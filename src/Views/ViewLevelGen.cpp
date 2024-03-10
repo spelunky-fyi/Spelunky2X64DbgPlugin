@@ -22,12 +22,13 @@ S2Plugin::ViewLevelGen::ViewLevelGen(ViewToolbar* toolbar, QWidget* parent) : QW
     mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
     mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
+    toggleAutoRefresh(Qt::Checked);
 }
 
 void S2Plugin::ViewLevelGen::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mRefreshLayout = new QHBoxLayout(this);
+    mMainLayout = new QVBoxLayout();
+    mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
     mMainTabWidget = new QTabWidget(this);
@@ -43,13 +44,14 @@ void S2Plugin::ViewLevelGen::initializeUI()
     QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewLevelGen::autoRefreshTimerTrigger);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
+    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
     mRefreshLayout->addWidget(mAutoRefreshCheckBox);
     QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewLevelGen::toggleAutoRefresh);
 
     mAutoRefreshIntervalLineEdit = new QLineEdit(this);
     mAutoRefreshIntervalLineEdit->setFixedWidth(50);
     mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("2000");
+    mAutoRefreshIntervalLineEdit->setText("500");
     mRefreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
     QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewLevelGen::autoRefreshIntervalChanged);
 
@@ -97,7 +99,7 @@ void S2Plugin::ViewLevelGen::initializeUI()
         {
             if (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
             {
-                auto roomWidget = new WidgetSpelunkyRooms(field.name, mToolbar, this);
+                auto roomWidget = new WidgetSpelunkyRooms(field.name, this);
                 if (field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
                 {
                     roomWidget->setIsMetaData();
@@ -123,19 +125,19 @@ void S2Plugin::ViewLevelGen::refreshLevelGen()
 {
     mMainTreeView->updateTree();
 
-    // TODO: update rooms tab
-    // for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
-    //{
-    //    if (mMainTabWidget->currentWidget() == mTabRooms && (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer))
-    //    {
-    //        auto pointerOffset = mToolbar->levelGen()->offsetForField(field.name);
-    //        if (pointerOffset != 0)
-    //        {
-    //            size_t offset = Script::Memory::ReadQword(pointerOffset);
-    //            mRoomsWidgets.at(field.name)->setOffset(offset);
-    //        }
-    //    }
-    //}
+    if (mMainTabWidget->currentWidget() == mTabRooms)
+    {
+        auto offset = Spelunky2::get()->get_LevelGenPtr(); // TODO: save ptr to sturct on view open
+        for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
+        {
+            if (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
+            {
+                size_t pointerOffset = Script::Memory::ReadQword(offset);
+                mRoomsWidgets.at(field.name)->setOffset(pointerOffset);
+            }
+            offset += field.get_size();
+        }
+    }
 }
 
 void S2Plugin::ViewLevelGen::toggleAutoRefresh(int newLevelGen)

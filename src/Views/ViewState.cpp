@@ -25,8 +25,8 @@ S2Plugin::ViewState::ViewState(ViewToolbar* toolbar, uintptr_t state, QWidget* p
 
 void S2Plugin::ViewState::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mRefreshLayout = new QHBoxLayout(this);
+    mMainLayout = new QVBoxLayout();
+    mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
     mRefreshButton = new QPushButton("Refresh", this);

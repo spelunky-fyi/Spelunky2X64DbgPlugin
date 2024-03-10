@@ -196,7 +196,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UTF8StringFixedSize:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
-            returnField->setData(field.size, gsRoleSize);
+            returnField->setData(field.get_size(), gsRoleSize);
             break;
         }
         case MemoryFieldType::State8:

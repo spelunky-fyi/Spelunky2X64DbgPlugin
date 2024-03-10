@@ -66,7 +66,7 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
         if (field.type == MemoryFieldType::Skip)
         {
             variableType = "uint8_t";
-            variableName = "skip[" + std::to_string(field.size) + "]";
+            variableName = "skip[" + std::to_string(field.get_size()) + "]";
         }
         else if (auto str = Configuration::getCPPTypeName(field.type); !str.empty())
         {

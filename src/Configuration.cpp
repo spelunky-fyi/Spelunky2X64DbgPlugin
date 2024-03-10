@@ -487,6 +487,7 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
     }
     for (const auto& [key, jsonValue] : j["struct_alignments"].items())
     {
+        // TODO add warning if wrong value, allowed range: 0-8
         mAlignments.insert({key, jsonValue.get<uint8_t>()});
     }
     for (const auto& [key, jsonArray] : j["refs"].items())
@@ -743,20 +744,11 @@ int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
         }
     }
     auto itr = mAlignments.find(typeName);
-    if (itr == mAlignments.end())
-    {
-        dprintf("alignment not found for (%s)\n", typeName.c_str());
-        return sizeof(uintptr_t);
-    }
-    else
-    {
-        if (itr->second > sizeof(uintptr_t))
-        {
-            dprintf("wrong alignment provided (%d) for struct (%s), allowed range: 0-8\n", itr->second, itr->first.c_str());
-            return sizeof(uintptr_t);
-        }
+    if (itr != mAlignments.end())
         return itr->second;
-    }
+
+    dprintf("alignment not found for (%s)\n", typeName.c_str());
+    return sizeof(uintptr_t);
 }
 
 size_t S2Plugin::Configuration::getTypeSize(const std::string& typeName, bool entitySubclass)
@@ -806,7 +798,7 @@ size_t S2Plugin::MemoryField::get_size() const
 
     if (size == 0)
     {
-        // no entity sub class
+        // no entity sub class, shouldn't be needed
 
         if (jsonName.empty())
         {

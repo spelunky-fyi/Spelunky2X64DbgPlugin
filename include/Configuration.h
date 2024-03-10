@@ -148,8 +148,6 @@ namespace S2Plugin
     struct MemoryField
     {
         std::string name;
-        size_t size{0};
-
         MemoryFieldType type{MemoryFieldType::None};
         bool isPointer{false};
 
@@ -166,6 +164,10 @@ namespace S2Plugin
         {
             return name == other.name;
         }
+
+      private:
+        size_t size{0};
+        friend class Configuration;
     };
 
     struct RoomCode
