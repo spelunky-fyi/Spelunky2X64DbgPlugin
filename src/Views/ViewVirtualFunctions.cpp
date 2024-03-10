@@ -102,7 +102,7 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
 
 void S2Plugin::ViewVirtualFunctions::jumpToFunction(bool b)
 {
-    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8));
+    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8ull));
     GuiDisasmAt(address, GetContextData(UE_CIP));
     GuiShowCpu();
 }

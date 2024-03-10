@@ -32,9 +32,9 @@ namespace S2Plugin
      * value, comparison value, memoryoffset and delta fields all should contain the `gsRoleRawValue` data
      * (may differ with some special types)
      *
-     * valueHex and comparison valuehex contain `gsRoleRawValue` only when it's a pointer (only used for update check)
+     * valueHex and comparison valuehex contain `gsRoleRawValue` only when it's a pointer (used for update check and click event)
      * value and comparison value also contain `gsRoleMemoryOffset` for field editing purposes
-     * for pointers, that will be the pointer itself, not memory offset of the pointer
+     * for pointers, that will be the pointer value, not memory offset of the pointer
      *
      * The rest of the roles are type specific
      */
@@ -47,7 +47,7 @@ namespace S2Plugin
     constexpr uint16_t gsRoleRawValue = Qt::UserRole + 5;
 
     constexpr uint16_t gsRoleFlagIndex = Qt::UserRole + 6;
-    constexpr uint16_t gsRoleRefName = Qt::UserRole + 7; // ref name for flags and states and vtable
+    constexpr uint16_t gsRoleRefName = Qt::UserRole + 7; // ref name for flags, states and vtable
     constexpr uint16_t gsRoleStdContainerFirstParameterType = Qt::UserRole + 8;
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
@@ -190,8 +190,14 @@ namespace S2Plugin
         // tries to load Configuration if not loaded already
         static bool is_loaded();
 
-        const std::unordered_map<std::string, std::string>& entityClassHierarchy() const noexcept;
-        const std::vector<std::pair<std::string, std::string>>& defaultEntityClassTypes() const noexcept;
+        const std::unordered_map<std::string, std::string>& entityClassHierarchy() const noexcept
+        {
+            return mEntityClassHierarchy;
+        }
+        const std::vector<std::pair<std::string, std::string>>& defaultEntityClassTypes() const noexcept
+        {
+            return mDefaultEntityClassTypes;
+        }
         std::vector<std::string> classHierarchyOfEntity(const std::string& entityName) const;
 
         const std::vector<MemoryField>& typeFields(const MemoryFieldType& type) const;

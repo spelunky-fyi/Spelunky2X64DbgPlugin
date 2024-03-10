@@ -1,10 +1,9 @@
-#include <windows.h>
+#include "Views/ViewStdMap.h"
 
 #include "Configuration.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
-#include "Views/ViewStdMap.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCheckBox>
@@ -17,7 +16,7 @@
 #include <Qlayout>
 
 S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent)
-    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent), mToolbar(toolbar)
+    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent)
 {
     mMainLayout = new QVBoxLayout(this);
 
@@ -29,7 +28,10 @@ S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytyp
     mMapValueAlignment = config->getAlingment(valuetypeName);
 
     initializeRefreshLayout();
-    initializeTreeView();
+    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
+    mMainTreeView->setEnableChangeHighlighting(false);
+
+    mMainLayout->addWidget(mMainTreeView);
     setWindowIcon(QIcon(":/icons/caveman.png"));
 
     mMainLayout->setMargin(5);
@@ -44,14 +46,6 @@ S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytyp
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryOffsetDelta).disable(gsColComment);
     refreshMapContents();
     toggleAutoRefresh(Qt::Checked);
-}
-
-void S2Plugin::ViewStdMap::initializeTreeView()
-{
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
-    mMainTreeView->setEnableChangeHighlighting(false);
-
-    mMainLayout->addWidget(mMainTreeView);
 }
 
 void S2Plugin::ViewStdMap::initializeRefreshLayout()

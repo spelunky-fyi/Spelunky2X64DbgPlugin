@@ -44,7 +44,6 @@ qt5_add_resources(SOURCES resources/spelunky2.qrc)
 x64dbg_plugin(${PROJECT_NAME}
 	src/pluginmain.cpp
 	src/QtPlugin.cpp
-	src/read_helpers.cpp
 	include/Spelunky2.h
 	include/Configuration.h
 	include/read_helpers.h

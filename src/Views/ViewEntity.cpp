@@ -36,7 +36,13 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWid
     mSpelunkyLevel->paintEntityUID(Entity{mEntityPtr}.uid(), QColor(222, 52, 235));
     updateLevel();
     toggleAutoRefresh(Qt::Checked);
-    mInterpretAsComboBox->setCurrentText(QString::fromStdString(Entity{mEntityPtr}.entityClassName()));
+    auto entityClassName = Entity{mEntityPtr}.entityClassName();
+
+    // the combobox is set as Entity by default, so we have to manually call interpretAsChanged
+    if (entityClassName == "Entity")
+        interpretAsChanged(QString::fromStdString(entityClassName));
+    else
+        mInterpretAsComboBox->setCurrentText(QString::fromStdString(entityClassName));
 }
 
 void S2Plugin::ViewEntity::initializeUI()
@@ -175,7 +181,6 @@ void S2Plugin::ViewEntity::closeEvent(QCloseEvent* event)
 
 void S2Plugin::ViewEntity::refreshEntity()
 {
-    // mMainTreeView->updateTableHeader(false);
     mMainTreeView->updateTree();
     if (mMainTabWidget->currentWidget() == mTabMemory)
     {
@@ -214,7 +219,7 @@ void S2Plugin::ViewEntity::autoRefreshIntervalChanged(const QString& text)
 
 void S2Plugin::ViewEntity::autoRefreshTimerTrigger()
 {
-    refreshEntity(); // TODO maybe connect with refreshEntity directly?
+    refreshEntity();
 }
 
 QSize S2Plugin::ViewEntity::sizeHint() const
@@ -236,7 +241,6 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
         auto config = Configuration::get();
 
         Entity entity{mEntityPtr};
-        // populate tree view
         auto hierarchy = Entity::classHierarchy(classType.toStdString());
 
         mMainTreeView->clear();
@@ -282,12 +286,11 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             headerField.type = MemoryFieldType::EntitySubclass;
             headerField.jsonName = *it;
             auto item = mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
-            // delta = mMainTreeView->getLastItemDelta();
-            if (++counter == hierarchy.size())
+            if (++counter == hierarchy.size()) // expand last subclass
             {
                 mMainTreeView->expandItem(item);
             }
-
+            // highlights fields in memory view, also updates delta
             recursiveHighlight(*it + ".", config->typeFieldsOfEntitySubclass(*it), recursiveHighlight);
         }
 
@@ -299,7 +302,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
 
 void S2Plugin::ViewEntity::updateMemoryViewOffsetAndSize()
 {
-    static const size_t defaultBytesShown = 0x188; // max Movable size, non movable size: 0xD0
+    static const size_t defaultBytesShown = 0x188; // big bucket size, small bucket size: 0xD0
 
     mMemoryView->setOffsetAndSize(mEntityPtr, defaultBytesShown);
     mMemoryComparisonView->setOffsetAndSize(mComparisonEntityPtr, defaultBytesShown);

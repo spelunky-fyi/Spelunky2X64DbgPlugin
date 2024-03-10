@@ -15,9 +15,6 @@ S2Plugin::ViewJournalPage::ViewJournalPage(ViewToolbar* toolbar, uintptr_t offse
     setWindowIcon(QIcon(":/icons/caveman.png"));
     setWindowTitle("JournalPage");
 
-    // mMainTreeView->setMemoryMappedData(mJournalPage.get());
-
-    mMainTreeView->updateTree(0, 0, true);
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
@@ -57,6 +54,8 @@ void S2Plugin::ViewJournalPage::initializeUI()
 
     mRefreshLayout->addWidget(new QLabel("Interpret as:", this));
     mInterpretAsComboBox = new QComboBox(this);
+    // TODO get from json
+    // also, guess page by the vtable
     mInterpretAsComboBox->addItem("JournalPage");
     mInterpretAsComboBox->addItem("JournalPageProgress");
     mInterpretAsComboBox->addItem("JournalPageJournalMenu");

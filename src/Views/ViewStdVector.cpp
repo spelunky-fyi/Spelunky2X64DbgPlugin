@@ -11,14 +11,16 @@
 #include <QTimer>
 
 S2Plugin::ViewStdVector::ViewStdVector(ViewToolbar* toolbar, const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent)
-    : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent), mToolbar(toolbar)
+    : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout(this);
+    mMainLayout = new QVBoxLayout();
 
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
     initializeRefreshLayout();
-    initializeTreeView();
+    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
+    mMainLayout->addWidget(mMainTreeView);
     setWindowIcon(QIcon(":/icons/caveman.png"));
 
     mMainLayout->setMargin(5);
@@ -31,16 +33,9 @@ S2Plugin::ViewStdVector::ViewStdVector(ViewToolbar* toolbar, const std::string& 
     toggleAutoRefresh(Qt::Checked);
 }
 
-void S2Plugin::ViewStdVector::initializeTreeView()
-{
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mMainLayout->addWidget(mMainTreeView);
-}
-
 void S2Plugin::ViewStdVector::initializeRefreshLayout()
 {
-    auto refreshLayout = new QHBoxLayout(this);
+    auto refreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(refreshLayout);
 
     auto refreshVectorButton = new QPushButton("Refresh vector", this);
@@ -82,7 +77,7 @@ void S2Plugin::ViewStdVector::refreshVectorContents()
 
     uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorOffset);
     uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorOffset + sizeof(uintptr_t));
-    if (vectorBegin > vectorEnd && Script::Memory::IsValidPtr(vectorBegin) && Script::Memory::IsValidPtr(vectorEnd))
+    if (vectorBegin > vectorEnd || !Script::Memory::IsValidPtr(vectorBegin) || !Script::Memory::IsValidPtr(vectorEnd))
         return;
 
     auto vectorItemCount = (vectorEnd - vectorBegin) / mVectorTypeSize;

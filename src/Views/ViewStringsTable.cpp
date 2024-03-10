@@ -50,7 +50,7 @@ void S2Plugin::ViewStringsTable::initializeUI()
 
     auto mModel = Spelunky2::get()->get_StringsTable().modelCache();
     if (mModel->rowCount() == 0) // there is probably a better way to check if it's "empty"
-        reload();
+        reload();                // initial "load"
 
     mModelProxy = new SortFilterProxyModelStringsTable(this);
     mModelProxy->setSourceModel(mModel);

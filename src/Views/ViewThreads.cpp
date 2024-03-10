@@ -16,6 +16,8 @@ static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
 // TODO review (crashes)
 
+// TODO: check for null in click event, add more columns, add spel2 function to get ptr based on the different heapbase
+
 S2Plugin::ViewThreads::ViewThreads(ViewToolbar* toolbar) : QWidget(toolbar), mToolbar(toolbar)
 {
     initializeUI();
@@ -55,7 +57,6 @@ void S2Plugin::ViewThreads::initializeUI()
 
 void S2Plugin::ViewThreads::refreshThreads()
 {
-    auto heapOffset = Spelunky2::get()->get_HeapBase();
     auto feedCodeOffset = 0x60;
 
     mMainTable->clear();
@@ -106,7 +107,7 @@ void S2Plugin::ViewThreads::refreshThreads()
         {
             continue;
         }
-        auto statePtr = heapBase + heapOffset;
+        auto statePtr = heapBase + 0x4A0; // hardcode for now
         if (!Script::Memory::IsValidPtr(statePtr))
         {
             continue;

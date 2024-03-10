@@ -526,16 +526,6 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
     // TODO: maybe add check for unused structs?
 }
 
-const std::unordered_map<std::string, std::string>& S2Plugin::Configuration::entityClassHierarchy() const noexcept
-{
-    return mEntityClassHierarchy;
-}
-
-const std::vector<std::pair<std::string, std::string>>& S2Plugin::Configuration::defaultEntityClassTypes() const noexcept
-{
-    return mDefaultEntityClassTypes;
-}
-
 std::vector<std::string> S2Plugin::Configuration::classHierarchyOfEntity(const std::string& entityName) const
 {
     std::vector<std::string> returnVec;
@@ -919,6 +909,7 @@ std::string S2Plugin::Configuration::getEntityName(uint32_t type) const
 
 uintptr_t S2Plugin::Configuration::offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t addr) const
 {
+    // TODO: maybe cache
     return offsetForField(typeFields(type), fieldUID, addr);
 }
 

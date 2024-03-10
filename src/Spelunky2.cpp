@@ -100,30 +100,13 @@ void S2Plugin::Spelunky2::reset()
     }
 }
 
-// size_t S2Plugin::Spelunky2::findEntityListMapOffset()
-// {
-//     auto offset = Script::Pattern::FindMem(spelunky2AfterBundle(), spelunky2AfterBundleSize(), "29 5C 8F 3D");
-//     offset = Script::Pattern::FindMem(offset, spelunky2AfterBundleSize(), "48 8D 8B");
-//     auto entitiesOffset = Script::Memory::ReadDword(offset + 3);
-
-//     offset = Script::Pattern::FindMem(spelunky2AfterBundle(), spelunky2AfterBundleSize(), "48 B8 02 55 A7 74 52 9D 51 43") - 7;
-//     auto entitiesPtr = Script::Memory::ReadDword(offset + 3) + offset + 7;
-
-//     auto mapOffset = Script::Memory::ReadQword(entitiesPtr) + entitiesOffset;
-
-//     auto mapPtr = reinterpret_cast<std::unordered_map<std::string, uint16_t>*>(mapOffset);
-//     dprintf("mapPtr size = %d\n", mapPtr->size());
-
-//     return offset;
-// }
-
 uintptr_t S2Plugin::Spelunky2::find(const char* pattern, uintptr_t start, size_t size) const
 {
     if (start == 0)
         start = afterBundle;
 
     if (size == 0)
-        size = afterBundleSize - (start - afterBundle);
+        size = afterBundleSize - (start == 0 ? 0 : start - afterBundle);
 
     return Script::Pattern::FindMem(start, size, pattern);
 }
@@ -135,7 +118,7 @@ uintptr_t S2Plugin::Spelunky2::find_between(const char* pattern, uintptr_t start
 
     size_t size;
     if (end == 0)
-        size = afterBundleSize - (start - afterBundle);
+        size = afterBundleSize - (start == 0 ? 0 : start - afterBundle);
     else
         size = end - start;
 
@@ -147,9 +130,11 @@ uintptr_t S2Plugin::Spelunky2::get_SaveDataPtr()
     auto gm = get_GameManagerPtr();
     if (gm == 0)
         return 0;
+
     auto heapOffsetSaveGame = Script::Memory::ReadQword(Script::Memory::ReadQword(gm + 8));
     if (heapOffsetSaveGame == 0)
         return 0;
+
     return heapBaseAddr + heapOffsetSaveGame;
 }
 

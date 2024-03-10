@@ -42,13 +42,11 @@ namespace S2Plugin
 
         QVBoxLayout* mMainLayout;
         TreeViewMemoryFields* mMainTreeView;
-        ViewToolbar* mToolbar;
         QPushButton* mRefreshDataButton;
         QCheckBox* mAutoRefreshCheckBox;
         QLineEdit* mAutoRefreshIntervalLineEdit;
         std::unique_ptr<QTimer> mAutoRefreshTimer;
 
-        void initializeTreeView();
         void initializeRefreshLayout();
     };
 } // namespace S2Plugin
