@@ -1616,23 +1616,7 @@
         "type": "TextRenderingInfoPointer"
       },
       { "field": "main_image", "type": "TextureRenderingInfo" },
-      { "field": "unknown14", "type": "UnsignedDword" },
-      { "field": "unknown15", "type": "UnsignedDword" },
-      { "field": "unknown16", "type": "UnsignedDword" },
-      { "field": "unknown17", "type": "UnsignedDword" },
-      { "field": "unknown18", "type": "Float" },
-      { "field": "unknown19", "type": "Float" },
-      { "field": "unknown20", "type": "Float" },
-      { "field": "unknown21", "type": "Float" },
-      { "field": "unknown22", "type": "Float" },
-      { "field": "unknown23", "type": "Float" },
-      { "field": "unknown24", "type": "Float" },
-      { "field": "unknown25", "type": "UnsignedDword" },
-      { "field": "unknown26", "type": "UnsignedDword" },
-      { "field": "unknown27", "type": "UnsignedDword" },
-      { "field": "unknown28", "type": "UnsignedDword" },
-      { "field": "unknown29", "type": "UnsignedDword" },
-      { "field": "unknown30", "type": "UnsignedDword" }
+      { "field": "unknown14", "type": "UnsignedDword" }
     ],
     "JournalPagePeople": [
       {
