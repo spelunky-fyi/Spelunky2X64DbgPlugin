@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Data/Entity.h"
 #include <QWidget>
+#include <array>
 #include <cstdint>
-#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace S2Plugin
 {
@@ -11,35 +14,41 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        explicit WidgetSpelunkyLevel(QWidget* parent = nullptr);
+        // main_entity used to get the layer
+        explicit WidgetSpelunkyLevel(uintptr_t main_entity, QWidget* parent = nullptr);
 
         QSize minimumSizeHint() const override;
         QSize sizeHint() const override;
 
-        void loadEntities(size_t entitiesOffset, uint32_t entitiesCount);
-        void paintEntityID(uint32_t entityTypeID, const QColor& color);
         void paintEntityMask(uint32_t entityMask, const QColor& color);
-        void paintEntityUID(uint32_t entityUID, const QColor& color);
-        void clearPaintedEntities();
-        void clearPaintedEntityUID(uint32_t entityUID);
+        void paintEntity(uintptr_t entityUID, const QColor& color);
+        void paintFloor(const QColor& color);
+        void clearAllPaintedEntities();
+        void clearPaintedEntity(uintptr_t addr);
 
       protected:
         void paintEvent(QPaintEvent* event) override;
 
       private:
-        size_t mEntitiesOffset{0};
-        uint32_t mEntitiesCount{0};
+        uintptr_t mMainEntityAddr{0};
 
-        std::unordered_map<uint32_t, QColor> mEntityMasksToPaint;
-        std::unordered_map<uint32_t, QColor> mEntityIDsToPaint;
-        std::unordered_map<uint32_t, QColor> mEntityUIDsToPaint;
-        std::pair<float, float> getEntityCoordinates(size_t entityOffset) const;
+        bool mPaintFloors{false};
+        QBrush mFloorColor;
+        uint mLevelWidth{0};
+        uint mLevelHeight{0};
 
-        static constexpr float msLevelMaxHeight = 125.0;
-        static constexpr float msLevelMaxWidth = 3. + 3. + (8 * 10);
+        std::pair<uintptr_t, uintptr_t> mMaskMapAddr;
+        std::pair<uintptr_t, uintptr_t> mGridEntitiesAddr;
+
+        uint32_t mEntityMasksToPaint{0};
+        std::array<QBrush, 15> mEntityMaskColors;
+        std::vector<std::pair<Entity, QBrush>> mEntitiesToPaint;
+
+        static constexpr uint8_t msLevelMaxHeight = 125;
+        static constexpr uint8_t msLevelMaxWidth = 85;
         static constexpr uint8_t msMarginVer = 1;
         static constexpr uint8_t msMarginHor = 1;
-        static constexpr float msScaleFactor = 5.;
+        static constexpr uint8_t msScaleFactor = 7;
     };
 
 } // namespace S2Plugin

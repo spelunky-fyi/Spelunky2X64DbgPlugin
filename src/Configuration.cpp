@@ -917,7 +917,6 @@ uintptr_t S2Plugin::Configuration::offsetForField(const std::vector<MemoryField>
     }
 
     auto currentLookupName = fieldUID.substr(0, currentDelimiter);
-
     auto offset = addr;
 
     for (auto& field : fields)
@@ -933,15 +932,16 @@ uintptr_t S2Plugin::Configuration::offsetForField(const std::vector<MemoryField>
 
             if (field.jsonName.empty())
             {
-                return offsetForField(typeFieldsOfDefaultStruct(field.jsonName), fieldUID.substr(currentDelimiter + 1), offset);
+                return offsetForField(typeFields(field.type), fieldUID.substr(currentDelimiter + 1), offset);
             }
             else
             {
-                return offsetForField(typeFields(field.type), fieldUID.substr(currentDelimiter + 1), offset);
+                return offsetForField(typeFieldsOfDefaultStruct(field.jsonName), fieldUID.substr(currentDelimiter + 1), offset);
             }
         }
         offset += field.get_size();
     }
+    dprintf("Failed to locate: (%s) in json\n", std::string(currentLookupName).c_str());
     return 0;
 }
 

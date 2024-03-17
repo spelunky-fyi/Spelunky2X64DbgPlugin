@@ -79,6 +79,5 @@ namespace S2Plugin
         void initializeUI();
         void updateMemoryViewOffsetAndSize();
         void updateComparedMemoryViewHighlights();
-        void updateLevel();
     };
 } // namespace S2Plugin

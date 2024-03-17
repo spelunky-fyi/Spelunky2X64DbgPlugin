@@ -276,7 +276,7 @@ namespace S2Plugin
             }
         }
 
-        size_t address;
+        uintptr_t address;
         size_t keytype_size;
         size_t valuetype_size;
         uint8_t key_offset;

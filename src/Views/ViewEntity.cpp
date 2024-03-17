@@ -14,8 +14,6 @@
 
 S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar), mEntityPtr(entityOffset)
 {
-    mMainLayout = new QVBoxLayout(this);
-
     initializeUI();
     setWindowIcon(QIcon(":/icons/caveman.png"));
 
@@ -32,9 +30,9 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWid
     mMainTreeView->setColumnWidth(gsColType, 100);
     updateMemoryViewOffsetAndSize();
 
-    mSpelunkyLevel->paintEntityMask(0x100, QColor(160, 160, 160)); // 0x100 = FLOOR // TODO: add paint floor and use grid entity matrix
-    mSpelunkyLevel->paintEntityUID(Entity{mEntityPtr}.uid(), QColor(222, 52, 235));
-    updateLevel();
+    mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
+    mSpelunkyLevel->paintEntity(mEntityPtr, QColor(222, 52, 235));
+    mSpelunkyLevel->update();
     toggleAutoRefresh(Qt::Checked);
     auto entityClassName = Entity{mEntityPtr}.entityClassName();
 
@@ -47,7 +45,8 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWid
 
 void S2Plugin::ViewEntity::initializeUI()
 {
-    mTopLayout = new QHBoxLayout(this);
+    mMainLayout = new QVBoxLayout();
+    mTopLayout = new QHBoxLayout();
     mMainLayout->addLayout(mTopLayout);
 
     mMainTabWidget = new QTabWidget(this);
@@ -148,7 +147,7 @@ void S2Plugin::ViewEntity::initializeUI()
 
     // TAB LEVEL
     scroll = new QScrollArea(mTabLevel);
-    mSpelunkyLevel = new WidgetSpelunkyLevel(scroll);
+    mSpelunkyLevel = new WidgetSpelunkyLevel(mEntityPtr, scroll);
     scroll->setStyleSheet("background-color: #fff;");
     scroll->setWidget(mSpelunkyLevel);
     scroll->setVisible(true);
@@ -190,7 +189,7 @@ void S2Plugin::ViewEntity::refreshEntity()
     }
     else if (mMainTabWidget->currentWidget() == mTabLevel)
     {
-        updateLevel();
+        mSpelunkyLevel->update();
     }
 }
 
@@ -316,38 +315,6 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
     // mMemoryComparisonView->addHighlightedField(fieldNameOverride, mMemoryOffsets.at("comparison." + fieldNameOverride), fieldSize, color);
 }
 
-void S2Plugin::ViewEntity::updateLevel()
-{
-    // TODO
-    //
-    // auto layerName = "layer0";
-    // auto entityCameraLayer = mEntity->cameraLayer();
-    // if (entityCameraLayer == 1)
-    //{
-    //     layerName = "layer1";
-    // }
-
-    // if (mEntity->comparedEntityMemoryOffset() != 0)
-    //{
-    //     if (entityCameraLayer == mEntity->comparisonCameraLayer())
-    //     {
-    //         mSpelunkyLevel->paintEntityUID(mEntity->comparisonUid(), QColor(232, 134, 30));
-    //     }
-    //     else
-    //     {
-    //         mSpelunkyLevel->paintEntityUID(mEntity->comparisonUid(), Qt::transparent);
-    //     }
-    // }
-
-    // auto layer = Script::Memory::ReadQword(mToolbar->state()->offsetForField(layerName));
-    // auto entityCount = (std::min)(Script::Memory::ReadDword(layer + 28), 10000u);
-    // auto entities = Script::Memory::ReadQword(layer + 8);
-
-    // mSpelunkyLevel->loadEntities(entities, entityCount);
-
-    mSpelunkyLevel->update();
-}
-
 void S2Plugin::ViewEntity::label()
 {
     mMainTreeView->labelAll();
@@ -357,7 +324,7 @@ void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)
 {
     if (mComparisonEntityPtr != 0)
     {
-        mSpelunkyLevel->clearPaintedEntityUID(Entity{mComparisonEntityPtr}.uid());
+        mSpelunkyLevel->clearPaintedEntity(mComparisonEntityPtr);
     }
 
     mComparisonEntityPtr = entityOffset;

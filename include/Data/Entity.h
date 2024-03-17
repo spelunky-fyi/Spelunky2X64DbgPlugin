@@ -10,6 +10,7 @@ namespace S2Plugin
     {
       public:
         Entity(uintptr_t offset) : mEntityPtr(offset){};
+        Entity() = delete;
 
         std::string entityClassName() const;
         uint32_t entityTypeID() const;
@@ -20,17 +21,14 @@ namespace S2Plugin
             return classHierarchy(entityClassName());
         }
 
-        uint8_t cameraLayer() const;
+        uint8_t layer() const;
         uint32_t uid() const;
         uintptr_t ptr() const
         {
             return mEntityPtr;
         }
         std::pair<float, float> position() const;
-        std::pair<int, int> position_floor() const
-        {
-            return static_cast<std::pair<int, int>>(position());
-        }
+        std::pair<float, float> abs_position() const;
 
       private:
         uintptr_t mEntityPtr;
@@ -42,6 +40,8 @@ namespace S2Plugin
             TYPE_PTR = 0x8,
             DB_TYPE_ID = 0x14,
             POS = 0x40,
+            ABS_POS = 0x48,
+            OVERLAY = 0x10,
         };
     };
 } // namespace S2Plugin

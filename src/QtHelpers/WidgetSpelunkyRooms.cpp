@@ -17,8 +17,7 @@ static const uint32_t gsMarginVer = 5;
 static constexpr size_t gsBufferSize = 8 * 16 * 2;     // 8x16 rooms * 2 bytes per room
 static constexpr size_t gsHalfBufferSize = 8 * 16 * 1; // 8x16 rooms * 1 byte/bool per room
 
-S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent)
-    : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
+S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent) : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
 {
     mFont = QFont("Courier", 11);
     mTextAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, "00");

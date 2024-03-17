@@ -54,7 +54,7 @@ uint32_t S2Plugin::Entity::uid() const
     return Script::Memory::ReadDword(mEntityPtr + ENTITY_OFFSETS::UID);
 }
 
-uint8_t S2Plugin::Entity::cameraLayer() const
+uint8_t S2Plugin::Entity::layer() const
 {
     return Script::Memory::ReadByte(mEntityPtr + ENTITY_OFFSETS::LAYER);
 }
@@ -64,5 +64,29 @@ std::pair<float, float> S2Plugin::Entity::position() const
     auto entityPosition = Script::Memory::ReadQword(mEntityPtr + ENTITY_OFFSETS::POS);
     // illegal :)
     auto returnValue = reinterpret_cast<std::pair<float, float>&>(entityPosition);
+    return returnValue;
+}
+
+std::pair<float, float> S2Plugin::Entity::abs_position() const
+{
+    auto entityAbsPosition = Script::Memory::ReadQword(mEntityPtr + ENTITY_OFFSETS::ABS_POS);
+    // illegal :)
+    auto returnValue = reinterpret_cast<std::pair<float, float>&>(entityAbsPosition);
+    // sometimes for some reason entities don't use absolute position coordinates, then the values are `-FLT_MAX` or something similar
+    if (returnValue.first < -999999.0f)
+    {
+        auto overlay = Script::Memory::ReadQword(mEntityPtr + ENTITY_OFFSETS::OVERLAY);
+        if (overlay == 0)
+        {
+            returnValue = position();
+        }
+        else
+        {
+            returnValue = position();
+            auto overlayPosition = Entity{overlay}.abs_position();
+            returnValue.first += overlayPosition.first;
+            returnValue.second += overlayPosition.second;
+        }
+    }
     return returnValue;
 }

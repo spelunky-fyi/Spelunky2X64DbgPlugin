@@ -181,9 +181,6 @@ namespace S2Plugin
     Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType)
     Q_DECLARE_METATYPE(std::string)
 
-    struct VirtualFunction;
-    struct Spelunky2;
-
     class Configuration
     {
       public:

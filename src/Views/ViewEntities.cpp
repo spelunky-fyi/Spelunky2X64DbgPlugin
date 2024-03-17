@@ -193,7 +193,7 @@ void S2Plugin::ViewEntities::refreshEntities()
                 {
                     for (size_t i = 0; i < list_count; ++i)
                     {
-                        AddEntity(pointers + (i * sizeof(size_t)));
+                        AddEntity(pointers + (i * sizeof(uintptr_t)));
                         ++totalEntities;
                     }
                 }
