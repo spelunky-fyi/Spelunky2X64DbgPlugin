@@ -851,6 +851,15 @@ std::string_view S2Plugin::Configuration::getTypeDisplayName(MemoryFieldType typ
     return it->second.display_name;
 }
 
+size_t S2Plugin::Configuration::getBuiltInTypeSize(MemoryFieldType type)
+{
+    auto it = gsMemoryFieldType.find(type);
+    if (it == gsMemoryFieldType.end())
+        return 0;
+
+    return it->second.size;
+}
+
 void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
 {
     using namespace std::string_literals;

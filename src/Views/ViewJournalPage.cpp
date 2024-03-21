@@ -156,6 +156,6 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
-        mInterpretAsComboBox->setCurrentText(""); // TODO not clear?
+        // mInterpretAsComboBox->setCurrentText("");
     }
 }

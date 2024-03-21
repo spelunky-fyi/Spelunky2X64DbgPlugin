@@ -45,7 +45,8 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent* event)
     painter.setPen(Qt::transparent);
     if (mPaintFloors)
     {
-        // painting floors is quite expensive, any optimisations as always welcome (like maybe use provided event to not draw obstructed parts of the level?)
+        // painting floors is quite expensive, any optimisations are always welcome (like maybe use provided event to not draw obstructed parts of the level?)
+        // TODO: don't read on refresh rate
         painter.setBrush(mFloorColor);
         auto gridAddr = layerToDraw == 0 ? mGridEntitiesAddr.first : mGridEntitiesAddr.second;
         // y: 0-125, x: 0-85

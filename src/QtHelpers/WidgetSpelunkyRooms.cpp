@@ -77,7 +77,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
                     auto rect = QRect(x, y - mTextAdvance.height() + 5, 2 * mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() - 2);
                     painter.setBrush(currentRoomCode.color);
                     painter.drawRoundedRect(rect, 4.0, 4.0);
-                    mToolTipRects.emplace_back(ToolTipRect{rect, currentRoomCode.name});
+                    mToolTipRects.emplace_back(ToolTipRect{rect, QString::fromStdString(currentRoomCode.name)});
                 }
 
                 if (currentRoomCode.id == 0 || currentRoomCode.id == 9)
@@ -163,12 +163,15 @@ void S2Plugin::WidgetSpelunkyRooms::setOffset(size_t offset)
 
 void S2Plugin::WidgetSpelunkyRooms::mouseMoveEvent(QMouseEvent* event)
 {
+    // when switching between the same room, the text stays in the same position, just like when just updating the text to keep it "alive", doesn't matter if the position if different
+    // TODO: when accessing different room first showText with empty text, then with the correct name
+    auto pos = event->pos();
     for (const auto& ttr : mToolTipRects)
     {
-        auto pos = event->pos();
         if (ttr.rect.contains(pos))
         {
-            QToolTip::showText(mapToGlobal(pos), QString::fromStdString(ttr.tooltip));
+            QToolTip::showText(mapToGlobal(pos), ttr.tooltip);
+            return;
         }
     }
 }

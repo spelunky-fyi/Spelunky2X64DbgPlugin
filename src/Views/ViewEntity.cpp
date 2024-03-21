@@ -7,6 +7,7 @@
 #include "QtHelpers/WidgetMemoryView.h"
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 #include "Views/ViewToolbar.h"
+#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QFont>
 #include <QLabel>
@@ -309,10 +310,61 @@ void S2Plugin::ViewEntity::updateMemoryViewOffsetAndSize()
 
 void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
 {
-    // TODO
-    // const auto color = QColor(255, 221, 184);
-    // take difference from mMainTreeView
-    // mMemoryComparisonView->addHighlightedField(fieldNameOverride, mMemoryOffsets.at("comparison." + fieldNameOverride), fieldSize, color);
+    if (mComparisonEntityPtr == 0)
+        return;
+
+    // TODO: don't clear tooltip if the interpretAs was not changed, maybe consider adding updateHighlightedField
+    mMemoryComparisonView->clearHighlights();
+    auto root = qobject_cast<QStandardItemModel*>(mMainTreeView->model())->invisibleRootItem();
+    auto config = Configuration::get();
+    size_t offset = 0;
+    std::string fieldName;
+    QColor color;
+    MemoryFieldType type{};
+
+    auto highlightFields = [&](QStandardItem* parrent, auto&& self) -> void
+    {
+        for (size_t idx = 0; idx < parrent->rowCount(); ++idx)
+        {
+            auto field = parrent->child(idx, gsColField);
+            type = field->data(gsRoleType).value<MemoryFieldType>();
+            bool isPointer = field->data(gsRoleIsPointer).toBool();
+            if (!isPointer && (type == MemoryFieldType::DefaultStructType || !config->typeFields(type).empty()))
+            {
+                self(field, self);
+                continue;
+            }
+            auto deltaField = parrent->child(idx, gsColMemoryOffsetDelta);
+            size_t delta = deltaField->data(gsRoleRawValue).toULongLong();
+            // get the size by the difference in offset delta
+            // [Known Issue]: this will fail in getting the correct size if there is a skip element between fields
+            size_t size = delta - offset;
+            if (size != 0)
+            {
+                mMemoryComparisonView->addHighlightedField(std::move(fieldName), mComparisonEntityPtr + offset, size, std::move(color));
+            }
+            offset = delta;
+            fieldName = field->data(gsRoleUID).toString().toStdString();
+            color = parrent->child(idx, gsColComparisonValueHex)->background().color();
+        }
+    };
+
+    for (size_t idx = 0; idx < root->rowCount(); ++idx)
+    {
+        QStandardItem* currentClass = root->child(idx, gsColField);
+        if (currentClass->data(gsRoleType).value<MemoryFieldType>() != MemoryFieldType::EntitySubclass)
+        {
+            displayError("Error in `updateComparedMemoryViewHighlights`, found non EntitySubclass member in main tree");
+            return;
+        }
+        highlightFields(currentClass, highlightFields);
+    }
+    // update last element
+    size_t size = Configuration::getBuiltInTypeSize(type);
+    if (size != 0)
+    {
+        mMemoryComparisonView->addHighlightedField(std::move(fieldName), mComparisonEntityPtr + offset, size, std::move(color));
+    }
 }
 
 void S2Plugin::ViewEntity::label()

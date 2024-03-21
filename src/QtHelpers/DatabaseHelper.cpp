@@ -4,6 +4,8 @@
 #include "pluginmain.h"
 #include <QString>
 
+// TODO: instead of adding all the flags as separate options, add flags and when selected, show another combo box with the flags
+
 struct ComparisonField
 {
     S2Plugin::MemoryFieldType type{S2Plugin::MemoryFieldType::None};
@@ -42,6 +44,7 @@ size_t S2Plugin::DB::populateComparisonCombobox(QComboBox* CompareFieldComboBox,
                     flag.type = MemoryFieldType::Flag;
                     flag.offset = offset;
                     flag.flag_index = x - 1;
+                    // TODO: use flag name?
                     CompareFieldComboBox->addItem(QString::fromStdString(prefix + field.name + ".flag_" + std::to_string(x)), QVariant::fromValue(flag));
                 }
                 break;
@@ -72,7 +75,7 @@ std::pair<QString, QVariant> S2Plugin::DB::valueForField(const QVariant& data, u
     auto offset = addr + compData.offset;
     switch (compData.type)
     {
-        // we only handle values that are present in the db's
+        // we only handle types that are occur in the db's
         case MemoryFieldType::Byte:
         case MemoryFieldType::State8:
         {

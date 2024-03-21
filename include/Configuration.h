@@ -209,6 +209,7 @@ namespace S2Plugin
         static MemoryFieldType getBuiltInType(const std::string& type);
         static std::string_view getCPPTypeName(MemoryFieldType type);
         static std::string_view getTypeDisplayName(MemoryFieldType type);
+        static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
 
         uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t addr = 0) const;
