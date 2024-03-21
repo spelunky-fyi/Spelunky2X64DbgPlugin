@@ -487,8 +487,11 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
     }
     for (const auto& [key, jsonValue] : j["struct_alignments"].items())
     {
-        // TODO add warning if wrong value, allowed range: 0-8
-        mAlignments.insert({key, jsonValue.get<uint8_t>()});
+        uint8_t val = jsonValue.get<uint8_t>();
+        if (val > 8)
+            throw std::runtime_error("Wrong value provided in [struct_alignments], name: (" + key + ") value (" + jsonValue.get<std::string>() + "). Allowed range: 0-8");
+
+        mAlignments.insert({key, val});
     }
     for (const auto& [key, jsonArray] : j["refs"].items())
     {
