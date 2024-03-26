@@ -2174,8 +2174,13 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         if (vftType == "Entity") // in case of Entity, we have to see what the entity is interpreted as, and show those functions
                         {
                             // rare case, we need the address not the pointer value to get entity
-                            auto ent = Entity{getDataFrom(index, gsColMemoryOffset, gsRoleRawValue).toULongLong()};
-                            mToolbar->showVirtualFunctions(rawValue, ent.entityClassName());
+                            uintptr_t ent;
+                            if (index.column() == gsColComparisonValue)
+                                ent = getDataFrom(index, gsColField, gsRoleComparisonMemoryOffset).toULongLong();
+                            else
+                                ent = getDataFrom(index, gsColField, gsRoleMemoryOffset).toULongLong();
+
+                            mToolbar->showVirtualFunctions(rawValue, Entity{ent}.entityClassName());
                         }
                         else
                         {
