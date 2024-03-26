@@ -3,14 +3,14 @@
 #include "pluginmain.h"
 #include <cstdint>
 #include <memory>
+#include <string>
 
 namespace S2Plugin
 {
-    // template just in case we want wstring or something, probably basic_string would be a better name
-    template <typename T = char>
-    struct StdString
+    template <typename T>
+    struct StdBasicString
     {
-        StdString(size_t addr) : offset(addr){};
+        StdBasicString(size_t addr) : offset(addr){};
         size_t size() const
         {
             return Script::Memory::ReadQword(offset + 0x10);
@@ -37,7 +37,9 @@ namespace S2Plugin
         }
         size_t string_ptr() const
         {
-            if (capacity() > (16 / sizeof(T)) - 1) // TODO only tested for char type
+            // test if string is in SSO mode (Short String Optimization)
+            // note: this is implementation specific, for std::string MSVC the capacity will be 15, for clang it might be as high as 22
+            if (capacity() > std::basic_string<T>{}.capacity())
                 return Script::Memory::ReadQword(offset);
 
             return offset;
@@ -54,7 +56,7 @@ namespace S2Plugin
             }
             return buffer;
         }
-        bool operator==(const StdString<T> other) const
+        bool operator==(const StdBasicString<T> other) const
         {
             if (string_ptr() == other.string_ptr())
                 return true;
@@ -73,4 +75,7 @@ namespace S2Plugin
       private:
         size_t offset;
     };
+
+    using StdString = StdBasicString<char>;
+    using StdWstring = StdBasicString<char16_t>;
 } // namespace S2Plugin
