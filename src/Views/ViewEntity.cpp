@@ -294,18 +294,22 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             recursiveHighlight(*it + ".", config->typeFieldsOfEntitySubclass(*it), recursiveHighlight);
         }
 
-        // updateMemoryViewOffsetAndSize();
         // mInterpretAsComboBox->setCurrentText("");
         mMainTreeView->updateTree(0, 0, true);
+        mEntitySize = delta;
+        updateMemoryViewOffsetAndSize();
     }
 }
 
 void S2Plugin::ViewEntity::updateMemoryViewOffsetAndSize()
 {
-    static const size_t defaultBytesShown = 0x188; // big bucket size, small bucket size: 0xD0
+    constexpr size_t smallEntityBucket = 0xD0;
+    constexpr size_t bigEntityBucket = 0x188;
 
-    mMemoryView->setOffsetAndSize(mEntityPtr, defaultBytesShown);
-    mMemoryComparisonView->setOffsetAndSize(mComparisonEntityPtr, defaultBytesShown);
+    size_t bytesShown = mEntitySize > smallEntityBucket ? bigEntityBucket : smallEntityBucket;
+
+    mMemoryView->setOffsetAndSize(mEntityPtr, bytesShown);
+    mMemoryComparisonView->setOffsetAndSize(mComparisonEntityPtr, bytesShown);
 }
 
 void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()

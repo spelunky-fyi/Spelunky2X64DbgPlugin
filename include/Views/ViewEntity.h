@@ -51,6 +51,11 @@ namespace S2Plugin
         QWidget* mTabLevel;
         QWidget* mTabCPP;
 
+        uintptr_t mEntityPtr;
+        uintptr_t mComparisonEntityPtr{0};
+        size_t mEntitySize{0};
+        ViewToolbar* mToolbar;
+
         // TOP LAYOUT
         QPushButton* mRefreshButton;
         QCheckBox* mAutoRefreshCheckBox;
@@ -72,9 +77,6 @@ namespace S2Plugin
         // TAB CPP
         QTextEdit* mCPPTextEdit;
         CPPSyntaxHighlighter* mCPPSyntaxHighlighter;
-        uintptr_t mEntityPtr;
-        uintptr_t mComparisonEntityPtr{0};
-        ViewToolbar* mToolbar;
 
         void initializeUI();
         void updateMemoryViewOffsetAndSize();
