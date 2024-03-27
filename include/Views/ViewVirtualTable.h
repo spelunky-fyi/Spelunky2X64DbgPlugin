@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QCheckBox>
 #include <QLabel>
 #include <QTableView>
@@ -11,7 +12,6 @@ namespace S2Plugin
 {
     class ItemModelVirtualTable;
     class SortFilterProxyModelVirtualTable;
-    class StyledItemDelegateHTML;
     class ItemModelGatherVirtualData;
     class SortFilterProxyModelGatherVirtualData;
 
@@ -56,7 +56,7 @@ namespace S2Plugin
         QTableView* mDataTable;
         std::unique_ptr<ItemModelVirtualTable> mModel;
         std::unique_ptr<SortFilterProxyModelVirtualTable> mSortFilterProxy;
-        std::unique_ptr<StyledItemDelegateHTML> mHTMLDelegate;
+        StyledItemDelegateHTML mHTMLDelegate;
 
         // LOOKUP
         QLineEdit* mLookupAddressLineEdit;

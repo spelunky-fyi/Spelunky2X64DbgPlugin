@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <array>
@@ -14,7 +15,6 @@ namespace S2Plugin
 {
     class ViewToolbar;
     struct MemoryField;
-    class StyledItemDelegateHTML;
 
     struct ColumnFilter
     {
@@ -75,7 +75,7 @@ namespace S2Plugin
       private:
         ViewToolbar* mToolbar;
         QStandardItemModel* mModel;
-        std::unique_ptr<StyledItemDelegateHTML> mHTMLDelegate;
+        StyledItemDelegateHTML mHTMLDelegate;
         std::array<uint32_t, 9> mSavedColumnWidths = {0};
         bool mEnableChangeHighlighting = true;
     };

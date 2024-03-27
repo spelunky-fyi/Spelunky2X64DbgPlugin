@@ -2,7 +2,6 @@
 #include "Data/VirtualTableLookup.h"
 #include "QtHelpers/ItemModelGatherVirtualData.h"
 #include "QtHelpers/ItemModelVirtualTable.h"
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
@@ -19,7 +18,6 @@
 
 S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
 {
-    mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
     mModel = std::make_unique<ItemModelVirtualTable>(this);
     mSortFilterProxy = std::make_unique<SortFilterProxyModelVirtualTable>(this);
     mGatherModel = std::make_unique<ItemModelGatherVirtualData>(this);
@@ -104,7 +102,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         mDataTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
         mDataTable->verticalHeader()->setDefaultSectionSize(19);
         mDataTable->verticalHeader()->setVisible(false);
-        mDataTable->setItemDelegate(mHTMLDelegate.get());
+        mDataTable->setItemDelegate(&mHTMLDelegate);
         mDataTable->setColumnWidth(gsColTableOffset, 100);
         mDataTable->setColumnWidth(gsColCodeAddress, 125);
         mDataTable->setColumnWidth(gsColTableAddress, 125);
@@ -192,7 +190,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         mGatherTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
         mGatherTable->verticalHeader()->setDefaultSectionSize(19);
         mGatherTable->verticalHeader()->setVisible(false);
-        mGatherTable->setItemDelegate(mHTMLDelegate.get());
+        mGatherTable->setItemDelegate(&mHTMLDelegate);
         mGatherTable->setColumnWidth(gsColGatherID, 50);
         mGatherTable->setColumnWidth(gsColGatherName, 200);
         mGatherTable->setColumnWidth(gsColGatherVirtualTableOffset, 125);

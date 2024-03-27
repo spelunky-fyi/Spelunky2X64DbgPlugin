@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -9,7 +10,6 @@
 namespace S2Plugin
 {
     class ViewToolbar;
-    class StyledItemDelegateHTML;
 
     class ViewThreads : public QWidget
     {
@@ -28,7 +28,7 @@ namespace S2Plugin
 
       private:
         ViewToolbar* mToolbar;
-        std::unique_ptr<StyledItemDelegateHTML> mHTMLDelegate;
+        StyledItemDelegateHTML mHTMLDelegate;
 
         QVBoxLayout* mMainLayout;
         QTableWidget* mMainTable;

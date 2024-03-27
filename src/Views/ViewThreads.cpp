@@ -1,7 +1,6 @@
 #include "Views/ViewThreads.h"
 #include "Configuration.h"
 #include "Data/State.h"
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
@@ -47,9 +46,8 @@ void S2Plugin::ViewThreads::initializeUI()
     mMainTable->horizontalHeader()->setStretchLastSection(true);
     mMainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mMainTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
-    mMainTable->setItemDelegate(mHTMLDelegate.get());
-    mHTMLDelegate->setCenterVertically(true);
+    mMainTable->setItemDelegate(&mHTMLDelegate);
+    mHTMLDelegate.setCenterVertically(true);
     QObject::connect(mMainTable, &QTableWidget::cellClicked, this, &ViewThreads::cellClicked);
 
     mMainLayout->addWidget(mMainTable);
