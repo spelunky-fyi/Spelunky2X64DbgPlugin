@@ -35,6 +35,12 @@ namespace S2Plugin
         size_t size{0};
         // Use the model as cache
         QStandardItemModel cache;
+
+        StringsTable(){};
+        ~StringsTable(){};
+        StringsTable(const StringsTable&) = delete;
+        StringsTable& operator=(const StringsTable&) = delete;
+
         friend struct Spelunky2;
     };
 } // namespace S2Plugin
