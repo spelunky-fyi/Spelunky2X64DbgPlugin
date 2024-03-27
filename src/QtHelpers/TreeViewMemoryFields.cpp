@@ -171,7 +171,6 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::EntityDBID:
         case MemoryFieldType::EntityUID:
         case MemoryFieldType::EntityPointer:
-        case MemoryFieldType::EntityUIDPointer:
         case MemoryFieldType::EntityDBPointer:
         case MemoryFieldType::TextureDBPointer:
         case MemoryFieldType::TextureDBID:
@@ -1385,11 +1384,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
-        case MemoryFieldType::EntityUIDPointer:
-        {
-            // TODO pending deletion
-            break;
-        }
         case MemoryFieldType::EntityPointer:
         {
             if (valueMemoryOffset == 0) // nullptr or bad ptr
@@ -2022,7 +2016,6 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     break;
                 }
                 case MemoryFieldType::EntityUID:
-                case MemoryFieldType::EntityUIDPointer:
                 {
                     auto offset = clickedItem->data(gsRoleEntityOffset).toULongLong();
                     if (offset != 0)

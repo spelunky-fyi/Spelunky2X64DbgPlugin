@@ -124,7 +124,6 @@ namespace S2Plugin
         {MemoryFieldType::Online, "Online", "", "Online", 0, false},
         // Special Types
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},
-        {MemoryFieldType::EntityUIDPointer, "Entity UID pointer", "uint32_t*", "EntityUIDPointer", 8, true},
         {MemoryFieldType::EntityDBPointer, "EntityDB pointer", "EntityDB*", "EntityDBPointer", 8, true},
         {MemoryFieldType::EntityDBID, "EntityDB ID", "uint32_t", "EntityDBID", 4, false},
         {MemoryFieldType::EntityUID, "Entity UID", "int32_t", "EntityUID", 4, false},

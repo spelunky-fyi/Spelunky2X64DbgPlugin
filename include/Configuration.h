@@ -98,7 +98,6 @@ namespace S2Plugin
         LevelGen,
         EntityDB,
         EntityPointer,
-        EntityUIDPointer, // TODO: remove
         EntityDBPointer,
         EntityDBID,
         EntityUID,

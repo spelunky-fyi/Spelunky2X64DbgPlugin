@@ -9046,9 +9046,9 @@
       { "field": "unknown4", "type": "UnsignedDword" }
     ],
     "UnknownPointerGroup": [
-      { "field": "unknown_uid1", "type": "EntityUIDPointer" },
-      { "field": "unknown_uid2", "type": "EntityUIDPointer" },
-      { "field": "unknown_uid3", "type": "EntityUIDPointer" }
+      { "field": "unknown_uid1", "type": "EntityUID", "pointer": true },
+      { "field": "unknown_uid2", "type": "EntityUID", "pointer": true },
+      { "field": "unknown_uid3", "type": "EntityUID", "pointer": true }
     ],
     "SoundInfoPointer": [
       {
