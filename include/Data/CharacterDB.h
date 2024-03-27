@@ -8,8 +8,9 @@ namespace S2Plugin
     class CharacterDB
     {
       public:
-        static uint8_t charactersCount() noexcept
+        static constexpr uint8_t charactersCount() noexcept
         {
+            // [Known Issue]: constant value, needs to rebuild program to update
             return 20;
         }
         const QStringList& characterNamesStringList() const noexcept
@@ -22,8 +23,12 @@ namespace S2Plugin
         }
         uintptr_t offsetFromIndex(uint8_t id) const
         {
-            constexpr size_t characterSize = 0x2C;
-            return ptr + id * characterSize;
+            return ptr + id * characterSize();
+        }
+        static constexpr size_t characterSize()
+        {
+            // [Known Issue]: constant value, needs to rebuild program to update
+            return 0x2Cu;
         }
 
       private:

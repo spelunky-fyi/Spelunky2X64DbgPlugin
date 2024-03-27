@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -53,7 +54,7 @@ namespace S2Plugin
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
                        bool disableChangeHighlightingForField = false);
 
-        void labelAll(); // TODO
+        void labelAll(std::string_view prefix = {});
 
         ColumnFilter activeColumns;
 

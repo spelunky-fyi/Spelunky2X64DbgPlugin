@@ -176,13 +176,19 @@ void S2Plugin::ViewEntityDB::searchFieldCompleterActivated(const QString& text)
 void S2Plugin::ViewEntityDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
-    // id == 0 is valid, but not used
+    // id == 0 is valid, but not used as of right now
     mMainTreeView->updateTree(Spelunky2::get()->get_EntityDB().offsetForIndex(id), 0);
 }
 
 void S2Plugin::ViewEntityDB::label()
 {
-    mMainTreeView->labelAll();
+    auto model = mMainTreeView->model();
+    auto& entityDB = Spelunky2::get()->get_EntityDB();
+    auto offset = entityDB.offsetForIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    size_t index = (indexOffset - offset) / entityDB.entitySize();
+    std::string name = '[' + Configuration::get()->entityList().nameForID(index) + ']';
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewEntityDB::fieldUpdated(const QString& fieldName)

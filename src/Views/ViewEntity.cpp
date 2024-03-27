@@ -369,7 +369,9 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
 
 void S2Plugin::ViewEntity::label()
 {
-    mMainTreeView->labelAll();
+    std::stringstream ss;
+    ss << "[Entity uid:" << Entity{mEntityPtr}.uid() << "]";
+    mMainTreeView->labelAll(ss.str());
 }
 
 void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)

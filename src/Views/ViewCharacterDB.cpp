@@ -182,7 +182,17 @@ void S2Plugin::ViewCharacterDB::showIndex(uint8_t index)
 
 void S2Plugin::ViewCharacterDB::label()
 {
-    mMainTreeView->labelAll(); // TODO: label all indexes, not only the visible one
+    auto model = mMainTreeView->model();
+    std::string name = "[UNKNOWN_CHARACTER]";
+    auto& characterDB = Spelunky2::get()->get_CharacterDB();
+    auto offset = characterDB.offsetFromIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    size_t index = (indexOffset - offset) / characterDB.characterSize();
+    if (index < characterDB.charactersCount())
+    {
+        name = '[' + characterDB.characterNamesStringList()[index].toStdString() + ']';
+    }
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewCharacterDB::fieldUpdated(const QString& fieldName)

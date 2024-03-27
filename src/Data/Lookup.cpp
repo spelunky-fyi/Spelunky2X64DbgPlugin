@@ -134,7 +134,7 @@ const S2Plugin::CharacterDB& S2Plugin::Spelunky2::get_CharacterDB()
     }
     mCharacterDB.ptr = instructionOffset + 11 + (duint)Script::Memory::ReadDword(instructionOffset + 7);
 
-    constexpr size_t characterSize = 0x2C;
+    const size_t characterSize = mCharacterDB.characterSize();
     auto& stringsTable = get_StringsTable();
     for (size_t x = 0; x < 20; ++x)
     {

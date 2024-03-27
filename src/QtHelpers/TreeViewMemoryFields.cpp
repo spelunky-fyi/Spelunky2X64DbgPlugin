@@ -2360,8 +2360,100 @@ void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions supportedActions)
     drag->exec();
 }
 
-void S2Plugin::TreeViewMemoryFields::labelAll()
+static void labelChildren(QStandardItem* parrent, std::string_view prefix)
 {
-    // TODO
-    // DbgSetAutoLabelAt(offset, (entityName + "." + fieldName).c_str());
+    auto config = S2Plugin::Configuration::get();
+
+    auto pointerCheck = [parrent](int idx)
+    {
+        auto hex_field = parrent->child(idx, S2Plugin::gsColValueHex);
+        auto pointer_value = hex_field->data(S2Plugin::gsRoleRawValue).toULongLong();
+        return Script::Memory::IsValidPtr(pointer_value);
+    };
+
+    for (int idx = 0; idx < parrent->rowCount(); ++idx)
+    {
+        auto field = parrent->child(idx, S2Plugin::gsColField);
+        bool isPointer = field->data(S2Plugin::gsRoleIsPointer).toBool();
+        std::string name;
+        auto qstr_name = field->data(S2Plugin::gsRoleUID).toString();
+        if (prefix.empty())
+        {
+            name = qstr_name.toStdString();
+        }
+        else
+        {
+            name.reserve(prefix.length() + 1u + qstr_name.length());
+            name.append(prefix);
+            name += '.';
+            // TODO: use 'toUtf8' instead of toStdString to skip creating new object - struggling with stupid linker error
+            name.append(qstr_name.toStdString());
+        }
+
+        S2Plugin::MemoryFieldType type = field->data(S2Plugin::gsRoleType).value<S2Plugin::MemoryFieldType>();
+        if (type == S2Plugin::MemoryFieldType::DefaultStructType || type == S2Plugin::MemoryFieldType::EntitySubclass || !config->typeFields(type).empty())
+        {
+            if (isPointer)
+            {
+                // label children only if it's valid pointer
+                if (pointerCheck(idx))
+                    labelChildren(field, prefix);
+            }
+            else
+            {
+                labelChildren(field, prefix);
+                // if it's inline struct we can't label the struct itself since the offset will be the same as the first element in the struct
+                continue;
+            }
+        }
+        else if (isPointer) // label address behind poinders
+        {
+            auto hex_field = parrent->child(idx, S2Plugin::gsColValueHex);
+            auto pointer_value = hex_field->data(S2Plugin::gsRoleRawValue).toULongLong();
+            if (Script::Memory::IsValidPtr(pointer_value))
+            {
+                auto typeName = config->getTypeDisplayName(type);
+                std::string valueName;
+                valueName.reserve(name.length() + 1u + typeName.length());
+                valueName += name;
+                valueName += '.';
+                valueName.append(config->getTypeDisplayName(type));
+                if (!DbgSetAutoLabelAt(pointer_value, valueName.c_str()))
+                {
+                    dprintf("Failed to label value behind pointer: (%s)\n", name.c_str());
+                    continue;
+                }
+            }
+        }
+        uintptr_t address = field->data(S2Plugin::gsRoleMemoryOffset).toULongLong();
+        if (!Script::Memory::IsValidPtr(address))
+        {
+            dprintf("Failed to label (%s)\n", name.c_str());
+            continue;
+        }
+
+        if (!DbgSetAutoLabelAt(address, name.c_str()))
+        {
+            dprintf("Failed to label (%s)\n", name.c_str());
+            continue;
+        }
+
+        // label each byte in flags field since often the instructions will only read the byte of interest
+        if (type == S2Plugin::MemoryFieldType::Flags16)
+        {
+            DbgSetAutoLabelAt(address + 1, (name + "+0x1").c_str());
+        }
+        else if (type == S2Plugin::MemoryFieldType::Flags32)
+        {
+            DbgSetAutoLabelAt(address + 1, (name + "+0x1").c_str());
+            DbgSetAutoLabelAt(address + 2, (name + "+0x2").c_str());
+            DbgSetAutoLabelAt(address + 3, (name + "+0x3").c_str());
+        }
+    }
+}
+
+void S2Plugin::TreeViewMemoryFields::labelAll(std::string_view prefix)
+{
+    auto parrent = mModel->invisibleRootItem();
+    labelChildren(parrent, prefix);
 }

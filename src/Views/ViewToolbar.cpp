@@ -323,20 +323,8 @@ void S2Plugin::ViewToolbar::showThreads()
 
 void S2Plugin::ViewToolbar::clearLabels()
 {
-    auto list = BridgeList<Script::Label::LabelInfo>();
-    Script::Label::GetList(&list);
-    for (auto x = 0; x < list.Count(); ++x)
-    {
-        const auto& labelInfo = list[x];
-        if (!labelInfo.manual)
-        {
-            if (!Script::Label::Delete(labelInfo.rva))
-            {
-                dprintf("Can't delete label %s\n", labelInfo.text);
-            }
-        }
-    }
-    list.Cleanup();
+    // -1 since the full max value causes some overflow? and removes all labels, not only the automatic ones
+    DbgClearAutoLabelRange(0, std::numeric_limits<duint>::max() - 1);
 }
 
 void S2Plugin::ViewToolbar::reloadConfig()

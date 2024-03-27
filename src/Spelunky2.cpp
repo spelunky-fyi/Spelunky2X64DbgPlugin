@@ -149,7 +149,7 @@ std::string S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const // TO
     };
     for (uint8_t idx = 0; idx < themeNames.size(); ++idx)
     {
-        uintptr_t testPtr = Script::Memory::ReadQword(firstThemeOffset + idx * 0x8u);
+        uintptr_t testPtr = Script::Memory::ReadQword(firstThemeOffset + idx * 0x8ull);
         if (testPtr == offset)
             return *(themeNames.begin() + idx);
     }

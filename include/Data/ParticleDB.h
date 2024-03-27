@@ -7,11 +7,15 @@ namespace S2Plugin
     class ParticleDB
     {
       public:
-        uintptr_t offsetForIndex(uint32_t particleDBIndex) const;
+        uintptr_t offsetForIndex(uint32_t particleDBIndex) const
+        {
+            return ptr == 0ull ? 0ull : ptr + particleDBIndex * particleSize();
+        }
         bool isValid() const
         {
             return (ptr != 0);
         }
+        static size_t particleSize();
 
       private:
         uintptr_t ptr{0};

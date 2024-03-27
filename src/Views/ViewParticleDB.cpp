@@ -180,7 +180,13 @@ void S2Plugin::ViewParticleDB::showID(uint32_t id)
 
 void S2Plugin::ViewParticleDB::label()
 {
-    mMainTreeView->labelAll();
+    auto model = mMainTreeView->model();
+    auto& particleDB = Spelunky2::get()->get_ParticleDB();
+    auto offset = particleDB.offsetForIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    size_t index = (indexOffset - offset) / particleDB.particleSize();
+    std::string name = '[' + Configuration::get()->particleEmittersList().nameForID(index + 1) + ']';
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewParticleDB::fieldUpdated(const QString& fieldName)

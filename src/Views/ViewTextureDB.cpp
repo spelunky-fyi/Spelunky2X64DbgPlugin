@@ -184,7 +184,19 @@ void S2Plugin::ViewTextureDB::showID(uint32_t id)
 
 void S2Plugin::ViewTextureDB::label()
 {
-    mMainTreeView->labelAll();
+    auto model = mMainTreeView->model();
+    std::string name;
+    auto& textureDB = Spelunky2::get()->get_TextureDB();
+    for (uint idx = 0; idx < model->rowCount(); ++idx)
+    {
+        if (model->data(model->index(idx, gsColField), Qt::DisplayRole).toString() == "id")
+        {
+            auto id = model->data(model->index(idx, gsColValue), gsRoleRawValue).toUInt();
+            name = '[' + textureDB.nameForID(id) + ']';
+            break;
+        }
+    }
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewTextureDB::fieldUpdated(const QString& fieldName)
