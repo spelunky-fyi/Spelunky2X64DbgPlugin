@@ -42,7 +42,6 @@
     "LogicDiceShop",
     "LogicOlmecCutscene",
     "LogicTiamatCutscene",
-    "LogicJellyfish",
     "LogicGhostToast",
     "LogicTunPreChallenge",
     "LogicMoonChallenge",
@@ -57,7 +56,6 @@
     "LogicUnderwaterBubbles",
     "LogicTuskPleasurePalace",
     "LogicPointer",
-    "BlackMarketDoorPointer",
     "LogicArena1",
     "LogicArenaAlienBlast",
     "LogicArenaLooseBombs",
@@ -105,7 +103,8 @@
     "MultiLineTextRenderingPointer",
     "EntityLogicPointer",
     "PointerToPointerToEntityList",
-    "InputsByControllerPointer"
+    "InputsByControllerPointer",
+    "MovableBehavior"
   ],
   // Struct alignments needed to calculate the padding in map/set node
   // it's just the biggest standard type in a struct, range: 0-8
@@ -9452,6 +9451,54 @@
         "field": "unknown27",
         "type": "StdMap",
         "comment": "added map for now, the size seam to always be 0"
+      }
+    ],
+    "MovableBehavior": [
+      {
+        "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": {
+            "name": "get_state_id",
+            "params": "",
+            "return": "uint8_t"
+          },
+          "1": {
+            "name": "secondary_sort_id",
+            "params": "",
+            "return": "uint8_t"
+          },
+          "2": {
+            "name": "force_state",
+            "params": "Movable* movable",
+            "return": "bool"
+          },
+          "3": {
+            "name": "on_enter",
+            "params": "Movable* movable",
+            "return": ""
+          },
+          "4": {
+            "name": "on_exit",
+            "params": "Movable* movable",
+            "return": ""
+          },
+          "5": {
+            "name": "update_logic",
+            "params": "Movable* movable",
+            "return": ""
+          },
+          "6": {
+            "name": "update_world",
+            "params": "Movable* movable",
+            "return": ""
+          },
+          "7": {
+            "name": "get_next_state_id",
+            "params": "Movable* movable",
+            "return": ""
+          }
+        }
       }
     ]
   }

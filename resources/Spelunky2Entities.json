@@ -1360,11 +1360,11 @@
         "field": "behaviors_map",
         "type": "StdMap",
         "keytype": "UnsignedDword",
-        "valuetype": "DataPointer",
+        "valuetype": "MovableBehavior",
         "comment": "map of avaible behaviors for this entity, behavior is just a vtable"
       },
-      { "field": "behaviors", "type": "StdSet", "keytype": "DataPointer" },
-      { "field": "current_behavior", "type": "DataPointer" },
+      { "field": "behaviors", "type": "StdSet", "keytype": "MovableBehavior" },
+      { "field": "current_behavior", "type": "MovableBehavior" },
       {
         "field": "cutscene_logic",
         "type": "EntityLogicPointer",
