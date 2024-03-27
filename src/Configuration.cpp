@@ -178,11 +178,6 @@ bool S2Plugin::Configuration::reload()
     return false;
 }
 
-bool S2Plugin::Configuration::is_loaded()
-{
-    return get() != nullptr;
-}
-
 S2Plugin::Configuration::Configuration()
 {
     char buffer[MAX_PATH + 1] = {0};
@@ -817,20 +812,6 @@ size_t S2Plugin::MemoryField::get_size() const
         const_cast<MemoryField*>(this)->size = Configuration::get()->getTypeSize(jsonName, type == MemoryFieldType::EntitySubclass);
     }
     return size;
-}
-
-bool S2Plugin::Configuration::isPermanentPointer(const std::string& type) const
-{
-    return mPointerTypes.find(type) != mPointerTypes.end();
-}
-
-bool S2Plugin::Configuration::isJsonStruct(const std::string type) const
-{
-    auto it = mTypeFieldsStructs.find(type);
-    if (it != mTypeFieldsStructs.end())
-        return true;
-
-    return false;
 }
 
 std::string_view S2Plugin::Configuration::getCPPTypeName(MemoryFieldType type)

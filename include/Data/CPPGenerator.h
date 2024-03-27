@@ -12,7 +12,10 @@ namespace S2Plugin
     {
       public:
         void generate(const std::string& typeName, CPPSyntaxHighlighter* highlighter);
-        std::string result() const;
+        std::string result() const
+        {
+            return mSS.str();
+        }
 
       private:
         std::stringstream mSS;

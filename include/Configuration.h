@@ -187,7 +187,10 @@ namespace S2Plugin
         static Configuration* get();
         static bool reload();
         // tries to load Configuration if not loaded already
-        static bool is_loaded();
+        static bool is_loaded()
+        {
+            return get() != nullptr;
+        }
 
         const std::unordered_map<std::string, std::string>& entityClassHierarchy() const noexcept
         {
@@ -217,8 +220,14 @@ namespace S2Plugin
 
         // equivalent to alignof operator
         int getAlingment(const std::string& type) const;
-        bool isPermanentPointer(const std::string& type) const;
-        bool isJsonStruct(const std::string type) const;
+        bool isPermanentPointer(const std::string& type) const
+        {
+            return mPointerTypes.find(type) != mPointerTypes.end();
+        }
+        bool isJsonStruct(const std::string type) const
+        {
+            return mTypeFieldsStructs.find(type) != mTypeFieldsStructs.end();
+        }
 
         std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
         std::string stateTitle(const std::string& fieldName, int64_t state) const;

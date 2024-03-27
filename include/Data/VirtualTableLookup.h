@@ -31,7 +31,10 @@ namespace S2Plugin
         }
         std::unordered_set<size_t> tableOffsetForFunctionAddress(size_t functionAddress) const;
         VirtualTableEntry findPrecedingEntryWithSymbols(size_t tableOffset) const;
-        size_t tableAddressForEntry(const VirtualTableEntry& entry) const;
+        size_t tableAddressForEntry(const VirtualTableEntry& entry) const
+        {
+            return mTableStartAddress + (entry.offset * sizeof(uintptr_t));
+        }
 
         void setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name) const;
 

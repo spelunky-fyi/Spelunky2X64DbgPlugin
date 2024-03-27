@@ -116,8 +116,3 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
         }
     }
 }
-
-std::string S2Plugin::CPPGenerator::result() const
-{
-    return mSS.str();
-}
