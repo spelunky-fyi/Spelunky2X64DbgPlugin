@@ -25,6 +25,7 @@ namespace S2Plugin
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
+        size_t mCurrentToolTip{0};
         QString mFieldName;
         bool mIsMetaData = false;
         size_t mOffset{0};

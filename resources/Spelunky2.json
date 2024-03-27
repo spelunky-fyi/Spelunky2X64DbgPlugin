@@ -8,7 +8,6 @@
     "LayerPointer",
     "EntityListPointer",
     "EntityUIDsListPointer",
-    "PlayerInventoryPointer",
     "SoundMeta",
     "IlluminationPointer",
     "ThemeInfoPointer",
@@ -150,7 +149,7 @@
       "28": "Online loading",
       "29": "Online lobby"
     },
-    "journal_progress_themes": {
+    "themes": {
       "0": "Unset",
       "1": "Dwelling",
       "2": "Jungle",
@@ -161,7 +160,15 @@
       "7": "Ice Caves",
       "8": "Neo Babylon",
       "9": "Sunken City",
-      "10": "Cosmic Ocean"
+      "10": "Cosmic Ocean",
+      "11": "City of Gold",
+      "12": "Duat",
+      "13": "Abzu",
+      "14": "Tiamat",
+      "15": "Eggplant World",
+      "16": "Hundun",
+      "17": "Base Camp",
+      "18": "Arena"
     },
     "buttons_flags_multiplayer_controls": {
       "1": "P1: Jump",
@@ -790,6 +797,8 @@
       { "field": "field_1c", "type": "Dword" }
     ],
     "EmittedParticlesInfo": [
+      { "field": "particle_count", "type": "UnsignedDword" },
+      { "field": "unknown2", "type": "UnsignedDword" },
       {
         "field": "particle_emitter",
         "type": "DataPointer",
@@ -798,49 +807,46 @@
       { "field": "memory", "type": "DataPointer", "comment": "void*" },
       {
         "field": "max_lifetimes",
-        "type": "DataPointer",
-        "comment": "uint16_t*"
+        "type": "UnsignedWord",
+        "pointer": true
       },
-      { "field": "lifetimes", "type": "DataPointer", "comment": "uint16_t*" },
-      { "field": "unknown7", "type": "DataPointer" },
-      { "field": "unknown8", "type": "DataPointer" },
-      { "field": "x_positions", "type": "DataPointer", "comment": "float*" },
-      { "field": "y_positions", "type": "DataPointer", "comment": "float*" },
+      { "field": "lifetimes", "type": "UnsignedWord", "pointer": true },
+      { "field": "unknown7", "type": "Float", "pointer": true },
+      { "field": "unknown8", "type": "Float", "pointer": true },
+      { "field": "x_positions", "type": "Float", "pointer": true },
+      { "field": "y_positions", "type": "Float", "pointer": true },
       {
         "field": "unknown_x_positions",
-        "type": "DataPointer",
-        "comment": "float*"
+        "type": "Float",
+        "pointer": true
       },
       {
         "field": "unknown_y_positions",
-        "type": "DataPointer",
-        "comment": "float*"
+        "type": "Float",
+        "pointer": true
       },
       {
         "field": "colors",
-        "type": "DataPointer",
+        "type": "UnsignedDword",
+        "pointer": true,
         "comment": "uColor* - color saved as 4 unsigned bytes"
       },
-      { "field": "widths", "type": "DataPointer", "comment": "float*" },
-      { "field": "heights", "type": "DataPointer", "comment": "float*" },
-      { "field": "x_velocities", "type": "DataPointer", "comment": "float*" },
-      { "field": "y_velocities", "type": "DataPointer", "comment": "float*" },
-      { "field": "unknown18", "type": "DataPointer" },
-      { "field": "unknown19", "type": "DataPointer" },
-      { "field": "unknown20", "type": "DataPointer" },
-      { "field": "unknown21", "type": "DataPointer" },
-      { "field": "unknown22", "type": "DataPointer" },
-      { "field": "unknown23", "type": "DataPointer" }
+      { "field": "widths", "type": "Float", "pointer": true },
+      { "field": "heights", "type": "Float", "pointer": true },
+      { "field": "x_velocities", "type": "Float", "pointer": true },
+      { "field": "y_velocities", "type": "Float", "pointer": true },
+      { "field": "unknown18", "type": "UnsignedByte", "pointer": true },
+      { "field": "unknown19", "type": "UnsignedByte", "pointer": true },
+      { "field": "unknown20", "type": "UnsignedByte", "pointer": true },
+      { "field": "unknown21", "type": "UnsignedByte", "pointer": true },
+      { "field": "unknown22", "type": "UnsignedByte", "pointer": true },
+      { "field": "unknown23", "type": "UnsignedByte", "pointer": true }
     ],
     "ParticleEmitterInfoPointer": [
       { "field": "particle_type", "type": "ParticleDBPointer" },
       { "field": "particle_type2", "type": "ParticleDBPointer" },
-      { "field": "particle_count", "type": "UnsignedDword" },
-      { "field": "unknown2", "type": "UnsignedDword" },
-      { "field": "emitted_particles", "type": "EmittedParticlesInfo" },
-      { "field": "particle_count2", "type": "UnsignedDword" },
-      { "field": "unknown24", "type": "Dword" },
-      { "field": "emitted_particles2", "type": "EmittedParticlesInfo" },
+      { "field": "emitted_particles", "type": "EmittedParticlesInfo", "comment": "values are shown for just one particle" },
+      { "field": "emitted_particles_back_layer", "type": "EmittedParticlesInfo" },
       {
         "field": "entity_uid",
         "type": "EntityUID",
@@ -3284,7 +3290,7 @@
       { "field": "money_shop_total", "type": "Dword" },
       { "field": "world_start", "type": "UnsignedByte" },
       { "field": "level_start", "type": "UnsignedByte" },
-      { "field": "theme_start", "type": "UnsignedByte" },
+      { "field": "theme_start", "type": "State8", "ref": "themes" },
       { "field": "b5f", "type": "UnsignedByte", "comment": "padding probably" },
       { "field": "seed", "type": "UnsignedDword" },
       { "field": "time_total", "type": "UnsignedDword" },
@@ -3293,8 +3299,8 @@
       { "field": "level", "type": "UnsignedByte" },
       { "field": "level_next", "type": "UnsignedByte" },
       { "field": "theme_info", "type": "UndeterminedThemeInfoPointer" },
-      { "field": "theme", "type": "UnsignedByte" },
-      { "field": "theme_next", "type": "UnsignedByte" },
+      { "field": "theme", "type": "State8", "ref": "themes" },
+      { "field": "theme_next", "type": "State8", "ref": "themes" },
       {
         "field": "win_state",
         "type": "State8",
@@ -3898,7 +3904,7 @@
       {
         "field": "theme",
         "type": "State8",
-        "ref": "journal_progress_themes"
+        "ref": "themes"
       },
       {
         "field": "grid_position",
@@ -4006,15 +4012,15 @@
     ],
     "JournalProgressThemeSlots": [
       { "field": "count", "type": "UnsignedByte" },
-      { "field": "slot1", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot2", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot3", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot4", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot5", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot6", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot7", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot8", "type": "State8", "ref": "journal_progress_themes" },
-      { "field": "slot9", "type": "State8", "ref": "journal_progress_themes" }
+      { "field": "slot1", "type": "State8", "ref": "themes" },
+      { "field": "slot2", "type": "State8", "ref": "themes" },
+      { "field": "slot3", "type": "State8", "ref": "themes" },
+      { "field": "slot4", "type": "State8", "ref": "themes" },
+      { "field": "slot5", "type": "State8", "ref": "themes" },
+      { "field": "slot6", "type": "State8", "ref": "themes" },
+      { "field": "slot7", "type": "State8", "ref": "themes" },
+      { "field": "slot8", "type": "State8", "ref": "themes" },
+      { "field": "slot9", "type": "State8", "ref": "themes" }
     ],
     "ArenaState": [
       {
@@ -6270,7 +6276,7 @@
       { "field": "seeded_unlocked", "type": "Bool" },
       { "field": "world_last", "type": "UnsignedByte" },
       { "field": "level_last", "type": "UnsignedByte" },
-      { "field": "theme_last", "type": "UnsignedByte" },
+      { "field": "theme_last", "type": "State8", "ref": "themes" },
       { "field": "padding6", "type": "UnsignedByte" },
       { "field": "score_last", "type": "UnsignedDword" },
       { "field": "time_last", "type": "UnsignedDword" },
@@ -7709,9 +7715,6 @@
       { "field": "hitbox_enabled", "type": "Bool" },
       { "field": "field_3A", "type": "UnsignedByte" },
       { "field": "field_3B", "type": "UnsignedByte" }
-    ],
-    "PlayerInventoryPointer": [
-      { "field": "inventory", "type": "PlayerInventory" }
     ],
     "PlayerInventory": [
       { "field": "money", "type": "Dword" },

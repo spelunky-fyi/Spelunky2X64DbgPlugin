@@ -1899,7 +1899,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::DefaultStructType:
         {
-            // TODO add setting "open in new vindow"
             if (isPointer)
             {
                 itemValue->setData(itemValueHex->data(Qt::DisplayRole), Qt::DisplayRole);

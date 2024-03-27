@@ -1509,7 +1509,7 @@
       { "field": "target_selection_timer", "type": "UnsignedDword" }
     ],
     "Player": [
-      { "field": "inventory_ptr", "type": "PlayerInventoryPointer" },
+      { "field": "inventory_ptr", "type": "PlayerInventory", "pointer": true },
       { "field": "emitted_light", "type": "IlluminationPointer" },
       { "field": "linked_companion_child", "type": "EntityUID" },
       { "field": "linked_companion_parent", "type": "EntityUID" },
@@ -4447,7 +4447,7 @@
     "PlayerGhost": [
       { "field": "sparkles_particle", "type": "ParticleEmitterInfoPointer" },
       { "field": "player_inputs", "type": "PlayerSlotPointer" },
-      { "field": "inventory", "type": "PlayerInventoryPointer" },
+      { "field": "inventory", "type": "PlayerInventory", "pointer": true },
       { "field": "sound", "type": "SoundMeta" },
       { "field": "body", "type": "EntityUID" },
       { "field": "unknown_timer", "type": "UnsignedWord" },

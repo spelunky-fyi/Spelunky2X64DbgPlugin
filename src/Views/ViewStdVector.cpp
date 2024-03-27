@@ -77,8 +77,11 @@ void S2Plugin::ViewStdVector::refreshVectorContents()
 
     uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorOffset);
     uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorOffset + sizeof(uintptr_t));
-    if (vectorBegin > vectorEnd || !Script::Memory::IsValidPtr(vectorBegin) || !Script::Memory::IsValidPtr(vectorEnd))
+    if (vectorBegin == vectorEnd)
         return;
+
+    if (vectorBegin >= vectorEnd || !Script::Memory::IsValidPtr(vectorBegin) || !Script::Memory::IsValidPtr(vectorEnd))
+        return; // TODO display error
 
     auto vectorItemCount = (vectorEnd - vectorBegin) / mVectorTypeSize;
     if ((vectorEnd - vectorBegin) % mVectorTypeSize != 0)

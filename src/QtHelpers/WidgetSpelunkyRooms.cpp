@@ -163,16 +163,21 @@ void S2Plugin::WidgetSpelunkyRooms::setOffset(size_t offset)
 
 void S2Plugin::WidgetSpelunkyRooms::mouseMoveEvent(QMouseEvent* event)
 {
-    // when switching between the same room, the text stays in the same position, just like when just updating the text to keep it "alive", doesn't matter if the position if different
-    // TODO: when accessing different room first showText with empty text, then with the correct name
     auto pos = event->pos();
+    uint32_t idx = 0;
     for (const auto& ttr : mToolTipRects)
     {
         if (ttr.rect.contains(pos))
         {
+            if (idx != mCurrentToolTip)
+            {
+                mCurrentToolTip = idx;
+                QToolTip::showText({}, {});
+            }
             QToolTip::showText(mapToGlobal(pos), ttr.tooltip);
             return;
         }
+        ++idx;
     }
 }
 
