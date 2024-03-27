@@ -933,6 +933,14 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
 
             auto value = getDataFrom(itemField->parent()->index(), gsColValue, gsRoleRawValue).toUInt();
             auto flagSet = ((value & mask) == mask);
+            if (itemValue->data(gsRoleRawValue).toBool() != flagSet)
+            {
+                itemValue->setData(flagSet, gsRoleRawValue);
+                itemField->setBackground(highlightColor);
+            }
+            else
+                itemField->setBackground(Qt::transparent);
+
             auto flagTitle = QString::fromStdString(flagName.empty() ? Configuration::get()->flagTitle("unknown", flagIndex) : flagName); // TODO: don't show empty unless it was chosen in settings
             // TODO: would love to instead get the names and save them in addMemoryField and then just use itemValue->setForeground or itemValue->setData(Qt::TextColorRole) for the color
             // but it doesn't work with HTML delagate, and i don't know how to edit it to make it work
