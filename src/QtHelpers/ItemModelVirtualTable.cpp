@@ -1,5 +1,6 @@
 #include "QtHelpers/ItemModelVirtualTable.h"
 #include "Configuration.h"
+#include "Data/Entity.h"
 #include "Data/State.h"
 #include "Data/VirtualTableLookup.h"
 #include "Spelunky2.h"
@@ -99,11 +100,10 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
         for (auto x = 0; x < maximum; ++x)
         {
             auto entityPtr = layerEntities + (x * sizeof(size_t));
-            auto entity = Script::Memory::ReadQword(entityPtr);
-            auto entityVTableOffset = Script::Memory::ReadQword(entity);
+            Entity entity = Script::Memory::ReadQword(entityPtr);
+            auto entityVTableOffset = Script::Memory::ReadQword(entity.ptr());
 
-            // auto entityUid = Script::Memory::ReadDword(entity + 56);
-            auto entityName = Configuration::get()->getEntityName(entity);
+            auto entityName = entity.entityTypeName();
             Spelunky2::get()->get_VirtualTableLookup().setSymbolNameForOffsetAddress(entityVTableOffset, entityName);
         }
     };
