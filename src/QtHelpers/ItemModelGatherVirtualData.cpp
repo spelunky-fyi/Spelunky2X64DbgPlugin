@@ -172,7 +172,7 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
     uint8_t counter = 0;
     for (const auto& themeName : themes)
     {
-        auto themeAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstThemeOffset + counter));
+        auto themeAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstThemeOffset + counter * sizeof(uintptr_t)));
         auto tableOffset = (themeAddress - vtl.tableStartAddress()) / sizeof(size_t);
         bool foundInEntries = false;
         for (auto& entry : mEntries)
@@ -227,7 +227,7 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
     counter = 0;
     for (const auto& logicName : logics)
     {
-        auto logicAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstLogicPtr + counter));
+        auto logicAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstLogicPtr + counter * sizeof(uintptr_t)));
         size_t tableOffset = 0;
         if (logicAddress != 0)
         {
