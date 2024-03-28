@@ -34,7 +34,7 @@ namespace S2Plugin
         size_t read_size = 0;
         Script::Memory::Read(addr, str.data(), size * char_size, &read_size);
         if (size * char_size != read_size)
-            dprintf("wtf %d -> %d", size * char_size, read_size);
+            dprintf("[ReadConstBasicString] read (bytes): %d expected: %d\n", read_size, size * char_size);
         return str;
     }
     static std::string ReadConstString(uintptr_t addr)
