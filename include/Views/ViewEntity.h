@@ -15,19 +15,17 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
-    struct Entity;
-    struct TreeViewMemoryFields;
-    struct WidgetMemoryView;
-    struct CPPSyntaxHighlighter;
-    struct WidgetSpelunkyLevel;
+    class ViewToolbar;
+    class TreeViewMemoryFields;
+    class WidgetMemoryView;
+    class CPPSyntaxHighlighter;
+    class WidgetSpelunkyLevel;
 
     class ViewEntity : public QWidget
     {
         Q_OBJECT
       public:
         ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWidget* parent = nullptr);
-        Entity* entity() const;
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -53,6 +51,11 @@ namespace S2Plugin
         QWidget* mTabLevel;
         QWidget* mTabCPP;
 
+        uintptr_t mEntityPtr;
+        uintptr_t mComparisonEntityPtr{0};
+        size_t mEntitySize{0};
+        ViewToolbar* mToolbar;
+
         // TOP LAYOUT
         QPushButton* mRefreshButton;
         QCheckBox* mAutoRefreshCheckBox;
@@ -67,7 +70,6 @@ namespace S2Plugin
         WidgetMemoryView* mMemoryView;
         WidgetMemoryView* mMemoryComparisonView;
         QScrollArea* mMemoryComparisonScrollArea;
-        uint32_t mExtraBytesShown = 100;
 
         // TAB LEVEL
         WidgetSpelunkyLevel* mSpelunkyLevel;
@@ -76,11 +78,8 @@ namespace S2Plugin
         QTextEdit* mCPPTextEdit;
         CPPSyntaxHighlighter* mCPPSyntaxHighlighter;
 
-        std::unique_ptr<Entity> mEntity;
-        ViewToolbar* mToolbar;
-
         void initializeUI();
         void updateMemoryViewOffsetAndSize();
-        void updateLevel();
+        void updateComparedMemoryViewHighlights();
     };
 } // namespace S2Plugin

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QCheckBox>
 #include <QLabel>
 #include <QTableView>
@@ -9,18 +10,16 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
-    struct ItemModelVirtualTable;
-    struct SortFilterProxyModelVirtualTable;
-    struct StyledItemDelegateHTML;
-    struct ItemModelGatherVirtualData;
-    struct SortFilterProxyModelGatherVirtualData;
+    class ItemModelVirtualTable;
+    class SortFilterProxyModelVirtualTable;
+    class ItemModelGatherVirtualData;
+    class SortFilterProxyModelGatherVirtualData;
 
     class ViewVirtualTable : public QWidget
     {
         Q_OBJECT
       public:
-        ViewVirtualTable(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewVirtualTable(QWidget* parent = nullptr);
         void showLookupAddress(size_t address);
         void updateGatherProgress();
 
@@ -46,7 +45,6 @@ namespace S2Plugin
         void showGatherHideCompletedCheckBoxStateChanged(int state);
 
       private:
-        ViewToolbar* mToolbar;
         QVBoxLayout* mMainLayout;
 
         QTabWidget* mMainTabWidget;
@@ -58,7 +56,7 @@ namespace S2Plugin
         QTableView* mDataTable;
         std::unique_ptr<ItemModelVirtualTable> mModel;
         std::unique_ptr<SortFilterProxyModelVirtualTable> mSortFilterProxy;
-        std::unique_ptr<StyledItemDelegateHTML> mHTMLDelegate;
+        StyledItemDelegateHTML mHTMLDelegate;
 
         // LOOKUP
         QLineEdit* mLookupAddressLineEdit;

@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QString>
 #include <QStyleOptionTabWidgetFrame>
 #include <QWidget>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace S2Plugin
@@ -15,12 +15,13 @@ namespace S2Plugin
         size_t offset;
         size_t size;
         QColor color;
+        HighlightedField(std::string _tooltip, size_t _offset, size_t _size, QColor _color) : tooltip(_tooltip), offset(_offset), size(_size), color(_color){};
     };
 
     struct ToolTipRect
     {
         QRect rect;
-        std::string tooltip;
+        QString tooltip;
     };
 
     class WidgetMemoryView : public QWidget
@@ -36,7 +37,7 @@ namespace S2Plugin
         void setOffsetAndSize(size_t offset, size_t size);
 
         void clearHighlights();
-        void addHighlightedField(const std::string& tooltip, size_t offset, size_t size, const QColor& color);
+        void addHighlightedField(std::string tooltip, size_t offset, size_t size, QColor color);
 
       protected:
         void paintEvent(QPaintEvent* event) override;

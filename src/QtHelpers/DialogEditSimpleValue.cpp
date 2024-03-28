@@ -1,5 +1,5 @@
 #include "QtHelpers/DialogEditSimpleValue.h"
-#include "Spelunky2.h"
+#include "Configuration.h"
 #include "pluginmain.h"
 #include <QDoubleValidator>
 #include <QGridLayout>
@@ -98,6 +98,14 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
             mLineEditDecValue->setValidator(new QDoubleValidator((std::numeric_limits<float>::max)() * -1, (std::numeric_limits<float>::max)(), 1000, this));
             uint32_t tmp = Script::Memory::ReadDword(mMemoryOffset);
             float v = reinterpret_cast<float&>(tmp);
+            mLineEditDecValue->setText(QString("%1").arg(v));
+            break;
+        }
+        case MemoryFieldType::Double:
+        {
+            mLineEditDecValue->setValidator(new QDoubleValidator((std::numeric_limits<double>::max)() * -1, (std::numeric_limits<double>::max)(), 1000, this));
+            size_t tmp = Script::Memory::ReadQword(mMemoryOffset);
+            double v = reinterpret_cast<double&>(tmp);
             mLineEditDecValue->setText(QString("%1").arg(v));
             break;
         }
@@ -205,6 +213,13 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
             Script::Memory::WriteDword(mMemoryOffset, tmp);
             break;
         }
+        case MemoryFieldType::Double:
+        {
+            double v = mLineEditDecValue->text().toDouble();
+            size_t tmp = reinterpret_cast<size_t&>(v);
+            Script::Memory::WriteQword(mMemoryOffset, tmp);
+            break;
+        }
     }
     accept();
 }
@@ -269,6 +284,13 @@ void S2Plugin::DialogEditSimpleValue::decValueChanged(const QString& text)
             float v = mLineEditDecValue->text().toFloat();
             uint32_t tmp = reinterpret_cast<uint32_t&>(v);
             ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << tmp;
+            break;
+        }
+        case MemoryFieldType::Double:
+        {
+            double v = mLineEditDecValue->text().toDouble();
+            size_t tmp = reinterpret_cast<size_t&>(v);
+            ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << tmp;
             break;
         }
     }

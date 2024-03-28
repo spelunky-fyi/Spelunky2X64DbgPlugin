@@ -1,6 +1,5 @@
 #include "Views/ViewOnline.h"
 #include "Configuration.h"
-#include "Data/Online.h"
 #include "Data/State.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
@@ -57,13 +56,9 @@ void S2Plugin::ViewOnline::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewOnline::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, mToolbar->online(), this);
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::Online))
-    {
-        mMainTreeView->addMemoryField(field, "Online." + field.name);
-    }
-    mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
+    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::Online), "Online", Spelunky2::get()->get_OnlinePtr());
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);
 
     mMainTreeView->setColumnWidth(gsColValue, 250);
@@ -81,13 +76,7 @@ void S2Plugin::ViewOnline::closeEvent(QCloseEvent* event)
 
 void S2Plugin::ViewOnline::refreshOnline()
 {
-    mToolbar->state()->refreshOffsets();
-    auto& offsets = mToolbar->online()->offsets();
-    auto deltaReference = offsets.at("Online.__vftable");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::Online))
-    {
-        mMainTreeView->updateValueForField(field, "Online." + field.name, offsets, deltaReference);
-    }
+    mMainTreeView->updateTree();
 }
 
 void S2Plugin::ViewOnline::toggleAutoRefresh(int newState)
@@ -130,8 +119,5 @@ QSize S2Plugin::ViewOnline::minimumSizeHint() const
 
 void S2Plugin::ViewOnline::label()
 {
-    for (const auto& [fieldName, offset] : mToolbar->online()->offsets())
-    {
-        DbgSetAutoLabelAt(offset, fieldName.c_str());
-    }
+    mMainTreeView->labelAll();
 }

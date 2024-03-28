@@ -7,16 +7,15 @@
 namespace S2Plugin
 {
     enum class MemoryFieldType;
-    struct ItemModelStates;
-    struct Configuration;
-    struct SortFilterProxyModelStates;
+    class ItemModelStates;
+    class SortFilterProxyModelStates;
 
     class DialogEditState : public QDialog
     {
         Q_OBJECT
 
       public:
-        DialogEditState(Configuration* config, const QString& fieldName, size_t memoryOffset, MemoryFieldType type, QWidget* parent = nullptr);
+        DialogEditState(const QString& fieldName, const std::string& refName, size_t memoryOffset, MemoryFieldType type, QWidget* parent = nullptr);
 
       protected:
         QSize minimumSizeHint() const override;

@@ -46,25 +46,18 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtPlugin.cpp
 	include/Spelunky2.h
 	include/Configuration.h
-	include/Data/MemoryMappedData.h
+	include/read_helpers.h
 	include/Data/EntityDB.h
 	include/Data/Entity.h
 	include/Data/State.h
-	include/Data/GameManager.h
-	include/Data/SaveGame.h
-	include/Data/LevelGen.h
 	include/Data/ParticleDB.h
 	include/Data/TextureDB.h
 	include/Data/IDNameList.h
-	include/Data/EntityList.h
 	include/Data/CharacterDB.h
-	include/Data/ParticleEmittersList.h
 	include/Data/VirtualTableLookup.h
 	include/Data/StringsTable.h
 	include/Data/CPPGenerator.h
 	include/Data/Logger.h
-	include/Data/Online.h
-	include/Data/JournalPage.h
 	include/Data/StdString.h
 	include/Data/StdMap.h
 	include/Views/ViewToolbar.h
@@ -99,7 +92,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/TreeWidgetItemNumeric.h
 	include/QtHelpers/ItemModelVirtualTable.h
 	include/QtHelpers/ItemModelVirtualFunctions.h
-	include/QtHelpers/ItemModelStringsTable.h
+	include/QtHelpers/SortFilterProxyModelStringsTable.h
 	include/QtHelpers/ItemModelStates.h
 	include/QtHelpers/ItemModelGatherVirtualData.h
 	include/QtHelpers/CPPSyntaxHighlighter.h
@@ -108,27 +101,19 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSampling.h
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
+	include/QtHelpers/DatabaseHelper.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
-	src/Data/MemoryMappedData.cpp
 	src/Data/EntityDB.cpp
 	src/Data/Entity.cpp
 	src/Data/State.cpp
-	src/Data/GameManager.cpp
-	src/Data/SaveGame.cpp
-	src/Data/LevelGen.cpp
 	src/Data/ParticleDB.cpp
-	src/Data/TextureDB.cpp
 	src/Data/IDNameList.cpp
-	src/Data/EntityList.cpp
-	src/Data/CharacterDB.cpp
-	src/Data/ParticleEmittersList.cpp
 	src/Data/VirtualTableLookup.cpp
 	src/Data/StringsTable.cpp
 	src/Data/CPPGenerator.cpp
 	src/Data/Logger.cpp
-	src/Data/Online.cpp
-	src/Data/JournalPage.cpp
+	src/Data/Lookup.cpp
 	src/Views/ViewToolbar.cpp
 	src/Views/ViewEntityDB.cpp
 	src/Views/ViewParticleDB.cpp
@@ -161,7 +146,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/TreeWidgetItemNumeric.cpp
 	src/QtHelpers/ItemModelVirtualTable.cpp
 	src/QtHelpers/ItemModelVirtualFunctions.cpp
-	src/QtHelpers/ItemModelStringsTable.cpp
+	src/QtHelpers/SortFilterProxyModelStringsTable.cpp
 	src/QtHelpers/ItemModelStates.cpp
 	src/QtHelpers/ItemModelGatherVirtualData.cpp
 	src/QtHelpers/CPPSyntaxHighlighter.cpp
@@ -170,6 +155,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/WidgetSampling.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
+	src/QtHelpers/DatabaseHelper.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc
 )
@@ -185,16 +171,29 @@ target_link_libraries(${PROJECT_NAME} PRIVATE 	Qt5::Core
 # Set the plugin as the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-# Copy the plugin to the x64dbg plugins folder
-add_custom_command(	TARGET ${PROJECT_NAME} 
-					POST_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_BINARY_DIR}/Release/Spelunky2.dp64" ${X64DBG_PLUGINS_ROOT})
+target_compile_options(Spelunky2 PRIVATE /W4)
 
-# Copy Spelunky2.json to the x64dbg plugins folder
+# Copy the plugin to the x64dbg plugins folder
+
+if(CMAKE_GENERATOR STREQUAL "Ninja") # dodgy solution for VS Community having different path to the binary
+	add_custom_command(	TARGET ${PROJECT_NAME} 
+						POST_BUILD
+						COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_BINARY_DIR}/Spelunky2.dp64" ${X64DBG_PLUGINS_ROOT})
+else()
+	add_custom_command(	TARGET ${PROJECT_NAME} 
+						POST_BUILD
+						COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_BINARY_DIR}/Release/Spelunky2.dp64" ${X64DBG_PLUGINS_ROOT})
+endif()
+
+# Copy .json files to the x64dbg plugins folder
 add_custom_target(deploy-auxfiles)
 add_custom_command(	TARGET deploy-auxfiles 
 					POST_BUILD
 					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2.json" ${X64DBG_PLUGINS_ROOT})
+
+add_custom_command(	TARGET deploy-auxfiles 
+					POST_BUILD
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2Entities.json" ${X64DBG_PLUGINS_ROOT})
 
 # Copy Spelunky2Entities.txt to the x64dbg plugins folder
 add_custom_command(	TARGET deploy-auxfiles

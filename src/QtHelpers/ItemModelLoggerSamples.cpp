@@ -1,7 +1,7 @@
 #include "QtHelpers/ItemModelLoggerSamples.h"
+#include "Configuration.h"
 #include "Data/Logger.h"
 #include "QtHelpers/TableViewLogger.h"
-#include "Spelunky2.h"
 
 S2Plugin::ItemModelLoggerSamples::ItemModelLoggerSamples(Logger* logger, QObject* parent) : QAbstractItemModel(parent), mLogger(logger) {}
 
@@ -47,16 +47,16 @@ QVariant S2Plugin::ItemModelLoggerSamples::data(const QModelIndex& index, int ro
                     return std::any_cast<uint16_t>(samples.at(index.row()));
                 }
                 case MemoryFieldType::Dword:
+                case MemoryFieldType::TextureDBID:
+                case MemoryFieldType::State32:
+                case MemoryFieldType::EntityUID:
                 {
                     return std::any_cast<int32_t>(samples.at(index.row()));
                 }
                 case MemoryFieldType::UnsignedDword:
                 case MemoryFieldType::Flags32:
-                case MemoryFieldType::State32:
                 case MemoryFieldType::EntityDBID:
-                case MemoryFieldType::EntityUID:
                 case MemoryFieldType::ParticleDBID:
-                case MemoryFieldType::TextureDBID:
                 case MemoryFieldType::StringsTableID:
                 {
                     return std::any_cast<uint32_t>(samples.at(index.row()));
@@ -64,6 +64,10 @@ QVariant S2Plugin::ItemModelLoggerSamples::data(const QModelIndex& index, int ro
                 case MemoryFieldType::Float:
                 {
                     return std::any_cast<float>(samples.at(index.row()));
+                }
+                case MemoryFieldType::Double:
+                {
+                    return std::any_cast<double>(samples.at(index.row()));
                 }
                 case MemoryFieldType::Qword:
                 {

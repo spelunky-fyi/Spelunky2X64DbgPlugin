@@ -13,15 +13,15 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
-    struct TreeViewMemoryFields;
-    struct JournalPage;
+    class ViewToolbar;
+    class TreeViewMemoryFields;
+    class JournalPage;
 
     class ViewJournalPage : public QWidget
     {
         Q_OBJECT
       public:
-        ViewJournalPage(ViewToolbar* toolbar, size_t offset, const std::string& pageType, QWidget* parent = nullptr);
+        ViewJournalPage(ViewToolbar* toolbar, uintptr_t offset, const std::string& pageType, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -37,7 +37,7 @@ namespace S2Plugin
         void interpretAsChanged(const QString& text);
 
       private:
-        size_t mOffset;
+        uintptr_t mOffset;
         std::string mPageType;
         ViewToolbar* mToolbar;
 
@@ -50,7 +50,6 @@ namespace S2Plugin
         std::unique_ptr<QTimer> mAutoRefreshTimer;
         QComboBox* mInterpretAsComboBox;
 
-        std::unique_ptr<JournalPage> mJournalPage;
         void initializeUI();
     };
 } // namespace S2Plugin
