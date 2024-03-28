@@ -63,9 +63,9 @@ void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryFie
     }
 }
 
-QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t offset, size_t delta, QStandardItem* parent)
+QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent)
 {
-    auto createAndInsertItem = [&delta](const MemoryField& field, const std::string& fieldNameUID, QStandardItem* itemParent, uintptr_t memOffset, bool showDelta = true) -> QStandardItem*
+    auto createAndInsertItem = [&delta](const MemoryField& field, const std::string& fieldNameUID, QStandardItem* itemParent, uintptr_t memAddr, bool showDelta = true) -> QStandardItem*
     {
         auto itemFieldName = new QStandardItem();
         itemFieldName->setEditable(false);
@@ -73,12 +73,12 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         itemFieldName->setData(QString::fromStdString(fieldNameUID), gsRoleUID);
         itemFieldName->setData(QVariant::fromValue(field.type), gsRoleType);
         itemFieldName->setData(field.isPointer, gsRoleIsPointer);
-        itemFieldName->setData(memOffset, gsRoleMemoryOffset);
+        itemFieldName->setData(memAddr, gsRoleMemoryAddress);
 
         auto itemFieldValue = new QStandardItem();
         itemFieldValue->setEditable(false);
         if (field.isPointer == false) // if it's pointer, we set it on first update
-            itemFieldValue->setData(memOffset, gsRoleMemoryOffset);
+            itemFieldValue->setData(memAddr, gsRoleMemoryAddress);
         itemFieldValue->setData("", Qt::DisplayRole);
 
         auto itemFieldValueHex = new QStandardItem();
@@ -95,13 +95,13 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
         auto itemFieldMemoryOffset = new QStandardItem();
         itemFieldMemoryOffset->setEditable(false);
-        if (memOffset == 0)
+        if (memAddr == 0)
             itemFieldMemoryOffset->setData("", Qt::DisplayRole);
         else
         {
-            itemFieldMemoryOffset->setData(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", memOffset), Qt::DisplayRole);
-            // for click event. I could just use the itemFieldName(gsRoleMemoryOffset) for it, but doing it this way for potential itemComparisonFieldMemoryOffset in future
-            itemFieldMemoryOffset->setData(memOffset, gsRoleRawValue);
+            itemFieldMemoryOffset->setData(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", memAddr), Qt::DisplayRole);
+            // for click event. I could just use the itemFieldName(gsRoleMemoryAddress) for it, but doing it this way for potential itemComparisonFieldMemoryOffset in future
+            itemFieldMemoryOffset->setData(memAddr, gsRoleRawValue);
         }
 
         auto itemFieldMemoryOffsetDelta = new QStandardItem();
@@ -186,13 +186,13 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UTF16Char:
         case MemoryFieldType::IPv4Address:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             break;
         }
         case MemoryFieldType::UTF16StringFixedSize:
         case MemoryFieldType::UTF8StringFixedSize:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(field.get_size(), gsRoleSize);
             break;
         }
@@ -200,19 +200,19 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::State16:
         case MemoryFieldType::State32:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleRefName);
             break;
         }
         case MemoryFieldType::VirtualFunctionTable:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleRefName);
             break;
         }
         case MemoryFieldType::Flags32:
         {
-            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             flagsParent->setData(QVariant::fromValue(field.firstParameterType), gsRoleRefName);
             for (uint8_t x = 1; x <= 32; ++x)
             {
@@ -233,7 +233,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         }
         case MemoryFieldType::Flags16:
         {
-            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, offset, delta);
+            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress, delta);
             flagsParent->setData(QVariant::fromValue(field.firstParameterType), gsRoleRefName);
             for (uint8_t x = 1; x <= 16; ++x)
             {
@@ -250,7 +250,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         }
         case MemoryFieldType::Flags8:
         {
-            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, offset, delta);
+            auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress, delta);
             flagsParent->setData(QVariant::fromValue(field.firstParameterType), gsRoleRefName);
             for (uint8_t x = 1; x <= 8; ++x)
             {
@@ -266,56 +266,56 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         }
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, returnField);
             break;
         }
         case MemoryFieldType::StdVector:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             if (field.isPointer)
                 addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, offset, delta, returnField);
+                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, returnField);
 
             break;
         }
         case MemoryFieldType::StdMap:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             returnField->setData(QVariant::fromValue(field.secondParameterType), gsRoleStdContainerSecondParameterType);
             if (field.isPointer)
                 addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, offset, delta, returnField);
+                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, returnField);
 
             break;
         }
         case MemoryFieldType::EntitySubclass:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, 0);
-            addMemoryFields(Configuration::get()->typeFieldsOfEntitySubclass(field.jsonName), fieldNameOverride, offset, delta, returnField);
+            addMemoryFields(Configuration::get()->typeFieldsOfEntitySubclass(field.jsonName), fieldNameOverride, memoryAddress, delta, returnField);
             break;
         }
         case MemoryFieldType::DefaultStructType:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
                 addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, 0, 0, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, offset, delta, returnField);
+                addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, memoryAddress, delta, returnField);
 
             break;
         }
         default:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, offset);
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
                 addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, offset, delta, returnField);
+                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, returnField);
 
             break;
         }
@@ -332,8 +332,8 @@ void S2Plugin::TreeViewMemoryFields::updateTableHeader(bool restoreColumnWidths)
     setColumnHidden(gsColValueHex, !activeColumns.test(gsColValueHex));
     setColumnHidden(gsColComparisonValue, !activeColumns.test(gsColComparisonValue));
     setColumnHidden(gsColComparisonValueHex, !activeColumns.test(gsColComparisonValueHex));
-    setColumnHidden(gsColMemoryOffset, !activeColumns.test(gsColMemoryOffset));
-    setColumnHidden(gsColMemoryOffsetDelta, !activeColumns.test(gsColMemoryOffsetDelta));
+    setColumnHidden(gsColMemoryAddress, !activeColumns.test(gsColMemoryAddress));
+    setColumnHidden(gsColMemoryAddressDelta, !activeColumns.test(gsColMemoryAddressDelta));
     setColumnHidden(gsColType, !activeColumns.test(gsColType));
     setColumnHidden(gsColComment, !activeColumns.test(gsColComment));
 
@@ -359,13 +359,13 @@ void S2Plugin::TreeViewMemoryFields::updateTableHeader(bool restoreColumnWidths)
         {
             setColumnWidth(gsColComparisonValueHex, mSavedColumnWidths[gsColComparisonValueHex]);
         }
-        if (mSavedColumnWidths[gsColMemoryOffset] != 0)
+        if (mSavedColumnWidths[gsColMemoryAddress] != 0)
         {
-            setColumnWidth(gsColMemoryOffset, mSavedColumnWidths[gsColMemoryOffset]);
+            setColumnWidth(gsColMemoryAddress, mSavedColumnWidths[gsColMemoryAddress]);
         }
-        if (mSavedColumnWidths[gsColMemoryOffsetDelta] != 0)
+        if (mSavedColumnWidths[gsColMemoryAddressDelta] != 0)
         {
-            setColumnWidth(gsColMemoryOffsetDelta, mSavedColumnWidths[gsColMemoryOffsetDelta]);
+            setColumnWidth(gsColMemoryAddressDelta, mSavedColumnWidths[gsColMemoryAddressDelta]);
         }
         if (mSavedColumnWidths[gsColType] != 0)
         {
@@ -470,8 +470,8 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
     // updating memory offset
     if (newAddr.has_value()) // if (fieldType != MemoryFieldType::Flag && fieldType != MemoryFieldType::EntitySubclass) // there should never be a situation when they get the memoryoffset updated
     {
-        QStandardItem* itemMemoryOffset = parent->child(row, gsColMemoryOffset);
-        QStandardItem* itemMemoryOffsetDelta = parent->child(row, gsColMemoryOffsetDelta);
+        QStandardItem* itemMemoryOffset = parent->child(row, gsColMemoryAddress);
+        QStandardItem* itemMemoryOffsetDelta = parent->child(row, gsColMemoryAddressDelta);
         auto deltaData = itemMemoryOffsetDelta->data(gsRoleRawValue);
         memoryOffset = newAddr.value() == 0 ? 0 : newAddr.value() + deltaData.toULongLong();
         if (!deltaData.isNull())
@@ -479,24 +479,24 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             itemMemoryOffset->setData(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", memoryOffset), Qt::DisplayRole);
             itemMemoryOffset->setData(memoryOffset, gsRoleRawValue);
         }
-        itemField->setData(memoryOffset, gsRoleMemoryOffset);
+        itemField->setData(memoryOffset, gsRoleMemoryAddress);
         if (isPointer == false)
-            itemValue->setData(memoryOffset, gsRoleMemoryOffset);
+            itemValue->setData(memoryOffset, gsRoleMemoryAddress);
     }
     else
-        memoryOffset = itemField->data(gsRoleMemoryOffset).toULongLong();
+        memoryOffset = itemField->data(gsRoleMemoryAddress).toULongLong();
 
     // updating memory offset for comparison
     if (newAddrComparison.has_value())
     {
-        QStandardItem* itemMemoryOffsetDelta = parent->child(row, gsColMemoryOffsetDelta);
+        QStandardItem* itemMemoryOffsetDelta = parent->child(row, gsColMemoryAddressDelta);
         comparisonMemoryOffset = newAddrComparison.value() == 0 ? 0 : newAddrComparison.value() + itemMemoryOffsetDelta->data(gsRoleRawValue).toULongLong();
-        itemField->setData(comparisonMemoryOffset, gsRoleComparisonMemoryOffset);
+        itemField->setData(comparisonMemoryOffset, gsRoleComparisonMemoryAddress);
         if (isPointer == false)
-            itemComparisonValue->setData(comparisonMemoryOffset, gsRoleMemoryOffset);
+            itemComparisonValue->setData(comparisonMemoryOffset, gsRoleMemoryAddress);
     }
     else
-        comparisonMemoryOffset = itemField->data(gsRoleComparisonMemoryOffset).toULongLong();
+        comparisonMemoryOffset = itemField->data(gsRoleComparisonMemoryAddress).toULongLong();
 
     bool pointerUpdate = false;
     bool comparisonPointerUpdate = false;
@@ -541,7 +541,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         newPointer = Script::Memory::ReadQword(memoryOffset);
         valueMemoryOffset = newPointer;
         pointerUpdate = checkAndUpdatePointer(valueMemoryOffset, itemValueHex);
-        itemValue->setData(valueMemoryOffset, gsRoleMemoryOffset);
+        itemValue->setData(valueMemoryOffset, gsRoleMemoryAddress);
 
         if (pointerUpdate)
             itemField->setBackground(highlightColor);
@@ -553,7 +553,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             newComparisonPointer = Script::Memory::ReadQword(comparisonMemoryOffset);
             valueComparisonMemoryOffset = newComparisonPointer;
             comparisonPointerUpdate = checkAndUpdatePointer(valueComparisonMemoryOffset, itemComparisonValueHex);
-            itemComparisonValue->setData(valueComparisonMemoryOffset, gsRoleMemoryOffset);
+            itemComparisonValue->setData(valueComparisonMemoryOffset, gsRoleMemoryAddress);
 
             comparisonPointerDifference = newPointer != newComparisonPointer;
             itemComparisonValueHex->setBackground(comparisonPointerDifference ? comparisonDifferenceColor : Qt::transparent);
@@ -1331,7 +1331,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 if (value.value() < 0)
                 {
                     itemValue->setData(QString::asprintf("(%d) Nothing", value.value()), Qt::DisplayRole);
-                    itemValue->setData(0, gsRoleEntityOffset);
+                    itemValue->setData(0, gsRoleEntityAddress);
                 }
                 else
                 {
@@ -1340,12 +1340,12 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     {
                         auto entityName = Configuration::get()->getEntityName(Entity{entityOffset}.entityTypeID());
                         itemValue->setData(QString::asprintf("<font color='blue'><u>UID %u (%s)</u></font>", value.value(), entityName.c_str()), Qt::DisplayRole);
-                        itemValue->setData(entityOffset, gsRoleEntityOffset);
+                        itemValue->setData(entityOffset, gsRoleEntityAddress);
                     }
                     else
                     {
                         itemValue->setData(QString::asprintf("(%d) UNKNOWN ENTITY", value.value()), Qt::DisplayRole);
-                        itemValue->setData(0, gsRoleEntityOffset);
+                        itemValue->setData(0, gsRoleEntityAddress);
                     }
                 }
             }
@@ -1359,7 +1359,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     if (comparisonValue.value() < 0)
                     {
                         itemComparisonValue->setData(QString::asprintf("(%d) Nothing", comparisonValue.value()), Qt::DisplayRole);
-                        itemComparisonValue->setData(0, gsRoleEntityOffset);
+                        itemComparisonValue->setData(0, gsRoleEntityAddress);
                     }
                     else
                     {
@@ -1368,12 +1368,12 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                         {
                             auto entityName = Configuration::get()->getEntityName(Entity{comparisonEntityOffset}.entityTypeID());
                             itemComparisonValue->setData(QString::asprintf("<font color='blue'><u>UID %u (%s)</u></font>", comparisonValue.value(), entityName.c_str()), Qt::DisplayRole);
-                            itemComparisonValue->setData(comparisonEntityOffset, gsRoleEntityOffset);
+                            itemComparisonValue->setData(comparisonEntityOffset, gsRoleEntityAddress);
                         }
                         else
                         {
                             itemComparisonValue->setData(QString::asprintf("(%d) UNKNOWN ENTITY", comparisonValue.value()), Qt::DisplayRole);
-                            itemComparisonValue->setData(0, gsRoleEntityOffset);
+                            itemComparisonValue->setData(0, gsRoleEntityAddress);
                         }
                     }
                 }
@@ -1743,7 +1743,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 // we can't show comparison version since it's a tab, not a new window
                 // TODO: maybe add comparison in the show rooms tab?
                 itemComparisonValue->setData("", Qt::DisplayRole);
-                itemComparisonValue->setData(0, gsRoleMemoryOffset);
+                itemComparisonValue->setData(0, gsRoleMemoryAddress);
 
                 itemComparisonValue->setBackground(itemComparisonValueHex->background());
             }
@@ -1958,7 +1958,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
 
     switch (index.column())
     {
-        case gsColMemoryOffset:
+        case gsColMemoryAddress:
         {
             GuiDumpAt(clickedItem->data(gsRoleRawValue).toULongLong());
             GuiShowCpu();
@@ -1991,14 +1991,14 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
             {
                 case MemoryFieldType::CodePointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     GuiDisasmAt(rawValue, GetContextData(UE_CIP));
                     GuiShowCpu();
                     break;
                 }
                 case MemoryFieldType::DataPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         GuiDumpAt(rawValue);
@@ -2017,7 +2017,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::EntityUID:
                 {
-                    auto offset = clickedItem->data(gsRoleEntityOffset).toULongLong();
+                    auto offset = clickedItem->data(gsRoleEntityAddress).toULongLong();
                     if (offset != 0)
                     {
                         mToolbar->showEntity(offset);
@@ -2078,7 +2078,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::EntityDBPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadDword(rawValue + 20);
@@ -2092,7 +2092,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::TextureDBPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadQword(rawValue);
@@ -2108,7 +2108,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::State16:
                 case MemoryFieldType::State32:
                 {
-                    auto addr = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (addr != 0)
                     {
                         auto name = getDataFrom(index, gsColField, gsRoleUID).toString();
@@ -2120,7 +2120,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::LevelGenPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         mToolbar->showLevelGen(); // TODO: use pointer
@@ -2129,7 +2129,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::StdVector:
                 {
-                    auto addr = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     auto fieldType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
                     if (addr != 0)
                     {
@@ -2139,7 +2139,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::StdMap:
                 {
-                    auto addr = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     auto fieldkeyType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
                     auto fieldvalueType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerSecondParameterType));
                     if (addr != 0)
@@ -2150,7 +2150,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::ParticleDBPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadDword(rawValue); // TODO: use pointer
@@ -2164,7 +2164,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::VirtualFunctionTable:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         // TODO: maybe use the "entity interpret as" for vtable? (it's doable)
@@ -2174,9 +2174,9 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                             // rare case, we need the address not the pointer value to get entity
                             uintptr_t ent;
                             if (index.column() == gsColComparisonValue)
-                                ent = getDataFrom(index, gsColField, gsRoleComparisonMemoryOffset).toULongLong();
+                                ent = getDataFrom(index, gsColField, gsRoleComparisonMemoryAddress).toULongLong();
                             else
-                                ent = getDataFrom(index, gsColField, gsRoleMemoryOffset).toULongLong();
+                                ent = getDataFrom(index, gsColField, gsRoleMemoryAddress).toULongLong();
 
                             mToolbar->showVirtualFunctions(rawValue, Entity{ent}.entityClassName());
                         }
@@ -2189,7 +2189,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::Bool:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (offset != 0)
                     {
                         auto currentValue = clickedItem->data(gsRoleRawValue).toBool();
@@ -2200,7 +2200,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::Flag:
                 {
                     auto flagIndex = getDataFrom(index, gsColField, gsRoleFlagIndex).toUInt();
-                    auto offset = clickedItem->parent()->data(gsRoleMemoryOffset).toULongLong();
+                    auto offset = clickedItem->parent()->data(gsRoleMemoryAddress).toULongLong();
                     if (offset != 0)
                     {
                         auto currentValue = Script::Memory::ReadDword(offset);
@@ -2221,7 +2221,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::UTF16Char:
                 case MemoryFieldType::StringsTableID:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (offset != 0)
                     {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
@@ -2233,7 +2233,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::LevelGenRoomsPointer:
                 case MemoryFieldType::LevelGenRoomsMetaPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         emit levelGenRoomsPointerClicked();
@@ -2242,7 +2242,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::JournalPagePointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
                         mToolbar->showJournalPage(rawValue, "JournalPage");
@@ -2254,7 +2254,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     bool isPointer = getDataFrom(index, gsColField, gsRoleIsPointer).toBool();
                     if (isPointer)
                     {
-                        auto addr = clickedItem->data(gsRoleMemoryOffset).toULongLong();
+                        auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                         if (addr != 0)
                         {
                             GuiDumpAt(addr);
@@ -2273,8 +2273,8 @@ void S2Plugin::TreeViewMemoryFields::clear()
     mSavedColumnWidths[gsColField] = columnWidth(gsColField);
     mSavedColumnWidths[gsColValue] = columnWidth(gsColValue);
     mSavedColumnWidths[gsColValueHex] = columnWidth(gsColValueHex);
-    mSavedColumnWidths[gsColMemoryOffset] = columnWidth(gsColMemoryOffset);
-    mSavedColumnWidths[gsColMemoryOffsetDelta] = columnWidth(gsColMemoryOffsetDelta);
+    mSavedColumnWidths[gsColMemoryAddress] = columnWidth(gsColMemoryAddress);
+    mSavedColumnWidths[gsColMemoryAddressDelta] = columnWidth(gsColMemoryAddressDelta);
     mSavedColumnWidths[gsColType] = columnWidth(gsColType);
     mSavedColumnWidths[gsColComment] = columnWidth(gsColComment);
     mModel->clear();
@@ -2333,7 +2333,7 @@ void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions supportedActions)
     auto& index = ix.at(0);
 
     // for spelunky/entityoffset: dragging an entity from ViewEntities on top of ViewEntity for comparison
-    auto entityItem = mModel->item(index.row(), gsColMemoryOffset); // TODO: maybe not needed? try to use spelunky/memoryfield data, also allow only entity pointer?
+    auto entityItem = mModel->item(index.row(), gsColMemoryAddress); // TODO: maybe not needed? try to use spelunky/memoryfield data, also allow only entity pointer?
     if (entityItem != nullptr)
     {
         auto entityData = entityItem->data(gsRoleRawValue);
@@ -2347,7 +2347,7 @@ void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions supportedActions)
 
     nlohmann::json o;
     o[gsJSONDragDropMemoryField_UID] = getDataFrom(index, gsColField, gsRoleUID).toString().toStdString();
-    o[gsJSONDragDropMemoryField_Offset] = getDataFrom(index, gsColField, gsRoleMemoryOffset).toULongLong();
+    o[gsJSONDragDropMemoryField_Address] = getDataFrom(index, gsColField, gsRoleMemoryAddress).toULongLong();
     o[gsJSONDragDropMemoryField_Type] = getDataFrom(index, gsColField, gsRoleType).value<MemoryFieldType>();
     auto json = QString::fromStdString(o.dump());
 
@@ -2423,7 +2423,7 @@ static void labelChildren(QStandardItem* parrent, std::string_view prefix)
                 }
             }
         }
-        uintptr_t address = field->data(S2Plugin::gsRoleMemoryOffset).toULongLong();
+        uintptr_t address = field->data(S2Plugin::gsRoleMemoryAddress).toULongLong();
         if (!Script::Memory::IsValidPtr(address))
         {
             dprintf("Failed to label (%s)\n", name.c_str());

@@ -77,8 +77,8 @@ void S2Plugin::ViewEntityDB::initializeUI()
         mMainTreeView->setColumnWidth(gsColField, 125);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColValueHex, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
         mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
@@ -177,15 +177,15 @@ void S2Plugin::ViewEntityDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
     // id == 0 is valid, but not used as of right now
-    mMainTreeView->updateTree(Spelunky2::get()->get_EntityDB().offsetForIndex(id), 0);
+    mMainTreeView->updateTree(Spelunky2::get()->get_EntityDB().addressOfIndex(id), 0);
 }
 
 void S2Plugin::ViewEntityDB::label()
 {
     auto model = mMainTreeView->model();
     auto& entityDB = Spelunky2::get()->get_EntityDB();
-    auto offset = entityDB.offsetForIndex(0); // ptr
-    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    auto offset = entityDB.addressOfIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
     size_t index = (indexOffset - offset) / entityDB.entitySize();
     std::string name = '[' + Configuration::get()->entityList().nameForID(index) + ']';
     mMainTreeView->labelAll(name);
@@ -248,7 +248,7 @@ void S2Plugin::ViewEntityDB::populateComparisonTableWidget()
         mCompareTableWidget->setItem(row, 0, item0);
         mCompareTableWidget->setItem(row, 1, new QTableWidgetItem(QString("<font color='blue'><u>%1</u></font>").arg(QString::fromStdString(entityList.nameForID(x)))));
 
-        auto [caption, value] = DB::valueForField(comboboxData, entityDB.offsetForIndex(x));
+        auto [caption, value] = DB::valueForField(comboboxData, entityDB.addressOfIndex(x));
         auto item = new TableWidgetItemNumeric(caption);
         item->setData(Qt::UserRole, value);
         mCompareTableWidget->setItem(row, 2, item);
@@ -276,7 +276,7 @@ void S2Plugin::ViewEntityDB::populateComparisonTreeWidget()
             continue;
         }
 
-        auto [caption, value] = DB::valueForField(comboboxData, entityDB.offsetForIndex(x));
+        auto [caption, value] = DB::valueForField(comboboxData, entityDB.addressOfIndex(x));
         auto captionStr = caption.toStdString();
         rootValues[captionStr] = value;
 

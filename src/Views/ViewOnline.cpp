@@ -17,8 +17,8 @@ S2Plugin::ViewOnline::ViewOnline(ViewToolbar* toolbar, QWidget* parent) : QWidge
     refreshOnline();
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     toggleAutoRefresh(Qt::Checked);
 }

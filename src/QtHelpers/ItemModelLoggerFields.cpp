@@ -23,7 +23,7 @@ QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int rol
             }
             case gsLogFieldColMemoryOffset:
             {
-                return QString::asprintf("0x%016llX", field.memoryOffset);
+                return QString::asprintf("0x%016llX", field.memoryAddr);
             }
             case gsLogFieldColFieldName:
             {

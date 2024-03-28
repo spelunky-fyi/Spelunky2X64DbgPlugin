@@ -26,8 +26,8 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWid
 
     mMainTreeView->setColumnWidth(gsColField, 175);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     updateMemoryViewOffsetAndSize();
 
@@ -338,7 +338,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
                 self(field, self);
                 continue;
             }
-            auto deltaField = parrent->child(idx, gsColMemoryOffsetDelta);
+            auto deltaField = parrent->child(idx, gsColMemoryAddressDelta);
             size_t delta = deltaField->data(gsRoleRawValue).toULongLong();
             // get the size by the difference in offset delta
             // [Known Issue]: this will fail in getting the correct size if there is a skip element between fields

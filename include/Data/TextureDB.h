@@ -23,7 +23,7 @@ namespace S2Plugin
             static std::string unknownName("UNKNOWN TEXTURE");
             return unknownName;
         }
-        uintptr_t offsetForID(uint32_t id) const
+        uintptr_t addressOfID(uint32_t id) const
         {
             if (auto it = mTextures.find(id); it != mTextures.end())
             {
@@ -50,7 +50,7 @@ namespace S2Plugin
 
       private:
         size_t ptr{0};
-        std::unordered_map<uint32_t, std::pair<std::string, uintptr_t>> mTextures; // id -> {name, offset}
+        std::unordered_map<uint32_t, std::pair<std::string, uintptr_t>> mTextures; // id -> {name, address}
         QStringList mTextureNamesStringList;
 
         TextureDB() = default;

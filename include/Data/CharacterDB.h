@@ -21,7 +21,7 @@ namespace S2Plugin
         {
             return ptr != 0;
         }
-        uintptr_t offsetFromIndex(uint8_t id) const
+        uintptr_t addressOfIndex(uint8_t id) const
         {
             return ptr + id * characterSize();
         }

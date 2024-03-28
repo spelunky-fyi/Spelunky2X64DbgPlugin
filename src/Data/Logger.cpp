@@ -61,7 +61,7 @@ void S2Plugin::Logger::sample()
         {
             case MemoryFieldType::Byte:
             {
-                int8_t value = Script::Memory::ReadByte(field.memoryOffset);
+                int8_t value = Script::Memory::ReadByte(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -71,13 +71,13 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::State8:
             case MemoryFieldType::CharacterDBID:
             {
-                uint8_t value = Script::Memory::ReadByte(field.memoryOffset);
+                uint8_t value = Script::Memory::ReadByte(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Word:
             {
-                int16_t value = Script::Memory::ReadWord(field.memoryOffset);
+                int16_t value = Script::Memory::ReadWord(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -85,7 +85,7 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::Flags16:
             case MemoryFieldType::State16:
             {
-                uint16_t value = Script::Memory::ReadWord(field.memoryOffset);
+                uint16_t value = Script::Memory::ReadWord(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -94,7 +94,7 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::EntityUID:
             case MemoryFieldType::TextureDBID:
             {
-                int32_t value = Script::Memory::ReadDword(field.memoryOffset);
+                int32_t value = Script::Memory::ReadDword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -104,33 +104,33 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::ParticleDBID:
             case MemoryFieldType::StringsTableID:
             {
-                uint32_t value = Script::Memory::ReadDword(field.memoryOffset);
+                uint32_t value = Script::Memory::ReadDword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Float:
             {
-                uint32_t tmp = Script::Memory::ReadDword(field.memoryOffset);
+                uint32_t tmp = Script::Memory::ReadDword(field.memoryAddr);
                 float value = reinterpret_cast<float&>(tmp);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Double:
             {
-                uint32_t tmp = Script::Memory::ReadDword(field.memoryOffset);
+                uint32_t tmp = Script::Memory::ReadDword(field.memoryAddr);
                 double value = reinterpret_cast<double&>(tmp);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Qword:
             {
-                int64_t value = Script::Memory::ReadQword(field.memoryOffset);
+                int64_t value = Script::Memory::ReadQword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedQword:
             {
-                uint64_t value = Script::Memory::ReadQword(field.memoryOffset);
+                uint64_t value = Script::Memory::ReadQword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }

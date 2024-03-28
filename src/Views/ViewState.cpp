@@ -17,8 +17,8 @@ S2Plugin::ViewState::ViewState(ViewToolbar* toolbar, uintptr_t state, QWidget* p
     setWindowTitle("State");
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     toggleAutoRefresh(Qt::Checked);
 }

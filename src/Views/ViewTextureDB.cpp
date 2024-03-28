@@ -129,8 +129,8 @@ void S2Plugin::ViewTextureDB::initializeUI()
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
@@ -178,7 +178,7 @@ void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
 void S2Plugin::ViewTextureDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
-    auto offset = Spelunky2::get()->get_TextureDB().offsetForID(id);
+    auto offset = Spelunky2::get()->get_TextureDB().addressOfID(id);
     mMainTreeView->updateTree(offset);
 }
 

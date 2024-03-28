@@ -125,8 +125,8 @@ void S2Plugin::ViewParticleDB::initializeUI()
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
@@ -175,15 +175,15 @@ void S2Plugin::ViewParticleDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
     uint32_t index = id == 0 ? 0 : id - 1;
-    mMainTreeView->updateTree(Spelunky2::get()->get_ParticleDB().offsetForIndex(index));
+    mMainTreeView->updateTree(Spelunky2::get()->get_ParticleDB().addressOfIndex(index));
 }
 
 void S2Plugin::ViewParticleDB::label()
 {
     auto model = mMainTreeView->model();
     auto& particleDB = Spelunky2::get()->get_ParticleDB();
-    auto offset = particleDB.offsetForIndex(0); // ptr
-    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    auto offset = particleDB.addressOfIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
     size_t index = (indexOffset - offset) / particleDB.particleSize();
     std::string name = '[' + Configuration::get()->particleEmittersList().nameForID(index + 1) + ']';
     mMainTreeView->labelAll(name);
@@ -242,7 +242,7 @@ void S2Plugin::ViewParticleDB::populateComparisonTableWidget()
         auto name = QString::fromStdString(particleList.nameForID(x));
         mCompareTableWidget->setItem(row, 1, new QTableWidgetItem(QString("<font color='blue'><u>%1</u></font>").arg(name)));
 
-        auto [caption, value] = DB::valueForField(comboboxData, particleDB.offsetForIndex(x - 1)); // id:1 == index:0
+        auto [caption, value] = DB::valueForField(comboboxData, particleDB.addressOfIndex(x - 1)); // id:1 == index:0
         auto item = new TableWidgetItemNumeric(caption);
         item->setData(Qt::UserRole, value);
         mCompareTableWidget->setItem(row, 2, item);
@@ -265,7 +265,7 @@ void S2Plugin::ViewParticleDB::populateComparisonTreeWidget()
     std::unordered_map<std::string, std::unordered_set<uint32_t>> groupedValues; // valueString -> set<particle id's>
     for (uint32_t x = 1; x <= particleEmitters.count(); ++x)
     {
-        auto [caption, value] = DB::valueForField(comboboxData, particleDB.offsetForIndex(x - 1)); // id:1 == index:0
+        auto [caption, value] = DB::valueForField(comboboxData, particleDB.addressOfIndex(x - 1)); // id:1 == index:0
         auto captionStr = caption.toStdString();
         rootValues[captionStr] = value;
 

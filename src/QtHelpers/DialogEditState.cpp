@@ -10,8 +10,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::string& refName, size_t memoryOffset, MemoryFieldType type, QWidget* parent)
-    : QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint), mMemoryOffset(memoryOffset), mFieldType(type)
+S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::string& refName, uintptr_t memoryAddress, MemoryFieldType type, QWidget* parent)
+    : QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint), mMemoryAddress(memoryAddress), mFieldType(type)
 {
     setModal(true);
     setWindowTitle("Change value");
@@ -31,17 +31,17 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
     {
         case MemoryFieldType::State8:
         {
-            currentState = Script::Memory::ReadByte(memoryOffset);
+            currentState = Script::Memory::ReadByte(memoryAddress);
             break;
         }
         case MemoryFieldType::State16:
         {
-            currentState = Script::Memory::ReadWord(memoryOffset);
+            currentState = Script::Memory::ReadWord(memoryAddress);
             break;
         }
         case MemoryFieldType::State32:
         {
-            currentState = Script::Memory::ReadDword(memoryOffset);
+            currentState = Script::Memory::ReadDword(memoryAddress);
             break;
         }
     }
@@ -113,7 +113,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             int8_t v = mStateLineEdit->text().toInt(&success);
             if (success)
             {
-                Script::Memory::WriteByte(mMemoryOffset, v);
+                Script::Memory::WriteByte(mMemoryAddress, v);
             }
             break;
         }
@@ -123,7 +123,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             int16_t v = mStateLineEdit->text().toInt(&success);
             if (success)
             {
-                Script::Memory::WriteWord(mMemoryOffset, v);
+                Script::Memory::WriteWord(mMemoryAddress, v);
             }
             break;
         }
@@ -133,7 +133,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             int32_t v = mStateLineEdit->text().toInt(&success);
             if (success)
             {
-                Script::Memory::WriteDword(mMemoryOffset, v);
+                Script::Memory::WriteDword(mMemoryAddress, v);
             }
             break;
         }

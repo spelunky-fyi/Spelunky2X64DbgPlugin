@@ -15,7 +15,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        DialogEditState(const QString& fieldName, const std::string& refName, size_t memoryOffset, MemoryFieldType type, QWidget* parent = nullptr);
+        DialogEditState(const QString& fieldName, const std::string& refName, uintptr_t memoryAddress, MemoryFieldType type, QWidget* parent = nullptr);
 
       protected:
         QSize minimumSizeHint() const override;
@@ -27,7 +27,7 @@ namespace S2Plugin
         void stateComboBoxChanged(int index);
 
       private:
-        size_t mMemoryOffset;
+        uintptr_t mMemoryAddress;
         MemoryFieldType mFieldType;
 
         QComboBox* mStatesComboBox;

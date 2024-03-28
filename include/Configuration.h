@@ -18,8 +18,8 @@ namespace S2Plugin
     constexpr uint8_t gsColValueHex = 2;
     constexpr uint8_t gsColComparisonValue = 3;
     constexpr uint8_t gsColComparisonValueHex = 4;
-    constexpr uint8_t gsColMemoryOffset = 5;
-    constexpr uint8_t gsColMemoryOffsetDelta = 6;
+    constexpr uint8_t gsColMemoryAddress = 5;
+    constexpr uint8_t gsColMemoryAddressDelta = 6;
     constexpr uint8_t gsColType = 7;
     constexpr uint8_t gsColComment = 8;
 
@@ -27,21 +27,21 @@ namespace S2Plugin
      * [[ Roles explanation: ]]
      * The first 5 roles are all saved to the name field
      * those are used as information about the row
-     * memory offsets in the name field are used just for row update and should not be used for anything else
+     * memory address in the name field are used just for row update and should not be used for anything else
      *
-     * value, comparison value, memoryoffset and delta fields all should contain the `gsRoleRawValue` data
+     * value, comparison value, memoryaddress and delta fields all should contain the `gsRoleRawValue` data
      * (may differ with some special types)
      *
      * valueHex and comparison valuehex contain `gsRoleRawValue` only when it's a pointer (used for update check and click event)
-     * value and comparison value also contain `gsRoleMemoryOffset` for field editing purposes
-     * for pointers, that will be the pointer value, not memory offset of the pointer
+     * value and comparison value also contain `gsRoleMemoryAddress` for field editing purposes
+     * for pointers, that will be the pointer value, not memory address of the pointer
      *
      * The rest of the roles are type specific
      */
 
     constexpr uint16_t gsRoleType = Qt::UserRole + 0;
-    constexpr uint16_t gsRoleMemoryOffset = Qt::UserRole + 1;
-    constexpr uint16_t gsRoleComparisonMemoryOffset = Qt::UserRole + 2;
+    constexpr uint16_t gsRoleMemoryAddress = Qt::UserRole + 1;
+    constexpr uint16_t gsRoleComparisonMemoryAddress = Qt::UserRole + 2;
     constexpr uint16_t gsRoleIsPointer = Qt::UserRole + 3;
     constexpr uint16_t gsRoleUID = Qt::UserRole + 4;
     constexpr uint16_t gsRoleRawValue = Qt::UserRole + 5;
@@ -51,10 +51,10 @@ namespace S2Plugin
     constexpr uint16_t gsRoleStdContainerFirstParameterType = Qt::UserRole + 8;
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
-    constexpr uint16_t gsRoleEntityOffset = Qt::UserRole + 11; // for entity uid to not look for the uid twice
+    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 11; // for entity uid to not look for the uid twice
 
     constexpr char* gsJSONDragDropMemoryField_UID = "uid";
-    constexpr char* gsJSONDragDropMemoryField_Offset = "offset";
+    constexpr char* gsJSONDragDropMemoryField_Address = "addr";
     constexpr char* gsJSONDragDropMemoryField_Type = "type";
 
     // new types need to be added to
@@ -214,8 +214,8 @@ namespace S2Plugin
         static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
 
-        uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t addr = 0) const;
-        uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t addr = 0) const;
+        uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t base_addr = 0) const;
+        uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t base_addr = 0) const;
 
         // equivalent to alignof operator
         int getAlingment(const std::string& type) const;

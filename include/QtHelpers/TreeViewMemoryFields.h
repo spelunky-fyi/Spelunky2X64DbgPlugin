@@ -44,7 +44,7 @@ namespace S2Plugin
         TreeViewMemoryFields(ViewToolbar* toolbar, QWidget* parent = nullptr);
 
         void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, QStandardItem* parent = nullptr);
-        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t offset, size_t delta, QStandardItem* parent = nullptr);
+        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent = nullptr);
         void clear();
         void updateTableHeader(bool restoreColumnWidths = true);
         void setEnableChangeHighlighting(bool b) noexcept;

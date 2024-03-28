@@ -16,7 +16,7 @@ namespace S2Plugin
 
     struct LoggerField
     {
-        size_t memoryOffset;
+        size_t memoryAddr;
         std::string name;
         MemoryFieldType type;
         QColor color;

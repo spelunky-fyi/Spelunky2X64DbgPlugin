@@ -98,7 +98,7 @@ void S2Plugin::TableViewLogger::dropEvent(QDropEvent* event)
         }
     }
     field.uuid = QUuid::createUuid().toString().toStdString();
-    field.memoryOffset = j[gsJSONDragDropMemoryField_Offset].get<uint64_t>();
+    field.memoryAddr = j[gsJSONDragDropMemoryField_Address].get<uint64_t>();
     field.name = j[gsJSONDragDropMemoryField_UID].get<std::string>();
     field.color = defaultColors[fieldsModel->rowCount() % defaultColors.size()];
 

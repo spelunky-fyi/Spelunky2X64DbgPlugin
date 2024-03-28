@@ -10,10 +10,10 @@ namespace S2Plugin
     template <typename T>
     struct StdBasicString
     {
-        StdBasicString(size_t addr) : offset(addr){};
+        StdBasicString(size_t addr) : addr(addr){};
         size_t size() const
         {
-            return Script::Memory::ReadQword(offset + 0x10);
+            return Script::Memory::ReadQword(addr + 0x10);
         }
         size_t lenght() const
         {
@@ -21,7 +21,7 @@ namespace S2Plugin
         }
         size_t capacity() const
         {
-            return Script::Memory::ReadQword(offset + 0x18);
+            return Script::Memory::ReadQword(addr + 0x18);
         }
         size_t begin() const
         {
@@ -40,19 +40,19 @@ namespace S2Plugin
             // test if string is in SSO mode (Short String Optimization)
             // note: this is implementation specific, for std::string MSVC the capacity will be 15, for clang it might be as high as 22
             if (capacity() > std::basic_string<T>{}.capacity())
-                return Script::Memory::ReadQword(offset);
+                return Script::Memory::ReadQword(addr);
 
-            return offset;
+            return addr;
         }
         std::basic_string<T> get_string() const
         {
-            size_t string_offset = string_ptr();
+            size_t string_addr = string_ptr();
             size_t string_lenght = lenght();
             std::basic_string<T> buffer;
             buffer.resize(string_lenght);
             if (string_lenght != 0)
             {
-                Script::Memory::Read(string_offset, buffer.data(), string_lenght * sizeof(T), nullptr);
+                Script::Memory::Read(string_addr, buffer.data(), string_lenght * sizeof(T), nullptr);
             }
             return buffer;
         }
@@ -73,7 +73,7 @@ namespace S2Plugin
         }
 
       private:
-        size_t offset;
+        uintptr_t addr;
     };
 
     using StdString = StdBasicString<char>;

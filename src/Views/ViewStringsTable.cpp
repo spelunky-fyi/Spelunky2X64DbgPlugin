@@ -70,7 +70,7 @@ void S2Plugin::ViewStringsTable::reload()
     for (size_t idx = 0; idx < stringTable.count(); ++idx)
     {
         QStandardItem* fieldID = new QStandardItem(QString::number(idx));
-        auto offset = stringTable.offsetForIndex(idx);
+        auto offset = stringTable.addressOfIndex(idx);
         QStandardItem* fieldTableOfset = new QStandardItem(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", offset));
         fieldTableOfset->setData(offset, gsRoleRawValue);
         auto stringOffset = Script::Memory::ReadQword(offset);

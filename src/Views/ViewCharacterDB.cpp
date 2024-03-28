@@ -124,8 +124,8 @@ void S2Plugin::ViewCharacterDB::initializeUI()
     mMainTreeView->setVisible(true);
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
@@ -176,7 +176,7 @@ void S2Plugin::ViewCharacterDB::searchFieldCompleterActivated(const QString& tex
 void S2Plugin::ViewCharacterDB::showIndex(uint8_t index)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
-    auto offset = Spelunky2::get()->get_CharacterDB().offsetFromIndex(index);
+    auto offset = Spelunky2::get()->get_CharacterDB().addressOfIndex(index);
     mMainTreeView->updateTree(offset);
 }
 
@@ -185,8 +185,8 @@ void S2Plugin::ViewCharacterDB::label()
     auto model = mMainTreeView->model();
     std::string name = "[UNKNOWN_CHARACTER]";
     auto& characterDB = Spelunky2::get()->get_CharacterDB();
-    auto offset = characterDB.offsetFromIndex(0); // ptr
-    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryOffset).toULongLong();
+    auto offset = characterDB.addressOfIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
     size_t index = (indexOffset - offset) / characterDB.characterSize();
     if (index < characterDB.charactersCount())
     {
@@ -247,7 +247,7 @@ void S2Plugin::ViewCharacterDB::populateComparisonTableWidget()
         const auto& name = characterDB.characterNamesStringList().at(x);
         mCompareTableWidget->setItem(row, 1, new QTableWidgetItem(QString("<font color='blue'><u>%1</u></font>").arg(name)));
 
-        auto [caption, value] = DB::valueForField(comboboxData, characterDB.offsetFromIndex(x));
+        auto [caption, value] = DB::valueForField(comboboxData, characterDB.addressOfIndex(x));
         auto item = new TableWidgetItemNumeric(caption);
         item->setData(Qt::UserRole, value);
         mCompareTableWidget->setItem(row, 2, item);
@@ -269,7 +269,7 @@ void S2Plugin::ViewCharacterDB::populateComparisonTreeWidget()
     std::unordered_map<std::string, std::unordered_set<uint32_t>> groupedValues; // valueString -> set<character id's>
     for (uint32_t x = 0; x < characterDB.charactersCount(); ++x)
     {
-        auto [caption, value] = DB::valueForField(comboboxData, characterDB.offsetFromIndex(x));
+        auto [caption, value] = DB::valueForField(comboboxData, characterDB.addressOfIndex(x));
         auto captionStr = caption.toStdString();
         rootValues[captionStr] = value;
 

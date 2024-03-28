@@ -15,12 +15,12 @@ namespace S2Plugin
         {
             return (ptr != 0);
         }
-        // returns offset in the table, not offset for the string itself
-        uintptr_t offsetForIndex(uint32_t idx) const
+        // returns address in the table, not address for the string itself
+        uintptr_t addressOfIndex(uint32_t idx) const
         {
             return ptr + idx * sizeof(uintptr_t);
         }
-        uintptr_t stringOffsetForIndex(uint32_t idx) const;
+        uintptr_t stringaddressOfIndex(uint32_t idx) const;
         size_t count() const
         {
             return size;
