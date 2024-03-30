@@ -389,21 +389,22 @@ void S2Plugin::TreeViewMemoryFields::updateTree(uintptr_t newAddr, uintptr_t new
 // this would be much better as lambda function, but lamba with templates is C++20 thing
 // hope that the compiler can inline and optimise all of this 🙏
 template <typename T>
-inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryOffset, QStandardItem* itemValue, const char* valueFormat, QStandardItem* itemValueHex, bool isPointer,
+inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryAddress, QStandardItem* itemValue, const char* valueFormat, QStandardItem* itemValueHex, bool isPointer,
                                     const char* hexFormat, bool updateBackground, bool resetBackgroundToTransparent, QColor& background)
 {
     std::optional<T> value;
-    if (memoryOffset == 0)
+    if (memoryAddress == 0)
     {
         itemValue->setData("", Qt::DisplayRole);
         if (!isPointer)
             itemValueHex->setData("", Qt::DisplayRole);
 
         itemValue->setData(QVariant{}, S2Plugin::gsRoleRawValue);
+        itemField->setBackground(Qt::transparent);
     }
     else
     {
-        T valueTmp = S2Plugin::Read<T>(memoryOffset);
+        T valueTmp = S2Plugin::Read<T>(memoryAddress);
         value = valueTmp;
         auto data = itemValue->data(S2Plugin::gsRoleRawValue);
         T valueOld = data.value<T>();
@@ -1068,6 +1069,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             char buffer[1024] = {0};
             if (valueMemoryOffset == 0)
             {
+                itemField->setBackground(Qt::transparent);
                 itemValue->setData("", Qt::DisplayRole);
                 if (!isPointer)
                     itemValueHex->setData("", Qt::DisplayRole);
@@ -1137,6 +1139,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             char buffer[1024] = {0};
             if (valueMemoryOffset == 0)
             {
+                itemField->setBackground(Qt::transparent);
                 itemValue->setData("", Qt::DisplayRole);
                 if (!isPointer)
                     itemValueHex->setData("", Qt::DisplayRole);
@@ -1590,6 +1593,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             std::optional<std::string> comparisonStringValue;
             if (valueMemoryOffset == 0)
             {
+                itemField->setBackground(Qt::transparent);
                 itemValue->setData("", Qt::DisplayRole);
                 if (!isPointer)
                     itemValueHex->setData("", Qt::DisplayRole);
@@ -1649,6 +1653,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             std::optional<std::u16string> comparisonStringValue;
             if (valueMemoryOffset == 0)
             {
+                itemField->setBackground(Qt::transparent);
                 itemValue->setData("", Qt::DisplayRole);
                 if (!isPointer)
                     itemValueHex->setData("", Qt::DisplayRole);
@@ -1848,6 +1853,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         {
             std::optional<size_t> value;
             // we use the size to check if it was changed
+            // TODO: don't use updateField, make struct with two size_t values for comparison and hold (will also be needed for std::list)
             value = updateField<size_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x8, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
             if (value.has_value())
             {

@@ -37,7 +37,7 @@ namespace S2Plugin
             dprintf("[ReadConstBasicString] read (bytes): %d expected: %d\n", read_size, size * char_size);
         return str;
     }
-    static std::string ReadConstString(uintptr_t addr)
+    inline std::string ReadConstString(uintptr_t addr)
     {
         return ReadConstBasicString<char>(addr);
     }
