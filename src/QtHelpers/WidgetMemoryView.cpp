@@ -6,8 +6,8 @@
 #include <QPainter>
 #include <QToolTip>
 
-static const uint32_t gsMarginHor = 10;
-static const uint32_t gsMarginVer = 5;
+static constexpr uint32_t gsMarginHor = 10;
+static constexpr uint32_t gsMarginVer = 5;
 
 S2Plugin::WidgetMemoryView::WidgetMemoryView(QWidget* parent) : QWidget(parent)
 {
@@ -25,11 +25,12 @@ void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
         painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
         painter.setFont(mFont);
 
-        mToolTipRects.clear();
+        // mToolTipRects.clear();
         painter.setBrush(Qt::black);
         uint32_t x = gsMarginHor;
         uint32_t y = gsMarginVer + mTextAdvance.height();
         uint32_t index = 0;
+        bool addToolTips = mToolTipRects.empty();
         for (size_t opCounter = mOffset; opCounter < (mOffset + mSize); ++opCounter)
         {
             // paint highlighted fields
@@ -41,12 +42,14 @@ void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
                     auto rect = QRect(x, y - mTextAdvance.height() + 5, field.size * mTextAdvance.width() + ((field.size - 1) * mSpaceAdvance), mTextAdvance.height() - 2);
                     painter.setBrush(field.color);
                     painter.drawRoundedRect(rect, 4.0, 4.0);
-                    mToolTipRects.emplace_back(ToolTipRect{rect, field.tooltip});
+                    if (addToolTips)
+                        mToolTipRects.emplace_back(ToolTipRect{rect, QString::fromStdString(field.tooltip)});
                 }
             }
 
             // paint hex values
             painter.setPen(QPen(Qt::SolidLine));
+            // TODO: don't read on refresh rate
             auto str = QString("%1").arg(Script::Memory::ReadByte(opCounter), 2, 16, QChar('0'));
             painter.drawText(x, y, str);
             x += mTextAdvance.width() + mSpaceAdvance;
@@ -88,19 +91,20 @@ void S2Plugin::WidgetMemoryView::clearHighlights()
     update();
 }
 
-void S2Plugin::WidgetMemoryView::addHighlightedField(const std::string& tooltip, size_t offset, size_t size, const QColor& color)
+void S2Plugin::WidgetMemoryView::addHighlightedField(std::string tooltip, size_t offset, size_t size, QColor color)
 {
-    mHighlightedFields.emplace_back(HighlightedField{tooltip, offset, size, color});
+    mHighlightedFields.emplace_back(std::move(tooltip), offset, size, std::move(color));
 }
 
 void S2Plugin::WidgetMemoryView::mouseMoveEvent(QMouseEvent* event)
 {
+    auto pos = event->pos();
     for (const auto& ttr : mToolTipRects)
     {
-        auto pos = event->pos();
         if (ttr.rect.contains(pos))
         {
-            QToolTip::showText(mapToGlobal(pos), QString::fromStdString(ttr.tooltip));
+            QToolTip::showText(mapToGlobal(pos), ttr.tooltip);
+            return;
         }
     }
 }

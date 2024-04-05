@@ -1,36 +1,46 @@
 #pragma once
 
+#include <QStandardItemModel>
 #include <QString>
 #include <cstdint>
-#include <unordered_map>
+#include <string>
 
 namespace S2Plugin
 {
-    struct Configuration;
-
-    struct StringEntry
-    {
-        uint32_t id;
-        size_t stringTableOffset; // pointer into the strings table
-        size_t memoryOffset;      // pointer to the string itself
-        QString str;
-    };
-
     class StringsTable
     {
       public:
-        explicit StringsTable(Configuration* config);
-        bool loadStringsTable();
-
-        const std::unordered_map<uint32_t, StringEntry>& entries();
-        StringEntry entryForID(uint32_t id);
-        QString nameForID(uint32_t id);
-
-        void reset();
+        QString stringForIndex(uint32_t idx) const;
+        bool isValid() const
+        {
+            return (ptr != 0);
+        }
+        // returns address in the table, not address for the string itself
+        uintptr_t addressOfIndex(uint32_t idx) const
+        {
+            return ptr + idx * sizeof(uintptr_t);
+        }
+        uintptr_t stringaddressOfIndex(uint32_t idx) const;
+        size_t count() const
+        {
+            return size;
+        }
+        QStandardItemModel* modelCache() const
+        {
+            return const_cast<QStandardItemModel*>(&cache);
+        }
 
       private:
-        Configuration* mConfiguration;
-        size_t mStringsTablePtr = 0;
-        std::unordered_map<uint32_t, StringEntry> mStringEntries;
+        uintptr_t ptr{0};
+        size_t size{0};
+        // Use the model as cache
+        QStandardItemModel cache;
+
+        StringsTable(){};
+        ~StringsTable(){};
+        StringsTable(const StringsTable&) = delete;
+        StringsTable& operator=(const StringsTable&) = delete;
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

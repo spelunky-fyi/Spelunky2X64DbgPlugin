@@ -1,7 +1,7 @@
 #include "Views/ViewThreads.h"
 #include "Configuration.h"
 #include "Data/State.h"
-#include "QtHelpers/StyledItemDelegateHTML.h"
+#include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QHeaderView>
@@ -12,6 +12,10 @@ static const uint32_t gsColTEBAddress = 1;
 static const uint32_t gsColStateAddress = 2;
 
 static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
+
+// TODO review (crashes)
+
+// TODO: check for null in click event, add more columns, add spel2 function to get ptr based on the different heapbase
 
 S2Plugin::ViewThreads::ViewThreads(ViewToolbar* toolbar) : QWidget(toolbar), mToolbar(toolbar)
 {
@@ -42,9 +46,8 @@ void S2Plugin::ViewThreads::initializeUI()
     mMainTable->horizontalHeader()->setStretchLastSection(true);
     mMainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mMainTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
-    mMainTable->setItemDelegate(mHTMLDelegate.get());
-    mHTMLDelegate->setCenterVertically(true);
+    mMainTable->setItemDelegate(&mHTMLDelegate);
+    mHTMLDelegate.setCenterVertically(true);
     QObject::connect(mMainTable, &QTableWidget::cellClicked, this, &ViewThreads::cellClicked);
 
     mMainLayout->addWidget(mMainTable);
@@ -52,9 +55,6 @@ void S2Plugin::ViewThreads::initializeUI()
 
 void S2Plugin::ViewThreads::refreshThreads()
 {
-    auto mainState = mToolbar->state();
-    auto heapOffset = mainState->heapOffset();
-    auto tebOffset = mainState->TEBOffset();
     auto feedCodeOffset = 0x60;
 
     mMainTable->clear();
@@ -100,12 +100,12 @@ void S2Plugin::ViewThreads::refreshThreads()
             continue;
         }
         auto tebAddress11Value = Script::Memory::ReadQword(tebAddress11Ptr);
-        auto heapBase = Script::Memory::ReadQword(tebAddress11Value + tebOffset);
+        auto heapBase = Script::Memory::ReadQword(tebAddress11Value + TEB_offset);
         if (!Script::Memory::IsValidPtr(heapBase))
         {
             continue;
         }
-        auto statePtr = heapBase + heapOffset;
+        auto statePtr = heapBase + 0x4A0; // hardcode for now
         if (!Script::Memory::IsValidPtr(statePtr))
         {
             continue;
@@ -152,9 +152,7 @@ void S2Plugin::ViewThreads::cellClicked(int row, int column)
     }
     else if (column == gsColStateAddress)
     {
-        auto threadState = std::make_unique<State>(mToolbar->configuration());
-        threadState->loadThreadSpecificState(clickedItem->data(gsRoleMemoryAddress).toULongLong());
-        mToolbar->showState(threadState.get());
-        mThreadStates.emplace_back(std::move(threadState));
+        auto statePtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+        mToolbar->showState(statePtr);
     }
 }

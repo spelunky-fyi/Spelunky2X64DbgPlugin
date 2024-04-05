@@ -8,6 +8,7 @@
 #endif // PLUGIN_NAME
 #define PLUGIN_VERSION 16
 
+#include <string>
 #include <windows.h>
 
 #include "pluginsdk/_plugins.h"
@@ -70,3 +71,6 @@ namespace S2Plugin
     extern int hMenuDump;
     extern int hMenuStack;
 } // namespace S2Plugin
+
+void displayError(const char* fmt, ...);
+void displayError(std::string message);

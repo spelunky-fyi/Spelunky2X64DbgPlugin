@@ -1,7 +1,7 @@
 #include "QtHelpers/ItemModelLoggerFields.h"
+#include "Configuration.h"
 #include "Data/Logger.h"
 #include "QtHelpers/TableViewLogger.h"
-#include "Spelunky2.h"
 
 S2Plugin::ItemModelLoggerFields::ItemModelLoggerFields(Logger* logger, QObject* parent) : QAbstractItemModel(parent), mLogger(logger) {}
 
@@ -23,7 +23,7 @@ QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int rol
             }
             case gsLogFieldColMemoryOffset:
             {
-                return QString::asprintf("0x%016llX", field.memoryOffset);
+                return QString::asprintf("0x%016llX", field.memoryAddr);
             }
             case gsLogFieldColFieldName:
             {
@@ -31,7 +31,8 @@ QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int rol
             }
             case gsLogFieldColFieldType:
             {
-                return QString::fromStdString(gsMemoryFieldTypeToStringMapping.at(field.type));
+                auto str = Configuration::getTypeDisplayName(field.type);
+                return QString::fromUtf8(str.data(), str.size());
             }
         }
     }

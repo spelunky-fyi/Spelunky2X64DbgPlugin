@@ -10,15 +10,14 @@
 
 namespace S2Plugin
 {
-    struct MemoryField;
-    struct ViewToolbar;
-    struct TreeViewMemoryFields;
+    class ViewToolbar;
+    class TreeViewMemoryFields;
 
     class ViewStdMap : public QWidget
     {
         Q_OBJECT
       public:
-        ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, size_t vectorOffset, QWidget* parent = nullptr);
+        ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -35,23 +34,19 @@ namespace S2Plugin
       private:
         std::string mMapKeyType;
         std::string mMapValueType;
-        size_t mmapOffset;
+        uintptr_t mmapOffset;
         size_t mMapKeyTypeSize;
         size_t mMapValueTypeSize;
         uint8_t mMapKeyAlignment;
         uint8_t mMapValueAlignment;
-        // MemoryField, offset, parrent
-        std::vector<std::tuple<MemoryField, size_t, QStandardItem*>> mMemoryFields;
 
         QVBoxLayout* mMainLayout;
         TreeViewMemoryFields* mMainTreeView;
-        ViewToolbar* mToolbar;
         QPushButton* mRefreshDataButton;
         QCheckBox* mAutoRefreshCheckBox;
         QLineEdit* mAutoRefreshIntervalLineEdit;
         std::unique_ptr<QTimer> mAutoRefreshTimer;
 
-        void initializeTreeView();
         void initializeRefreshLayout();
     };
 } // namespace S2Plugin

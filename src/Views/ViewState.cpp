@@ -1,7 +1,6 @@
 #include "Views/ViewState.h"
 #include "Configuration.h"
 #include "Data/EntityDB.h"
-#include "Data/EntityList.h"
 #include "Data/State.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
@@ -11,24 +10,23 @@
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewState::ViewState(ViewToolbar* toolbar, State* state, QWidget* parent) : QWidget(parent), mToolbar(toolbar), mState(state)
+S2Plugin::ViewState::ViewState(ViewToolbar* toolbar, uintptr_t state, QWidget* parent) : QWidget(parent), mToolbar(toolbar), mState(state)
 {
     initializeUI();
     setWindowIcon(QIcon(":/icons/caveman.png"));
     setWindowTitle("State");
-    refreshState();
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     toggleAutoRefresh(Qt::Checked);
 }
 
 void S2Plugin::ViewState::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mRefreshLayout = new QHBoxLayout(this);
+    mMainLayout = new QVBoxLayout();
+    mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
     mRefreshButton = new QPushButton("Refresh", this);
@@ -58,13 +56,10 @@ void S2Plugin::ViewState::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewState::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, mState, this);
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::State))
-    {
-        mMainTreeView->addMemoryField(field, "State." + field.name);
-    }
-    mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
+    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::State), "State", mState);
+
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);
 
     mMainTreeView->setColumnWidth(gsColValue, 250);
@@ -82,13 +77,12 @@ void S2Plugin::ViewState::closeEvent(QCloseEvent* event)
 
 void S2Plugin::ViewState::refreshState()
 {
-    mState->refreshOffsets();
-    auto& offsets = mState->offsets();
-    auto deltaReference = offsets.at("State.p00");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::State))
-    {
-        mMainTreeView->updateValueForField(field, "State." + field.name, offsets, deltaReference);
-    }
+    mMainTreeView->updateTree();
+}
+
+void S2Plugin::ViewState::autoRefreshTimerTrigger()
+{
+    mMainTreeView->updateTree();
 }
 
 void S2Plugin::ViewState::toggleAutoRefresh(int newState)
@@ -114,11 +108,6 @@ void S2Plugin::ViewState::autoRefreshIntervalChanged(const QString& text)
     }
 }
 
-void S2Plugin::ViewState::autoRefreshTimerTrigger()
-{
-    refreshState();
-}
-
 QSize S2Plugin::ViewState::sizeHint() const
 {
     return QSize(750, 1050);
@@ -131,8 +120,5 @@ QSize S2Plugin::ViewState::minimumSizeHint() const
 
 void S2Plugin::ViewState::label()
 {
-    for (const auto& [fieldName, offset] : mState->offsets())
-    {
-        DbgSetAutoLabelAt(offset, fieldName.c_str());
-    }
+    mMainTreeView->labelAll();
 }

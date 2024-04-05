@@ -1,6 +1,6 @@
 #include "QtHelpers/WidgetSamplesPlot.h"
+#include "Configuration.h"
 #include "Data/Logger.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QFont>
 #include <QFontMetrics>
@@ -35,8 +35,8 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
 
         auto [lowerBound, upperBound] = mLogger->sampleBounds(field);
         const auto& samples = mLogger->samplesForField(field.uuid);
-        size_t x = 0;
-        uint16_t mappedY;
+        int x = 0;
+        uint16_t mappedY = 0;
         uint16_t prevX = 0, prevY = 0;
         bool first = true;
         for (const auto& sample : samples)
@@ -70,17 +70,17 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
                     break;
                 }
                 case MemoryFieldType::Dword:
+                case MemoryFieldType::TextureDBID:
+                case MemoryFieldType::EntityUID:
+                case MemoryFieldType::State32:
                 {
                     mappedY = ((std::any_cast<int32_t>(sample) - lowerBound) / (float)(upperBound - lowerBound)) * drawHeight;
                     break;
                 }
                 case MemoryFieldType::UnsignedDword:
                 case MemoryFieldType::Flags32:
-                case MemoryFieldType::State32:
                 case MemoryFieldType::EntityDBID:
-                case MemoryFieldType::EntityUID:
                 case MemoryFieldType::ParticleDBID:
-                case MemoryFieldType::TextureDBID:
                 case MemoryFieldType::StringsTableID:
                 {
                     mappedY = ((std::any_cast<uint32_t>(sample) - lowerBound) / (float)(upperBound - lowerBound)) * drawHeight;
@@ -89,6 +89,11 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
                 case MemoryFieldType::Float:
                 {
                     mappedY = ((std::any_cast<float>(sample) - lowerBound) / (float)(upperBound - lowerBound)) * drawHeight;
+                    break;
+                }
+                case MemoryFieldType::Double:
+                {
+                    mappedY = ((std::any_cast<double>(sample) - lowerBound) / (double)(upperBound - lowerBound)) * drawHeight;
                     break;
                 }
                 case MemoryFieldType::Qword:
@@ -124,8 +129,8 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
         painter.setPen(Qt::cyan);
         painter.drawLine(mCurrentMousePos.x(), 0, mCurrentMousePos.x(), paintBounds.height());
 
-        int64_t sampleIndex = mCurrentMousePos.x() - gsPlotMargin;
-        if (sampleIndex >= 0 && sampleIndex < mLogger->sampleCount())
+        int64_t sampleIndex = static_cast<int64_t>(mCurrentMousePos.x()) - gsPlotMargin;
+        if (sampleIndex >= 0 && sampleIndex < static_cast<int64_t>(mLogger->sampleCount()))
         {
             auto scrollArea = qobject_cast<QScrollArea*>(parent()->parent());
             auto drawOnLeftSide = (scrollArea->mapFromGlobal(QCursor::pos()).x() > (scrollArea->width() / 2));
@@ -177,17 +182,17 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
                         break;
                     }
                     case MemoryFieldType::Dword:
+                    case MemoryFieldType::TextureDBID:
+                    case MemoryFieldType::EntityUID:
+                    case MemoryFieldType::State32:
                     {
                         caption = QString("%1 (%2)").arg(std::any_cast<int32_t>(sample)).arg(QString::fromStdString(field.name));
                         break;
                     }
                     case MemoryFieldType::UnsignedDword:
                     case MemoryFieldType::Flags32:
-                    case MemoryFieldType::State32:
                     case MemoryFieldType::EntityDBID:
-                    case MemoryFieldType::EntityUID:
                     case MemoryFieldType::ParticleDBID:
-                    case MemoryFieldType::TextureDBID:
                     case MemoryFieldType::StringsTableID:
                     {
                         caption = QString("%1 (%2)").arg(std::any_cast<uint32_t>(sample)).arg(QString::fromStdString(field.name));
@@ -196,6 +201,11 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
                     case MemoryFieldType::Float:
                     {
                         caption = QString("%1 (%2)").arg(std::any_cast<float>(sample)).arg(QString::fromStdString(field.name));
+                        break;
+                    }
+                    case MemoryFieldType::Double:
+                    {
+                        caption = QString("%1 (%2)").arg(std::any_cast<double>(sample)).arg(QString::fromStdString(field.name));
                         break;
                     }
                     case MemoryFieldType::Qword:

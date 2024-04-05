@@ -1,6 +1,5 @@
 #include "Views/ViewJournalPage.h"
 #include "Configuration.h"
-#include "Data/JournalPage.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
@@ -9,21 +8,17 @@
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewJournalPage::ViewJournalPage(ViewToolbar* toolbar, size_t offset, const std::string& pageType, QWidget* parent) : QWidget(parent), mOffset(offset), mPageType(pageType), mToolbar(toolbar)
+S2Plugin::ViewJournalPage::ViewJournalPage(ViewToolbar* toolbar, uintptr_t offset, const std::string& pageType, QWidget* parent)
+    : QWidget(parent), mOffset(offset), mPageType(pageType), mToolbar(toolbar)
 {
-    mJournalPage = std::make_unique<JournalPage>(mToolbar->configuration(), mOffset, mPageType);
-
     initializeUI();
     setWindowIcon(QIcon(":/icons/caveman.png"));
     setWindowTitle("JournalPage");
 
-    mMainTreeView->setMemoryMappedData(mJournalPage.get());
-
-    refreshJournalPage();
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     toggleAutoRefresh(Qt::Checked);
 }
@@ -59,6 +54,8 @@ void S2Plugin::ViewJournalPage::initializeUI()
 
     mRefreshLayout->addWidget(new QLabel("Interpret as:", this));
     mInterpretAsComboBox = new QComboBox(this);
+    // TODO get from json
+    // also, guess page by the vtable
     mInterpretAsComboBox->addItem("JournalPage");
     mInterpretAsComboBox->addItem("JournalPageProgress");
     mInterpretAsComboBox->addItem("JournalPageJournalMenu");
@@ -83,13 +80,9 @@ void S2Plugin::ViewJournalPage::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewJournalPage::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, mJournalPage.get(), this);
-    for (const auto& field : mToolbar->configuration()->typeFieldsOfInlineStruct(mPageType))
-    {
-        mMainTreeView->addMemoryField(field, mPageType + "." + field.name);
-    }
-    mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
+    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(mPageType), mPageType, mOffset);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);
 
     mMainTreeView->setColumnWidth(gsColValue, 250);
@@ -107,13 +100,7 @@ void S2Plugin::ViewJournalPage::closeEvent(QCloseEvent* event)
 
 void S2Plugin::ViewJournalPage::refreshJournalPage()
 {
-    mJournalPage->refreshOffsets();
-    auto& offsets = mJournalPage->offsets();
-    auto deltaReference = offsets.at(mPageType + ".__vftable");
-    for (const auto& field : mToolbar->configuration()->typeFieldsOfInlineStruct(mPageType))
-    {
-        mMainTreeView->updateValueForField(field, mPageType + "." + field.name, offsets, deltaReference);
-    }
+    mMainTreeView->updateTree();
 }
 
 void S2Plugin::ViewJournalPage::toggleAutoRefresh(int newState)
@@ -156,29 +143,19 @@ QSize S2Plugin::ViewJournalPage::minimumSizeHint() const
 
 void S2Plugin::ViewJournalPage::label()
 {
-    for (const auto& [fieldName, offset] : mJournalPage->offsets())
-    {
-        DbgSetAutoLabelAt(offset, fieldName.c_str());
-    }
+    mMainTreeView->labelAll();
 }
 
 void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
 {
     if (!text.isEmpty())
     {
-        auto textStr = text.toStdString();
-        mJournalPage->interpretAs(textStr);
-        mPageType = textStr;
+        mPageType = text.toStdString();
         mMainTreeView->clear();
-        for (const auto& field : mToolbar->configuration()->typeFieldsOfInlineStruct(mPageType))
-        {
-            mMainTreeView->addMemoryField(field, mPageType + "." + field.name);
-        }
-        mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-        mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
+        mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(mPageType), mPageType, mOffset);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
-        refreshJournalPage();
-        mInterpretAsComboBox->setCurrentText("");
+        mMainTreeView->updateTree(0, 0, true);
+        // mInterpretAsComboBox->setCurrentText("");
     }
 }

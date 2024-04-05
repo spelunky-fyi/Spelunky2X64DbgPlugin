@@ -1,52 +1,50 @@
 #include "Views/ViewParticleDB.h"
 #include "Configuration.h"
-#include "Data/ParticleDB.h"
-#include "Data/ParticleEmittersList.h"
-#include "QtHelpers/StyledItemDelegateHTML.h"
+#include "QtHelpers/DatabaseHelper.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
-#include "pluginmain.h"
-#include <QCloseEvent>
+#include <QCheckBox>
+#include <QCompleter>
 #include <QHeaderView>
-#include <QLineEdit>
 #include <QPushButton>
-#include <QTreeWidgetItem>
+#include <QVBoxLayout>
 
-S2Plugin::ViewParticleDB::ViewParticleDB(ViewToolbar* toolbar, size_t index, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewParticleDB::ViewParticleDB(ViewToolbar* toolbar, uint32_t id, QWidget* parent) : QWidget(parent)
 {
+    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
     setWindowIcon(QIcon(":/icons/caveman.png"));
-    setWindowTitle(QString("Particle DB (%1 particles)").arg(mToolbar->particleDB()->particleEmittersList()->count()));
-    showIndex(index);
+    setWindowTitle(QString("Particle DB (%1 particles)").arg(Configuration::get()->particleEmittersList().count()));
+    showID(id);
 }
 
 void S2Plugin::ViewParticleDB::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    auto mainLayout = new QVBoxLayout();
+    mainLayout->setMargin(5);
+    setLayout(mainLayout);
 
-    mMainTabWidget = new QTabWidget(this);
+    mMainTabWidget = new QTabWidget();
     mMainTabWidget->setDocumentMode(false);
-    mMainLayout->addWidget(mMainTabWidget);
+    mainLayout->addWidget(mMainTabWidget);
 
     mTabLookup = new QWidget();
     mTabCompare = new QWidget();
-    mTabLookup->setLayout(new QVBoxLayout(mTabLookup));
+    mTabLookup->setLayout(new QVBoxLayout());
     mTabLookup->layout()->setMargin(10);
     mTabLookup->setObjectName("lookupwidget");
     mTabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
-    mTabCompare->setLayout(new QVBoxLayout(mTabCompare));
+    mTabCompare->setLayout(new QVBoxLayout());
     mTabCompare->layout()->setMargin(10);
     mTabCompare->setObjectName("comparewidget");
     mTabCompare->setStyleSheet("QWidget#comparewidget {border: 1px solid #999;}");
 
     mMainTabWidget->addTab(mTabLookup, "Lookup");
     mMainTabWidget->addTab(mTabCompare, "Compare");
-
+    auto config = Configuration::get();
     // LOOKUP
     {
         auto topLayout = new QHBoxLayout();
@@ -56,11 +54,11 @@ void S2Plugin::ViewParticleDB::initializeUI()
         topLayout->addWidget(mSearchLineEdit);
         QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &ViewParticleDB::searchFieldReturnPressed);
         mSearchLineEdit->setVisible(false);
-        mParticleNameCompleter = new QCompleter(mToolbar->particleDB()->particleEmittersList()->names(), this);
-        mParticleNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-        mParticleNameCompleter->setFilterMode(Qt::MatchContains);
-        QObject::connect(mParticleNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewParticleDB::searchFieldCompleterActivated);
-        mSearchLineEdit->setCompleter(mParticleNameCompleter);
+        auto particleNameCompleter = new QCompleter(config->particleEmittersList().names(), this);
+        particleNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+        particleNameCompleter->setFilterMode(Qt::MatchContains);
+        QObject::connect(particleNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewParticleDB::searchFieldCompleterActivated);
+        mSearchLineEdit->setCompleter(particleNameCompleter);
 
         auto labelButton = new QPushButton("Label", this);
         QObject::connect(labelButton, &QPushButton::clicked, this, &ViewParticleDB::label);
@@ -68,56 +66,23 @@ void S2Plugin::ViewParticleDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
-        mMainTreeView = new TreeViewMemoryFields(mToolbar, mToolbar->particleDB(), this);
         mMainTreeView->setEnableChangeHighlighting(false);
-        for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::ParticleDB))
-        {
-            mMainTreeView->addMemoryField(field, "ParticleDB." + field.name);
-        }
+        mMainTreeView->addMemoryFields(config->typeFields(MemoryFieldType::ParticleDB), "ParticleDB", 0);
+
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &ViewParticleDB::fieldUpdated);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &ViewParticleDB::fieldExpanded);
         mTabLookup->layout()->addWidget(mMainTreeView);
-        mMainTreeView->setColumnWidth(gsColValue, 250);
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
-        mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-        mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
     }
 
     // COMPARE
     {
         auto topLayout = new QHBoxLayout();
         mCompareFieldComboBox = new QComboBox(this);
-        mCompareFieldComboBox->addItem(QString::fromStdString(""), QVariant::fromValue(QString::fromStdString("")));
-        for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::ParticleDB))
-        {
-            switch (field.type)
-            {
-                case MemoryFieldType::Skip:
-                    continue;
-                case MemoryFieldType::Flags32:
-                case MemoryFieldType::Flags16:
-                case MemoryFieldType::Flags8:
-                {
-                    mCompareFieldComboBox->addItem(QString::fromStdString(field.name), QVariant::fromValue(field));
-                    uint8_t flagCount = (field.type == MemoryFieldType::Flags16 ? 16 : (field.type == MemoryFieldType::Flags8 ? 8 : 32));
-                    for (uint8_t x = 1; x <= flagCount; ++x)
-                    {
-                        MemoryField flagField;
-                        flagField.name = field.name;
-                        flagField.type = MemoryFieldType::Flag;
-                        flagField.extraInfo = x - 1;
-                        flagField.comment = std::to_string(flagCount); // abuse the comment field to transmit the size to fetch
-                        mCompareFieldComboBox->addItem(QString::fromStdString(field.name + ".flag_" + std::to_string(x)), QVariant::fromValue(flagField));
-                    }
-                    break;
-                }
-                default:
-                {
-                    mCompareFieldComboBox->addItem(QString::fromStdString(field.name), QVariant::fromValue(field));
-                    break;
-                }
-            }
-        }
+        mCompareFieldComboBox->addItem(QString::fromStdString(""), QVariant{});
+        DB::populateComparisonCombobox(mCompareFieldComboBox, config->typeFields(MemoryFieldType::ParticleDB));
+
         QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &ViewParticleDB::comparisonFieldChosen);
         topLayout->addWidget(mCompareFieldComboBox);
 
@@ -127,7 +92,7 @@ void S2Plugin::ViewParticleDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabCompare->layout())->addLayout(topLayout);
 
-        mCompareTableWidget = new QTableWidget(mToolbar->particleDB()->particleEmittersList()->count(), 3, this);
+        mCompareTableWidget = new QTableWidget(config->particleEmittersList().count(), 3, this);
         mCompareTableWidget->setAlternatingRowColors(true);
         mCompareTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         mCompareTableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
@@ -140,15 +105,14 @@ void S2Plugin::ViewParticleDB::initializeUI()
         mCompareTableWidget->setColumnWidth(0, 40);
         mCompareTableWidget->setColumnWidth(1, 325);
         mCompareTableWidget->setColumnWidth(2, 150);
-        mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
-        mCompareTableWidget->setItemDelegate(mHTMLDelegate.get());
+        mCompareTableWidget->setItemDelegate(&mHTMLDelegate);
         QObject::connect(mCompareTableWidget, &QTableWidget::cellClicked, this, &ViewParticleDB::comparisonCellClicked);
 
         mCompareTreeWidget = new QTreeWidget(this);
         mCompareTreeWidget->setAlternatingRowColors(true);
         mCompareTreeWidget->headerItem()->setHidden(true);
         mCompareTreeWidget->setHidden(true);
-        mCompareTreeWidget->setItemDelegate(mHTMLDelegate.get());
+        mCompareTreeWidget->setItemDelegate(&mHTMLDelegate);
         QObject::connect(mCompareTreeWidget, &QTreeWidget::itemClicked, this, &ViewParticleDB::groupedComparisonItemClicked);
 
         mTabCompare->layout()->addWidget(mCompareTableWidget);
@@ -159,9 +123,10 @@ void S2Plugin::ViewParticleDB::initializeUI()
     mSearchLineEdit->setFocus();
     mMainTreeView->setVisible(true);
     mMainTreeView->setColumnWidth(gsColField, 125);
+    mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
@@ -185,16 +150,18 @@ void S2Plugin::ViewParticleDB::searchFieldReturnPressed()
     auto text = mSearchLineEdit->text();
     bool isNumeric = false;
     auto enteredID = text.toUInt(&isNumeric);
-    if (isNumeric && enteredID <= mToolbar->particleDB()->particleEmittersList()->highestID())
+    auto& particleEmittersList = Configuration::get()->particleEmittersList();
+
+    if (isNumeric && enteredID <= particleEmittersList.highestID())
     {
-        showIndex(enteredID);
+        showID(enteredID);
     }
     else
     {
-        auto entityID = mToolbar->particleDB()->particleEmittersList()->idForName(text.toStdString());
+        auto entityID = particleEmittersList.idForName(text.toStdString());
         if (entityID != 0)
         {
-            showIndex(entityID);
+            showID(entityID);
         }
     }
 }
@@ -204,25 +171,22 @@ void S2Plugin::ViewParticleDB::searchFieldCompleterActivated(const QString& text
     searchFieldReturnPressed();
 }
 
-void S2Plugin::ViewParticleDB::showIndex(size_t index)
+void S2Plugin::ViewParticleDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
-    mLookupIndex = index;
-    auto& offsets = mToolbar->particleDB()->offsetsForIndex(mLookupIndex);
-    auto deltaReference = offsets.at("ParticleDB.id");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::ParticleDB))
-    {
-        mMainTreeView->updateValueForField(field, "ParticleDB." + field.name, offsets, deltaReference);
-    }
+    uint32_t index = id == 0 ? 0 : id - 1;
+    mMainTreeView->updateTree(Spelunky2::get()->get_ParticleDB().addressOfIndex(index));
 }
 
 void S2Plugin::ViewParticleDB::label()
 {
-    auto particleDB = mToolbar->particleDB();
-    for (const auto& [fieldName, offset] : particleDB->offsetsForIndex(mLookupIndex))
-    {
-        DbgSetAutoLabelAt(offset, (mToolbar->particleDB()->particleEmittersList()->nameForID(mLookupIndex) + "." + fieldName).c_str());
-    }
+    auto model = mMainTreeView->model();
+    auto& particleDB = Spelunky2::get()->get_ParticleDB();
+    auto offset = particleDB.addressOfIndex(0); // ptr
+    uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
+    size_t index = (indexOffset - offset) / particleDB.particleSize();
+    std::string name = '[' + Configuration::get()->particleEmittersList().nameForID(index + 1) + ']';
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewParticleDB::fieldUpdated(const QString& fieldName)
@@ -237,12 +201,7 @@ void S2Plugin::ViewParticleDB::fieldExpanded(const QModelIndex& index)
 
 void S2Plugin::ViewParticleDB::updateFieldValues()
 {
-    auto& offsets = mToolbar->particleDB()->offsetsForIndex(mLookupIndex);
-    auto deltaReference = offsets.at("ParticleDB.id");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::ParticleDB))
-    {
-        mMainTreeView->updateValueForField(field, "ParticleDB." + field.name, offsets, deltaReference);
-    }
+    mMainTreeView->updateTree();
 }
 
 void S2Plugin::ViewParticleDB::compareGroupByCheckBoxClicked(int state)
@@ -270,19 +229,20 @@ void S2Plugin::ViewParticleDB::populateComparisonTableWidget()
 {
     mCompareTableWidget->setSortingEnabled(false);
 
-    auto field = mCompareFieldComboBox->currentData().value<MemoryField>();
-    auto particleDB = mToolbar->particleDB();
+    auto comboboxData = mCompareFieldComboBox->currentData();
+    auto& particleList = Configuration::get()->particleEmittersList();
+    auto& particleDB = Spelunky2::get()->get_ParticleDB();
 
     size_t row = 0;
-    for (auto x = 1; x <= particleDB->particleEmittersList()->count(); ++x)
+    for (auto x = 1; x <= particleList.count(); ++x)
     {
         auto item0 = new QTableWidgetItem(QString::asprintf("%03d", x));
         item0->setTextAlignment(Qt::AlignCenter);
         mCompareTableWidget->setItem(row, 0, item0);
-        auto name = QString::fromStdString(mToolbar->particleDB()->particleEmittersList()->nameForID(x));
+        auto name = QString::fromStdString(particleList.nameForID(x));
         mCompareTableWidget->setItem(row, 1, new QTableWidgetItem(QString("<font color='blue'><u>%1</u></font>").arg(name)));
 
-        auto [caption, value] = valueForField(field, x);
+        auto [caption, value] = DB::valueForField(comboboxData, particleDB.addressOfIndex(x - 1)); // id:1 == index:0
         auto item = new TableWidgetItemNumeric(caption);
         item->setData(Qt::UserRole, value);
         mCompareTableWidget->setItem(row, 2, item);
@@ -297,14 +257,15 @@ void S2Plugin::ViewParticleDB::populateComparisonTreeWidget()
 {
     mCompareTreeWidget->setSortingEnabled(false);
 
-    auto field = mCompareFieldComboBox->currentData().value<MemoryField>();
-    auto particleDB = mToolbar->particleDB();
+    auto comboboxData = mCompareFieldComboBox->currentData();
+    auto& particleDB = Spelunky2::get()->get_ParticleDB();
+    auto& particleEmitters = Configuration::get()->particleEmittersList();
 
     std::unordered_map<std::string, QVariant> rootValues;
     std::unordered_map<std::string, std::unordered_set<uint32_t>> groupedValues; // valueString -> set<particle id's>
-    for (uint32_t x = 1; x <= particleDB->particleEmittersList()->count(); ++x)
+    for (uint32_t x = 1; x <= particleEmitters.count(); ++x)
     {
-        auto [caption, value] = valueForField(field, x);
+        auto [caption, value] = DB::valueForField(comboboxData, particleDB.addressOfIndex(x - 1)); // id:1 == index:0
         auto captionStr = caption.toStdString();
         rootValues[captionStr] = value;
 
@@ -325,7 +286,7 @@ void S2Plugin::ViewParticleDB::populateComparisonTreeWidget()
         mCompareTreeWidget->insertTopLevelItem(0, rootItem);
         for (const auto& particleId : particleIds)
         {
-            auto particleName = mToolbar->particleDB()->particleEmittersList()->nameForID(particleId);
+            auto particleName = particleEmitters.nameForID(particleId);
             auto caption = QString("<font color='blue'><u>%1</u></font>").arg(QString::fromStdString(particleName));
             auto childItem = new QTreeWidgetItem(rootItem, QStringList(caption));
             childItem->setData(0, Qt::UserRole, particleId);
@@ -337,105 +298,13 @@ void S2Plugin::ViewParticleDB::populateComparisonTreeWidget()
     mCompareTreeWidget->sortItems(0, Qt::AscendingOrder);
 }
 
-std::pair<QString, QVariant> S2Plugin::ViewParticleDB::valueForField(const MemoryField& field, size_t particleDBIndex)
-{
-    auto offset = mToolbar->particleDB()->offsetsForIndex(particleDBIndex).at("ParticleDB." + field.name);
-    switch (field.type)
-    {
-        case MemoryFieldType::CodePointer:
-        case MemoryFieldType::DataPointer:
-        {
-            size_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("0x%016llX", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Byte:
-        case MemoryFieldType::State8:
-        {
-            int8_t value = Script::Memory::ReadByte(offset);
-            return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedByte:
-        case MemoryFieldType::Flags8:
-        {
-            uint8_t value = Script::Memory::ReadByte(offset);
-            return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Word:
-        case MemoryFieldType::State16:
-        {
-            int16_t value = Script::Memory::ReadWord(offset);
-            return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedWord:
-        case MemoryFieldType::Flags16:
-        {
-            uint16_t value = Script::Memory::ReadWord(offset);
-            return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Dword:
-        case MemoryFieldType::State32:
-        {
-            int32_t value = Script::Memory::ReadDword(offset);
-            return std::make_pair(QString::asprintf("%ld", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedDword:
-        case MemoryFieldType::Flags32:
-        {
-            uint32_t value = Script::Memory::ReadDword(offset);
-            return std::make_pair(QString::asprintf("%lu", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Qword:
-        {
-            int64_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("%lld", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedQword:
-        {
-            uint64_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("%llu", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Float:
-        {
-            uint32_t dword = Script::Memory::ReadDword(offset);
-            float value = reinterpret_cast<float&>(dword);
-            return std::make_pair(QString::asprintf("%f", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Bool:
-        {
-            auto b = Script::Memory::ReadByte(offset);
-            bool value = reinterpret_cast<bool&>(b);
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(b));
-        }
-        case MemoryFieldType::Flag:
-        {
-            uint8_t flagToCheck = field.extraInfo;
-            bool isFlagSet = false;
-            if (field.comment == "32")
-            {
-                isFlagSet = ((Script::Memory::ReadDword(offset) & (1 << flagToCheck)) > 0);
-            }
-            else if (field.comment == "16")
-            {
-                isFlagSet = ((Script::Memory::ReadWord(offset) & (1 << flagToCheck)) > 0);
-            }
-            else if (field.comment == "8")
-            {
-                isFlagSet = ((Script::Memory::ReadByte(offset) & (1 << flagToCheck)) > 0);
-            }
-
-            bool value = reinterpret_cast<bool&>(isFlagSet);
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(isFlagSet));
-        }
-    }
-    return std::make_pair("unknown", 0);
-}
-
 void S2Plugin::ViewParticleDB::comparisonCellClicked(int row, int column)
 {
     if (column == 1)
     {
-        auto clickedID = mCompareTableWidget->item(row, 0)->data(Qt::DisplayRole).toULongLong();
-        showIndex(clickedID);
+        mSearchLineEdit->clear();
+        auto clickedID = mCompareTableWidget->item(row, 0)->data(Qt::DisplayRole).toUInt();
+        showID(clickedID);
     }
 }
 
@@ -443,6 +312,7 @@ void S2Plugin::ViewParticleDB::groupedComparisonItemClicked(QTreeWidgetItem* ite
 {
     if (item->childCount() == 0)
     {
-        showIndex(item->data(0, Qt::UserRole).toUInt());
+        mSearchLineEdit->clear();
+        showID(item->data(0, Qt::UserRole).toUInt());
     }
 }

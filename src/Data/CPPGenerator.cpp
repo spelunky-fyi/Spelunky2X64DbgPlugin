@@ -1,9 +1,8 @@
 #include "Data/CPPGenerator.h"
 #include "Configuration.h"
 #include "QtHelpers/CPPSyntaxHighlighter.h"
-#include "Spelunky2.h"
 
-S2Plugin::CPPGenerator::CPPGenerator(Configuration* config) : mConfiguration(config) {}
+// TODO a lot
 
 void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHighlighter* highlighter)
 {
@@ -12,14 +11,15 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
     std::vector<std::string> dependencies;
     std::string parentClassName = "";
     std::vector<MemoryField> fields;
-    if (mConfiguration->isEntitySubclass(className))
+    auto config = Configuration::get();
+    if (config->isEntitySubclass(className))
     {
-        const auto& hierarchy = mConfiguration->entityClassHierarchy();
+        const auto& hierarchy = config->entityClassHierarchy();
         if (hierarchy.count(className) > 0)
         {
             parentClassName = hierarchy.at(className);
         }
-        fields = mConfiguration->typeFieldsOfEntitySubclass(className);
+        fields = config->typeFieldsOfEntitySubclass(className);
 
         // add the parents to the dependencies
         std::string p = parentClassName;
@@ -33,18 +33,9 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
             dependencies.emplace_back("Entity");
         }
     }
-    else if (mConfiguration->isPointer(className))
+    else if (auto& vec = config->typeFieldsOfDefaultStruct(className); !vec.empty())
     {
-        fields = mConfiguration->typeFieldsOfPointer(className);
-        auto pointerIndex = className.find("Pointer");
-        if (pointerIndex != std::string::npos)
-        {
-            className.replace(pointerIndex, 7, "");
-        }
-    }
-    else if (mConfiguration->isInlineStruct(className))
-    {
-        fields = mConfiguration->typeFieldsOfInlineStruct(className);
+        fields = vec;
     }
     else
     {
@@ -55,7 +46,7 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
     QString qClassName = QString("\\b" + QRegularExpression::escape(QString::fromStdString(className)) + "\\b");
     highlighter->addRule(qClassName, HighlightColor::Type);
 
-    auto skipCounter = 1;
+    // auto skipCounter = 1;
     mGeneratedTypes.insert(typeName);
     mSS << "class " << className;
     if (!parentClassName.empty())
@@ -75,13 +66,13 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
         if (field.type == MemoryFieldType::Skip)
         {
             variableType = "uint8_t";
-            variableName = "skip[" + std::to_string(field.extraInfo) + "]";
+            variableName = "skip[" + std::to_string(field.get_size()) + "]";
         }
-        else if (gsMemoryFieldTypeToCPPTypeMapping.count(field.type) > 0)
+        else if (auto str = Configuration::getCPPTypeName(field.type); !str.empty())
         {
-            variableType = gsMemoryFieldTypeToCPPTypeMapping.at(field.type);
+            variableType = str;
         }
-        else if (field.type == MemoryFieldType::PointerType)
+        else if (field.isPointer)
         {
             std::string pointerLessFieldType = field.jsonName;
             auto pointerIndex = pointerLessFieldType.find("Pointer");
@@ -92,7 +83,7 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
             variableType = pointerLessFieldType + "*";
             dependencies.emplace_back(field.jsonName);
         }
-        else if (field.type == MemoryFieldType::InlineStructType)
+        else if (field.type == MemoryFieldType::DefaultStructType)
         {
             variableType = field.jsonName;
             dependencies.emplace_back(field.jsonName);
@@ -124,9 +115,4 @@ void S2Plugin::CPPGenerator::generate(const std::string& typeName, CPPSyntaxHigh
             generate(dep, highlighter);
         }
     }
-}
-
-std::string S2Plugin::CPPGenerator::result() const
-{
-    return mSS.str();
 }

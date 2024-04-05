@@ -1,9 +1,10 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
+#include "Configuration.h"
 #include "Data/State.h"
 #include "QtHelpers/WidgetMemoryView.h"
+#include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
-#include <Data/LevelGen.h>
 #include <QEvent>
 #include <QFontMetrics>
 #include <QHelpEvent>
@@ -16,8 +17,7 @@ static const uint32_t gsMarginVer = 5;
 static constexpr size_t gsBufferSize = 8 * 16 * 2;     // 8x16 rooms * 2 bytes per room
 static constexpr size_t gsHalfBufferSize = 8 * 16 * 1; // 8x16 rooms * 1 byte/bool per room
 
-S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, ViewToolbar* toolbar, QWidget* parent)
-    : QWidget(parent), mFieldName(QString::fromStdString(fieldName)), mToolbar(toolbar)
+S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent) : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
 {
     mFont = QFont("Courier", 11);
     mTextAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, "00");
@@ -28,16 +28,17 @@ S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName,
 
 void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
 {
+    auto config = Configuration::get();
     QPainter painter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
     painter.setFont(mFont);
-
-    auto rect = QRectF(QPointF(0, 0), sizeHint());
-    rect.adjust(0, 0, -0.5, -0.5);
-    painter.setBrush(Qt::white);
-    painter.setPen(QPen(Qt::darkGray, 1));
-    painter.drawRect(rect);
-
+    {
+        auto rect = QRectF(QPointF(0, 0), sizeHint());
+        rect.adjust(0, 0, -0.5, -0.5);
+        painter.setBrush(Qt::white);
+        painter.setPen(QPen(Qt::darkGray, 1));
+        painter.drawRect(rect);
+    }
     mToolTipRects.clear();
     painter.setBrush(Qt::black);
     uint32_t x = gsMarginHor;
@@ -51,8 +52,6 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
         auto buffer = std::array<uint8_t, gsBufferSize>();
         Script::Memory::Read(mOffset, buffer.data(), bufferSize, nullptr);
 
-        RoomCode currentRoomCode;
-        uint32_t index = 0;
         for (auto counter = 0; counter < bufferSize; ++counter)
         {
             if (mIsMetaData)
@@ -61,8 +60,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
                 {
                     painter.setPen(QPen(Qt::white, 1));
                     painter.setBrush(Qt::black);
-                    auto rect = QRect(x, y - mTextAdvance.height() + 5, mTextAdvance.width(), mTextAdvance.height() - 2);
-                    painter.drawRect(rect);
+                    painter.drawRect(QRect(x, y - mTextAdvance.height() + 5, mTextAdvance.width(), mTextAdvance.height() - 2));
                 }
                 else
                 {
@@ -71,14 +69,15 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
             }
             else
             {
+                RoomCode currentRoomCode{0, "", QColor{}};
                 if (counter % 2 == 0)
                 {
-                    currentRoomCode = mToolbar->levelGen()->roomCodeForID(buffer.at(counter));
+                    currentRoomCode = config->roomCodeForID(buffer.at(counter));
                     painter.setPen(Qt::transparent);
                     auto rect = QRect(x, y - mTextAdvance.height() + 5, 2 * mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() - 2);
                     painter.setBrush(currentRoomCode.color);
                     painter.drawRoundedRect(rect, 4.0, 4.0);
-                    mToolTipRects.emplace_back(ToolTipRect{rect, currentRoomCode.name});
+                    mToolTipRects.emplace_back(ToolTipRect{rect, QString::fromStdString(currentRoomCode.name)});
                 }
 
                 if (currentRoomCode.id == 0 || currentRoomCode.id == 9)
@@ -109,8 +108,10 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
         }
 
         // draw level dimensions
-        auto levelWidth = Script::Memory::ReadDword(mToolbar->state()->offsetForField("level_width_rooms"));
-        auto levelHeight = Script::Memory::ReadDword(mToolbar->state()->offsetForField("level_height_rooms"));
+        uintptr_t offsetWidth = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_width_rooms", Spelunky2::get()->get_StatePtr());
+        uintptr_t offsetHeight = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_height_rooms", Spelunky2::get()->get_StatePtr());
+        auto levelWidth = Script::Memory::ReadDword(offsetWidth);
+        auto levelHeight = Script::Memory::ReadDword(offsetHeight);
         uint32_t borderX = gsMarginHor;
         uint32_t borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
         uint32_t borderWidth, borderHeight;
@@ -162,13 +163,21 @@ void S2Plugin::WidgetSpelunkyRooms::setOffset(size_t offset)
 
 void S2Plugin::WidgetSpelunkyRooms::mouseMoveEvent(QMouseEvent* event)
 {
+    auto pos = event->pos();
+    uint32_t idx = 0;
     for (const auto& ttr : mToolTipRects)
     {
-        auto pos = event->pos();
         if (ttr.rect.contains(pos))
         {
-            QToolTip::showText(mapToGlobal(pos), QString::fromStdString(ttr.tooltip));
+            if (idx != mCurrentToolTip)
+            {
+                mCurrentToolTip = idx;
+                QToolTip::showText({}, {});
+            }
+            QToolTip::showText(mapToGlobal(pos), ttr.tooltip);
+            return;
         }
+        ++idx;
     }
 }
 

@@ -13,9 +13,9 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
-    struct TreeViewMemoryFields;
-    struct WidgetSpelunkyRooms;
+    class ViewToolbar;
+    class TreeViewMemoryFields;
+    class WidgetSpelunkyRooms;
 
     class ViewLevelGen : public QWidget
     {
@@ -34,7 +34,7 @@ namespace S2Plugin
         void autoRefreshTimerTrigger();
         void autoRefreshIntervalChanged(const QString& text);
         void label();
-        void levelGenRoomsPointerClicked(const QString& fieldName);
+        void levelGenRoomsPointerClicked();
 
       private:
         QVBoxLayout* mMainLayout;

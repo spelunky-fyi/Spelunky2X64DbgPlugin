@@ -12,7 +12,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        DialogEditSimpleValue(const QString& fieldName, size_t memoryOffset, MemoryFieldType type, QWidget* parent = nullptr);
+        DialogEditSimpleValue(const QString& fieldName, uintptr_t memoryAddress, MemoryFieldType type, QWidget* parent = nullptr);
 
       protected:
         QSize minimumSizeHint() const override;
@@ -24,7 +24,7 @@ namespace S2Plugin
         void decValueChanged(const QString& text);
 
       private:
-        size_t mMemoryOffset;
+        uintptr_t mMemoryAddress;
         MemoryFieldType mFieldType;
 
         QLineEdit* mLineEditDecValue;

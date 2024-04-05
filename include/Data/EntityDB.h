@@ -1,30 +1,25 @@
 #pragma once
 
-#include "Data/MemoryMappedData.h"
-#include "EntityList.h"
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include <cstdint>
 
 namespace S2Plugin
 {
-    struct Configuration;
-
-    class EntityDB : public MemoryMappedData
+    class EntityDB
     {
       public:
-        explicit EntityDB(Configuration* config);
-        bool loadEntityDB();
-        EntityList* entityList() const noexcept;
-
-        std::unordered_map<std::string, size_t>& offsetsForIndex(uint32_t entityDBIndex);
-
-        void reset();
+        uintptr_t addressOfIndex(uint32_t idx) const // as of right now id == index
+        {
+            return ptr == 0ull ? 0ull : ptr + idx * entitySize();
+        }
+        bool isValid() const
+        {
+            return (ptr != 0);
+        }
+        static size_t entitySize();
 
       private:
-        size_t mEntityDBPtr = 0;
-        std::unique_ptr<EntityList> mEntityList;
-        std::vector<std::unordered_map<std::string, size_t>> mMemoryOffsets; // list of fieldname -> offset of field value in memory
+        uintptr_t ptr{0};
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

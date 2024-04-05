@@ -1,8 +1,8 @@
 #include <windows.h>
 
 #include "Configuration.h"
+#include "Data/Entity.h"
 #include "Data/EntityDB.h"
-#include "Data/EntityList.h"
 #include "Data/State.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
@@ -19,6 +19,11 @@ S2Plugin::ViewEntities::ViewEntities(ViewToolbar* toolbar, QWidget* parent) : QW
 {
     mMainLayout = new QVBoxLayout(this);
 
+    auto config = Configuration::get();
+    mLayer0Offset = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
+    mLayer1Offset = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
+    mLayerMapOffset = config->offsetForField(config->typeFieldsOfDefaultStruct("LayerPointer"), "entities_by_mask");
+
     initializeRefreshAndFilter();
     initializeTreeView();
     setWindowIcon(QIcon(":/icons/caveman.png"));
@@ -29,13 +34,14 @@ S2Plugin::ViewEntities::ViewEntities(ViewToolbar* toolbar, QWidget* parent) : QW
     setWindowTitle("Entities");
     mMainTreeView->setVisible(true);
 
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
     refreshEntities();
     mFilterLineEdit->setFocus();
 }
 
 void S2Plugin::ViewEntities::initializeTreeView()
 {
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, nullptr, this);
+    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
     mMainTreeView->setEnableChangeHighlighting(false);
 
     mMainLayout->addWidget(mMainTreeView);
@@ -95,12 +101,9 @@ void S2Plugin::ViewEntities::closeEvent(QCloseEvent* event)
 void S2Plugin::ViewEntities::refreshEntities()
 {
     mMainTreeView->clear();
-    std::unordered_map<std::string, size_t> offsets;
 
-    const auto spel2 = mToolbar->configuration()->spelunky2();
-    const static auto entity_db = mToolbar->entityDB();
     bool isUIDlookupSuccess = false;
-    uint enteredUID;
+    uint enteredUID = 0;
     if (!mFilterLineEdit->text().isEmpty())
     {
         enteredUID = mFilterLineEdit->text().toUInt(&isUIDlookupSuccess, 0);
@@ -108,9 +111,8 @@ void S2Plugin::ViewEntities::refreshEntities()
 
     auto AddEntity = [&](size_t entity_ptr)
     {
-        auto entity = Script::Memory::ReadQword(entity_ptr);
-        auto entityUid = Script::Memory::ReadDword(entity + 0x38);
-        QString entityName = QString::fromStdString(spel2->getEntityName(entity, entity_db));
+        auto entity = Entity{Script::Memory::ReadQword(entity_ptr)};
+        QString entityName = QString::fromStdString(Configuration::get()->getEntityName(entity.entityTypeID()));
 
         if (!isUIDlookupSuccess && !mFilterLineEdit->text().isEmpty())
         {
@@ -119,17 +121,16 @@ void S2Plugin::ViewEntities::refreshEntities()
         }
 
         MemoryField field;
-        field.name = "entity_uid_" + std::to_string(entityUid);
+        field.name = "entity_uid_" + std::to_string(entity.uid());
         field.type = MemoryFieldType::EntityPointer;
-        mMainTreeView->addMemoryField(field, field.name);
-        offsets[field.name] = entity_ptr;
-        mMainTreeView->updateValueForField(field, field.name, offsets);
+        field.isPointer = true;
+        mMainTreeView->addMemoryField(field, "", entity_ptr, 0);
     };
 
     size_t totalEntities = 0;
-    auto layer0 = Script::Memory::ReadQword(mToolbar->state()->offsetForField("layer0"));
+    auto layer0 = Script::Memory::ReadQword(mLayer0Offset);
     auto layer0Count = Script::Memory::ReadDword(layer0 + 0x1C);
-    auto layer1 = Script::Memory::ReadQword(mToolbar->state()->offsetForField("layer1"));
+    auto layer1 = Script::Memory::ReadQword(mLayer1Offset);
     auto layer1Count = Script::Memory::ReadDword(layer1 + 0x1C);
     mCheckboxLayer0->setText(QString("Front layer (%1)").arg(layer0Count));
     mCheckboxLayer1->setText(QString("Back layer (%1)").arg(layer1Count));
@@ -144,7 +145,7 @@ void S2Plugin::ViewEntities::refreshEntities()
         auto ent_list = Script::Memory::ReadQword(layer0 + 0x8);
         auto uid_list = Script::Memory::ReadQword(layer0 + 0x10);
         bool found_uid = false;
-        for (int idx = 0; idx < layer0Count; ++idx)
+        for (uint idx = 0; idx < layer0Count; ++idx)
         {
             auto uid = Script::Memory::ReadDword(uid_list + idx * sizeof(uint32_t));
             if (enteredUID == uid)
@@ -158,7 +159,7 @@ void S2Plugin::ViewEntities::refreshEntities()
         uid_list = Script::Memory::ReadQword(layer1 + 0x10);
         if (found_uid == false)
         {
-            for (int idx = 0; idx < layer1Count; ++idx)
+            for (uint idx = 0; idx < layer1Count; ++idx)
             {
                 auto uid = Script::Memory::ReadDword(uid_list + idx * sizeof(uint32_t));
                 if (enteredUID == uid)
@@ -170,8 +171,8 @@ void S2Plugin::ViewEntities::refreshEntities()
         }
     }
 
-    StdMap<MASK, size_t> map0{layer0 + 0x40};
-    StdMap<MASK, size_t> map1{layer1 + 0x40};
+    StdMap<MASK, size_t> map0{layer0 + mLayerMapOffset};
+    StdMap<MASK, size_t> map1{layer1 + mLayerMapOffset};
 
     for (auto& checkbox : mCheckbox)
     {
@@ -192,7 +193,7 @@ void S2Plugin::ViewEntities::refreshEntities()
                 {
                     for (size_t i = 0; i < list_count; ++i)
                     {
-                        AddEntity(pointers + (i * sizeof(size_t)));
+                        AddEntity(pointers + (i * sizeof(uintptr_t)));
                         ++totalEntities;
                     }
                 }
@@ -222,14 +223,12 @@ void S2Plugin::ViewEntities::refreshEntities()
     setWindowTitle(QString("%1 Entities").arg(totalEntities));
 
     mMainTreeView->updateTableHeader();
-    mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
-    mMainTreeView->setColumnHidden(gsColMemoryOffsetDelta, true);
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    mMainTreeView->updateTree();
 }
 
 QSize S2Plugin::ViewEntities::sizeHint() const

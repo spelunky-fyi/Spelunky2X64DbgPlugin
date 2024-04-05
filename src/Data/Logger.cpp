@@ -1,9 +1,7 @@
 #include "Data/Logger.h"
+#include "Configuration.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
-
-S2Plugin::Logger::Logger(QObject* parent) : QObject(parent) {}
 
 void S2Plugin::Logger::addField(const LoggerField& field)
 {
@@ -27,26 +25,6 @@ void S2Plugin::Logger::removeFieldAt(size_t fieldIndex)
         mSamples.clear();
         emit fieldsChanged();
     }
-}
-
-void S2Plugin::Logger::updateFieldColor(size_t fieldIndex, const QColor& newColor)
-{
-    mFields.at(fieldIndex).color = newColor;
-}
-
-const S2Plugin::LoggerField& S2Plugin::Logger::fieldAt(size_t fieldIndex) const
-{
-    return mFields.at(fieldIndex);
-}
-
-void S2Plugin::Logger::setTableModel(ItemModelLoggerFields* tableModel)
-{
-    mTableModel = tableModel;
-}
-
-size_t S2Plugin::Logger::fieldCount() const noexcept
-{
-    return mFields.size();
 }
 
 void S2Plugin::Logger::start(size_t samplePeriod, size_t duration)
@@ -83,7 +61,7 @@ void S2Plugin::Logger::sample()
         {
             case MemoryFieldType::Byte:
             {
-                int8_t value = Script::Memory::ReadByte(field.memoryOffset);
+                int8_t value = Script::Memory::ReadByte(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -93,13 +71,13 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::State8:
             case MemoryFieldType::CharacterDBID:
             {
-                uint8_t value = Script::Memory::ReadByte(field.memoryOffset);
+                uint8_t value = Script::Memory::ReadByte(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Word:
             {
-                int16_t value = Script::Memory::ReadWord(field.memoryOffset);
+                int16_t value = Script::Memory::ReadWord(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -107,45 +85,52 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::Flags16:
             case MemoryFieldType::State16:
             {
-                uint16_t value = Script::Memory::ReadWord(field.memoryOffset);
+                uint16_t value = Script::Memory::ReadWord(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Dword:
+            case MemoryFieldType::State32:
+            case MemoryFieldType::EntityUID:
+            case MemoryFieldType::TextureDBID:
             {
-                int32_t value = Script::Memory::ReadDword(field.memoryOffset);
+                int32_t value = Script::Memory::ReadDword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedDword:
             case MemoryFieldType::Flags32:
-            case MemoryFieldType::State32:
             case MemoryFieldType::EntityDBID:
-            case MemoryFieldType::EntityUID:
             case MemoryFieldType::ParticleDBID:
-            case MemoryFieldType::TextureDBID:
             case MemoryFieldType::StringsTableID:
             {
-                uint32_t value = Script::Memory::ReadDword(field.memoryOffset);
+                uint32_t value = Script::Memory::ReadDword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Float:
             {
-                uint32_t tmp = Script::Memory::ReadDword(field.memoryOffset);
+                uint32_t tmp = Script::Memory::ReadDword(field.memoryAddr);
                 float value = reinterpret_cast<float&>(tmp);
+                mSamples[field.uuid].emplace_back(value);
+                break;
+            }
+            case MemoryFieldType::Double:
+            {
+                uint32_t tmp = Script::Memory::ReadDword(field.memoryAddr);
+                double value = reinterpret_cast<double&>(tmp);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Qword:
             {
-                int64_t value = Script::Memory::ReadQword(field.memoryOffset);
+                int64_t value = Script::Memory::ReadQword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedQword:
             {
-                uint64_t value = Script::Memory::ReadQword(field.memoryOffset);
+                uint64_t value = Script::Memory::ReadQword(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -172,6 +157,19 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
             {
                 int64_t v_ceil = std::ceil(std::any_cast<float>(value));
                 int64_t v_floor = std::floor(std::any_cast<float>(value));
+                if (v_ceil > highest)
+                {
+                    highest = v_ceil;
+                }
+                if (v_floor < lowest)
+                {
+                    lowest = v_floor;
+                }
+            }
+            else if (field.type == MemoryFieldType::Double)
+            {
+                int64_t v_ceil = std::ceil(std::any_cast<double>(value));
+                int64_t v_floor = std::floor(std::any_cast<double>(value));
                 if (v_ceil > highest)
                 {
                     highest = v_ceil;
@@ -252,18 +250,4 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
         }
     }
     return std::make_pair(lowest, highest);
-}
-
-const std::vector<std::any>& S2Plugin::Logger::samplesForField(const std::string& fieldUUID) const
-{
-    return mSamples.at(fieldUUID);
-}
-
-size_t S2Plugin::Logger::sampleCount() const noexcept
-{
-    for (const auto& [uuid, samples] : mSamples)
-    {
-        return samples.size();
-    }
-    return 0;
 }

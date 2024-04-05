@@ -4,8 +4,8 @@
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 
-S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(const std::string& typeName, size_t offset, ViewToolbar* toolbar, QObject* parent)
-    : QAbstractItemModel(parent), mTypeName(typeName), mMemoryOffset(offset), mToolbar(toolbar)
+S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, ViewToolbar* toolbar, QObject* parent)
+    : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress), mToolbar(toolbar)
 {
 }
 
@@ -16,7 +16,7 @@ Qt::ItemFlags S2Plugin::ItemModelVirtualFunctions::flags(const QModelIndex& inde
 
 QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int role) const
 {
-    const VirtualFunction entry = mToolbar->configuration()->virtualFunctionsOfType(mTypeName).at(index.row());
+    const VirtualFunction entry = Configuration::get()->virtualFunctionsOfType(mTypeName).at(index.row());
     switch (role)
     {
         case Qt::DisplayRole:
@@ -32,9 +32,9 @@ QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int
                         .arg(QString::fromStdString(entry.name))
                         .arg(QString::fromStdString(entry.params));
                 case gsColFunctionTableAddress:
-                    return QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", mMemoryOffset + (entry.index * 8));
+                    return QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", mMemoryAddress + (entry.index * 8));
                 case gsColFunctionFunctionAddress:
-                    return QString::asprintf("<font color='green'><u>0x%016llX</u></font>", Script::Memory::ReadQword(mMemoryOffset + (entry.index * 8)));
+                    return QString::asprintf("<font color='green'><u>0x%016llX</u></font>", Script::Memory::ReadQword(mMemoryAddress + (entry.index * 8)));
             }
             break;
         }
@@ -44,11 +44,11 @@ QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int
         }
         case gsRoleFunctionTableAddress:
         {
-            return mMemoryOffset + (entry.index * 8);
+            return mMemoryAddress + (entry.index * 8);
         }
         case gsRoleFunctionFunctionAddress:
         {
-            return Script::Memory::ReadQword(mMemoryOffset + (entry.index * 8));
+            return Script::Memory::ReadQword(mMemoryAddress + (entry.index * 8));
         }
     }
     return QVariant();
@@ -56,7 +56,7 @@ QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int
 
 int S2Plugin::ItemModelVirtualFunctions::rowCount(const QModelIndex& parent) const
 {
-    return mToolbar->configuration()->virtualFunctionsOfType(mTypeName).size();
+    return Configuration::get()->virtualFunctionsOfType(mTypeName).size();
 }
 
 int S2Plugin::ItemModelVirtualFunctions::columnCount(const QModelIndex& parent) const

@@ -1,18 +1,19 @@
 #pragma once
 
-#include "pluginsdk/_scriptapi_memory.h"
+#include "pluginmain.h"
+#include <cstdint>
 #include <memory>
+#include <string>
 
 namespace S2Plugin
 {
-    // template just in case we want wstring or something, probably basic_string would fit this better
-    template <typename T = char>
-    struct StdString
+    template <typename T>
+    struct StdBasicString
     {
-        StdString(size_t addr) : offset(addr){};
+        StdBasicString(size_t addr) : addr(addr){};
         size_t size() const
         {
-            return Script::Memory::ReadQword(offset + 0x10);
+            return Script::Memory::ReadQword(addr + 0x10);
         }
         size_t lenght() const
         {
@@ -20,15 +21,15 @@ namespace S2Plugin
         }
         size_t capacity() const
         {
-            return Script::Memory::ReadQword(offset + 0x18);
+            return Script::Memory::ReadQword(addr + 0x18);
         }
         size_t begin() const
         {
-            return offset;
+            return string_ptr();
         }
         size_t end() const
         {
-            return offset + lenght() * sizeof(T);
+            return string_ptr() + lenght() * sizeof(T);
         }
         bool empty() const
         {
@@ -36,24 +37,26 @@ namespace S2Plugin
         }
         size_t string_ptr() const
         {
-            if (capacity() > 15)
-                return Script::Memory::ReadQword(offset);
+            // test if string is in SSO mode (Short String Optimization)
+            // note: this is implementation specific, for std::string MSVC the capacity will be 15, for clang it might be as high as 22
+            if (capacity() > std::basic_string<T>{}.capacity())
+                return Script::Memory::ReadQword(addr);
 
-            return offset;
+            return addr;
         }
-        std::unique_ptr<T[]> get_string() const
+        std::basic_string<T> get_string() const
         {
-            size_t string_offset = string_ptr();
+            size_t string_addr = string_ptr();
             size_t string_lenght = lenght();
-            std::unique_ptr<T[]> data = std::make_unique<T[]>(string_lenght + 1);
+            std::basic_string<T> buffer;
+            buffer.resize(string_lenght);
             if (string_lenght != 0)
             {
-                Script::Memory::Read(string_offset, data.get(), sizeof(T) * string_lenght, nullptr);
+                Script::Memory::Read(string_addr, buffer.data(), string_lenght * sizeof(T), nullptr);
             }
-            data.get()[string_lenght] = (T)NULL;
-            return data;
+            return buffer;
         }
-        bool operator==(const StdString<T> other) const
+        bool operator==(const StdBasicString<T> other) const
         {
             if (string_ptr() == other.string_ptr())
                 return true;
@@ -63,17 +66,16 @@ namespace S2Plugin
             if (l != other_l)
                 return false;
 
-            if (l == 0) // both lengths the same, so both are 0
+            if (l == 0) // both lengths the same at this point, so both are 0
                 return true;
 
-            auto this_str = get_string();
-            auto other_str = other.get_string();
-            return memcmp(this_str.get(), other_str.get(), l * sizeof(T)) == 0;
+            return get_string() == other.get_string();
         }
-        bool operator!=(const StdString<T> other) const
-        {
-            return !operator==(other);
-        }
-        size_t offset;
+
+      private:
+        uintptr_t addr;
     };
+
+    using StdString = StdBasicString<char>;
+    using StdWstring = StdBasicString<char16_t>;
 } // namespace S2Plugin

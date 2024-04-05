@@ -5,23 +5,24 @@
 - Download [x64dbg](https://github.com/x64dbg/x64dbg/releases) and extract.
 - In the extracted folder, go to release/x64 and launch x64dbg.exe, this will initialize the application and create a bunch of folders.
 - Close the application.
-- An (empty) plugins folder has been created. Put the following files in this plugin folder:
+- An (empty) plugins folder has been created. Put all the files from lastes release in it
   - Spelunky2.dp64 (the actual plugin)
   - Spelunky2.json (the definition of the fields and classes)
-  - Spelunky2Entities.txt (the list of all the entities)
-  - Spelunky2ParticleEmitters.txt (the list of all the particle emitters)
+  - Spelunky2Entities.json (the definitions of entity and it's sub-classes)
+  - Spelunky2Entities.txt (the list of all the entity names with type ids)
+  - Spelunky2ParticleEmitters.txt (the list of all the particle emitters types with ids)
   - Spelunky2RoomCodes.json (the list of the room codes for level generation)
+  - (optional) Spelunky2VirtualTableData.json (gathered data about vtables and offsets)
 - Launch x64dbg.exe again, and you should see a tab at the top right of the window called "Spelunky 2"
 
-By default, x64dbg enables a couple of standard/system breakpoints, which means that Spelunky will pause automatically when these breakpoints are hit. To disable these, open the Options > Preferences menu and uncheck "System Breakpoint, "Entry Breakpoint" and "TLS Callbacks".
+By default, x64dbg enables a couple of standard/system breakpoints, which means that Spelunky will pause automatically when these breakpoints are hit. To disable these, open the Options > Preferences menu and uncheck "System Breakpoint", "Entry Breakpoint" and "TLS Callbacks".
 
 If you do hit a breakpoint, the bottom left corner of the x64dbg window will be a yellow square with red text "Paused". Just click the "Run" icon in the toolbar at the top (the blue right-pointing arrow), to continue execution.
 
 ## Starting up
 
-- Launch Spelunky 2, and wait until you see the Mossmouth logo, don't attach before that point, during the black screen
-- In x64dbg go to the File > Attach menu and a list of processes will pop up. Choose Spel2 (Spelunky 2) and click the Attach button
-- Activate the Spelunky 2 tab (the rightmost tab), and you're good to go
+- You can launch Spelunky2 from x64dbg, just hit File > Open (shortcut `F3`) and select `spel2.exe`. you can also attach to running game: In x64dbg go to the File > Attach menu and a list of processes will pop up. Choose Spel2 (Spelunky 2) and click the Attach button
+- Activate the Spelunky 2 tab (the rightmost tab), and you're good to go (note: interacting with the options in the tab too soon after game start/attaching may result in error about main thread, just wait a second and try again)
 
 ## Basic usage
 
@@ -29,8 +30,8 @@ The buttons on the top-left side give you access to the internals of Spelunky 2.
 
 The data tables containing all the fields will have a clickable "Value" column, to either change its value, or jump to a represented entity, type, ...
 
-Fields that are marked in red means they have changed values compared to the last refresh update.
-The State and Entity windows have a refresh button, and a way to automatically refresh the data.
+Fields with red background mean they have changed values compared to the last refresh update.
+Most windows have a refresh button, and a way to automatically refresh the data.
 
 ## Entity DB
 
@@ -72,7 +73,7 @@ The 'Rooms' tab shows how the different rooms are laid out in the level during l
 
 ## Entities
 
-By default, the entities list is filtered only by characters, monsters and items, as things tend to get a bit slow if you always list the FLOOR entities as well.
+You can list entities by the layer and entity MASK, names are identical to the Overlunky API. There is also search box which can be used to search for unique uid (uid) or type name
 
 ![Entities](/resources/docs_entities.png)
 
@@ -139,13 +140,13 @@ A plot of the data is also available:
 
 ## Advanced usage
 
-The Spelunky2.json file contains all the field definitions of the known classes. Just add another entry, and specify the correct field types, which you can deduce from looking at the entity memory tab. Don't forget to add the new entity name to the `entity_class_hierarchy` list so the correct inheritance can be determined, and to `default_entity_types` so that when you click on the entity, it will immediately cast it to the correct type. You can use a regex to match multiple entity names at once.
+The Spelunky2.json file contains all the field definitions of the known structs and classes. Just add another entry, and specify the correct field types. Entity subclasses should be added in Spelunky2Entities.json, don't forget to add the new entity name to the `entity_class_hierarchy` list so the correct inheritance can be determined, and to `default_entity_types` so that when you click on the entity, it will immediately cast it to the correct type. You can use a regex to match multiple entity names at once.
 
-If you define a new pointer type, don't forget to add it to the `pointer_types` list.
+If you want to define struct as pointer, you can add `"pointer": true` when assigning field with the struct name as type, if you need this struct to be used in some container type, add it to `pointer_types` list instead.
 
-Once saved, click the "Reload JSON" button at the bottom left, and the updated information will be visualized (the entity windows will close for reload though).
+Once saved, click the "Reload JSON" button at the bottom left in Spelunky2 tab, and the updated information will be visualized (most windows will automatically close to update the changes).
 
-Entity, State, EntityDB and ParticleDB windows all have a "Label" button as well. This can help you if you are reading the assembly in the CPU tab. Click the "Clear labels" button to remove them, however due to a bug (?) in x64dbg it won't delete them all. Press Ctrl-Alt-L to see all the labels.
+Most windows also have a "Label" button to automatically label all the fields in the struct. This can help you if you are reading the assembly in the CPU tab. Click the "Clear labels" button to remove them.
 
 ## Virtual table
 
@@ -153,7 +154,7 @@ Entity, State, EntityDB and ParticleDB windows all have a "Label" button as well
 
 To look up an entity in the virtual table, make sure you are in a level containing the entity in question, and press the 'Detect entities' button. Uncheck the imported symbols and non-address entries to clear up the list. If you leave 'Show symbol-less entries' checked, you will jump to the entity when you type the symbol name in the search box. If you uncheck it, just the filtered list will be shown.
 
-The table offset is the offset from the first entry in the table, D3Dcompile.
+The table offset is the offset from the first entry in the table.
 
 ![Virtual table lookup](/resources/docs_virtual_table_lookup.png)
 

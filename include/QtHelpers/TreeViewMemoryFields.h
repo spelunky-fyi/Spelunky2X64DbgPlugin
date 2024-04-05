@@ -1,35 +1,62 @@
 #pragma once
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
-    struct MemoryMappedData;
+    class ViewToolbar;
     struct MemoryField;
-    class StyledItemDelegateHTML;
+
+    struct ColumnFilter
+    {
+        constexpr ColumnFilter& enable(uint8_t h)
+        {
+            activeColumns = activeColumns | (1U << h);
+            return *this;
+        }
+        constexpr ColumnFilter& disable(uint8_t h)
+        {
+            activeColumns = activeColumns & ~(1U << h);
+            return *this;
+        }
+        constexpr bool test(uint8_t h) const
+        {
+            return (activeColumns & (1U << h)) != 0;
+        }
+
+      private:
+        uint16_t activeColumns{0xFFFF};
+    };
 
     class TreeViewMemoryFields : public QTreeView
     {
         Q_OBJECT
       public:
-        TreeViewMemoryFields(ViewToolbar* toolbar, MemoryMappedData* mmd, QWidget* parent = nullptr);
-        void setMemoryMappedData(MemoryMappedData* mmd);
+        TreeViewMemoryFields(ViewToolbar* toolbar, QWidget* parent = nullptr);
 
-        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, QStandardItem* parent = nullptr);
+        void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, QStandardItem* parent = nullptr);
+        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent = nullptr);
         void clear();
         void updateTableHeader(bool restoreColumnWidths = true);
         void setEnableChangeHighlighting(bool b) noexcept;
 
         void expandItem(QStandardItem* item);
-        QStandardItem* lookupTreeViewItem(const std::string& fieldName, uint8_t column, QStandardItem* parent);
-        void updateValueForField(const MemoryField& field, const std::string& fieldNameOverride, std::unordered_map<std::string, size_t>& offsets, size_t memoryOffsetDeltaReference = 0,
-                                 QStandardItem* parent = nullptr, bool disableChangeHighlightingForField = false);
+        void updateTree(uintptr_t newAddr = 0, uintptr_t newComparisonAddr = 0, bool initial = false);
+        void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
+                       bool disableChangeHighlightingForField = false);
+
+        void labelAll(std::string_view prefix = {});
+
+        ColumnFilter activeColumns;
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
@@ -39,7 +66,7 @@ namespace S2Plugin
 
       signals:
         void memoryFieldValueUpdated(const QString& fieldName);
-        void levelGenRoomsPointerClicked(const QString& fieldName);
+        void levelGenRoomsPointerClicked();
         void entityOffsetDropped(size_t offset);
 
       private slots:
@@ -47,9 +74,8 @@ namespace S2Plugin
 
       private:
         ViewToolbar* mToolbar;
-        MemoryMappedData* mMemoryMappedData;
         QStandardItemModel* mModel;
-        std::unique_ptr<StyledItemDelegateHTML> mHTMLDelegate;
+        StyledItemDelegateHTML mHTMLDelegate;
         std::array<uint32_t, 9> mSavedColumnWidths = {0};
         bool mEnableChangeHighlighting = true;
     };

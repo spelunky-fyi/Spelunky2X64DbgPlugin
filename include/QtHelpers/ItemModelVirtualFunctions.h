@@ -7,7 +7,7 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
+    class ViewToolbar;
 
     static const uint8_t gsColFunctionIndex = 0;
     static const uint8_t gsColFunctionTableAddress = 1;
@@ -22,7 +22,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ItemModelVirtualFunctions(const std::string& typeName, size_t offset, ViewToolbar* toolbar, QObject* parent = nullptr);
+        ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, ViewToolbar* toolbar, QObject* parent = nullptr);
 
         Qt::ItemFlags flags(const QModelIndex& index) const override;
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
@@ -34,7 +34,7 @@ namespace S2Plugin
 
       private:
         std::string mTypeName;
-        size_t mMemoryOffset;
+        uintptr_t mMemoryAddress;
         ViewToolbar* mToolbar;
     };
 

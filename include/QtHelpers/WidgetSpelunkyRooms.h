@@ -5,7 +5,6 @@
 
 namespace S2Plugin
 {
-    struct ViewToolbar;
     struct ToolTipRect;
 
     class WidgetSpelunkyRooms : public QWidget
@@ -13,7 +12,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        WidgetSpelunkyRooms(const std::string& fieldName, ViewToolbar* toolbar, QWidget* parent = nullptr);
+        WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent = nullptr);
 
         QSize minimumSizeHint() const override;
         QSize sizeHint() const override;
@@ -26,10 +25,10 @@ namespace S2Plugin
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
+        size_t mCurrentToolTip{0};
         QString mFieldName;
-        ViewToolbar* mToolbar;
         bool mIsMetaData = false;
-        size_t mOffset;
+        size_t mOffset{0};
         QFont mFont;
         QSize mTextAdvance;
         uint8_t mSpaceAdvance;

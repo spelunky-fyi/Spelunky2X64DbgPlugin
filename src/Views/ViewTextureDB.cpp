@@ -1,6 +1,7 @@
 #include "Views/ViewTextureDB.h"
 #include "Configuration.h"
 #include "Data/TextureDB.h"
+#include "QtHelpers/DatabaseHelper.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
@@ -8,37 +9,39 @@
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
+#include <QCheckBox>
+#include <QCompleter>
 #include <QHeaderView>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QTreeWidgetItem>
+#include <QVBoxLayout>
 
-S2Plugin::ViewTextureDB::ViewTextureDB(ViewToolbar* toolbar, size_t index, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewTextureDB::ViewTextureDB(ViewToolbar* toolbar, size_t index, QWidget* parent) : QWidget(parent)
 {
+    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
     setWindowIcon(QIcon(":/icons/caveman.png"));
-    setWindowTitle(QString("Texture DB (%1 textures)").arg(mToolbar->textureDB()->count()));
+    setWindowTitle(QString("Texture DB (%1 textures)").arg(Spelunky2::get()->get_TextureDB().count()));
     showID(index);
 }
 
 void S2Plugin::ViewTextureDB::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    auto mainLayout = new QVBoxLayout();
+    mainLayout->setMargin(5);
+    setLayout(mainLayout);
 
     mMainTabWidget = new QTabWidget(this);
     mMainTabWidget->setDocumentMode(false);
-    mMainLayout->addWidget(mMainTabWidget);
+    mainLayout->addWidget(mMainTabWidget);
 
-    mTabLookup = new QWidget();
-    mTabCompare = new QWidget();
-    mTabLookup->setLayout(new QVBoxLayout(mTabLookup));
+    mTabLookup = new QWidget();  // ownership passed on via addTab
+    mTabCompare = new QWidget(); // ovnership passed on via addTab
+    mTabLookup->setLayout(new QVBoxLayout());
     mTabLookup->layout()->setMargin(10);
     mTabLookup->setObjectName("lookupwidget");
     mTabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
-    mTabCompare->setLayout(new QVBoxLayout(mTabCompare));
+    mTabCompare->setLayout(new QVBoxLayout());
     mTabCompare->layout()->setMargin(10);
     mTabCompare->setObjectName("comparewidget");
     mTabCompare->setStyleSheet("QWidget#comparewidget {border: 1px solid #999;}");
@@ -48,18 +51,18 @@ void S2Plugin::ViewTextureDB::initializeUI()
 
     // LOOKUP
     {
-        auto topLayout = new QHBoxLayout();
+        auto topLayout = new QHBoxLayout(this);
 
         mSearchLineEdit = new QLineEdit();
         mSearchLineEdit->setPlaceholderText("Search id");
         topLayout->addWidget(mSearchLineEdit);
         QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &ViewTextureDB::searchFieldReturnPressed);
         mSearchLineEdit->setVisible(false);
-        mTextureNameCompleter = new QCompleter(mToolbar->textureDB()->namesStringList(), this);
-        mTextureNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-        mTextureNameCompleter->setFilterMode(Qt::MatchContains);
-        QObject::connect(mTextureNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewTextureDB::searchFieldCompleterActivated);
-        mSearchLineEdit->setCompleter(mTextureNameCompleter);
+        auto textureNameCompleter = new QCompleter(Spelunky2::get()->get_TextureDB().namesStringList(), this);
+        textureNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+        textureNameCompleter->setFilterMode(Qt::MatchContains);
+        QObject::connect(textureNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewTextureDB::searchFieldCompleterActivated);
+        mSearchLineEdit->setCompleter(textureNameCompleter);
 
         auto labelButton = new QPushButton("Label", this);
         QObject::connect(labelButton, &QPushButton::clicked, this, &ViewTextureDB::label);
@@ -67,19 +70,14 @@ void S2Plugin::ViewTextureDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
-        mMainTreeView = new TreeViewMemoryFields(mToolbar, mToolbar->textureDB(), this);
         mMainTreeView->setEnableChangeHighlighting(false);
-        for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::TextureDB))
-        {
-            mMainTreeView->addMemoryField(field, "TextureDB." + field.name);
-        }
+        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::TextureDB), "TextureDB", 0);
+
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &ViewTextureDB::fieldUpdated);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &ViewTextureDB::fieldExpanded);
         mTabLookup->layout()->addWidget(mMainTreeView);
-        mMainTreeView->setColumnWidth(gsColValue, 250);
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
-        mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-        mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
     }
 
     // COMPARE
@@ -87,36 +85,8 @@ void S2Plugin::ViewTextureDB::initializeUI()
         auto topLayout = new QHBoxLayout();
         mCompareFieldComboBox = new QComboBox(this);
         mCompareFieldComboBox->addItem(QString::fromStdString(""), QVariant::fromValue(QString::fromStdString("")));
-        for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::TextureDB))
-        {
-            switch (field.type)
-            {
-                case MemoryFieldType::Skip:
-                    continue;
-                case MemoryFieldType::Flags32:
-                case MemoryFieldType::Flags16:
-                case MemoryFieldType::Flags8:
-                {
-                    mCompareFieldComboBox->addItem(QString::fromStdString(field.name), QVariant::fromValue(field));
-                    uint8_t flagCount = (field.type == MemoryFieldType::Flags16 ? 16 : (field.type == MemoryFieldType::Flags8 ? 8 : 32));
-                    for (uint8_t x = 1; x <= flagCount; ++x)
-                    {
-                        MemoryField flagField;
-                        flagField.name = field.name;
-                        flagField.type = MemoryFieldType::Flag;
-                        flagField.extraInfo = x - 1;
-                        flagField.comment = std::to_string(flagCount); // abuse the comment field to transmit the size to fetch
-                        mCompareFieldComboBox->addItem(QString::fromStdString(field.name + ".flag_" + std::to_string(x)), QVariant::fromValue(flagField));
-                    }
-                    break;
-                }
-                default:
-                {
-                    mCompareFieldComboBox->addItem(QString::fromStdString(field.name), QVariant::fromValue(field));
-                    break;
-                }
-            }
-        }
+        DB::populateComparisonCombobox(mCompareFieldComboBox, Configuration::get()->typeFields(MemoryFieldType::TextureDB));
+
         QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &ViewTextureDB::comparisonFieldChosen);
         topLayout->addWidget(mCompareFieldComboBox);
 
@@ -126,7 +96,7 @@ void S2Plugin::ViewTextureDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabCompare->layout())->addLayout(topLayout);
 
-        mCompareTableWidget = new QTableWidget(mToolbar->textureDB()->count(), 3, this);
+        mCompareTableWidget = new QTableWidget(Spelunky2::get()->get_TextureDB().count(), 3, this);
         mCompareTableWidget->setAlternatingRowColors(true);
         mCompareTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         mCompareTableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
@@ -139,15 +109,14 @@ void S2Plugin::ViewTextureDB::initializeUI()
         mCompareTableWidget->setColumnWidth(0, 40);
         mCompareTableWidget->setColumnWidth(1, 325);
         mCompareTableWidget->setColumnWidth(2, 150);
-        mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
-        mCompareTableWidget->setItemDelegate(mHTMLDelegate.get());
+        mCompareTableWidget->setItemDelegate(&mHTMLDelegate);
         QObject::connect(mCompareTableWidget, &QTableWidget::cellClicked, this, &ViewTextureDB::comparisonCellClicked);
 
         mCompareTreeWidget = new QTreeWidget(this);
         mCompareTreeWidget->setAlternatingRowColors(true);
         mCompareTreeWidget->headerItem()->setHidden(true);
         mCompareTreeWidget->setHidden(true);
-        mCompareTreeWidget->setItemDelegate(mHTMLDelegate.get());
+        mCompareTreeWidget->setItemDelegate(&mHTMLDelegate);
         QObject::connect(mCompareTreeWidget, &QTreeWidget::itemClicked, this, &ViewTextureDB::groupedComparisonItemClicked);
 
         mTabCompare->layout()->addWidget(mCompareTableWidget);
@@ -158,9 +127,10 @@ void S2Plugin::ViewTextureDB::initializeUI()
     mSearchLineEdit->setFocus();
     mMainTreeView->setVisible(true);
     mMainTreeView->setColumnWidth(gsColField, 125);
+    mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffsetDelta, 75);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
@@ -184,7 +154,7 @@ void S2Plugin::ViewTextureDB::searchFieldReturnPressed()
     auto text = mSearchLineEdit->text();
     bool isNumeric = false;
     auto enteredID = text.toUInt(&isNumeric);
-    if (isNumeric && enteredID < mToolbar->textureDB()->count())
+    if (isNumeric && Spelunky2::get()->get_TextureDB().isValidID(enteredID))
     {
         showID(enteredID);
     }
@@ -205,25 +175,28 @@ void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
     searchFieldReturnPressed();
 }
 
-void S2Plugin::ViewTextureDB::showID(size_t id)
+void S2Plugin::ViewTextureDB::showID(uint32_t id)
 {
     mMainTabWidget->setCurrentWidget(mTabLookup);
-    mLookupID = id;
-    auto& offsets = mToolbar->textureDB()->offsetsForTextureID(mLookupID);
-    auto deltaReference = offsets.at("TextureDB.id");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::TextureDB))
-    {
-        mMainTreeView->updateValueForField(field, "TextureDB." + field.name, offsets, deltaReference);
-    }
+    auto offset = Spelunky2::get()->get_TextureDB().addressOfID(id);
+    mMainTreeView->updateTree(offset);
 }
 
 void S2Plugin::ViewTextureDB::label()
 {
-    auto textureDB = mToolbar->textureDB();
-    for (const auto& [fieldName, offset] : textureDB->offsetsForTextureID(mLookupID))
+    auto model = mMainTreeView->model();
+    std::string name;
+    auto& textureDB = Spelunky2::get()->get_TextureDB();
+    for (uint idx = 0; idx < model->rowCount(); ++idx)
     {
-        DbgSetAutoLabelAt(offset, ("Texture" + std::to_string(mLookupID) + "." + fieldName).c_str());
+        if (model->data(model->index(idx, gsColField), Qt::DisplayRole).toString() == "id")
+        {
+            auto id = model->data(model->index(idx, gsColValue), gsRoleRawValue).toUInt();
+            name = '[' + textureDB.nameForID(id) + ']';
+            break;
+        }
     }
+    mMainTreeView->labelAll(name);
 }
 
 void S2Plugin::ViewTextureDB::fieldUpdated(const QString& fieldName)
@@ -238,12 +211,7 @@ void S2Plugin::ViewTextureDB::fieldExpanded(const QModelIndex& index)
 
 void S2Plugin::ViewTextureDB::updateFieldValues()
 {
-    auto& offsets = mToolbar->textureDB()->offsetsForTextureID(mLookupID);
-    auto deltaReference = offsets.at("TextureDB.id");
-    for (const auto& field : mToolbar->configuration()->typeFields(MemoryFieldType::TextureDB))
-    {
-        mMainTreeView->updateValueForField(field, "TextureDB." + field.name, offsets, deltaReference);
-    }
+    mMainTreeView->updateTree();
 }
 
 void S2Plugin::ViewTextureDB::compareGroupByCheckBoxClicked(int state)
@@ -271,19 +239,19 @@ void S2Plugin::ViewTextureDB::populateComparisonTableWidget()
 {
     mCompareTableWidget->setSortingEnabled(false);
 
-    auto field = mCompareFieldComboBox->currentData().value<MemoryField>();
-    auto textureDB = mToolbar->textureDB();
+    auto comboboxData = mCompareFieldComboBox->currentData();
+    auto& textureDB = Spelunky2::get()->get_TextureDB();
 
     size_t row = 0;
-    for (auto x = 0; x < textureDB->count(); ++x)
+    for (auto& [textureID, textureData] : textureDB.textures())
     {
-        auto item0 = new QTableWidgetItem(QString::asprintf("%03d", x));
+        auto item0 = new QTableWidgetItem(QString::asprintf("%03d", textureID));
         item0->setTextAlignment(Qt::AlignCenter);
         mCompareTableWidget->setItem(row, 0, item0);
-        auto name = QString("Texture %1 (%2)").arg(x).arg(QString::fromStdString(mToolbar->textureDB()->nameForID(x)));
+        auto name = QString("Texture %1 (%2)").arg(textureID).arg(QString::fromStdString(textureData.first));
         mCompareTableWidget->setItem(row, 1, new QTableWidgetItem(QString("<font color='blue'><u>%1</u></font>").arg(name)));
 
-        auto [caption, value] = valueForField(field, x);
+        auto [caption, value] = DB::valueForField(comboboxData, textureData.second);
         auto item = new TableWidgetItemNumeric(caption);
         item->setData(Qt::UserRole, value);
         mCompareTableWidget->setItem(row, 2, item);
@@ -298,24 +266,24 @@ void S2Plugin::ViewTextureDB::populateComparisonTreeWidget()
 {
     mCompareTreeWidget->setSortingEnabled(false);
 
-    auto field = mCompareFieldComboBox->currentData().value<MemoryField>();
-    auto textureDB = mToolbar->textureDB();
+    auto comboboxData = mCompareFieldComboBox->currentData();
+    auto& textureDB = Spelunky2::get()->get_TextureDB();
 
     std::unordered_map<std::string, QVariant> rootValues;
     std::unordered_map<std::string, std::unordered_set<uint32_t>> groupedValues; // valueString -> set<texture id's>
-    for (uint32_t x = 0; x < textureDB->count(); ++x)
+    for (auto& [textureID, textureData] : textureDB.textures())
     {
-        auto [caption, value] = valueForField(field, x);
+        auto [caption, value] = DB::valueForField(comboboxData, textureData.second);
         auto captionStr = caption.toStdString();
         rootValues[captionStr] = value;
 
         if (groupedValues.count(captionStr) == 0)
         {
-            groupedValues[captionStr] = {x};
+            groupedValues[captionStr] = {textureID};
         }
         else
         {
-            groupedValues[captionStr].insert(x);
+            groupedValues[captionStr].insert(textureID);
         }
     }
 
@@ -326,7 +294,7 @@ void S2Plugin::ViewTextureDB::populateComparisonTreeWidget()
         mCompareTreeWidget->insertTopLevelItem(0, rootItem);
         for (const auto& textureId : textureIds)
         {
-            auto textureName = QString("Texture %1 (%2)").arg(textureId).arg(QString::fromStdString(mToolbar->textureDB()->nameForID(textureId)));
+            auto textureName = QString("Texture %1 (%2)").arg(textureId).arg(QString::fromStdString(textureDB.nameForID(textureId)));
             auto caption = QString("<font color='blue'><u>%1</u></font>").arg(textureName);
             auto childItem = new QTreeWidgetItem(rootItem, QStringList(caption));
             childItem->setData(0, Qt::UserRole, textureId);
@@ -338,103 +306,11 @@ void S2Plugin::ViewTextureDB::populateComparisonTreeWidget()
     mCompareTreeWidget->sortItems(0, Qt::AscendingOrder);
 }
 
-std::pair<QString, QVariant> S2Plugin::ViewTextureDB::valueForField(const MemoryField& field, size_t textureDBIndex)
-{
-    auto offset = mToolbar->textureDB()->offsetsForTextureID(textureDBIndex).at("TextureDB." + field.name);
-    switch (field.type)
-    {
-        case MemoryFieldType::CodePointer:
-        case MemoryFieldType::DataPointer:
-        {
-            size_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("0x%016llX", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Byte:
-        case MemoryFieldType::State8:
-        {
-            int8_t value = Script::Memory::ReadByte(offset);
-            return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedByte:
-        case MemoryFieldType::Flags8:
-        {
-            uint8_t value = Script::Memory::ReadByte(offset);
-            return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Word:
-        case MemoryFieldType::State16:
-        {
-            int16_t value = Script::Memory::ReadWord(offset);
-            return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedWord:
-        case MemoryFieldType::Flags16:
-        {
-            uint16_t value = Script::Memory::ReadWord(offset);
-            return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Dword:
-        case MemoryFieldType::State32:
-        {
-            int32_t value = Script::Memory::ReadDword(offset);
-            return std::make_pair(QString::asprintf("%ld", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedDword:
-        case MemoryFieldType::Flags32:
-        {
-            uint32_t value = Script::Memory::ReadDword(offset);
-            return std::make_pair(QString::asprintf("%lu", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Qword:
-        {
-            int64_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("%lld", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::UnsignedQword:
-        {
-            uint64_t value = Script::Memory::ReadQword(offset);
-            return std::make_pair(QString::asprintf("%llu", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Float:
-        {
-            uint32_t dword = Script::Memory::ReadDword(offset);
-            float value = reinterpret_cast<float&>(dword);
-            return std::make_pair(QString::asprintf("%f", value), QVariant::fromValue(value));
-        }
-        case MemoryFieldType::Bool:
-        {
-            auto b = Script::Memory::ReadByte(offset);
-            bool value = reinterpret_cast<bool&>(b);
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(b));
-        }
-        case MemoryFieldType::Flag:
-        {
-            uint8_t flagToCheck = field.extraInfo;
-            bool isFlagSet = false;
-            if (field.comment == "32")
-            {
-                isFlagSet = ((Script::Memory::ReadDword(offset) & (1 << flagToCheck)) > 0);
-            }
-            else if (field.comment == "16")
-            {
-                isFlagSet = ((Script::Memory::ReadWord(offset) & (1 << flagToCheck)) > 0);
-            }
-            else if (field.comment == "8")
-            {
-                isFlagSet = ((Script::Memory::ReadByte(offset) & (1 << flagToCheck)) > 0);
-            }
-
-            bool value = reinterpret_cast<bool&>(isFlagSet);
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(isFlagSet));
-        }
-    }
-    return std::make_pair("unknown", 0);
-}
-
 void S2Plugin::ViewTextureDB::comparisonCellClicked(int row, int column)
 {
     if (column == 1)
     {
+        mSearchLineEdit->clear();
         auto clickedID = mCompareTableWidget->item(row, 0)->data(Qt::DisplayRole).toULongLong();
         showID(clickedID);
     }
@@ -444,6 +320,7 @@ void S2Plugin::ViewTextureDB::groupedComparisonItemClicked(QTreeWidgetItem* item
 {
     if (item->childCount() == 0)
     {
+        mSearchLineEdit->clear();
         showID(item->data(0, Qt::UserRole).toUInt());
     }
 }

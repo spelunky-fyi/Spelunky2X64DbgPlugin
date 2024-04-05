@@ -1,33 +1,45 @@
 #pragma once
 
-#include "Data/MemoryMappedData.h"
 #include <QStringList>
 #include <cstdint>
-#include <string>
-#include <unordered_map>
 
 namespace S2Plugin
 {
-    struct StringsTable;
-    struct Configuration;
-
-    class CharacterDB : public MemoryMappedData
+    class CharacterDB
     {
       public:
-        explicit CharacterDB(Configuration* config);
-        bool loadCharacters(StringsTable* stringsTable);
-        uint8_t charactersCount() const noexcept;
-
-        std::unordered_map<std::string, size_t>& offsetsForIndex(uint8_t characterIndex);
-        const std::unordered_map<uint8_t, QString>& characterNames() const noexcept;
-        QStringList characterNamesStringList() const noexcept;
-
-        void reset();
+        static constexpr uint8_t charactersCount() noexcept
+        {
+            // [Known Issue]: constant value, needs to rebuild program to update
+            return 20;
+        }
+        const QStringList& characterNamesStringList() const noexcept
+        {
+            return mCharacterNamesStringList;
+        }
+        bool isValid() const
+        {
+            return ptr != 0;
+        }
+        uintptr_t addressOfIndex(uint8_t id) const
+        {
+            return ptr + id * characterSize();
+        }
+        static constexpr size_t characterSize()
+        {
+            // [Known Issue]: constant value, needs to rebuild program to update
+            return 0x2Cu;
+        }
 
       private:
-        size_t mCharactersPtr = 0;
-        std::unordered_map<uint8_t, std::unordered_map<std::string, size_t>> mMemoryOffsets; // map of character id -> ( fieldname -> offset ) of field value in memory
-        std::unordered_map<uint8_t, QString> mCharacterNames;
+        uintptr_t ptr{0};
         QStringList mCharacterNamesStringList;
+
+        CharacterDB() = default;
+        ~CharacterDB(){};
+        CharacterDB(const CharacterDB&) = delete;
+        CharacterDB& operator=(const CharacterDB&) = delete;
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

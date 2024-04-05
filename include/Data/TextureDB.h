@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Data/MemoryMappedData.h"
 #include <QStringList>
 #include <cstdint>
 #include <string>
@@ -8,24 +7,57 @@
 
 namespace S2Plugin
 {
-    struct Configuration;
-
-    class TextureDB : public MemoryMappedData
+    class TextureDB
     {
       public:
-        explicit TextureDB(Configuration* config);
-        bool loadTextureDB();
-
-        std::unordered_map<std::string, size_t>& offsetsForTextureID(uint32_t textureDBID);
-        std::string nameForID(uint32_t id) const; // id != index !!
-        const QStringList& namesStringList() const noexcept;
-        size_t count();
-        void reset();
+        bool isValid() const
+        {
+            return (ptr != 0);
+        }
+        const std::string& nameForID(uint32_t id) const // id != index since there is no id 325 and the order is different
+        {
+            if (auto it = mTextures.find(id); it != mTextures.end())
+            {
+                return it->second.first;
+            }
+            static std::string unknownName("UNKNOWN TEXTURE");
+            return unknownName;
+        }
+        uintptr_t addressOfID(uint32_t id) const
+        {
+            if (auto it = mTextures.find(id); it != mTextures.end())
+            {
+                return it->second.second;
+            }
+            return 0;
+        }
+        const QStringList& namesStringList() const noexcept
+        {
+            return mTextureNamesStringList;
+        }
+        size_t count() const
+        {
+            return mTextures.size();
+        }
+        bool isValidID(uint32_t id) const
+        {
+            return mTextures.count(id) != 0;
+        }
+        const auto textures() const
+        {
+            return mTextures;
+        }
 
       private:
-        size_t mTextureDBPtr = 0;
-        std::unordered_map<uint32_t, std::unordered_map<std::string, size_t>> mMemoryOffsets; // texture id -> (fieldname -> offset of field value in memory)
-        std::unordered_map<uint32_t, std::string> mTextureNames;                              // id -> name
+        size_t ptr{0};
+        std::unordered_map<uint32_t, std::pair<std::string, uintptr_t>> mTextures; // id -> {name, address}
         QStringList mTextureNamesStringList;
+
+        TextureDB() = default;
+        ~TextureDB(){};
+        TextureDB(const TextureDB&) = delete;
+        TextureDB& operator=(const TextureDB&) = delete;
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

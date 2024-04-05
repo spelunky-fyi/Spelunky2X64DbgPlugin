@@ -1,11 +1,9 @@
-#include <windows.h>
+#include "Views/ViewStdMap.h"
 
 #include "Configuration.h"
-#include "Data/MemoryMappedData.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
-#include "Views/ViewStdMap.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCheckBox>
@@ -17,20 +15,23 @@
 #include <QTimer>
 #include <Qlayout>
 
-S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, size_t mapOffset, QWidget* parent)
-    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent)
+    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent)
 {
     mMainLayout = new QVBoxLayout(this);
 
-    auto m = MemoryMappedData(mToolbar->configuration());
-    mMapKeyTypeSize = m.sizeOf(keytypeName);
-    mMapValueTypeSize = m.sizeOf(valuetypeName);
+    auto config = Configuration::get();
+    mMapKeyTypeSize = config->getTypeSize(keytypeName);
+    mMapValueTypeSize = config->getTypeSize(valuetypeName);
 
-    mMapKeyAlignment = mToolbar->configuration()->getAlingment(keytypeName);
-    mMapValueAlignment = mToolbar->configuration()->getAlingment(valuetypeName);
+    mMapKeyAlignment = config->getAlingment(keytypeName);
+    mMapValueAlignment = config->getAlingment(valuetypeName);
 
     initializeRefreshLayout();
-    initializeTreeView();
+    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
+    mMainTreeView->setEnableChangeHighlighting(false);
+
+    mMainLayout->addWidget(mMainTreeView);
     setWindowIcon(QIcon(":/icons/caveman.png"));
 
     mMainLayout->setMargin(5);
@@ -42,16 +43,9 @@ S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytyp
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
     mMainTreeView->setVisible(true);
 
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     refreshMapContents();
     toggleAutoRefresh(Qt::Checked);
-}
-
-void S2Plugin::ViewStdMap::initializeTreeView()
-{
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, nullptr, this);
-    mMainTreeView->setEnableChangeHighlighting(false);
-
-    mMainLayout->addWidget(mMainTreeView);
 }
 
 void S2Plugin::ViewStdMap::initializeRefreshLayout()
@@ -93,120 +87,96 @@ void S2Plugin::ViewStdMap::closeEvent(QCloseEvent* event)
 
 void S2Plugin::ViewStdMap::refreshMapContents()
 {
-    StdMap the_map{mmapOffset, mMapKeyAlignment, mMapValueAlignment, mMapKeyTypeSize};
-    auto config = mToolbar->configuration();
-    mMainTreeView->clear();
-    mMemoryFields.clear();
-    mMemoryFields.reserve(the_map.size());
+    if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mmapOffset)))
+        return;
 
-    bool add_parrent_object = false;
-    MemoryField parent_field;
-    parent_field.type = MemoryFieldType::Byte;
+    StdMap the_map{mmapOffset, mMapKeyAlignment, mMapValueAlignment, mMapKeyTypeSize};
+    auto config = Configuration::get();
+    mMainTreeView->clear();
 
     MemoryField key_field;
     key_field.name = "key";
-    if (config->isPointer(mMapKeyType))
+    if (config->isPermanentPointer(mMapKeyType))
     {
-        key_field.type = MemoryFieldType::PointerType;
+        key_field.type = MemoryFieldType::DefaultStructType;
         key_field.jsonName = mMapKeyType;
-        add_parrent_object = true;
+        key_field.isPointer = true;
     }
-    else if (config->isInlineStruct(mMapKeyType))
+    else if (config->isJsonStruct(mMapKeyType))
     {
-        key_field.type = MemoryFieldType::InlineStructType;
+        key_field.type = MemoryFieldType::DefaultStructType;
         key_field.jsonName = mMapKeyType;
-        add_parrent_object = true;
     }
-    else if (config->isBuiltInType(mMapKeyType))
+    else if (auto type = config->getBuiltInType(mMapKeyType); type != MemoryFieldType::None)
     {
-        key_field.type = gsJSONStringToMemoryFieldTypeMapping.at(mMapKeyType);
-        // check for the line below
-        // add_parrent_object = true;
+        key_field.type = type;
+        if (Configuration::isPointerType(type))
+            key_field.isPointer = true;
     }
     else
     {
-        dprintf("%s is UNKNOWN\n", mMapKeyType.c_str());
-        // not implemented
+        dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapKeyType.c_str());
+        return;
     }
 
     MemoryField value_field;
     if (mMapValueTypeSize != 0) // if not StdSet
     {
         value_field.name = "value";
-        if (config->isPointer(mMapValueType))
+        if (config->isPermanentPointer(mMapValueType))
         {
-            value_field.type = MemoryFieldType::PointerType;
+            value_field.type = MemoryFieldType::DefaultStructType;
+            value_field.jsonName = mMapValueType;
+            value_field.isPointer = true;
+        }
+        else if (config->isJsonStruct(mMapValueType))
+        {
+            value_field.type = MemoryFieldType::DefaultStructType;
             value_field.jsonName = mMapValueType;
         }
-        else if (config->isInlineStruct(mMapValueType))
+        else if (auto type = config->getBuiltInType(mMapValueType); type != MemoryFieldType::None)
         {
-            value_field.type = MemoryFieldType::InlineStructType;
-            value_field.jsonName = mMapValueType;
-        }
-        else if (config->isBuiltInType(mMapValueType))
-        {
-            value_field.type = gsJSONStringToMemoryFieldTypeMapping.at(mMapValueType);
+            value_field.type = type;
+            if (Configuration::isPointerType(type))
+                value_field.isPointer = true;
         }
         else
         {
-            dprintf("%s is UNKNOWN\n", mMapValueType.c_str());
-            // not implemented
+            dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapValueType.c_str());
+            return;
         }
     }
 
     auto _end = the_map.end();
     auto _cur = the_map.begin();
-    for (int x = 0; _cur != _end && x < 100; ++x, ++_cur)
+    MemoryField parent_field;
+    parent_field.type = MemoryFieldType::Dummy;
+    for (int x = 0; _cur != _end && x < 300; ++x, ++_cur)
     {
         QStandardItem* parent{nullptr};
-        if (add_parrent_object)
-        {
-            parent_field.name = "obj_" + std::to_string(x);
-            parent = mMainTreeView->addMemoryField(parent_field, parent_field.name);
-        }
-        else
-            key_field.name = "key_" + std::to_string(x);
+        parent_field.name = "obj_" + std::to_string(x);
+        parent = mMainTreeView->addMemoryField(parent_field, parent_field.name, 0, 0);
 
-        mMemoryFields.emplace_back(std::make_tuple(key_field, _cur.key_ptr(), parent));
-        auto key_StandardItem = mMainTreeView->addMemoryField(key_field, key_field.name, parent);
-        if (!add_parrent_object)
-            parent = key_StandardItem;
+        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, parent);
 
         if (mMapValueTypeSize == 0) // StdSet
             continue;
 
-        mMemoryFields.emplace_back(std::make_tuple(value_field, _cur.value_ptr(), parent));
-        mMainTreeView->addMemoryField(value_field, value_field.name, parent);
+        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, parent);
     }
     refreshData();
 
     mMainTreeView->updateTableHeader();
-
-    mMainTreeView->setColumnHidden(gsColComparisonValue, true);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, true);
-    mMainTreeView->setColumnHidden(gsColMemoryOffsetDelta, true);
-    mMainTreeView->setColumnHidden(gsColComment, true);
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryOffset, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
 }
 
 void S2Plugin::ViewStdMap::refreshData()
 {
-    std::unordered_map<std::string, size_t> offsets;
-    auto m = MemoryMappedData(mToolbar->configuration());
-
-    for (const auto& field : mMemoryFields)
-    {
-        const auto& mem_field = std::get<0>(field);
-        const auto& mem_offset = std::get<1>(field);
-        const auto& parrent = std::get<2>(field);
-
-        m.setOffsetForField(mem_field, mem_field.name, mem_offset, offsets);
-        mMainTreeView->updateValueForField(mem_field, mem_field.name, offsets, 0, parrent);
-    }
+    mMainTreeView->updateTree();
 }
 
 QSize S2Plugin::ViewStdMap::sizeHint() const

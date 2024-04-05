@@ -1,6 +1,10 @@
 #include "pluginmain.h"
 #include "QtPlugin.h"
 
+#include <QIcon>
+#include <QMessageBox>
+#include <string>
+
 int S2Plugin::handle;
 HWND S2Plugin::hwndDlg;
 int S2Plugin::hMenu;
@@ -54,4 +58,34 @@ PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
 PLUG_EXPORT void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* info)
 {
     QtPlugin::MenuEntry(info->hEntry);
+}
+
+void displayError(const char* fmt, ...)
+{
+    char buffer[1024] = {0};
+
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setText(buffer);
+    msgBox.setWindowTitle("Spelunky2");
+    msgBox.exec();
+    _plugin_logprintf("[Spelunky2] %s\n", buffer);
+}
+
+void displayError(std::string message)
+{
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setText(message.c_str());
+    msgBox.setWindowTitle("Spelunky2");
+    msgBox.exec();
+    message.append("[Spelunky2] ");
+    _plugin_logprint(message.c_str());
 }

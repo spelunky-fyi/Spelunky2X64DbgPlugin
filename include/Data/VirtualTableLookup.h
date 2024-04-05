@@ -7,8 +7,6 @@
 
 namespace S2Plugin
 {
-    struct Configuration;
-
     struct VirtualTableEntry
     {
         size_t value;
@@ -18,29 +16,51 @@ namespace S2Plugin
         bool isAutoSymbol = false; // whether the symbol name was added from x64dbg
         std::unordered_set<std::string> symbols;
 
-        void addSymbol(const std::string& s);
+        void addSymbol(const std::string& s)
+        {
+            symbols.insert(s);
+        }
     };
 
     class VirtualTableLookup
     {
       public:
-        explicit VirtualTableLookup(Configuration* config);
-        bool loadTable();
+        const VirtualTableEntry& entryForOffset(size_t tableOffset) const
+        {
+            return mOffsetToTableEntries.at(tableOffset);
+        }
+        std::unordered_set<size_t> tableOffsetForFunctionAddress(size_t functionAddress) const;
+        VirtualTableEntry findPrecedingEntryWithSymbols(size_t tableOffset) const;
+        size_t tableAddressForEntry(const VirtualTableEntry& entry) const
+        {
+            return mTableStartAddress + (entry.offset * sizeof(uintptr_t));
+        }
 
-        const VirtualTableEntry& entryForOffset(size_t tableOffset);
-        std::unordered_set<uint32_t> tableOffsetForFunctionAddress(size_t functionAddress);
-        VirtualTableEntry findPrecedingEntryWithSymbols(size_t tableOffset);
-        size_t tableAddressForEntry(const VirtualTableEntry& entry);
+        void setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name) const;
 
-        void setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name);
-
-        size_t count() const noexcept;
-        size_t tableStartAddress() const noexcept;
-        void reset();
+        constexpr size_t count() const noexcept
+        {
+            constexpr size_t gsAmountOfPointers = 53243;
+            return gsAmountOfPointers;
+        }
+        size_t tableStartAddress() const noexcept
+        {
+            return mTableStartAddress;
+        }
+        bool isValid() const
+        {
+            return (mTableStartAddress != 0);
+        }
 
       private:
-        Configuration* mConfiguration;
-        std::unordered_map<uint32_t, VirtualTableEntry> mOffsetToTableEntries;
-        size_t mTableStartAddress = 0;
+        std::unordered_map<size_t, VirtualTableEntry> mOffsetToTableEntries;
+        uintptr_t mTableStartAddress{0};
+
+        VirtualTableLookup() = default;
+        ~VirtualTableLookup(){};
+        VirtualTableLookup(const VirtualTableLookup&) = delete;
+        VirtualTableLookup& operator=(const VirtualTableLookup&) = delete;
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

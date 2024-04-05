@@ -1,30 +1,25 @@
 #pragma once
 
-#include "Data/MemoryMappedData.h"
 #include <cstdint>
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 namespace S2Plugin
 {
-    struct Configuration;
-    struct ParticleEmittersList;
-
-    class ParticleDB : public MemoryMappedData
+    class ParticleDB
     {
       public:
-        explicit ParticleDB(Configuration* config);
-        bool loadParticleDB();
-        ParticleEmittersList* particleEmittersList() const noexcept;
-
-        std::unordered_map<std::string, size_t>& offsetsForIndex(uint32_t particleDBIndex);
-
-        void reset();
+        uintptr_t addressOfIndex(uint32_t particleDBIndex) const
+        {
+            return ptr == 0ull ? 0ull : ptr + particleDBIndex * particleSize();
+        }
+        bool isValid() const
+        {
+            return (ptr != 0);
+        }
+        static size_t particleSize();
 
       private:
-        size_t mParticleDBPtr = 0;
-        std::unique_ptr<ParticleEmittersList> mParticleEmittersList;
-        std::unordered_map<uint16_t, std::unordered_map<std::string, size_t>> mMemoryOffsets; // map of particleDBID -> ( fieldname -> offset ) of field value in memory
+        uintptr_t ptr{0};
+
+        friend struct Spelunky2;
     };
 } // namespace S2Plugin

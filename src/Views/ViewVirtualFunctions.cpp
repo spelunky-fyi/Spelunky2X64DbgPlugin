@@ -39,8 +39,7 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
     mTopLayout->addWidget(jumpBtn);
     mTopLayout->addStretch();
 
-    mHTMLDelegate = std::make_unique<StyledItemDelegateHTML>();
-    mHTMLDelegate->setCenterVertically(true);
+    mHTMLDelegate.setCenterVertically(true);
 
     mFunctionsTable = new QTableView(this);
     mSortFilterProxy->setSourceModel(mModel.get());
@@ -48,7 +47,7 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
     mFunctionsTable->setAlternatingRowColors(true);
     mFunctionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mFunctionsTable->horizontalHeader()->setStretchLastSection(true);
-    mFunctionsTable->setItemDelegate(mHTMLDelegate.get());
+    mFunctionsTable->setItemDelegate(&mHTMLDelegate);
     mFunctionsTable->setColumnWidth(gsColFunctionIndex, 50);
     mFunctionsTable->setColumnWidth(gsColFunctionTableAddress, 130);
     mFunctionsTable->setColumnWidth(gsColFunctionFunctionAddress, 130);
@@ -103,7 +102,7 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
 
 void S2Plugin::ViewVirtualFunctions::jumpToFunction(bool b)
 {
-    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8));
+    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8ull));
     GuiDisasmAt(address, GetContextData(UE_CIP));
     GuiShowCpu();
 }

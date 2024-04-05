@@ -1,35 +1,22 @@
 #pragma once
 
-#include "Data/MemoryMappedData.h"
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 
 namespace S2Plugin
 {
-    struct Configuration;
-
-    class State : public MemoryMappedData
+    struct State
     {
-      public:
-        explicit State(Configuration* config);
-        bool loadState();
-        void loadThreadSpecificState(size_t offset);
+        State(uintptr_t addr) : mStatePtr(addr){};
 
-        uint32_t heapOffset();
-        uint32_t TEBOffset() const;
-
-        std::unordered_map<std::string, size_t>& offsets();
-        void refreshOffsets();
-        size_t offsetForField(const std::string& fieldName) const;
-
-        size_t findNextEntity(size_t entityOffset);
-
-        void reset();
+        uintptr_t ptr() const
+        {
+            return mStatePtr;
+        }
+        uintptr_t findEntitybyUID(uint32_t uid) const;
 
       private:
-        size_t mStatePtr = 0;
-        uint32_t mHeapOffset = 0;
-        std::unordered_map<std::string, size_t> mMemoryOffsets; // fieldname -> offset of field value in memory
+        uintptr_t mStatePtr = 0;
     };
 } // namespace S2Plugin

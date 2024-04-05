@@ -1,6 +1,8 @@
 #pragma once
 
-#include "pluginsdk/_scriptapi_memory.h"
+#include "pluginmain.h"
+#include <cstdint>
+#include <utility>
 
 namespace S2Plugin
 {
@@ -41,34 +43,34 @@ namespace S2Plugin
             Node(Node& t) : node_ptr(t.node_ptr), parent_map(t.parent_map){};
             Key key() const
             {
-                auto offset = key_ptr();
+                auto key_address = key_ptr();
                 // would probably be better with Read function but
                 // probably doesn't matter as for large structures you will just grab the address most of the time
                 switch (parent_map->keytype_size)
                 {
                     case size_byte:
-                        return (Key)Script::Memory::ReadByte(offset);
+                        return (Key)Script::Memory::ReadByte(key_address);
                     case size_word:
-                        return (Key)Script::Memory::ReadWord(offset);
+                        return (Key)Script::Memory::ReadWord(key_address);
                     case size_dword:
-                        return (Key)Script::Memory::ReadDword(offset);
+                        return (Key)Script::Memory::ReadDword(key_address);
                 }
-                return (Key)Script::Memory::ReadQword(offset);
+                return (Key)Script::Memory::ReadQword(key_address);
             }
             Value value() const
             {
-                auto offset = value_ptr();
+                auto value_address = value_ptr();
                 // same as key()
                 switch (parent_map->valuetype_size)
                 {
                     case size_byte:
-                        return (Value)Script::Memory::ReadByte(offset);
+                        return (Value)Script::Memory::ReadByte(value_address);
                     case size_word:
-                        return (Value)Script::Memory::ReadWord(offset);
+                        return (Value)Script::Memory::ReadWord(value_address);
                     case size_dword:
-                        return (Value)Script::Memory::ReadDword(offset);
+                        return (Value)Script::Memory::ReadDword(value_address);
                 }
-                return (Value)Script::Memory::ReadQword(offset);
+                return (Value)Script::Memory::ReadQword(value_address);
             }
             size_t key_ptr() const
             {
@@ -230,7 +232,7 @@ namespace S2Plugin
             // or if there is a padding added for aliment
             // the issue is, if key or value are a structs, we need to know their alignments, not just their size
 
-            uint8_t alignment = key_alignment > value_alignment ? key_alignment : value_alignment;
+            uint8_t alignment = std::max(key_alignment, value_alignment);
 
             switch (alignment)
             {
@@ -256,6 +258,7 @@ namespace S2Plugin
             {
                 case 0:
                 case 1:
+                    value_offset = offset;
                     break;
                 case 2:
                     value_offset = (offset + 1) & ~1;
@@ -273,7 +276,7 @@ namespace S2Plugin
             }
         }
 
-        size_t address;
+        uintptr_t address;
         size_t keytype_size;
         size_t valuetype_size;
         uint8_t key_offset;
