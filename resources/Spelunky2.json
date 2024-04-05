@@ -844,8 +844,15 @@
     "ParticleEmitterInfoPointer": [
       { "field": "particle_type", "type": "ParticleDBPointer" },
       { "field": "particle_type2", "type": "ParticleDBPointer" },
-      { "field": "emitted_particles", "type": "EmittedParticlesInfo", "comment": "values are shown for just one particle" },
-      { "field": "emitted_particles_back_layer", "type": "EmittedParticlesInfo" },
+      {
+        "field": "emitted_particles",
+        "type": "EmittedParticlesInfo",
+        "comment": "values are shown for just one particle"
+      },
+      {
+        "field": "emitted_particles_back_layer",
+        "type": "EmittedParticlesInfo"
+      },
       {
         "field": "entity_uid",
         "type": "EntityUID",
@@ -8125,7 +8132,12 @@
     ],
     "LayerPointer": [
       { "field": "is_back_layer", "type": "Bool" },
-      { "field": "skip1", "type": "Skip", "offset": 7, "comment": "skip padding" },
+      {
+        "field": "skip1",
+        "type": "Skip",
+        "offset": 7,
+        "comment": "skip padding"
+      },
       { "field": "all_entities", "type": "EntityList" },
       {
         "field": "unknown_entities1",
