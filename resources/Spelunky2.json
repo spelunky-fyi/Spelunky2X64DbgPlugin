@@ -101,7 +101,6 @@
     "PointerToFloorsMap",
     "PointerToFloatSet",
     "MultiLineTextRenderingPointer",
-    "EntityLogicPointer",
     "PointerToPointerToEntityList",
     "InputsByControllerPointer",
     "MovableBehavior"
@@ -5059,9 +5058,9 @@
     ],
     "LogicUnderwaterBubbles": [
       { "field": "base_logic", "type": "Logic" },
-      { "field": "unknown3", "type": "Float" },
-      { "field": "unknown4", "type": "Word" },
-      { "field": "unknown5", "type": "Byte" }
+      { "field": "gravity_direction", "type": "Float" },
+      { "field": "droplets_spawn_chance", "type": "Word", "comment": "inverse chance" },
+      { "field": "droplets_enabled", "type": "Bool" }
     ],
     "LogicDiceShop": [
       { "field": "base_logic", "type": "Logic" },
@@ -8198,7 +8197,7 @@
       {
         "field": "entity_regions",
         "type": "StdMap",
-        "keytype": "UnsignedDword",
+        "keytype": "EntityUID",
         "valuetype": "EntityRegions",
         "comment": "key is uid, all entities except FX, FLOOR, DECORATION, BG, SHADOW and LOGICAL"
       },
@@ -9379,8 +9378,22 @@
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" }
     ],
-    "EntityLogicPointer": [
-      { "field": "__vftable", "type": "DataPointer" },
+    "CutsceneBehavior": [
+    {
+      "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": {
+            "name": "~CutsceneBehavior",
+            "params": "",
+            "return": ""
+          },
+          "1": {
+            "name": "update",
+            "params": "Movable* entity"
+          }
+        }
+    },
       { "field": "unknown1", "type": "Qword" },
       { "field": "unknown2", "type": "Qword" }
     ],

@@ -925,7 +925,8 @@
           "23": {
             "name": "v23",
             "params": "Entity* logical_trigger, Entity* who_triggered_it",
-            "return": "spawns LASERTRAP_SHOT from LASERTRAP, also some trigger entities use this, seam to be called right after on_collision2, tiggers use self as the first parameter"
+            "return": "void",
+            "comment": "spawns LASERTRAP_SHOT from LASERTRAP, also some trigger entities use this, seam to be called right after on_collision2, tiggers use self as the first parameter"
           },
           "24": {
             "name": "trigger_action",
@@ -1367,7 +1368,8 @@
       { "field": "current_behavior", "type": "MovableBehavior" },
       {
         "field": "cutscene_logic",
-        "type": "EntityLogicPointer",
+        "type": "CutsceneBehavior",
+        "pointer": true,
         "comment": "seams to be the same structs used in state.logic ? or similar at least"
       },
       { "field": "movex", "type": "Float" },
