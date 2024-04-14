@@ -41,7 +41,7 @@ void S2Plugin::ViewLevelGen::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewLevelGen::refreshLevelGen);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewLevelGen::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewLevelGen::refreshLevelGen);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -161,11 +161,6 @@ void S2Plugin::ViewLevelGen::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewLevelGen::autoRefreshTimerTrigger()
-{
-    refreshLevelGen();
 }
 
 QSize S2Plugin::ViewLevelGen::sizeHint() const

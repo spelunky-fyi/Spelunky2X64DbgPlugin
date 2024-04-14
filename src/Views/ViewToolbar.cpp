@@ -209,7 +209,7 @@ void S2Plugin::ViewToolbar::showGameManager()
 
 void S2Plugin::ViewToolbar::showLevelGen()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StatePtr() != 0)
     {
         auto w = new ViewLevelGen(this);
         mMDIArea->addSubWindow(w);

@@ -31,7 +31,6 @@ namespace S2Plugin
       private slots:
         void refreshJournalPage();
         void toggleAutoRefresh(int newState);
-        void autoRefreshTimerTrigger();
         void autoRefreshIntervalChanged(const QString& text);
         void label();
         void interpretAsChanged(const QString& text);

@@ -33,7 +33,7 @@ void S2Plugin::ViewSaveGame::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewSaveGame::refreshSaveGame);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewSaveGame::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewSaveGame::refreshSaveGame);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -43,7 +43,7 @@ void S2Plugin::ViewSaveGame::initializeUI()
     mAutoRefreshIntervalLineEdit = new QLineEdit(this);
     mAutoRefreshIntervalLineEdit->setFixedWidth(50);
     mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("100");
+    mAutoRefreshIntervalLineEdit->setText("500");
     mRefreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
     QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewSaveGame::autoRefreshIntervalChanged);
 
@@ -100,11 +100,6 @@ void S2Plugin::ViewSaveGame::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewSaveGame::autoRefreshTimerTrigger()
-{
-    refreshSaveGame();
 }
 
 QSize S2Plugin::ViewSaveGame::sizeHint() const

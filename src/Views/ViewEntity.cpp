@@ -79,7 +79,7 @@ void S2Plugin::ViewEntity::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewEntity::refreshEntity);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewEntity::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewEntity::refreshEntity);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -215,11 +215,6 @@ void S2Plugin::ViewEntity::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewEntity::autoRefreshTimerTrigger()
-{
-    refreshEntity();
 }
 
 QSize S2Plugin::ViewEntity::sizeHint() const

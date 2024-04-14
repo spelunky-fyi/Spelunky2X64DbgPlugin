@@ -28,7 +28,6 @@ namespace S2Plugin
         void refreshMapContents();
         void refreshData();
         void toggleAutoRefresh(int newState);
-        void autoRefreshTimerTrigger();
         void autoRefreshIntervalChanged(const QString& text);
 
       private:

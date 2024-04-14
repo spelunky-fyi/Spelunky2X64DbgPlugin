@@ -47,7 +47,7 @@ void S2Plugin::ViewStdVector::initializeRefreshLayout()
     QObject::connect(mRefreshDataButton, &QPushButton::clicked, this, &ViewStdVector::refreshData);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewStdVector::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewStdVector::refreshData);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh data every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -164,9 +164,4 @@ void S2Plugin::ViewStdVector::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewStdVector::autoRefreshTimerTrigger()
-{
-    refreshData();
 }

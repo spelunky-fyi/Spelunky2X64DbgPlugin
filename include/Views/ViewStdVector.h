@@ -27,7 +27,6 @@ namespace S2Plugin
         void refreshVectorContents();
         void refreshData();
         void toggleAutoRefresh(int newState);
-        void autoRefreshTimerTrigger();
         void autoRefreshIntervalChanged(const QString& text);
 
       private:

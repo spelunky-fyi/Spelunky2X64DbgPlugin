@@ -31,7 +31,6 @@ namespace S2Plugin
       private slots:
         void refreshLevelGen();
         void toggleAutoRefresh(int newLevelGen);
-        void autoRefreshTimerTrigger();
         void autoRefreshIntervalChanged(const QString& text);
         void label();
         void levelGenRoomsPointerClicked();

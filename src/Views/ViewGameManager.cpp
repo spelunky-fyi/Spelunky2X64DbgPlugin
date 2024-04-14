@@ -33,7 +33,7 @@ void S2Plugin::ViewGameManager::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewGameManager::refreshGameManager);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewGameManager::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewGameManager::refreshGameManager);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -99,11 +99,6 @@ void S2Plugin::ViewGameManager::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewGameManager::autoRefreshTimerTrigger()
-{
-    refreshGameManager();
 }
 
 QSize S2Plugin::ViewGameManager::sizeHint() const

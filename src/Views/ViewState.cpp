@@ -34,7 +34,7 @@ void S2Plugin::ViewState::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewState::refreshState);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewState::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewState::refreshState);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -76,11 +76,6 @@ void S2Plugin::ViewState::closeEvent(QCloseEvent* event)
 }
 
 void S2Plugin::ViewState::refreshState()
-{
-    mMainTreeView->updateTree();
-}
-
-void S2Plugin::ViewState::autoRefreshTimerTrigger()
 {
     mMainTreeView->updateTree();
 }

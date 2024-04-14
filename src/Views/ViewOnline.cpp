@@ -34,7 +34,7 @@ void S2Plugin::ViewOnline::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewOnline::refreshOnline);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewOnline::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewOnline::refreshOnline);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -100,11 +100,6 @@ void S2Plugin::ViewOnline::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewOnline::autoRefreshTimerTrigger()
-{
-    refreshOnline();
 }
 
 QSize S2Plugin::ViewOnline::sizeHint() const

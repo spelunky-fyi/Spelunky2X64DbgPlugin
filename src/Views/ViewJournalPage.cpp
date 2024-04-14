@@ -34,7 +34,7 @@ void S2Plugin::ViewJournalPage::initializeUI()
     QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewJournalPage::refreshJournalPage);
 
     mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewJournalPage::autoRefreshTimerTrigger);
+    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewJournalPage::refreshJournalPage);
 
     mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
     mAutoRefreshCheckBox->setCheckState(Qt::Checked);
@@ -124,11 +124,6 @@ void S2Plugin::ViewJournalPage::autoRefreshIntervalChanged(const QString& text)
     {
         mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
     }
-}
-
-void S2Plugin::ViewJournalPage::autoRefreshTimerTrigger()
-{
-    refreshJournalPage();
 }
 
 QSize S2Plugin::ViewJournalPage::sizeHint() const
