@@ -49,7 +49,6 @@ namespace S2Plugin
         void updateTableHeader(bool restoreColumnWidths = true);
         void setEnableChangeHighlighting(bool b) noexcept;
 
-        void expandItem(QStandardItem* item);
         void updateTree(uintptr_t newAddr = 0, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
                        bool disableChangeHighlightingForField = false);
@@ -65,7 +64,7 @@ namespace S2Plugin
         void startDrag(Qt::DropActions supportedActions) override;
 
       signals:
-        void memoryFieldValueUpdated(const QString& fieldName);
+        void memoryFieldValueUpdated(int row, QStandardItem* parrent);
         void levelGenRoomsPointerClicked();
         void entityOffsetDropped(size_t offset);
 

@@ -2014,8 +2014,8 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::EntityPointer:
                 {
-                    auto rawValue = clickedItem->data(gsRoleRawValue).toULongLong(); // TODO check if valid ptr here or in update
-                    if (rawValue != 0)
+                    auto rawValue = clickedItem->data(gsRoleRawValue).toULongLong();
+                    if (Script::Memory::IsValidPtr(rawValue))
                     {
                         mToolbar->showEntity(rawValue);
                     }
@@ -2269,7 +2269,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     }
                 }
             }
-            emit memoryFieldValueUpdated(getDataFrom(index, gsColField, gsRoleUID).toString());
+            emit memoryFieldValueUpdated(index.row(), clickedItem->parent());
         }
     }
 }
@@ -2284,11 +2284,6 @@ void S2Plugin::TreeViewMemoryFields::clear()
     mSavedColumnWidths[gsColType] = columnWidth(gsColType);
     mSavedColumnWidths[gsColComment] = columnWidth(gsColComment);
     mModel->clear();
-}
-
-void S2Plugin::TreeViewMemoryFields::expandItem(QStandardItem* item)
-{
-    expand(mModel->indexFromItem(item));
 }
 
 void S2Plugin::TreeViewMemoryFields::setEnableChangeHighlighting(bool b) noexcept

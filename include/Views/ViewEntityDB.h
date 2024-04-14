@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QModelIndex>
 #include <QSize>
+#include <QStandardItem>
 #include <QString>
 #include <QTabWidget>
 #include <QTableWidget>
@@ -35,7 +36,7 @@ namespace S2Plugin
         void searchFieldReturnPressed();
         void searchFieldCompleterActivated(const QString& text);
         void label();
-        void fieldUpdated(const QString& fieldName);
+        void fieldUpdated(int row, QStandardItem* parrent);
         void fieldExpanded(const QModelIndex& index);
         void comparisonFieldChosen(const QString& fieldName);
         void compareGroupByCheckBoxClicked(int state);
@@ -59,7 +60,6 @@ namespace S2Plugin
         QTreeWidget* mCompareTreeWidget;
 
         void initializeUI();
-        void updateFieldValues();
         void populateComparisonTableWidget();
         void populateComparisonTreeWidget();
     };

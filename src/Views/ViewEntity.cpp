@@ -288,7 +288,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             auto item = mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
             if (++counter == hierarchy.size()) // expand last subclass
             {
-                mMainTreeView->expandItem(item);
+                mMainTreeView->expand(item->index());
             }
             // highlights fields in memory view, also updates delta
             recursiveHighlight(*it + ".", config->typeFieldsOfEntitySubclass(*it), recursiveHighlight);

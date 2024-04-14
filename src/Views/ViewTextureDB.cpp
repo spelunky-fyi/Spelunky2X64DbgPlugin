@@ -199,19 +199,26 @@ void S2Plugin::ViewTextureDB::label()
     mMainTreeView->labelAll(name);
 }
 
-void S2Plugin::ViewTextureDB::fieldUpdated(const QString& fieldName)
+void S2Plugin::ViewTextureDB::fieldUpdated(int row, QStandardItem* parrent)
 {
-    updateFieldValues();
+    if (parrent != nullptr) // special case: for flag field need to update it's parrent, not the flag field
+    {
+        auto model = qobject_cast<QStandardItemModel*>(mMainTreeView->model());
+        auto parrentIndex = parrent->index();
+        auto index = model->index(row, gsColField, parrentIndex);
+        if (model->data(index, gsRoleType).value<MemoryFieldType>() == MemoryFieldType::Flag)
+        {
+            mMainTreeView->updateRow(parrentIndex.row(), std::nullopt, std::nullopt, parrent->parent(), true);
+            return;
+        }
+    }
+    mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parrent, true);
 }
 
 void S2Plugin::ViewTextureDB::fieldExpanded(const QModelIndex& index)
 {
-    updateFieldValues();
-}
-
-void S2Plugin::ViewTextureDB::updateFieldValues()
-{
-    mMainTreeView->updateTree();
+    auto model = qobject_cast<QStandardItemModel*>(mMainTreeView->model());
+    mMainTreeView->updateRow(index.row(), std::nullopt, std::nullopt, model->itemFromIndex(index.parent()), true);
 }
 
 void S2Plugin::ViewTextureDB::compareGroupByCheckBoxClicked(int state)
