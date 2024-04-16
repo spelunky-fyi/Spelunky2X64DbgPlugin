@@ -11,14 +11,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     class ViewOnline : public QWidget
     {
         Q_OBJECT
       public:
-        ViewOnline(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewOnline(QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -39,8 +38,6 @@ namespace S2Plugin
         QCheckBox* mAutoRefreshCheckBox;
         QLineEdit* mAutoRefreshIntervalLineEdit;
         std::unique_ptr<QTimer> mAutoRefreshTimer;
-
-        ViewToolbar* mToolbar;
 
         void initializeUI();
     };

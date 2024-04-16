@@ -1,21 +1,18 @@
-#include <windows.h>
+#include "Views/ViewEntities.h"
 
 #include "Configuration.h"
 #include "Data/Entity.h"
-#include "Data/EntityDB.h"
-#include "Data/State.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewEntities.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 #include <QTimer>
 
-S2Plugin::ViewEntities::ViewEntities(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
 {
     mMainLayout = new QVBoxLayout(this);
 
@@ -26,7 +23,7 @@ S2Plugin::ViewEntities::ViewEntities(ViewToolbar* toolbar, QWidget* parent) : QW
 
     initializeRefreshAndFilter();
     initializeTreeView();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
 
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
@@ -41,7 +38,7 @@ S2Plugin::ViewEntities::ViewEntities(ViewToolbar* toolbar, QWidget* parent) : QW
 
 void S2Plugin::ViewEntities::initializeTreeView()
 {
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setEnableChangeHighlighting(false);
 
     mMainLayout->addWidget(mMainTreeView);

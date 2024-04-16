@@ -3,23 +3,20 @@
 #include "Configuration.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCheckBox>
 #include <QCloseEvent>
-#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
-#include <Qlayout>
+#include <QVBoxLayout>
 
-S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent)
+S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent)
     : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout(this);
-
     auto config = Configuration::get();
     mMapKeyTypeSize = config->getTypeSize(keytypeName);
     mMapValueTypeSize = config->getTypeSize(valuetypeName);
@@ -28,28 +25,22 @@ S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytyp
     mMapValueAlignment = config->getAlingment(valuetypeName);
 
     initializeRefreshLayout();
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
-    mMainTreeView->setEnableChangeHighlighting(false);
-
-    mMainLayout->addWidget(mMainTreeView);
-    setWindowIcon(QIcon(":/icons/caveman.png"));
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    setWindowIcon(S2Plugin::getCavemanIcon());
 
     if (mMapValueTypeSize == 0)
         setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
     else
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
-    mMainTreeView->setVisible(true);
 
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     refreshMapContents();
     toggleAutoRefresh(Qt::Checked);
 }
 
 void S2Plugin::ViewStdMap::initializeRefreshLayout()
 {
+    mMainLayout = new QVBoxLayout(this);
+    setLayout(mMainLayout);
+
     auto refreshLayout = new QHBoxLayout(this);
     mMainLayout->addLayout(refreshLayout);
 
@@ -78,6 +69,13 @@ void S2Plugin::ViewStdMap::initializeRefreshLayout()
 
     refreshLayout->addWidget(new QLabel("milliseconds", this));
     refreshLayout->addStretch();
+
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->setEnableChangeHighlighting(false);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
+    mMainTreeView->setVisible(true);
+    mMainLayout->addWidget(mMainTreeView);
+    mMainLayout->setMargin(5);
 }
 
 void S2Plugin::ViewStdMap::closeEvent(QCloseEvent* event)

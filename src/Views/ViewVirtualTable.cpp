@@ -1,10 +1,12 @@
 #include "Views/ViewVirtualTable.h"
+
 #include "Data/VirtualTableLookup.h"
 #include "QtHelpers/ItemModelGatherVirtualData.h"
 #include "QtHelpers/ItemModelVirtualTable.h"
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCheckBox>
 #include <QClipBoard>
@@ -18,14 +20,14 @@
 
 S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
 {
-    mModel = std::make_unique<ItemModelVirtualTable>(this);
-    mSortFilterProxy = std::make_unique<SortFilterProxyModelVirtualTable>(this);
-    mGatherModel = std::make_unique<ItemModelGatherVirtualData>(this);
-    mGatherSortFilterProxy = std::make_unique<SortFilterProxyModelGatherVirtualData>(this);
+    mModel = new ItemModelVirtualTable(this);
+    mSortFilterProxy = new SortFilterProxyModelVirtualTable(this);
+    mGatherModel = new ItemModelGatherVirtualData(this);
+    mGatherSortFilterProxy = new SortFilterProxyModelGatherVirtualData(this);
     mGatherSortFilterProxy->sort(gsColGatherID);
 
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("Virtual Table");
 }
 
@@ -95,14 +97,14 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         dynamic_cast<QVBoxLayout*>(mTabData->layout())->addLayout(tmpLayout);
 
         mDataTable = new QTableView(this);
-        mSortFilterProxy->setSourceModel(mModel.get());
-        mDataTable->setModel(mSortFilterProxy.get());
+        mSortFilterProxy->setSourceModel(mModel);
+        mDataTable->setModel(mSortFilterProxy);
         mDataTable->setAlternatingRowColors(true);
         mDataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
         mDataTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
         mDataTable->verticalHeader()->setDefaultSectionSize(19);
         mDataTable->verticalHeader()->setVisible(false);
-        mDataTable->setItemDelegate(&mHTMLDelegate);
+        mDataTable->setItemDelegate(new StyledItemDelegateHTML(this));
         mDataTable->setColumnWidth(gsColTableOffset, 100);
         mDataTable->setColumnWidth(gsColCodeAddress, 125);
         mDataTable->setColumnWidth(gsColTableAddress, 125);
@@ -183,14 +185,14 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         dynamic_cast<QVBoxLayout*>(mTabGather->layout())->addLayout(topLayout);
 
         mGatherTable = new QTableView(this);
-        mGatherSortFilterProxy->setSourceModel(mGatherModel.get());
-        mGatherTable->setModel(mGatherSortFilterProxy.get());
+        mGatherSortFilterProxy->setSourceModel(mGatherModel);
+        mGatherTable->setModel(mGatherSortFilterProxy);
         mGatherTable->setAlternatingRowColors(true);
         mGatherTable->setSelectionBehavior(QAbstractItemView::SelectRows);
         mGatherTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
         mGatherTable->verticalHeader()->setDefaultSectionSize(19);
         mGatherTable->verticalHeader()->setVisible(false);
-        mGatherTable->setItemDelegate(&mHTMLDelegate);
+        mGatherTable->setItemDelegate(new StyledItemDelegateHTML(this));
         mGatherTable->setColumnWidth(gsColGatherID, 50);
         mGatherTable->setColumnWidth(gsColGatherName, 200);
         mGatherTable->setColumnWidth(gsColGatherVirtualTableOffset, 125);
@@ -395,7 +397,7 @@ void S2Plugin::ViewVirtualTable::exportGatheredData()
         {
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Critical);
-            msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+            msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
             msgBox.setText("The file could not be written");
             msgBox.setWindowTitle("Spelunky2");
             msgBox.exec();
@@ -411,7 +413,7 @@ void S2Plugin::ViewVirtualTable::exportVirtTable()
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
     msgBox.setText("The table was copied to the clipboard");
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();
@@ -425,7 +427,7 @@ void S2Plugin::ViewVirtualTable::exportCppEnum()
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
     msgBox.setText("The C++ enum was copied to the clipboard");
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();

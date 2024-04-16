@@ -18,13 +18,12 @@
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
-    class ViewToolbar;
 
     class ViewCharacterDB : public QWidget
     {
         Q_OBJECT
       public:
-        ViewCharacterDB(ViewToolbar* toolbar, uint8_t index = 0, QWidget* parent = nullptr);
+        ViewCharacterDB(uint8_t index = 0, QWidget* parent = nullptr);
         void showIndex(uint8_t index);
 
       protected:

@@ -13,7 +13,6 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     struct MemoryField;
 
     struct ColumnFilter
@@ -41,7 +40,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        TreeViewMemoryFields(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        TreeViewMemoryFields(QWidget* parent = nullptr);
 
         void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, QStandardItem* parent = nullptr);
         QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent = nullptr);
@@ -72,7 +71,6 @@ namespace S2Plugin
         void cellClicked(const QModelIndex& index);
 
       private:
-        ViewToolbar* mToolbar;
         QStandardItemModel* mModel;
         StyledItemDelegateHTML mHTMLDelegate;
         std::array<uint32_t, 9> mSavedColumnWidths = {0};

@@ -1,10 +1,12 @@
 #include "Views/ViewLogger.h"
+
 #include "Data/Logger.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "QtHelpers/ItemModelLoggerSamples.h"
 #include "QtHelpers/TableViewLogger.h"
 #include "QtHelpers/WidgetSamplesPlot.h"
 #include "QtHelpers/WidgetSampling.h"
+#include "QtPlugin.h"
 #include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QIcon>
@@ -16,7 +18,7 @@ S2Plugin::ViewLogger::ViewLogger(QWidget* parent) : QWidget(parent)
     mLogger = std::make_unique<Logger>();
 
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("Logger");
 }
 
@@ -142,7 +144,7 @@ void S2Plugin::ViewLogger::startLogging()
     {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+        msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
         msgBox.setText("Please specify one or more fields to log");
         msgBox.setWindowTitle("Spelunky2");
         msgBox.exec();

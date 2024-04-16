@@ -1,22 +1,22 @@
 #include "Views/ViewCharacterDB.h"
+
 #include "Configuration.h"
 #include "QtHelpers/DatabaseHelper.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include <QCheckBox>
 #include <QCompleter>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewCharacterDB::ViewCharacterDB(ViewToolbar* toolbar, uint8_t index, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewCharacterDB::ViewCharacterDB(uint8_t index, QWidget* parent) : QWidget(parent)
 {
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("Character DB");
     showIndex(index);
 }
@@ -66,6 +66,7 @@ void S2Plugin::ViewCharacterDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
+        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->addMemoryFields(config->typeFields(MemoryFieldType::CharacterDB), "CharacterDB", 0);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &ViewCharacterDB::fieldUpdated);

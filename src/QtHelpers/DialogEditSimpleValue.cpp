@@ -1,5 +1,6 @@
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "Configuration.h"
+#include "QtPlugin.h"
 #include "pluginmain.h"
 #include <QDoubleValidator>
 #include <QGridLayout>
@@ -17,7 +18,7 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
 {
     setModal(true);
     setWindowTitle("Change value");
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
     // FIELDS
@@ -74,6 +75,7 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
         case MemoryFieldType::UnsignedDword:
         case MemoryFieldType::StringsTableID:
         {
+            // TODO: test why is this commented out?
             // mLineEditDecValue->setValidator(new QIntValidator((std::numeric_limits<uint32_t>::min)(), (std::numeric_limits<uint32_t>::max)(), this));
             uint32_t v = Script::Memory::ReadDword(mMemoryAddress);
             mLineEditDecValue->setText(QString("%1").arg(v));

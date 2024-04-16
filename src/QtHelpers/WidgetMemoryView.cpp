@@ -5,6 +5,7 @@
 #include <QHelpEvent>
 #include <QPainter>
 #include <QToolTip>
+#include <cmath>
 
 static constexpr uint32_t gsMarginHor = 10;
 static constexpr uint32_t gsMarginVer = 5;

@@ -1,5 +1,4 @@
 #include "QtHelpers/CPPSyntaxHighlighter.h"
-#include "pluginmain.h"
 
 S2Plugin::CPPSyntaxHighlighter::CPPSyntaxHighlighter(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {

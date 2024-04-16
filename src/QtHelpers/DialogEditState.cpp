@@ -1,6 +1,7 @@
 #include "QtHelpers/DialogEditState.h"
 #include "Configuration.h"
 #include "QtHelpers/ItemModelStates.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QGridLayout>
@@ -15,7 +16,7 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
 {
     setModal(true);
     setWindowTitle("Change value");
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
     // STATES

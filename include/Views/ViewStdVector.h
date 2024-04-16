@@ -9,14 +9,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     class ViewStdVector : public QWidget
     {
         Q_OBJECT
       public:
-        ViewStdVector(ViewToolbar* toolbar, const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent = nullptr);
+        ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;

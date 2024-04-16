@@ -1,6 +1,5 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QLineEdit>
@@ -17,14 +16,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     class ViewTextureDB : public QWidget
     {
         Q_OBJECT
       public:
-        ViewTextureDB(ViewToolbar* toolbar, size_t index = 1, QWidget* parent = nullptr);
+        ViewTextureDB(size_t index = 1, QWidget* parent = nullptr);
         void showID(uint32_t id);
 
       protected:
@@ -44,8 +42,6 @@ namespace S2Plugin
         void groupedComparisonItemClicked(QTreeWidgetItem* item, int column);
 
       private:
-        StyledItemDelegateHTML mHTMLDelegate;
-
         QTabWidget* mMainTabWidget;
         QWidget* mTabLookup;
         QWidget* mTabCompare;

@@ -1,22 +1,22 @@
 #include "Views/ViewParticleDB.h"
+
 #include "Configuration.h"
 #include "QtHelpers/DatabaseHelper.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include <QCheckBox>
 #include <QCompleter>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewParticleDB::ViewParticleDB(ViewToolbar* toolbar, uint32_t id, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewParticleDB::ViewParticleDB(uint32_t id, QWidget* parent) : QWidget(parent)
 {
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle(QString("Particle DB (%1 particles)").arg(Configuration::get()->particleEmittersList().count()));
     showID(id);
 }
@@ -66,6 +66,7 @@ void S2Plugin::ViewParticleDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
+        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->addMemoryFields(config->typeFields(MemoryFieldType::ParticleDB), "ParticleDB", 0);
 

@@ -42,8 +42,3 @@ QSize S2Plugin::StyledItemDelegateHTML::sizeHint(const QStyleOptionViewItem& opt
     doc.setDocumentMargin(2);
     return QSize(doc.idealWidth(), doc.size().height());
 }
-
-void S2Plugin::StyledItemDelegateHTML::setCenterVertically(bool b)
-{
-    mCenterVertically = b;
-}

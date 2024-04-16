@@ -13,7 +13,6 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
     class WidgetSpelunkyRooms;
 
@@ -21,7 +20,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewLevelGen(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewLevelGen(QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -53,8 +52,6 @@ namespace S2Plugin
 
         // TAB LEVEL
         std::unordered_map<std::string, WidgetSpelunkyRooms*> mRoomsWidgets; // field_name -> widget*
-
-        ViewToolbar* mToolbar;
 
         void initializeUI();
     };

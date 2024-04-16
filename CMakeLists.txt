@@ -135,24 +135,19 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
-	src/QtHelpers/StyledItemDelegateColorPicker.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp
 	src/QtHelpers/WidgetMemoryView.cpp
 	src/QtHelpers/WidgetSpelunkyLevel.cpp
 	src/QtHelpers/WidgetSpelunkyRooms.cpp
 	src/QtHelpers/DialogEditSimpleValue.cpp
 	src/QtHelpers/DialogEditState.cpp
-	src/QtHelpers/TableWidgetItemNumeric.cpp
-	src/QtHelpers/TreeWidgetItemNumeric.cpp
 	src/QtHelpers/ItemModelVirtualTable.cpp
 	src/QtHelpers/ItemModelVirtualFunctions.cpp
 	src/QtHelpers/SortFilterProxyModelStringsTable.cpp
-	src/QtHelpers/ItemModelStates.cpp
 	src/QtHelpers/ItemModelGatherVirtualData.cpp
 	src/QtHelpers/CPPSyntaxHighlighter.cpp
 	src/QtHelpers/TableViewLogger.cpp
 	src/QtHelpers/ItemModelLoggerFields.cpp
-	src/QtHelpers/WidgetSampling.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
 	src/QtHelpers/DatabaseHelper.cpp

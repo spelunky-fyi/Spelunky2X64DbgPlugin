@@ -4,7 +4,6 @@
 #include "Data/State.h"
 #include "Data/VirtualTableLookup.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 
 S2Plugin::ItemModelVirtualTable::ItemModelVirtualTable(QObject* parent) : QAbstractItemModel(parent)
@@ -12,11 +11,6 @@ S2Plugin::ItemModelVirtualTable::ItemModelVirtualTable(QObject* parent) : QAbstr
     auto config = Configuration::get();
     mLayer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", Spelunky2::get()->get_StatePtr());
     mLayer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", Spelunky2::get()->get_StatePtr());
-}
-
-Qt::ItemFlags S2Plugin::ItemModelVirtualTable::flags(const QModelIndex& index) const
-{
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
 }
 
 QVariant S2Plugin::ItemModelVirtualTable::data(const QModelIndex& index, int role) const
@@ -56,21 +50,6 @@ QVariant S2Plugin::ItemModelVirtualTable::data(const QModelIndex& index, int rol
 int S2Plugin::ItemModelVirtualTable::rowCount(const QModelIndex& parent) const
 {
     return Spelunky2::get()->get_VirtualTableLookup().count();
-}
-
-int S2Plugin::ItemModelVirtualTable::columnCount(const QModelIndex& parent) const
-{
-    return 4;
-}
-
-QModelIndex S2Plugin::ItemModelVirtualTable::index(int row, int column, const QModelIndex& parent) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex S2Plugin::ItemModelVirtualTable::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
 }
 
 QVariant S2Plugin::ItemModelVirtualTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -146,48 +125,13 @@ bool S2Plugin::SortFilterProxyModelVirtualTable::filterAcceptsRow(int sourceRow,
     }
 
     if (!mShowImportedSymbols && entry.isAutoSymbol)
-    {
         return false;
-    }
 
     if (!mShowNonAddressEntries && !entry.isValidAddress)
-    {
         return false;
-    }
 
     if (!mShowSymbollessEntries && entry.symbols.size() == 0)
-    {
         return false;
-    }
 
     return true;
-}
-
-void S2Plugin::SortFilterProxyModelVirtualTable::setShowImportedSymbols(bool b)
-{
-    mShowImportedSymbols = b;
-    invalidateFilter();
-}
-
-void S2Plugin::SortFilterProxyModelVirtualTable::setShowNonAddressEntries(bool b)
-{
-    mShowNonAddressEntries = b;
-    invalidateFilter();
-}
-
-void S2Plugin::SortFilterProxyModelVirtualTable::setShowSymbollessEntries(bool b)
-{
-    mShowSymbollessEntries = b;
-    invalidateFilter();
-}
-
-void S2Plugin::SortFilterProxyModelVirtualTable::setFilterString(const QString& f)
-{
-    mFilterString = f;
-    invalidateFilter();
-}
-
-bool S2Plugin::SortFilterProxyModelVirtualTable::symbollessEntriesShown() const noexcept
-{
-    return mShowSymbollessEntries;
 }

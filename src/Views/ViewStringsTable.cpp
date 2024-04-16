@@ -1,6 +1,8 @@
 #include "Views/ViewStringsTable.h"
+
 #include "Data/StringsTable.h"
 #include "QtHelpers/SortFilterProxyModelStringsTable.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QHeaderView>
@@ -13,7 +15,7 @@ constexpr uint32_t gsRoleRawValue = 1;
 
 S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 {
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable().count()));
     initializeUI();
 }

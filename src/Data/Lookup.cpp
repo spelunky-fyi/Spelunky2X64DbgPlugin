@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include "read_helpers.h"

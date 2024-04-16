@@ -14,11 +14,11 @@ static constexpr uint32_t lowbias32(uint32_t x)
 
 // Just for refrence
 // struct RobinHoodTableEntry
-//{
+// {
 //    uint32_t uid_plus_one;
 //    uint32_t padding;
 //    Entity* entity;
-//};
+// };
 
 uintptr_t S2Plugin::State::findEntitybyUID(uint32_t uid) const
 {
@@ -28,6 +28,7 @@ uintptr_t S2Plugin::State::findEntitybyUID(uint32_t uid) const
         return 0;
     }
 
+    // [Known Issue]: Static value, have to restart programm for size to update
     static size_t mask_offset = Configuration::get()->offsetForField(MemoryFieldType::State, "uid_to_entity_mask");
     const uint32_t mask = Script::Memory::ReadDword(mStatePtr + mask_offset);
     const uint32_t target_uid_plus_one = lowbias32(uid + 1u);

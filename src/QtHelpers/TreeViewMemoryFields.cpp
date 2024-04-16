@@ -11,6 +11,7 @@
 #include "Data/TextureDB.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "QtHelpers/DialogEditState.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "Views/ViewCharacterDB.h"
 #include "Views/ViewEntity.h"
@@ -34,7 +35,7 @@
 #include <sstream>
 #include <string>
 
-S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(ViewToolbar* toolbar, QWidget* parent) : QTreeView(parent), mToolbar(toolbar)
+S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(QWidget* parent) : QTreeView(parent)
 {
     setItemDelegate(&mHTMLDelegate);
     setAlternatingRowColors(true);
@@ -2017,7 +2018,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleRawValue).toULongLong();
                     if (Script::Memory::IsValidPtr(rawValue))
                     {
-                        mToolbar->showEntity(rawValue);
+                        getToolbar()->showEntity(rawValue);
                     }
                     break;
                 }
@@ -2026,7 +2027,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto offset = clickedItem->data(gsRoleEntityAddress).toULongLong();
                     if (offset != 0)
                     {
-                        mToolbar->showEntity(offset);
+                        getToolbar()->showEntity(offset);
                     }
                     break;
                 }
@@ -2035,7 +2036,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto id = clickedItem->data(gsRoleRawValue).toUInt();
                     if (id != 0)
                     {
-                        auto view = mToolbar->showEntityDB();
+                        auto view = getToolbar()->showEntityDB();
                         if (view != nullptr)
                         {
                             view->showID(id);
@@ -2048,7 +2049,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto id = clickedItem->data(gsRoleRawValue);
                     if (!id.isNull())
                     {
-                        auto view = mToolbar->showCharacterDB();
+                        auto view = getToolbar()->showCharacterDB();
                         if (view != nullptr)
                         {
                             view->showIndex(id.toUInt());
@@ -2061,7 +2062,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto id = clickedItem->data(gsRoleRawValue);
                     if (!id.isNull())
                     {
-                        auto view = mToolbar->showTextureDB();
+                        auto view = getToolbar()->showTextureDB();
                         if (view != nullptr)
                         {
                             view->showID(id.toUInt());
@@ -2074,7 +2075,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto id = clickedItem->data(gsRoleRawValue);
                     if (!id.isNull() && id.toUInt() != -1)
                     {
-                        auto view = mToolbar->showParticleDB();
+                        auto view = getToolbar()->showParticleDB();
                         if (view != nullptr)
                         {
                             view->showID(id.toUInt());
@@ -2088,7 +2089,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadDword(rawValue + 20);
-                        auto view = mToolbar->showEntityDB();
+                        auto view = getToolbar()->showEntityDB();
                         if (view != nullptr)
                         {
                             view->showID(id); // TODO: use pointer, not ID
@@ -2102,7 +2103,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadQword(rawValue);
-                        auto view = mToolbar->showTextureDB();
+                        auto view = getToolbar()->showTextureDB();
                         if (view != nullptr)
                         {
                             view->showID(id);
@@ -2129,7 +2130,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        mToolbar->showLevelGen(); // TODO: use pointer
+                        getToolbar()->showLevelGen(); // TODO: use pointer
                     }
                     break;
                 }
@@ -2139,7 +2140,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto fieldType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
                     if (addr != 0)
                     {
-                        mToolbar->showStdVector(addr, fieldType);
+                        getToolbar()->showStdVector(addr, fieldType);
                     }
                     break;
                 }
@@ -2150,7 +2151,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto fieldvalueType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerSecondParameterType));
                     if (addr != 0)
                     {
-                        mToolbar->showStdMap(addr, fieldkeyType, fieldvalueType);
+                        getToolbar()->showStdMap(addr, fieldkeyType, fieldvalueType);
                     }
                     break;
                 }
@@ -2160,7 +2161,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (rawValue != 0)
                     {
                         auto id = Script::Memory::ReadDword(rawValue); // TODO: use pointer
-                        auto view = mToolbar->showParticleDB();
+                        auto view = getToolbar()->showParticleDB();
                         if (view != nullptr)
                         {
                             view->showID(id);
@@ -2184,11 +2185,11 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                             else
                                 ent = getDataFrom(index, gsColField, gsRoleMemoryAddress).toULongLong();
 
-                            mToolbar->showVirtualFunctions(rawValue, Entity{ent}.entityClassName());
+                            getToolbar()->showVirtualFunctions(rawValue, Entity{ent}.entityClassName());
                         }
                         else
                         {
-                            mToolbar->showVirtualFunctions(rawValue, vftType);
+                            getToolbar()->showVirtualFunctions(rawValue, vftType);
                         }
                     }
                     break;
@@ -2251,7 +2252,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        mToolbar->showJournalPage(rawValue, "JournalPage");
+                        getToolbar()->showJournalPage(rawValue, "JournalPage");
                     }
                     break;
                 }

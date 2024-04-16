@@ -1,18 +1,17 @@
 #include "Views/ViewOnline.h"
+
 #include "Configuration.h"
-#include "Data/State.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewOnline::ViewOnline(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewOnline::ViewOnline(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("Online");
     refreshOnline();
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -56,7 +55,7 @@ void S2Plugin::ViewOnline::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewOnline::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::Online), "Online", Spelunky2::get()->get_OnlinePtr());
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);

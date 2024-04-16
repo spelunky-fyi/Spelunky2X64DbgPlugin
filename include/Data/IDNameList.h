@@ -10,9 +10,10 @@ namespace S2Plugin
 {
     class IDNameList
     {
-      public:
+      protected:
         IDNameList(const std::string& relFilePath, const std::regex& regex);
 
+      public:
         uint32_t idForName(const std::string& name) const;
         std::string nameForID(uint32_t id) const;
         uint32_t highestID() const noexcept

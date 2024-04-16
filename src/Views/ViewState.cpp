@@ -1,19 +1,17 @@
 #include "Views/ViewState.h"
+
 #include "Configuration.h"
-#include "Data/EntityDB.h"
-#include "Data/State.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewState::ViewState(ViewToolbar* toolbar, uintptr_t state, QWidget* parent) : QWidget(parent), mToolbar(toolbar), mState(state)
+S2Plugin::ViewState::ViewState(uintptr_t state, QWidget* parent) : QWidget(parent), mState(state)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("State");
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
@@ -56,7 +54,7 @@ void S2Plugin::ViewState::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewState::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::State), "State", mState);
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);

@@ -1,4 +1,5 @@
 #include "Views/ViewEntity.h"
+
 #include "Configuration.h"
 #include "Data/CPPGenerator.h"
 #include "Data/Entity.h"
@@ -6,17 +7,17 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "QtHelpers/WidgetSpelunkyLevel.h"
-#include "Views/ViewToolbar.h"
+#include "QtPlugin.h"
 #include "pluginmain.h"
 #include <QCloseEvent>
 #include <QFont>
 #include <QLabel>
 #include <string>
 
-S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar), mEntityPtr(entityOffset)
+S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget(parent), mEntityPtr(entityOffset)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
 
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
@@ -120,7 +121,7 @@ void S2Plugin::ViewEntity::initializeUI()
     mTopLayout->addWidget(mInterpretAsComboBox);
 
     // TAB FIELDS
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setVisible(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);

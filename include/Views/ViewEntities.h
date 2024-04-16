@@ -9,7 +9,6 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     enum class MASK : uint32_t
@@ -34,7 +33,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewEntities(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewEntities(QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -77,7 +76,6 @@ namespace S2Plugin
 
         QLineEdit* mFilterLineEdit;
 
-        ViewToolbar* mToolbar;
         uintptr_t mLayer0Offset = 0;
         uintptr_t mLayer1Offset = 0;
         uintptr_t mLayerMapOffset = 0;

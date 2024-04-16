@@ -1,6 +1,5 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QCheckBox>
 #include <QLabel>
 #include <QTableView>
@@ -54,9 +53,8 @@ namespace S2Plugin
 
         // DATA
         QTableView* mDataTable;
-        std::unique_ptr<ItemModelVirtualTable> mModel;
-        std::unique_ptr<SortFilterProxyModelVirtualTable> mSortFilterProxy;
-        StyledItemDelegateHTML mHTMLDelegate;
+        ItemModelVirtualTable* mModel;
+        SortFilterProxyModelVirtualTable* mSortFilterProxy;
 
         // LOOKUP
         QLineEdit* mLookupAddressLineEdit;
@@ -64,8 +62,8 @@ namespace S2Plugin
 
         // GATHER
         QTableView* mGatherTable;
-        std::unique_ptr<ItemModelGatherVirtualData> mGatherModel;
-        std::unique_ptr<SortFilterProxyModelGatherVirtualData> mGatherSortFilterProxy;
+        ItemModelGatherVirtualData* mGatherModel;
+        SortFilterProxyModelGatherVirtualData* mGatherSortFilterProxy;
         QLabel* mGatherProgressLabel;
         QCheckBox* mHideCompletedCheckbox;
 

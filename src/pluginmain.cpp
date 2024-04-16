@@ -71,7 +71,7 @@ void displayError(const char* fmt, ...)
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
     msgBox.setText(buffer);
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();
@@ -82,7 +82,7 @@ void displayError(std::string message)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
     msgBox.setText(message.c_str());
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();

@@ -7,7 +7,11 @@ namespace S2Plugin
     class StyledItemDelegateHTML : public QStyledItemDelegate
     {
       public:
-        void setCenterVertically(bool b);
+        StyledItemDelegateHTML(QObject* parent = nullptr) : QStyledItemDelegate(parent){};
+        void setCenterVertically(bool b)
+        {
+            mCenterVertically = b;
+        }
 
       protected:
         void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;

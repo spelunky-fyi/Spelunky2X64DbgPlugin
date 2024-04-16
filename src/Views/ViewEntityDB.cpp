@@ -1,23 +1,23 @@
 #include "Views/ViewEntityDB.h"
+
 #include "Configuration.h"
 #include "Data/EntityDB.h"
 #include "QtHelpers/DatabaseHelper.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include <QCheckBox>
 #include <QCompleter>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewEntityDB::ViewEntityDB(ViewToolbar* toolbar, uint32_t id, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewEntityDB::ViewEntityDB(uint32_t id, QWidget* parent) : QWidget(parent)
 {
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle(QString("Entity DB (%1 entities)").arg(Configuration::get()->entityList().highestID()));
     showID(id);
 }
@@ -69,6 +69,7 @@ void S2Plugin::ViewEntityDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
+        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->addMemoryFields(config->typeFields(MemoryFieldType::EntityDB), "EntityDB", 0);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &ViewEntityDB::fieldUpdated);

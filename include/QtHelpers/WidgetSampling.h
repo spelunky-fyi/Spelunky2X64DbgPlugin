@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPaintEvent>
+#include <QPainter>
 #include <QWidget>
 
 namespace S2Plugin
@@ -9,12 +10,36 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        explicit WidgetSampling(QWidget* parent = nullptr);
+        explicit WidgetSampling(QWidget* parent = nullptr) : QWidget(parent){};
 
-        QSize minimumSizeHint() const override;
-        QSize sizeHint() const override;
+        QSize minimumSizeHint() const override
+        {
+            return QSize(400, 400);
+        }
+        QSize sizeHint() const override
+        {
+            return minimumSizeHint();
+        }
 
       protected:
-        void paintEvent(QPaintEvent* event) override;
+        void paintEvent(QPaintEvent* event) override
+        {
+            auto painter = QPainter(this);
+            painter.save();
+
+            painter.fillRect(rect(), Qt::white);
+            painter.setPen(Qt::darkGray);
+            painter.drawRect(rect().adjusted(0, 0, -1, -1));
+
+            static const auto caption = QString("Sampling...");
+            static const auto font = QFont("Arial", 16);
+            static const auto captionSize = QFontMetrics(font).size(Qt::TextSingleLine, caption);
+
+            painter.setFont(font);
+            painter.setPen(Qt::lightGray);
+            painter.drawText(QPointF((width() / 2.) - (captionSize.width() / 2.), (height() / 2.) - (captionSize.height() / 2.)), caption);
+
+            painter.restore();
+        }
     };
 } // namespace S2Plugin

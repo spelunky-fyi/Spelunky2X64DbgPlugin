@@ -11,14 +11,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     class ViewState : public QWidget
     {
         Q_OBJECT
       public:
-        ViewState(ViewToolbar* toolbar, uintptr_t state, QWidget* parent = nullptr);
+        ViewState(uintptr_t state, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -32,7 +31,6 @@ namespace S2Plugin
         void label();
 
       private:
-        ViewToolbar* mToolbar;
         uintptr_t mState;
 
         QVBoxLayout* mMainLayout;

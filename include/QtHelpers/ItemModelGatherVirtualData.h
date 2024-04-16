@@ -37,14 +37,32 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        ItemModelGatherVirtualData(QObject* parent = nullptr);
+        ItemModelGatherVirtualData(QObject* parent = nullptr) : QAbstractItemModel(parent)
+        {
+            parseJSON();
+        };
 
-        Qt::ItemFlags flags(const QModelIndex& index) const override;
+        Qt::ItemFlags flags(const QModelIndex& index) const override
+        {
+            return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
+        }
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-        int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-        int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-        QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-        QModelIndex parent(const QModelIndex& index) const override;
+        int rowCount(const QModelIndex& parent = QModelIndex()) const override
+        {
+            return mEntries.size();
+        }
+        int columnCount(const QModelIndex& parent = QModelIndex()) const override
+        {
+            return 10;
+        }
+        QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override
+        {
+            return createIndex(row, column);
+        }
+        QModelIndex parent(const QModelIndex& index) const override
+        {
+            return QModelIndex();
+        }
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
         void gatherEntities();
@@ -54,7 +72,10 @@ namespace S2Plugin
         std::string dumpJSON() const;
         std::string dumpVirtTable() const;
         std::string dumpCppEnum() const;
-        bool isEntryCompleted(size_t index) const;
+        bool isEntryCompleted(size_t index) const
+        {
+            return mEntries.at(index).virtualTableOffset != 0;
+        }
 
       private:
         std::vector<GatheredDataEntry> mEntries;
@@ -67,10 +88,22 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr);
+        SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
 
-        bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
-        void setHideCompleted(bool b);
+        bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override
+        {
+            if (mHideCompleted && dynamic_cast<ItemModelGatherVirtualData*>(sourceModel())->isEntryCompleted(sourceRow))
+            {
+                return false;
+            }
+            return true;
+        }
+        void setHideCompleted(bool b)
+        {
+            beginResetModel();
+            mHideCompleted = b;
+            endResetModel();
+        }
 
       private:
         bool mHideCompleted = false;

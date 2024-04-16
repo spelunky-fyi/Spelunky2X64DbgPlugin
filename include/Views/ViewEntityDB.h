@@ -17,14 +17,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     class ViewEntityDB : public QWidget
     {
         Q_OBJECT
       public:
-        ViewEntityDB(ViewToolbar* toolbar, uint32_t id = 1, QWidget* parent = nullptr);
+        ViewEntityDB(uint32_t id = 1, QWidget* parent = nullptr);
         void showID(uint32_t id);
 
       protected:

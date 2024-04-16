@@ -1,18 +1,17 @@
 #include "Views/ViewJournalPage.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewJournalPage::ViewJournalPage(ViewToolbar* toolbar, uintptr_t offset, const std::string& pageType, QWidget* parent)
-    : QWidget(parent), mOffset(offset), mPageType(pageType), mToolbar(toolbar)
+S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t offset, const std::string& pageType, QWidget* parent) : QWidget(parent), mOffset(offset), mPageType(pageType)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("JournalPage");
 
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -80,7 +79,7 @@ void S2Plugin::ViewJournalPage::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewJournalPage::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(mPageType), mPageType, mOffset);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);

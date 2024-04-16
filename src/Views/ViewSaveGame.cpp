@@ -1,17 +1,17 @@
 #include "Views/ViewSaveGame.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewSaveGame::ViewSaveGame(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewSaveGame::ViewSaveGame(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("SaveGame");
     refreshSaveGame();
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -55,7 +55,7 @@ void S2Plugin::ViewSaveGame::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewSaveGame::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::SaveGame), "SaveGame", Spelunky2::get()->get_SaveDataPtr());
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);

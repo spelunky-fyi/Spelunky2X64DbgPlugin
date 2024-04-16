@@ -15,7 +15,6 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
     class WidgetMemoryView;
     class CPPSyntaxHighlighter;
@@ -25,7 +24,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewEntity(size_t entityOffset, ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewEntity(size_t entityOffset, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -53,7 +52,6 @@ namespace S2Plugin
         uintptr_t mEntityPtr;
         uintptr_t mComparisonEntityPtr{0};
         size_t mEntitySize{0};
-        ViewToolbar* mToolbar;
 
         // TOP LAYOUT
         QPushButton* mRefreshButton;

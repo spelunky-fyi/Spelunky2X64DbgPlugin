@@ -1,8 +1,11 @@
 #pragma once
 
 #include <QRegularExpression>
+#include <QSet>
+#include <QString>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
+#include <QTextDocument>
 #include <QVector>
 
 namespace S2Plugin

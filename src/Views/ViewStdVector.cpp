@@ -1,33 +1,24 @@
 #include "Views/ViewStdVector.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
+#include <QCheckBox>
 #include <QCloseEvent>
-#include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QTimer>
+#include <QVBoxLayout>
 
-S2Plugin::ViewStdVector::ViewStdVector(ViewToolbar* toolbar, const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent)
-    : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
+S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent) : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout();
-
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
     initializeRefreshLayout();
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mMainLayout->addWidget(mMainTreeView);
-    setWindowIcon(QIcon(":/icons/caveman.png"));
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
-
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
-    mMainTreeView->setVisible(true);
 
     refreshVectorContents();
     toggleAutoRefresh(Qt::Checked);
@@ -35,6 +26,9 @@ S2Plugin::ViewStdVector::ViewStdVector(ViewToolbar* toolbar, const std::string& 
 
 void S2Plugin::ViewStdVector::initializeRefreshLayout()
 {
+    mMainLayout = new QVBoxLayout();
+    setLayout(mMainLayout);
+
     auto refreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(refreshLayout);
 
@@ -63,6 +57,12 @@ void S2Plugin::ViewStdVector::initializeRefreshLayout()
 
     refreshLayout->addWidget(new QLabel("milliseconds", this));
     refreshLayout->addStretch();
+
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
+    mMainLayout->addWidget(mMainTreeView);
+    mMainTreeView->setVisible(true);
+    mMainLayout->setMargin(5);
 }
 
 void S2Plugin::ViewStdVector::closeEvent(QCloseEvent* event)

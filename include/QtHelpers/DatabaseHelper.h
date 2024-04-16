@@ -2,6 +2,7 @@
 
 #include "Configuration.h"
 #include <QComboBox>
+#include <QString>
 #include <QWidget>
 #include <cstdint>
 #include <vector>

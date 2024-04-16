@@ -1,6 +1,6 @@
 #include "Views/ViewThreads.h"
-#include "Configuration.h"
-#include "Data/State.h"
+
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
@@ -17,10 +17,10 @@ static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
 // TODO: check for null in click event, add more columns, add spel2 function to get ptr based on the different heapbase
 
-S2Plugin::ViewThreads::ViewThreads(ViewToolbar* toolbar) : QWidget(toolbar), mToolbar(toolbar)
+S2Plugin::ViewThreads::ViewThreads(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Threads");
     refreshThreads();
 }
@@ -153,6 +153,6 @@ void S2Plugin::ViewThreads::cellClicked(int row, int column)
     else if (column == gsColStateAddress)
     {
         auto statePtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-        mToolbar->showState(statePtr);
+        getToolbar()->showState(statePtr);
     }
 }

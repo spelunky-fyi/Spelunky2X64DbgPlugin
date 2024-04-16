@@ -1,19 +1,12 @@
 #include "QtHelpers/WidgetSamplesPlot.h"
 #include "Configuration.h"
 #include "Data/Logger.h"
-#include "pluginmain.h"
 #include <QFont>
 #include <QFontMetrics>
 #include <QPainter>
 #include <QScrollArea>
 
 static const uint8_t gsPlotMargin = 5;
-
-S2Plugin::WidgetSamplesPlot::WidgetSamplesPlot(Logger* logger, QWidget* parent) : QWidget(parent), mLogger(logger)
-{
-    setMouseTracking(true);
-    setCursor(Qt::CrossCursor);
-}
 
 void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
 {
@@ -236,23 +229,7 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
     }
 }
 
-void S2Plugin::WidgetSamplesPlot::mouseMoveEvent(QMouseEvent* event)
-{
-    mCurrentMousePos = event->pos();
-    update();
-}
-
-void S2Plugin::WidgetSamplesPlot::leaveEvent(QEvent* event)
-{
-    update();
-}
-
 QSize S2Plugin::WidgetSamplesPlot::minimumSizeHint() const
 {
     return QSize(mLogger->sampleCount() + (gsPlotMargin * 2) + 100, 50);
-}
-
-QSize S2Plugin::WidgetSamplesPlot::sizeHint() const
-{
-    return minimumSizeHint();
 }

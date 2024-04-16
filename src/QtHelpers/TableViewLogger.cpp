@@ -3,7 +3,7 @@
 #include "Data/Logger.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "QtHelpers/StyledItemDelegateColorPicker.h"
-#include "pluginmain.h"
+#include "QtPlugin.h"
 #include <QColorDialog>
 #include <QFont>
 #include <QFontMetrics>
@@ -90,7 +90,7 @@ void S2Plugin::TableViewLogger::dropEvent(QDropEvent* event)
         {
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Critical);
-            msgBox.setWindowIcon(QIcon(":/icons/caveman.png"));
+            msgBox.setWindowIcon(getCavemanIcon());
             msgBox.setText("This field type is not supported for logging");
             msgBox.setWindowTitle("Spelunky2");
             msgBox.exec();

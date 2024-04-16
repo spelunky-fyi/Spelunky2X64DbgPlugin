@@ -3,7 +3,6 @@
 #include "Data/State.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QEvent>
 #include <QFontMetrics>

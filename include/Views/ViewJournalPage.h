@@ -13,7 +13,6 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
     class JournalPage;
 
@@ -21,7 +20,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewJournalPage(ViewToolbar* toolbar, uintptr_t offset, const std::string& pageType, QWidget* parent = nullptr);
+        ViewJournalPage(uintptr_t offset, const std::string& pageType, QWidget* parent = nullptr);
 
       protected:
         void closeEvent(QCloseEvent* event) override;
@@ -38,7 +37,6 @@ namespace S2Plugin
       private:
         uintptr_t mOffset;
         std::string mPageType;
-        ViewToolbar* mToolbar;
 
         QVBoxLayout* mMainLayout;
         QHBoxLayout* mRefreshLayout;

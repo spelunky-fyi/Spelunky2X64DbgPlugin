@@ -1,20 +1,20 @@
 #include "Views/ViewLevelGen.h"
+
 #include "Configuration.h"
-#include "Data/EntityDB.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetSpelunkyRooms.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 #include <QScrollArea>
 
-S2Plugin::ViewLevelGen::ViewLevelGen(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewLevelGen::ViewLevelGen(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("LevelGen");
     mMainTreeView->updateTree(0, 0, true);
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -77,7 +77,7 @@ void S2Plugin::ViewLevelGen::initializeUI()
 
     // TAB DATA
     {
-        mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", Spelunky2::get()->get_LevelGenPtr());
         mTabData->layout()->addWidget(mMainTreeView);
 

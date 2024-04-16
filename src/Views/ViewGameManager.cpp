@@ -1,17 +1,17 @@
 #include "Views/ViewGameManager.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
-S2Plugin::ViewGameManager::ViewGameManager(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewGameManager::ViewGameManager(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle("GameManager");
     refreshGameManager();
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -55,7 +55,7 @@ void S2Plugin::ViewGameManager::initializeUI()
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewGameManager::label);
     mRefreshLayout->addWidget(labelButton);
 
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
+    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::GameManager), "GameManager", Spelunky2::get()->get_GameManagerPtr());
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);

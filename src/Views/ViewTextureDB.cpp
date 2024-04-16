@@ -1,4 +1,5 @@
 #include "Views/ViewTextureDB.h"
+
 #include "Configuration.h"
 #include "Data/TextureDB.h"
 #include "QtHelpers/DatabaseHelper.h"
@@ -6,9 +7,8 @@
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
 #include <QCheckBox>
 #include <QCompleter>
 #include <QHeaderView>
@@ -16,11 +16,10 @@
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
-S2Plugin::ViewTextureDB::ViewTextureDB(ViewToolbar* toolbar, size_t index, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewTextureDB::ViewTextureDB(size_t index, QWidget* parent) : QWidget(parent)
 {
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
     initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(S2Plugin::getCavemanIcon());
     setWindowTitle(QString("Texture DB (%1 textures)").arg(Spelunky2::get()->get_TextureDB().count()));
     showID(index);
 }
@@ -70,6 +69,7 @@ void S2Plugin::ViewTextureDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
 
+        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::TextureDB), "TextureDB", 0);
 
@@ -109,14 +109,15 @@ void S2Plugin::ViewTextureDB::initializeUI()
         mCompareTableWidget->setColumnWidth(0, 40);
         mCompareTableWidget->setColumnWidth(1, 325);
         mCompareTableWidget->setColumnWidth(2, 150);
-        mCompareTableWidget->setItemDelegate(&mHTMLDelegate);
+        auto HTMLDelegate = new StyledItemDelegateHTML(this);
+        mCompareTableWidget->setItemDelegate(HTMLDelegate);
         QObject::connect(mCompareTableWidget, &QTableWidget::cellClicked, this, &ViewTextureDB::comparisonCellClicked);
 
         mCompareTreeWidget = new QTreeWidget(this);
         mCompareTreeWidget->setAlternatingRowColors(true);
         mCompareTreeWidget->headerItem()->setHidden(true);
         mCompareTreeWidget->setHidden(true);
-        mCompareTreeWidget->setItemDelegate(&mHTMLDelegate);
+        mCompareTreeWidget->setItemDelegate(HTMLDelegate);
         QObject::connect(mCompareTreeWidget, &QTreeWidget::itemClicked, this, &ViewTextureDB::groupedComparisonItemClicked);
 
         mTabCompare->layout()->addWidget(mCompareTableWidget);

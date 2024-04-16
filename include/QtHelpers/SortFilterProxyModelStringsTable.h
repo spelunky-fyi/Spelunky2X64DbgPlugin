@@ -10,10 +10,14 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelStringsTable(QObject* parent = nullptr);
+        SortFilterProxyModelStringsTable(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
-        void setFilterString(const QString& f);
+        void setFilterString(const QString& f)
+        {
+            mFilterString = f;
+            invalidateFilter();
+        }
 
       private:
         QString mFilterString = "";
