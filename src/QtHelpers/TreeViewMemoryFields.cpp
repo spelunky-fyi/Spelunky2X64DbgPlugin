@@ -128,7 +128,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
             typeName += QString::fromStdString(field.jsonName);
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
-            typeName += QString::fromUtf8(str.data(), str.size());
+            typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
         else
             typeName += "Unknown field type";
 
@@ -2315,7 +2315,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
     event->acceptProposedAction();
 }
 
-void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions supportedActions)
+void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions)
 {
     auto ix = selectedIndexes();
     if (ix.count() == 0)

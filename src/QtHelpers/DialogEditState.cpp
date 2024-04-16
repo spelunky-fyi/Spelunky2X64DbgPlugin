@@ -16,7 +16,7 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
 {
     setModal(true);
     setWindowTitle("Change value");
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
     // STATES
@@ -142,7 +142,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
     accept();
 }
 
-void S2Plugin::DialogEditState::stateComboBoxChanged(int index)
+void S2Plugin::DialogEditState::stateComboBoxChanged()
 {
     auto currentState = mStatesComboBox->currentData().toString();
     mStateLineEdit->setText(currentState);

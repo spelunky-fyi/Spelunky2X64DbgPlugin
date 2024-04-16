@@ -33,14 +33,14 @@ namespace S2Plugin
 
       private slots:
         void searchFieldReturnPressed();
-        void searchFieldCompleterActivated(const QString& text);
+        void searchFieldCompleterActivated();
         void label();
         void fieldUpdated(int row, QStandardItem* parrent);
         void fieldExpanded(const QModelIndex& index);
-        void comparisonFieldChosen(const QString& fieldName);
+        void comparisonFieldChosen();
         void compareGroupByCheckBoxClicked(int state);
         void comparisonCellClicked(int row, int column);
-        void groupedComparisonItemClicked(QTreeWidgetItem* item, int column);
+        void groupedComparisonItemClicked(QTreeWidgetItem* item);
 
       private:
         StyledItemDelegateHTML mHTMLDelegate;

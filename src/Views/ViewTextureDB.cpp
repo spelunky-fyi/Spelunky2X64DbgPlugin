@@ -16,10 +16,10 @@
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
-S2Plugin::ViewTextureDB::ViewTextureDB(size_t index, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewTextureDB::ViewTextureDB(uint32_t index, QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Texture DB (%1 textures)").arg(Spelunky2::get()->get_TextureDB().count()));
     showID(index);
 }
@@ -96,7 +96,7 @@ void S2Plugin::ViewTextureDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabCompare->layout())->addLayout(topLayout);
 
-        mCompareTableWidget = new QTableWidget(Spelunky2::get()->get_TextureDB().count(), 3, this);
+        mCompareTableWidget = new QTableWidget(static_cast<int>(Spelunky2::get()->get_TextureDB().count()), 3, this);
         mCompareTableWidget->setAlternatingRowColors(true);
         mCompareTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         mCompareTableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
@@ -135,7 +135,7 @@ void S2Plugin::ViewTextureDB::initializeUI()
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
-void S2Plugin::ViewTextureDB::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewTextureDB::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -171,7 +171,7 @@ void S2Plugin::ViewTextureDB::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
+void S2Plugin::ViewTextureDB::searchFieldCompleterActivated()
 {
     searchFieldReturnPressed();
 }
@@ -188,7 +188,7 @@ void S2Plugin::ViewTextureDB::label()
     auto model = mMainTreeView->model();
     std::string name;
     auto& textureDB = Spelunky2::get()->get_TextureDB();
-    for (uint idx = 0; idx < model->rowCount(); ++idx)
+    for (int idx = 0; idx < model->rowCount(); ++idx)
     {
         if (model->data(model->index(idx, gsColField), Qt::DisplayRole).toString() == "id")
         {
@@ -228,7 +228,7 @@ void S2Plugin::ViewTextureDB::compareGroupByCheckBoxClicked(int state)
     mCompareTreeWidget->setHidden(state == Qt::Unchecked);
 }
 
-void S2Plugin::ViewTextureDB::comparisonFieldChosen(const QString& fieldName)
+void S2Plugin::ViewTextureDB::comparisonFieldChosen()
 {
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
@@ -250,7 +250,7 @@ void S2Plugin::ViewTextureDB::populateComparisonTableWidget()
     auto comboboxData = mCompareFieldComboBox->currentData();
     auto& textureDB = Spelunky2::get()->get_TextureDB();
 
-    size_t row = 0;
+    int row = 0;
     for (auto& [textureID, textureData] : textureDB.textures())
     {
         auto item0 = new QTableWidgetItem(QString::asprintf("%03d", textureID));
@@ -324,7 +324,7 @@ void S2Plugin::ViewTextureDB::comparisonCellClicked(int row, int column)
     }
 }
 
-void S2Plugin::ViewTextureDB::groupedComparisonItemClicked(QTreeWidgetItem* item, int column)
+void S2Plugin::ViewTextureDB::groupedComparisonItemClicked(QTreeWidgetItem* item)
 {
     if (item->childCount() == 0)
     {

@@ -43,7 +43,7 @@ namespace S2Plugin
         }
 
         void addField(const LoggerField& field);
-        void removeFieldAt(size_t fieldIndex);
+        void removeFieldAt(int fieldIndex);
         void updateFieldColor(size_t fieldIndex, const QColor& newColor)
         {
             mFields.at(fieldIndex).color = newColor;
@@ -63,7 +63,7 @@ namespace S2Plugin
         }
         std::pair<int64_t, int64_t> sampleBounds(const LoggerField& field) const;
 
-        void start(size_t samplePeriod, size_t duration);
+        void start(int samplePeriod, int duration);
 
       signals:
         void samplingEnded();

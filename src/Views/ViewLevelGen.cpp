@@ -14,7 +14,7 @@
 S2Plugin::ViewLevelGen::ViewLevelGen(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("LevelGen");
     mMainTreeView->updateTree(0, 0, true);
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -116,7 +116,7 @@ void S2Plugin::ViewLevelGen::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewLevelGen::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewLevelGen::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -159,7 +159,7 @@ void S2Plugin::ViewLevelGen::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 

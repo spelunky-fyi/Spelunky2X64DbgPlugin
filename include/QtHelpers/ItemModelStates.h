@@ -14,7 +14,7 @@ namespace S2Plugin
       public:
         ItemModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QAbstractItemModel(parent), mStates(states){};
 
-        Qt::ItemFlags flags(const QModelIndex& index) const override
+        Qt::ItemFlags flags(const QModelIndex&) const override
         {
             return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
         }
@@ -31,19 +31,19 @@ namespace S2Plugin
             }
             return QVariant();
         }
-        int rowCount(const QModelIndex& parent = QModelIndex()) const override
+        int rowCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
-            return mStates.size();
+            return static_cast<int>(mStates.size());
         }
-        int columnCount(const QModelIndex& parent = QModelIndex()) const override
+        int columnCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return 1;
         }
-        QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override
+        QModelIndex index(int row, int column, [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return createIndex(row, column);
         }
-        QModelIndex parent(const QModelIndex& index) const override
+        QModelIndex parent(const QModelIndex&) const override
         {
             return QModelIndex();
         }

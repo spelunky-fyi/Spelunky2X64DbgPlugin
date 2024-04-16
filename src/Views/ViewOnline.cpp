@@ -11,7 +11,7 @@
 S2Plugin::ViewOnline::ViewOnline(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Online");
     refreshOnline();
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -68,7 +68,7 @@ void S2Plugin::ViewOnline::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewOnline::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewOnline::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -97,7 +97,7 @@ void S2Plugin::ViewOnline::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 

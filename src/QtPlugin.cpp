@@ -92,7 +92,7 @@ void QtPlugin::Detach()
     gsViewToolbar->resetSpelunky2Data();
 }
 
-void QtPlugin::MenuPrepare(int hMenu) {}
+void QtPlugin::MenuPrepare([[maybe_unused]] int hMenu) {}
 
 void QtPlugin::MenuEntry(int hEntry)
 {

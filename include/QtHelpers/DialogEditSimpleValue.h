@@ -21,7 +21,7 @@ namespace S2Plugin
       private slots:
         void cancelBtnClicked();
         void changeBtnClicked();
-        void decValueChanged(const QString& text);
+        void decValueChanged();
 
       private:
         uintptr_t mMemoryAddress;

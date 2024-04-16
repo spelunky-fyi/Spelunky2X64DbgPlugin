@@ -47,9 +47,9 @@ QVariant S2Plugin::ItemModelVirtualTable::data(const QModelIndex& index, int rol
     return QVariant();
 }
 
-int S2Plugin::ItemModelVirtualTable::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelVirtualTable::rowCount(const QModelIndex&) const
 {
-    return Spelunky2::get()->get_VirtualTableLookup().count();
+    return static_cast<int>(Spelunky2::get()->get_VirtualTableLookup().count());
 }
 
 QVariant S2Plugin::ItemModelVirtualTable::headerData(int section, Qt::Orientation orientation, int role) const
@@ -102,7 +102,7 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
 
 S2Plugin::SortFilterProxyModelVirtualTable::SortFilterProxyModelVirtualTable(QObject* parent) : QSortFilterProxyModel(parent) {}
 
-bool S2Plugin::SortFilterProxyModelVirtualTable::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
+bool S2Plugin::SortFilterProxyModelVirtualTable::filterAcceptsRow(int sourceRow, const QModelIndex&) const
 {
     const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(sourceRow);
 

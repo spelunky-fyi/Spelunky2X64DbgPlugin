@@ -42,24 +42,24 @@ namespace S2Plugin
             parseJSON();
         };
 
-        Qt::ItemFlags flags(const QModelIndex& index) const override
+        Qt::ItemFlags flags(const QModelIndex&) const override
         {
             return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
         }
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-        int rowCount(const QModelIndex& parent = QModelIndex()) const override
+        int rowCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
-            return mEntries.size();
+            return static_cast<int>(mEntries.size());
         }
-        int columnCount(const QModelIndex& parent = QModelIndex()) const override
+        int columnCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return 10;
         }
-        QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override
+        QModelIndex index(int row, int column, [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return createIndex(row, column);
         }
-        QModelIndex parent(const QModelIndex& index) const override
+        QModelIndex parent(const QModelIndex&) const override
         {
             return QModelIndex();
         }
@@ -90,7 +90,7 @@ namespace S2Plugin
       public:
         SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
 
-        bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override
+        bool filterAcceptsRow(int sourceRow, const QModelIndex&) const override
         {
             if (mHideCompleted && dynamic_cast<ItemModelGatherVirtualData*>(sourceModel())->isEntryCompleted(sourceRow))
             {

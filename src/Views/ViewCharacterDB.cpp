@@ -16,7 +16,7 @@
 S2Plugin::ViewCharacterDB::ViewCharacterDB(uint8_t index, QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Character DB");
     showIndex(index);
 }
@@ -130,7 +130,7 @@ void S2Plugin::ViewCharacterDB::initializeUI()
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
-void S2Plugin::ViewCharacterDB::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewCharacterDB::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -169,7 +169,7 @@ void S2Plugin::ViewCharacterDB::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::ViewCharacterDB::searchFieldCompleterActivated(const QString& text)
+void S2Plugin::ViewCharacterDB::searchFieldCompleterActivated()
 {
     searchFieldReturnPressed();
 }
@@ -224,7 +224,7 @@ void S2Plugin::ViewCharacterDB::compareGroupByCheckBoxClicked(int state)
     mCompareTreeWidget->setHidden(state == Qt::Unchecked);
 }
 
-void S2Plugin::ViewCharacterDB::comparisonFieldChosen(const QString& fieldName)
+void S2Plugin::ViewCharacterDB::comparisonFieldChosen()
 {
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
@@ -246,7 +246,7 @@ void S2Plugin::ViewCharacterDB::populateComparisonTableWidget()
     auto comboboxData = mCompareFieldComboBox->currentData();
     auto& characterDB = Spelunky2::get()->get_CharacterDB();
 
-    size_t row = 0;
+    int row = 0;
     for (auto x = 0; x < characterDB.charactersCount(); ++x)
     {
         auto item0 = new QTableWidgetItem(QString::asprintf("%03d", x));
@@ -320,7 +320,7 @@ void S2Plugin::ViewCharacterDB::comparisonCellClicked(int row, int column)
     }
 }
 
-void S2Plugin::ViewCharacterDB::groupedComparisonItemClicked(QTreeWidgetItem* item, int column)
+void S2Plugin::ViewCharacterDB::groupedComparisonItemClicked(QTreeWidgetItem* item)
 {
     if (item->childCount() == 0)
     {

@@ -30,7 +30,7 @@ S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidge
     }
 }
 
-void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
 {
     auto painter = QPainter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);

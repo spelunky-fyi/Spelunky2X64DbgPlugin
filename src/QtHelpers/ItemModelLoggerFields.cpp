@@ -25,16 +25,16 @@ QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int rol
             case gsLogFieldColFieldType:
             {
                 auto str = Configuration::getTypeDisplayName(field.type);
-                return QString::fromUtf8(str.data(), str.size());
+                return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
             }
         }
     }
     return QVariant();
 }
 
-int S2Plugin::ItemModelLoggerFields::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelLoggerFields::rowCount(const QModelIndex&) const
 {
-    return mLogger->fieldCount();
+    return static_cast<int>(mLogger->fieldCount());
 }
 
 QVariant S2Plugin::ItemModelLoggerFields::headerData(int section, Qt::Orientation orientation, int role) const

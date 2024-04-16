@@ -17,7 +17,7 @@
 S2Plugin::ViewEntityDB::ViewEntityDB(uint32_t id, QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Entity DB (%1 entities)").arg(Configuration::get()->entityList().highestID()));
     showID(id);
 }
@@ -101,7 +101,7 @@ void S2Plugin::ViewEntityDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabCompare->layout())->addLayout(topLayout);
 
-        mCompareTableWidget = new QTableWidget(config->entityList().count(), 3, this);
+        mCompareTableWidget = new QTableWidget(static_cast<int>(config->entityList().count()), 3, this);
         mCompareTableWidget->setAlternatingRowColors(true);
         mCompareTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         mCompareTableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
@@ -133,7 +133,7 @@ void S2Plugin::ViewEntityDB::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewEntityDB::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewEntityDB::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -169,7 +169,7 @@ void S2Plugin::ViewEntityDB::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::ViewEntityDB::searchFieldCompleterActivated(const QString& text)
+void S2Plugin::ViewEntityDB::searchFieldCompleterActivated()
 {
     searchFieldReturnPressed();
 }
@@ -187,7 +187,7 @@ void S2Plugin::ViewEntityDB::label()
     auto& entityDB = Spelunky2::get()->get_EntityDB();
     auto offset = entityDB.addressOfIndex(0); // ptr
     uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
-    size_t index = (indexOffset - offset) / entityDB.entitySize();
+    uint32_t index = static_cast<uint32_t>((indexOffset - offset) / entityDB.entitySize());
     std::string name = '[' + Configuration::get()->entityList().nameForID(index) + ']';
     mMainTreeView->labelAll(name);
 }
@@ -220,7 +220,7 @@ void S2Plugin::ViewEntityDB::compareGroupByCheckBoxClicked(int state)
     mCompareTreeWidget->setHidden(state == Qt::Unchecked);
 }
 
-void S2Plugin::ViewEntityDB::comparisonFieldChosen(const QString& fieldName)
+void S2Plugin::ViewEntityDB::comparisonFieldChosen()
 {
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
@@ -243,7 +243,7 @@ void S2Plugin::ViewEntityDB::populateComparisonTableWidget()
     auto& entityDB = Spelunky2::get()->get_EntityDB();
     auto& entityList = Configuration::get()->entityList();
 
-    size_t row = 0;
+    int row = 0;
     for (uint x = 1; x <= entityList.highestID(); ++x)
     {
         if (!entityList.isValidID(x))
@@ -327,7 +327,7 @@ void S2Plugin::ViewEntityDB::comparisonCellClicked(int row, int column)
     }
 }
 
-void S2Plugin::ViewEntityDB::groupedComparisonItemClicked(QTreeWidgetItem* item, int column)
+void S2Plugin::ViewEntityDB::groupedComparisonItemClicked(QTreeWidgetItem* item)
 {
     if (item->childCount() == 0)
     {

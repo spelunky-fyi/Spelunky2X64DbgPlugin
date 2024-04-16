@@ -12,7 +12,7 @@
 S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, size_t offset, QWidget* parent) : QWidget(parent), mTypeName(typeName), mMemoryOffset(offset)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Virtual Functions of %1").arg(QString::fromStdString(typeName)));
 }
 
@@ -59,7 +59,7 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
     QObject::connect(mFunctionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);
 }
 
-void S2Plugin::ViewVirtualFunctions::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewVirtualFunctions::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -100,7 +100,7 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
     }
 }
 
-void S2Plugin::ViewVirtualFunctions::jumpToFunction(bool b)
+void S2Plugin::ViewVirtualFunctions::jumpToFunction()
 {
     auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8ull));
     GuiDisasmAt(address, GetContextData(UE_CIP));

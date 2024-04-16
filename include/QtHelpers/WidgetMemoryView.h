@@ -13,9 +13,9 @@ namespace S2Plugin
     {
         std::string tooltip;
         size_t offset;
-        size_t size;
+        int size;
         QColor color;
-        HighlightedField(std::string _tooltip, size_t _offset, size_t _size, QColor _color) : tooltip(_tooltip), offset(_offset), size(_size), color(_color){};
+        HighlightedField(std::string _tooltip, size_t _offset, int _size, QColor _color) : tooltip(_tooltip), offset(_offset), size(_size), color(_color){};
     };
 
     struct ToolTipRect
@@ -37,7 +37,7 @@ namespace S2Plugin
         void setOffsetAndSize(size_t offset, size_t size);
 
         void clearHighlights();
-        void addHighlightedField(std::string tooltip, size_t offset, size_t size, QColor color);
+        void addHighlightedField(std::string tooltip, size_t offset, int size, QColor color);
 
       protected:
         void paintEvent(QPaintEvent* event) override;

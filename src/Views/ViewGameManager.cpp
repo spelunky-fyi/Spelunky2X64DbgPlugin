@@ -11,7 +11,7 @@
 S2Plugin::ViewGameManager::ViewGameManager(QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("GameManager");
     refreshGameManager();
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -68,7 +68,7 @@ void S2Plugin::ViewGameManager::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewGameManager::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewGameManager::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -97,7 +97,7 @@ void S2Plugin::ViewGameManager::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 

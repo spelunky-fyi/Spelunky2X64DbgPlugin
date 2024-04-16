@@ -23,7 +23,7 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
 
     initializeRefreshAndFilter();
     initializeTreeView();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
 
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
@@ -90,7 +90,7 @@ void S2Plugin::ViewEntities::initializeRefreshAndFilter()
     mMainLayout->addLayout(horLayout);
 }
 
-void S2Plugin::ViewEntities::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewEntities::closeEvent(QCloseEvent*)
 {
     delete this;
 }

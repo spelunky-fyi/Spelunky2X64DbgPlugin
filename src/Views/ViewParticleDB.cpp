@@ -16,7 +16,7 @@
 S2Plugin::ViewParticleDB::ViewParticleDB(uint32_t id, QWidget* parent) : QWidget(parent)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Particle DB (%1 particles)").arg(Configuration::get()->particleEmittersList().count()));
     showID(id);
 }
@@ -93,7 +93,7 @@ void S2Plugin::ViewParticleDB::initializeUI()
 
         dynamic_cast<QVBoxLayout*>(mTabCompare->layout())->addLayout(topLayout);
 
-        mCompareTableWidget = new QTableWidget(config->particleEmittersList().count(), 3, this);
+        mCompareTableWidget = new QTableWidget(static_cast<int>(config->particleEmittersList().count()), 3, this);
         mCompareTableWidget->setAlternatingRowColors(true);
         mCompareTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
         mCompareTableWidget->setHorizontalHeaderLabels(QStringList() << "ID"
@@ -131,7 +131,7 @@ void S2Plugin::ViewParticleDB::initializeUI()
     mMainTreeView->setColumnWidth(gsColType, 100);
 }
 
-void S2Plugin::ViewParticleDB::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewParticleDB::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -167,7 +167,7 @@ void S2Plugin::ViewParticleDB::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::ViewParticleDB::searchFieldCompleterActivated(const QString& text)
+void S2Plugin::ViewParticleDB::searchFieldCompleterActivated()
 {
     searchFieldReturnPressed();
 }
@@ -185,7 +185,7 @@ void S2Plugin::ViewParticleDB::label()
     auto& particleDB = Spelunky2::get()->get_ParticleDB();
     auto offset = particleDB.addressOfIndex(0); // ptr
     uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
-    size_t index = (indexOffset - offset) / particleDB.particleSize();
+    uint32_t index = static_cast<uint32_t>((indexOffset - offset) / particleDB.particleSize());
     std::string name = '[' + Configuration::get()->particleEmittersList().nameForID(index + 1) + ']';
     mMainTreeView->labelAll(name);
 }
@@ -218,7 +218,7 @@ void S2Plugin::ViewParticleDB::compareGroupByCheckBoxClicked(int state)
     mCompareTreeWidget->setHidden(state == Qt::Unchecked);
 }
 
-void S2Plugin::ViewParticleDB::comparisonFieldChosen(const QString& fieldName)
+void S2Plugin::ViewParticleDB::comparisonFieldChosen()
 {
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
@@ -241,7 +241,7 @@ void S2Plugin::ViewParticleDB::populateComparisonTableWidget()
     auto& particleList = Configuration::get()->particleEmittersList();
     auto& particleDB = Spelunky2::get()->get_ParticleDB();
 
-    size_t row = 0;
+    int row = 0;
     for (auto x = 1; x <= particleList.count(); ++x)
     {
         auto item0 = new QTableWidgetItem(QString::asprintf("%03d", x));
@@ -316,7 +316,7 @@ void S2Plugin::ViewParticleDB::comparisonCellClicked(int row, int column)
     }
 }
 
-void S2Plugin::ViewParticleDB::groupedComparisonItemClicked(QTreeWidgetItem* item, int column)
+void S2Plugin::ViewParticleDB::groupedComparisonItemClicked(QTreeWidgetItem* item)
 {
     if (item->childCount() == 0)
     {

@@ -15,7 +15,7 @@ constexpr uint32_t gsRoleRawValue = 1;
 
 S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 {
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable().count()));
     initializeUI();
 }
@@ -69,7 +69,7 @@ void S2Plugin::ViewStringsTable::reload()
     stringTable.modelCache()->setHorizontalHeaderLabels({"ID", "Table offset", "Memory offset", "Value"});
     auto parrent = stringTable.modelCache()->invisibleRootItem();
 
-    for (size_t idx = 0; idx < stringTable.count(); ++idx)
+    for (uint32_t idx = 0; idx < stringTable.count(); ++idx)
     {
         QStandardItem* fieldID = new QStandardItem(QString::number(idx));
         auto offset = stringTable.addressOfIndex(idx);
@@ -100,7 +100,7 @@ QSize S2Plugin::ViewStringsTable::minimumSizeHint() const
     return QSize(150, 150);
 }
 
-void S2Plugin::ViewStringsTable::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewStringsTable::closeEvent(QCloseEvent*)
 {
     delete this;
 }

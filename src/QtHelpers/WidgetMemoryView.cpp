@@ -18,7 +18,7 @@ S2Plugin::WidgetMemoryView::WidgetMemoryView(QWidget* parent) : QWidget(parent)
     setMouseTracking(true);
 }
 
-void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent*)
 {
     if (mOffset != 0 && mSize != 0)
     {
@@ -92,7 +92,7 @@ void S2Plugin::WidgetMemoryView::clearHighlights()
     update();
 }
 
-void S2Plugin::WidgetMemoryView::addHighlightedField(std::string tooltip, size_t offset, size_t size, QColor color)
+void S2Plugin::WidgetMemoryView::addHighlightedField(std::string tooltip, size_t offset, int size, QColor color)
 {
     mHighlightedFields.emplace_back(std::move(tooltip), offset, size, std::move(color));
 }

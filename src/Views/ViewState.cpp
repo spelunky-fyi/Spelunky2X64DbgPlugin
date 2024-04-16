@@ -11,7 +11,7 @@
 S2Plugin::ViewState::ViewState(uintptr_t state, QWidget* parent) : QWidget(parent), mState(state)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("State");
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
@@ -68,7 +68,7 @@ void S2Plugin::ViewState::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewState::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewState::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -97,7 +97,7 @@ void S2Plugin::ViewState::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 

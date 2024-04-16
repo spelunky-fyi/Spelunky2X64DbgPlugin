@@ -22,21 +22,21 @@ namespace S2Plugin
       public:
         ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, QObject* parent = nullptr) : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress){};
 
-        Qt::ItemFlags flags(const QModelIndex& index) const override
+        Qt::ItemFlags flags(const QModelIndex&) const override
         {
             return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
         }
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
         int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-        int columnCount(const QModelIndex& parent = QModelIndex()) const override
+        int columnCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return 4;
         }
-        QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override
+        QModelIndex index(int row, int column, [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return createIndex(row, column);
         }
-        QModelIndex parent(const QModelIndex& index) const override
+        QModelIndex parent(const QModelIndex&) const override
         {
             return QModelIndex();
         }

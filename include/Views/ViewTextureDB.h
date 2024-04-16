@@ -22,7 +22,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewTextureDB(size_t index = 1, QWidget* parent = nullptr);
+        ViewTextureDB(uint32_t index = 1, QWidget* parent = nullptr);
         void showID(uint32_t id);
 
       protected:
@@ -32,14 +32,14 @@ namespace S2Plugin
 
       private slots:
         void searchFieldReturnPressed();
-        void searchFieldCompleterActivated(const QString& text);
+        void searchFieldCompleterActivated();
         void label();
         void fieldUpdated(int row, QStandardItem* parrent);
         void fieldExpanded(const QModelIndex& index);
-        void comparisonFieldChosen(const QString& fieldName);
+        void comparisonFieldChosen();
         void compareGroupByCheckBoxClicked(int state);
         void comparisonCellClicked(int row, int column);
-        void groupedComparisonItemClicked(QTreeWidgetItem* item, int column);
+        void groupedComparisonItemClicked(QTreeWidgetItem* item);
 
       private:
         QTabWidget* mMainTabWidget;

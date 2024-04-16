@@ -18,11 +18,11 @@ S2Plugin::ViewLogger::ViewLogger(QWidget* parent) : QWidget(parent)
     mLogger = std::make_unique<Logger>();
 
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Logger");
 }
 
-void S2Plugin::ViewLogger::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewLogger::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -138,13 +138,13 @@ void S2Plugin::ViewLogger::startLogging()
         mStartButton->setEnabled(false);
         mMainTabWidget->setHidden(true);
         mSamplingWidget->setHidden(false);
-        mLogger->start(mSamplePeriodLineEdit->text().toULongLong(), mDurationLineEdit->text().toULongLong());
+        mLogger->start(mSamplePeriodLineEdit->text().toInt(), mDurationLineEdit->text().toInt());
     }
     else
     {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
+        msgBox.setWindowIcon(getCavemanIcon());
         msgBox.setText("Please specify one or more fields to log");
         msgBox.setWindowTitle("Spelunky2");
         msgBox.exec();

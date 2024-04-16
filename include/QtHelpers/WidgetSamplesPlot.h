@@ -31,7 +31,7 @@ namespace S2Plugin
             mCurrentMousePos = event->pos();
             update();
         }
-        void leaveEvent(QEvent* event) override
+        void leaveEvent(QEvent*) override
         {
             update();
         }

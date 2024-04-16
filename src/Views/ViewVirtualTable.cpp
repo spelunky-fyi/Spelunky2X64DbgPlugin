@@ -27,7 +27,7 @@ S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
     mGatherSortFilterProxy->sort(gsColGatherID);
 
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Virtual Table");
 }
 
@@ -205,7 +205,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
     }
 }
 
-void S2Plugin::ViewVirtualTable::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewVirtualTable::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -336,7 +336,7 @@ void S2Plugin::ViewVirtualTable::lookupAddress(size_t address)
 
         if (items.size() == 0)
         {
-            mLookupResultsTable->setRowCount(tableOffsets.size());
+            mLookupResultsTable->setRowCount(static_cast<int>(tableOffsets.size()));
             auto counter = 0;
             for (const auto& tableOffset : tableOffsets)
             {
@@ -346,7 +346,7 @@ void S2Plugin::ViewVirtualTable::lookupAddress(size_t address)
         }
         else
         {
-            mLookupResultsTable->setRowCount(items.size());
+            mLookupResultsTable->setRowCount(static_cast<int>(items.size()));
             auto counter = 0;
             for (const auto& item : items)
             {
@@ -397,7 +397,7 @@ void S2Plugin::ViewVirtualTable::exportGatheredData()
         {
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Critical);
-            msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
+            msgBox.setWindowIcon(getCavemanIcon());
             msgBox.setText("The file could not be written");
             msgBox.setWindowTitle("Spelunky2");
             msgBox.exec();
@@ -413,7 +413,7 @@ void S2Plugin::ViewVirtualTable::exportVirtTable()
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
+    msgBox.setWindowIcon(getCavemanIcon());
     msgBox.setText("The table was copied to the clipboard");
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();
@@ -427,7 +427,7 @@ void S2Plugin::ViewVirtualTable::exportCppEnum()
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowIcon(S2Plugin::getCavemanIcon());
+    msgBox.setWindowIcon(getCavemanIcon());
     msgBox.setText("The C++ enum was copied to the clipboard");
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();

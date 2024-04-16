@@ -24,7 +24,7 @@ namespace S2Plugin
       private slots:
         void cancelBtnClicked();
         void changeBtnClicked();
-        void stateComboBoxChanged(int index);
+        void stateComboBoxChanged();
 
       private:
         uintptr_t mMemoryAddress;

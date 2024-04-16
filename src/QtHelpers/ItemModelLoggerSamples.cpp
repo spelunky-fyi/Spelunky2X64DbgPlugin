@@ -76,14 +76,14 @@ QVariant S2Plugin::ItemModelLoggerSamples::data(const QModelIndex& index, int ro
     return QVariant();
 }
 
-int S2Plugin::ItemModelLoggerSamples::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelLoggerSamples::rowCount(const QModelIndex&) const
 {
-    return mLogger->sampleCount();
+    return static_cast<int>(mLogger->sampleCount());
 }
 
-int S2Plugin::ItemModelLoggerSamples::columnCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelLoggerSamples::columnCount(const QModelIndex&) const
 {
-    return mLogger->fieldCount() + 1;
+    return static_cast<int>(mLogger->fieldCount() + 1);
 }
 
 QVariant S2Plugin::ItemModelLoggerSamples::headerData(int section, Qt::Orientation orientation, int role) const

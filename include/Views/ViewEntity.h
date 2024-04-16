@@ -38,7 +38,7 @@ namespace S2Plugin
         void interpretAsChanged(const QString& text);
         void label();
         void entityOffsetDropped(size_t entityOffset);
-        void tabChanged(int index);
+        void tabChanged();
 
       private:
         QVBoxLayout* mMainLayout;

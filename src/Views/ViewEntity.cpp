@@ -17,7 +17,7 @@
 S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget(parent), mEntityPtr(entityOffset)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
 
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
@@ -175,7 +175,7 @@ void S2Plugin::ViewEntity::initializeUI()
     mTabCPP->layout()->addWidget(mCPPTextEdit);
 }
 
-void S2Plugin::ViewEntity::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewEntity::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -214,7 +214,7 @@ void S2Plugin::ViewEntity::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 
@@ -264,7 +264,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
                     }
                 }
 
-                auto size = field.get_size();
+                int size = static_cast<int>(field.get_size());
                 if (size == 0)
                     continue;
                 mMemoryView->addHighlightedField(prefix + field.name, mEntityPtr + delta, size, *(colors.begin() + colorIndex));
@@ -324,7 +324,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
 
     auto highlightFields = [&](QStandardItem* parrent, auto&& self) -> void
     {
-        for (size_t idx = 0; idx < parrent->rowCount(); ++idx)
+        for (int idx = 0; idx < parrent->rowCount(); ++idx)
         {
             auto field = parrent->child(idx, gsColField);
             type = field->data(gsRoleType).value<MemoryFieldType>();
@@ -338,7 +338,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
             size_t delta = deltaField->data(gsRoleRawValue).toULongLong();
             // get the size by the difference in offset delta
             // [Known Issue]: this will fail in getting the correct size if there is a skip element between fields
-            size_t size = delta - offset;
+            int size = static_cast<int>(delta - offset);
             if (size != 0)
             {
                 mMemoryComparisonView->addHighlightedField(std::move(fieldName), mComparisonEntityPtr + offset, size, std::move(color));
@@ -349,7 +349,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
         }
     };
 
-    for (size_t idx = 0; idx < root->rowCount(); ++idx)
+    for (int idx = 0; idx < root->rowCount(); ++idx)
     {
         QStandardItem* currentClass = root->child(idx, gsColField);
         if (currentClass->data(gsRoleType).value<MemoryFieldType>() != MemoryFieldType::EntitySubclass)
@@ -360,7 +360,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
         highlightFields(currentClass, highlightFields);
     }
     // update last element
-    size_t size = Configuration::getBuiltInTypeSize(type);
+    int size = static_cast<int>(Configuration::getBuiltInTypeSize(type));
     if (size != 0)
     {
         mMemoryComparisonView->addHighlightedField(std::move(fieldName), mComparisonEntityPtr + offset, size, std::move(color));
@@ -390,7 +390,7 @@ void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)
     updateMemoryViewOffsetAndSize();
 }
 
-void S2Plugin::ViewEntity::tabChanged(int index)
+void S2Plugin::ViewEntity::tabChanged()
 {
     if (mMainTabWidget->currentWidget() == mTabCPP)
     {

@@ -8,7 +8,7 @@
 
 static const uint8_t gsPlotMargin = 5;
 
-void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
 {
     auto painter = QPainter(this);
 
@@ -231,5 +231,5 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent* event)
 
 QSize S2Plugin::WidgetSamplesPlot::minimumSizeHint() const
 {
-    return QSize(mLogger->sampleCount() + (gsPlotMargin * 2) + 100, 50);
+    return QSize(static_cast<int>(mLogger->sampleCount() + (gsPlotMargin * 2) + 100), 50);
 }

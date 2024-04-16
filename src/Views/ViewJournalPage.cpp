@@ -11,7 +11,7 @@
 S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t offset, const std::string& pageType, QWidget* parent) : QWidget(parent), mOffset(offset), mPageType(pageType)
 {
     initializeUI();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("JournalPage");
 
     mMainTreeView->setColumnWidth(gsColField, 125);
@@ -52,27 +52,27 @@ void S2Plugin::ViewJournalPage::initializeUI()
     mRefreshLayout->addStretch();
 
     mRefreshLayout->addWidget(new QLabel("Interpret as:", this));
-    mInterpretAsComboBox = new QComboBox(this);
+    auto interpretAsComboBox = new QComboBox(this);
     // TODO get from json
-    // also, guess page by the vtable
-    mInterpretAsComboBox->addItem("JournalPage");
-    mInterpretAsComboBox->addItem("JournalPageProgress");
-    mInterpretAsComboBox->addItem("JournalPageJournalMenu");
-    mInterpretAsComboBox->addItem("JournalPagePlaces");
-    mInterpretAsComboBox->addItem("JournalPagePeople");
-    mInterpretAsComboBox->addItem("JournalPageBestiary");
-    mInterpretAsComboBox->addItem("JournalPageItems");
-    mInterpretAsComboBox->addItem("JournalPageTraps");
-    mInterpretAsComboBox->addItem("JournalPageStory");
-    mInterpretAsComboBox->addItem("JournalPageFeats");
-    mInterpretAsComboBox->addItem("JournalPageDeathCause");
-    mInterpretAsComboBox->addItem("JournalPageDeathMenu");
-    mInterpretAsComboBox->addItem("JournalPageRecap");
-    mInterpretAsComboBox->addItem("JournalPagePlayerProfile");
-    mInterpretAsComboBox->addItem("JournalPageLastGamePlayed");
+    // also, guess page by the vtable maybe?
+    interpretAsComboBox->addItem("JournalPage");
+    interpretAsComboBox->addItem("JournalPageProgress");
+    interpretAsComboBox->addItem("JournalPageJournalMenu");
+    interpretAsComboBox->addItem("JournalPagePlaces");
+    interpretAsComboBox->addItem("JournalPagePeople");
+    interpretAsComboBox->addItem("JournalPageBestiary");
+    interpretAsComboBox->addItem("JournalPageItems");
+    interpretAsComboBox->addItem("JournalPageTraps");
+    interpretAsComboBox->addItem("JournalPageStory");
+    interpretAsComboBox->addItem("JournalPageFeats");
+    interpretAsComboBox->addItem("JournalPageDeathCause");
+    interpretAsComboBox->addItem("JournalPageDeathMenu");
+    interpretAsComboBox->addItem("JournalPageRecap");
+    interpretAsComboBox->addItem("JournalPagePlayerProfile");
+    interpretAsComboBox->addItem("JournalPageLastGamePlayed");
 
-    QObject::connect(mInterpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
-    mRefreshLayout->addWidget(mInterpretAsComboBox);
+    QObject::connect(interpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
+    mRefreshLayout->addWidget(interpretAsComboBox);
     mRefreshLayout->addStretch();
 
     auto labelButton = new QPushButton("Label", this);
@@ -92,7 +92,7 @@ void S2Plugin::ViewJournalPage::initializeUI()
     mMainTreeView->setVisible(true);
 }
 
-void S2Plugin::ViewJournalPage::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewJournalPage::closeEvent(QCloseEvent*)
 {
     delete this;
 }
@@ -121,7 +121,7 @@ void S2Plugin::ViewJournalPage::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 
@@ -150,6 +150,5 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
-        // mInterpretAsComboBox->setCurrentText("");
     }
 }

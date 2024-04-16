@@ -45,7 +45,6 @@ namespace S2Plugin
         QCheckBox* mAutoRefreshCheckBox;
         QLineEdit* mAutoRefreshIntervalLineEdit;
         std::unique_ptr<QTimer> mAutoRefreshTimer;
-        QComboBox* mInterpretAsComboBox;
 
         void initializeUI();
     };

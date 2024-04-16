@@ -21,7 +21,7 @@ namespace S2Plugin
 
       private slots:
         void tableEntryClicked(const QModelIndex& index);
-        void jumpToFunction(bool b);
+        void jumpToFunction();
 
       private:
         std::string mTypeName;

@@ -40,22 +40,22 @@ PLUG_EXPORT void plugsetup(PLUG_SETUPSTRUCT* setupStruct)
     QtPlugin::WaitForSetup();
 }
 
-PLUG_EXPORT void CBDETACH(CBTYPE cbType, PLUG_CB_DETACH* info)
+PLUG_EXPORT void CBDETACH([[maybe_unused]] CBTYPE cbType, [[maybe_unused]] PLUG_CB_DETACH* info)
 {
     GuiExecuteOnGuiThread(QtPlugin::Detach);
 }
 
-PLUG_EXPORT void CBEXITPROCESS(CBTYPE cbType, PLUG_CB_EXITPROCESS* info)
+PLUG_EXPORT void CBEXITPROCESS([[maybe_unused]] CBTYPE cbType, [[maybe_unused]] PLUG_CB_EXITPROCESS* info)
 {
     GuiExecuteOnGuiThread(QtPlugin::Detach);
 }
 
-PLUG_EXPORT void CBMENUPREPARE(CBTYPE, PLUG_CB_MENUPREPARE* info)
+PLUG_EXPORT void CBMENUPREPARE([[maybe_unused]] CBTYPE cbType, PLUG_CB_MENUPREPARE* info)
 {
     QtPlugin::MenuPrepare(info->hMenu);
 }
 
-PLUG_EXPORT void CBMENUENTRY(CBTYPE, PLUG_CB_MENUENTRY* info)
+PLUG_EXPORT void CBMENUENTRY([[maybe_unused]] CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 {
     QtPlugin::MenuEntry(info->hEntry);
 }

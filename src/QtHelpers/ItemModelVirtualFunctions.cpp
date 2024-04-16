@@ -42,9 +42,9 @@ QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int
     return QVariant();
 }
 
-int S2Plugin::ItemModelVirtualFunctions::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelVirtualFunctions::rowCount(const QModelIndex&) const
 {
-    return Configuration::get()->virtualFunctionsOfType(mTypeName).size();
+    return static_cast<int>(Configuration::get()->virtualFunctionsOfType(mTypeName).size());
 }
 
 QVariant S2Plugin::ItemModelVirtualFunctions::headerData(int section, Qt::Orientation orientation, int role) const

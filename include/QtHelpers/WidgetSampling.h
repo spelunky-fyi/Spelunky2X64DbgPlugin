@@ -22,7 +22,7 @@ namespace S2Plugin
         }
 
       protected:
-        void paintEvent(QPaintEvent* event) override
+        void paintEvent(QPaintEvent*) override
         {
             auto painter = QPainter(this);
             painter.save();

@@ -18,7 +18,7 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
 {
     setModal(true);
     setWindowTitle("Change value");
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
     // FIELDS
@@ -226,7 +226,7 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
     accept();
 }
 
-void S2Plugin::DialogEditSimpleValue::decValueChanged(const QString& text)
+void S2Plugin::DialogEditSimpleValue::decValueChanged()
 {
     std::stringstream ss;
     switch (mFieldType)

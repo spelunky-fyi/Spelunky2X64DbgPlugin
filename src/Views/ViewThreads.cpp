@@ -127,7 +127,7 @@ void S2Plugin::ViewThreads::refreshThreads()
     }
 }
 
-void S2Plugin::ViewThreads::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewThreads::closeEvent(QCloseEvent*)
 {
     delete this;
 }

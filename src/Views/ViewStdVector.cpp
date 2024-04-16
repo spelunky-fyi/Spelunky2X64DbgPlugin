@@ -17,7 +17,7 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
     initializeRefreshLayout();
-    setWindowIcon(S2Plugin::getCavemanIcon());
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
 
     refreshVectorContents();
@@ -65,7 +65,7 @@ void S2Plugin::ViewStdVector::initializeRefreshLayout()
     mMainLayout->setMargin(5);
 }
 
-void S2Plugin::ViewStdVector::closeEvent(QCloseEvent* event)
+void S2Plugin::ViewStdVector::closeEvent(QCloseEvent* )
 {
     delete this;
 }
@@ -162,6 +162,6 @@ void S2Plugin::ViewStdVector::autoRefreshIntervalChanged(const QString& text)
 {
     if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
     {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
+        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
