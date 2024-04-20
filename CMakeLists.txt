@@ -101,7 +101,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSampling.h
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
-	include/QtHelpers/DatabaseHelper.h
+	include/QtHelpers/WidgetDatabaseView.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
@@ -150,7 +150,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/ItemModelLoggerFields.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
-	src/QtHelpers/DatabaseHelper.cpp
+	src/QtHelpers/WidgetDatabaseView.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc
 )

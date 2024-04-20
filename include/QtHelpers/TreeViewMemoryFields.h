@@ -1,6 +1,5 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QStandardItemModel>
 #include <QTreeView>
 #include <array>
@@ -72,7 +71,6 @@ namespace S2Plugin
 
       private:
         QStandardItemModel* mModel;
-        StyledItemDelegateHTML mHTMLDelegate;
         std::array<uint32_t, 9> mSavedColumnWidths = {0};
         bool mEnableChangeHighlighting = true;
     };

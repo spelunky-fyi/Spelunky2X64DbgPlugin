@@ -11,6 +11,7 @@
 #include "Data/TextureDB.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "QtHelpers/DialogEditState.h"
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "Views/ViewCharacterDB.h"
@@ -37,7 +38,7 @@
 
 S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(QWidget* parent) : QTreeView(parent)
 {
-    setItemDelegate(&mHTMLDelegate);
+    setItemDelegate(new StyledItemDelegateHTML(this));
     setAlternatingRowColors(true);
     mModel = new QStandardItemModel(this);
     setModel(mModel);
@@ -2052,7 +2053,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         auto view = getToolbar()->showCharacterDB();
                         if (view != nullptr)
                         {
-                            view->showIndex(id.toUInt());
+                            view->showID(id.toUInt());
                         }
                     }
                     break;

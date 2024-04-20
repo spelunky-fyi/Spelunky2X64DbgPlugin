@@ -70,6 +70,7 @@ const S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
     {
         uintptr_t offset = mTextureDB.ptr + textureSize * x;
         auto textureID = Script::Memory::ReadQword(offset);
+        mTextureDB.mHighestID = std::max(mTextureDB.mHighestID, textureID);
 
         auto nameOffset = offset + 0x8;
 
