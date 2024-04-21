@@ -9,7 +9,6 @@
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 #include "QtPlugin.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
 #include <QFont>
 #include <QLabel>
 #include <string>
@@ -173,11 +172,6 @@ void S2Plugin::ViewEntity::initializeUI()
     mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
 
     mTabCPP->layout()->addWidget(mCPPTextEdit);
-}
-
-void S2Plugin::ViewEntity::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 void S2Plugin::ViewEntity::refreshEntity()

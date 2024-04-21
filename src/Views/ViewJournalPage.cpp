@@ -4,7 +4,6 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
-#include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 
@@ -90,11 +89,6 @@ void S2Plugin::ViewJournalPage::initializeUI()
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
-}
-
-void S2Plugin::ViewJournalPage::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 void S2Plugin::ViewJournalPage::refreshJournalPage()

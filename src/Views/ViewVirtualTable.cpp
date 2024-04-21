@@ -205,11 +205,6 @@ void S2Plugin::ViewVirtualTable::initializeUI()
     }
 }
 
-void S2Plugin::ViewVirtualTable::closeEvent(QCloseEvent*)
-{
-    delete this;
-}
-
 QSize S2Plugin::ViewVirtualTable::sizeHint() const
 {
     return QSize(800, 650);

@@ -6,7 +6,6 @@
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 #include <QScrollArea>
@@ -114,11 +113,6 @@ void S2Plugin::ViewLevelGen::initializeUI()
     mMainLayout->setMargin(5);
     setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
-}
-
-void S2Plugin::ViewLevelGen::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 void S2Plugin::ViewLevelGen::refreshLevelGen()

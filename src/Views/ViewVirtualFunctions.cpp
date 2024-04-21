@@ -59,11 +59,6 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
     QObject::connect(mFunctionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);
 }
 
-void S2Plugin::ViewVirtualFunctions::closeEvent(QCloseEvent*)
-{
-    delete this;
-}
-
 QSize S2Plugin::ViewVirtualFunctions::sizeHint() const
 {
     return QSize(650, 450);

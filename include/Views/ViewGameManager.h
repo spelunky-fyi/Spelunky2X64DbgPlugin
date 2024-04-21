@@ -20,7 +20,6 @@ namespace S2Plugin
         ViewGameManager(QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

@@ -7,7 +7,6 @@
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QCheckBox>
-#include <QCloseEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -76,11 +75,6 @@ void S2Plugin::ViewStdMap::initializeRefreshLayout()
     mMainTreeView->setVisible(true);
     mMainLayout->addWidget(mMainTreeView);
     mMainLayout->setMargin(5);
-}
-
-void S2Plugin::ViewStdMap::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 void S2Plugin::ViewStdMap::refreshMapContents()

@@ -36,7 +36,6 @@ namespace S2Plugin
         ViewEntities(QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

@@ -27,7 +27,6 @@ namespace S2Plugin
         ViewEntity(size_t entityOffset, QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

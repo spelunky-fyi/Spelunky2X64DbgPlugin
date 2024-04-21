@@ -7,7 +7,6 @@
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
 #include <QHeaderView>
 #include <QLabel>
 #include <QTimer>
@@ -88,11 +87,6 @@ void S2Plugin::ViewEntities::initializeRefreshAndFilter()
     horLayout->addLayout(filterLayout);
     horLayout->addStretch();
     mMainLayout->addLayout(horLayout);
-}
-
-void S2Plugin::ViewEntities::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 void S2Plugin::ViewEntities::refreshEntities()

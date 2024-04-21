@@ -18,7 +18,6 @@ namespace S2Plugin
         ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

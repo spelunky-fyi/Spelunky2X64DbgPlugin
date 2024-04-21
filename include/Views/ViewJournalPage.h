@@ -23,7 +23,6 @@ namespace S2Plugin
         ViewJournalPage(uintptr_t offset, const std::string& pageType, QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

@@ -33,11 +33,11 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
     setWindowIcon(getCavemanIcon());
     auto mainLayout = new QVBoxLayout();
     mainLayout->setMargin(5);
-    setLayout(mainLayout);
 
     mMainTabWidget = new QTabWidget();
     mMainTabWidget->setDocumentMode(false);
     mainLayout->addWidget(mMainTabWidget);
+    setLayout(mainLayout);
 
     auto tabLookup = new QWidget();
     auto tabCompare = new QWidget();
@@ -67,7 +67,7 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         QObject::connect(labelButton, &QPushButton::clicked, this, &WidgetDatabaseView::label);
         topLayout->addWidget(labelButton);
 
-        dynamic_cast<QVBoxLayout*>(tabLookup->layout())->addLayout(topLayout);
+        qobject_cast<QVBoxLayout*>(tabLookup->layout())->addLayout(topLayout);
 
         mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
@@ -99,7 +99,7 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         QObject::connect(groupCheckbox, &QCheckBox::stateChanged, this, &WidgetDatabaseView::compareGroupByCheckBoxClicked);
         topLayout->addWidget(groupCheckbox);
 
-        dynamic_cast<QVBoxLayout*>(tabCompare->layout())->addLayout(topLayout);
+        qobject_cast<QVBoxLayout*>(tabCompare->layout())->addLayout(topLayout);
 
         mCompareTableWidget = new QTableWidget(0, 3, this); // need to set the row count in subclass
         mCompareTableWidget->setAlternatingRowColors(true);
@@ -132,11 +132,6 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
     mSearchLineEdit->setVisible(true);
     mSearchLineEdit->setFocus();
     mMainTreeView->setVisible(true);
-}
-
-void S2Plugin::WidgetDatabaseView::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 QSize S2Plugin::WidgetDatabaseView::minimumSizeHint() const

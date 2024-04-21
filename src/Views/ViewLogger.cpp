@@ -7,7 +7,6 @@
 #include "QtHelpers/WidgetSamplesPlot.h"
 #include "QtHelpers/WidgetSampling.h"
 #include "QtPlugin.h"
-#include <QCloseEvent>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QLabel>
@@ -20,11 +19,6 @@ S2Plugin::ViewLogger::ViewLogger(QWidget* parent) : QWidget(parent)
     initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("Logger");
-}
-
-void S2Plugin::ViewLogger::closeEvent(QCloseEvent*)
-{
-    delete this;
 }
 
 QSize S2Plugin::ViewLogger::sizeHint() const

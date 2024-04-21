@@ -6,7 +6,6 @@
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QCheckBox>
-#include <QCloseEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QTimer>
@@ -63,11 +62,6 @@ void S2Plugin::ViewStdVector::initializeRefreshLayout()
     mMainLayout->addWidget(mMainTreeView);
     mMainTreeView->setVisible(true);
     mMainLayout->setMargin(5);
-}
-
-void S2Plugin::ViewStdVector::closeEvent(QCloseEvent* )
-{
-    delete this;
 }
 
 void S2Plugin::ViewStdVector::refreshVectorContents()

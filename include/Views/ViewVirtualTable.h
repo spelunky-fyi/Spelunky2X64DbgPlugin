@@ -23,7 +23,6 @@ namespace S2Plugin
         void updateGatherProgress();
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

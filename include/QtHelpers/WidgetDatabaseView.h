@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QCloseEvent>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QModelIndex>
@@ -39,7 +38,6 @@ namespace S2Plugin
         virtual void showID(ID_type id) = 0;
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize minimumSizeHint() const override;
 
         virtual ID_type highestRecordID() const = 0;

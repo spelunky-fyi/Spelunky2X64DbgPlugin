@@ -19,7 +19,6 @@ namespace S2Plugin
         ViewStdMap(const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

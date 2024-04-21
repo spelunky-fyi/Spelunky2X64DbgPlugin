@@ -135,8 +135,9 @@ S2Plugin::ViewEntityDB* S2Plugin::ViewToolbar::showEntityDB()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
     {
         auto w = new ViewEntityDB();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(new ViewEntityDB());
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
         return w;
     }
     return nullptr;
@@ -147,8 +148,9 @@ S2Plugin::ViewParticleDB* S2Plugin::ViewToolbar::showParticleDB()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_ParticleDB().isValid())
     {
         auto w = new ViewParticleDB();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
         return w;
     }
     return nullptr;
@@ -159,8 +161,9 @@ S2Plugin::ViewTextureDB* S2Plugin::ViewToolbar::showTextureDB()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_TextureDB().isValid())
     {
         auto w = new ViewTextureDB();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
         return w;
     }
     return nullptr;
@@ -171,8 +174,9 @@ S2Plugin::ViewCharacterDB* S2Plugin::ViewToolbar::showCharacterDB()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid() && Spelunky2::get()->get_CharacterDB().isValid())
     {
         auto w = new ViewCharacterDB();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
         return w;
     }
     return nullptr;
@@ -193,8 +197,9 @@ void S2Plugin::ViewToolbar::showState(uintptr_t state)
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
         auto w = new ViewState(state);
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
@@ -203,14 +208,15 @@ void S2Plugin::ViewToolbar::showGameManager()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameManagerPtr() != 0)
     {
         auto w = new ViewGameManager();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
 void S2Plugin::ViewToolbar::showLevelGen()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StatePtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_LevelGenPtr() != 0)
     {
         auto w = new ViewLevelGen();
         mMDIArea->addSubWindow(w);
@@ -223,8 +229,9 @@ S2Plugin::ViewVirtualTable* S2Plugin::ViewToolbar::showVirtualTableLookup()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_VirtualTableLookup().isValid())
     {
         auto w = new ViewVirtualTable();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
         return w;
     }
     return nullptr;
@@ -235,8 +242,9 @@ void S2Plugin::ViewToolbar::showStringsTable()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid())
     {
         auto w = new ViewStringsTable();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
@@ -245,16 +253,18 @@ void S2Plugin::ViewToolbar::showOnline()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_OnlinePtr() != 0)
     {
         auto w = new ViewOnline();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
 void S2Plugin::ViewToolbar::showEntity(uintptr_t offset)
 {
     auto w = new ViewEntity(offset);
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showEntities()
@@ -262,8 +272,9 @@ void S2Plugin::ViewToolbar::showEntities()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
     {
         auto w = new ViewEntities();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
@@ -272,44 +283,50 @@ void S2Plugin::ViewToolbar::showSaveGame()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_SaveDataPtr() != 0)
     {
         auto w = new ViewSaveGame();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 
 void S2Plugin::ViewToolbar::showLogger()
 {
     auto w = new ViewLogger();
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showVirtualFunctions(size_t offset, const std::string& typeName)
 {
     auto w = new ViewVirtualFunctions(typeName, offset);
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showStdVector(size_t offset, const std::string& typeName)
 {
     auto w = new ViewStdVector(typeName, offset);
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showStdMap(size_t offset, const std::string& keytypeName, const std::string& valuetypeName)
 {
     auto w = new ViewStdMap(keytypeName, valuetypeName, offset);
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showJournalPage(size_t offset, const std::string& pageType)
 {
     auto w = new ViewJournalPage(offset, pageType);
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showThreads()
@@ -317,8 +334,9 @@ void S2Plugin::ViewToolbar::showThreads()
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
         auto w = new ViewThreads();
-        mMDIArea->addSubWindow(w);
-        w->setVisible(true);
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
 

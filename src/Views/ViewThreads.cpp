@@ -127,11 +127,6 @@ void S2Plugin::ViewThreads::refreshThreads()
     }
 }
 
-void S2Plugin::ViewThreads::closeEvent(QCloseEvent*)
-{
-    delete this;
-}
-
 QSize S2Plugin::ViewThreads::sizeHint() const
 {
     return QSize(550, 375);

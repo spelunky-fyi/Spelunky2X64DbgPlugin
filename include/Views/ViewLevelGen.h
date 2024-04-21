@@ -23,7 +23,6 @@ namespace S2Plugin
         ViewLevelGen(QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 

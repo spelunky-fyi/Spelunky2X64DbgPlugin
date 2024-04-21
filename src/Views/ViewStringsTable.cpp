@@ -100,11 +100,6 @@ QSize S2Plugin::ViewStringsTable::minimumSizeHint() const
     return QSize(150, 150);
 }
 
-void S2Plugin::ViewStringsTable::closeEvent(QCloseEvent*)
-{
-    delete this;
-}
-
 void S2Plugin::ViewStringsTable::cellClicked(const QModelIndex& index)
 {
     if (index.column() == gsColStringTableOffset || index.column() == gsColStringMemoryOffset)
