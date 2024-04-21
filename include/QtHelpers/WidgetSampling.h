@@ -10,7 +10,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        explicit WidgetSampling(QWidget* parent = nullptr) : QWidget(parent){};
+        using QWidget::QWidget;
 
         QSize minimumSizeHint() const override
         {

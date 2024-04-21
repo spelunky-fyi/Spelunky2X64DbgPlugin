@@ -7,7 +7,7 @@ namespace S2Plugin
     class StyledItemDelegateHTML : public QStyledItemDelegate
     {
       public:
-        StyledItemDelegateHTML(QObject* parent = nullptr) : QStyledItemDelegate(parent){};
+        using QStyledItemDelegate::QStyledItemDelegate;
         void setCenterVertically(bool b)
         {
             mCenterVertically = b;

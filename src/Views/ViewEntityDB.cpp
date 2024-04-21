@@ -11,7 +11,7 @@ S2Plugin::ViewEntityDB::ViewEntityDB(QWidget* parent) : WidgetDatabaseView(Memor
 {
     auto config = Configuration::get();
     setWindowTitle(QString("Entity DB (%1 entities)").arg(config->entityList().count()));
-    auto entityNameCompleter = new QCompleter(Configuration::get()->entityList().names(), this);
+    auto entityNameCompleter = new QCompleter(config->entityList().names(), this);
     entityNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     entityNameCompleter->setFilterMode(Qt::MatchContains);
     QObject::connect(entityNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewEntityDB::searchFieldCompleterActivated);

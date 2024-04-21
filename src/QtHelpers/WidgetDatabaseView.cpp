@@ -89,7 +89,7 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
     {
         auto topLayout = new QHBoxLayout();
         mCompareFieldComboBox = new QComboBox();
-        mCompareFieldComboBox->addItem(QString::fromStdString(""), QVariant{});
+        mCompareFieldComboBox->addItem(QString::fromStdString(""));
         populateComparisonCombobox(config->typeFields(type));
 
         QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &WidgetDatabaseView::comparisonFieldChosen);
@@ -258,7 +258,7 @@ void S2Plugin::WidgetDatabaseView::populateComparisonTreeWidget()
 
     for (const auto& [groupString, IDList] : groupedValues)
     {
-        auto rootItem = new TreeWidgetItemNumeric(nullptr, groupString);
+        auto rootItem = new TreeWidgetItemNumeric(mCompareTreeWidget, QStringList(groupString));
         rootItem->setData(0, Qt::UserRole, rootValues.at(groupString));
         mCompareTreeWidget->insertTopLevelItem(0, rootItem);
         for (const auto& recordID : IDList)

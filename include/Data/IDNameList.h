@@ -24,7 +24,7 @@ namespace S2Plugin
         {
             return mEntries.size();
         }
-        QStringList names() const noexcept
+        const QStringList& names() const noexcept
         {
             return mNames;
         }
