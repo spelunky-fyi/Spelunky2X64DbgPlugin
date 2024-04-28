@@ -55,7 +55,7 @@ void S2Plugin::ViewOnline::initializeUI()
 
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::Online), "Online", Spelunky2::get()->get_OnlinePtr());
-    
+
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);
 
