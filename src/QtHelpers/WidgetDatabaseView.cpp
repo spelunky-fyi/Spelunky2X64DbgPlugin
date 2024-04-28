@@ -71,7 +71,7 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
 
         mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
-        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
+        mMainTreeView->addMemoryFields(config->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &WidgetDatabaseView::fieldUpdated);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &WidgetDatabaseView::fieldExpanded);
         tabLookup->layout()->addWidget(mMainTreeView);

@@ -135,7 +135,7 @@ S2Plugin::ViewEntityDB* S2Plugin::ViewToolbar::showEntityDB()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
     {
         auto w = new ViewEntityDB();
-        auto win = mMDIArea->addSubWindow(new ViewEntityDB());
+        auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);
         return w;

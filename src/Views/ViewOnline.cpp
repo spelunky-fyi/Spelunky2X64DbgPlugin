@@ -12,7 +12,6 @@ S2Plugin::ViewOnline::ViewOnline(QWidget* parent) : QWidget(parent)
     initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("Online");
-    refreshOnline();
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
@@ -56,6 +55,7 @@ void S2Plugin::ViewOnline::initializeUI()
 
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::Online), "Online", Spelunky2::get()->get_OnlinePtr());
+    
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainLayout->addWidget(mMainTreeView);
 
