@@ -19,7 +19,6 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
     setWindowIcon(getCavemanIcon());
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
 
     setWindowTitle(QString::asprintf("Entity %s 0x%016llX", Entity{mEntityPtr}.entityTypeName().c_str(), entityOffset));
     mMainTreeView->setVisible(true);
@@ -46,7 +45,7 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
 
 void S2Plugin::ViewEntity::initializeUI()
 {
-    mMainLayout = new QVBoxLayout();
+    mMainLayout = new QVBoxLayout(this);
     mTopLayout = new QHBoxLayout();
     mMainLayout->addLayout(mTopLayout);
 

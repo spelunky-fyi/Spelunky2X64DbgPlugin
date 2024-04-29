@@ -38,7 +38,6 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
 void S2Plugin::ViewStdMap::initializeRefreshLayout()
 {
     mMainLayout = new QVBoxLayout(this);
-    setLayout(mMainLayout);
 
     auto refreshLayout = new QHBoxLayout(this);
     mMainLayout->addLayout(refreshLayout);

@@ -23,7 +23,7 @@ S2Plugin::ViewOnline::ViewOnline(QWidget* parent) : QWidget(parent)
 void S2Plugin::ViewOnline::initializeUI()
 {
     mMainLayout = new QVBoxLayout(this);
-    mRefreshLayout = new QHBoxLayout(this);
+    mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
     mRefreshButton = new QPushButton("Refresh", this);
@@ -63,7 +63,6 @@ void S2Plugin::ViewOnline::initializeUI()
     mMainTreeView->updateTableHeader();
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
 }
 

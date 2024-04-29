@@ -20,7 +20,6 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
 {
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
-    setLayout(mainLayout);
 
     auto topLayout = new QHBoxLayout(this);
     mainLayout->addLayout(topLayout);

@@ -4,7 +4,6 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QString>
-#include <QVBoxLayout>
 #include <array>
 
 namespace S2Plugin
@@ -49,7 +48,6 @@ namespace S2Plugin
             const MASK mask;
             const QString name;
         };
-        QVBoxLayout* mMainLayout;
         TreeViewMemoryFields* mMainTreeView;
 
         QCheckBox* mCheckboxLayer0;
@@ -78,8 +76,5 @@ namespace S2Plugin
         uintptr_t mLayer0Offset = 0;
         uintptr_t mLayer1Offset = 0;
         uintptr_t mLayerMapOffset = 0;
-
-        void initializeTreeView();
-        void initializeRefreshAndFilter();
     };
 } // namespace S2Plugin

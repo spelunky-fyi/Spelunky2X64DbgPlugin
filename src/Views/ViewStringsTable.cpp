@@ -22,8 +22,7 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 
 void S2Plugin::ViewStringsTable::initializeUI()
 {
-    auto mainLayout = new QVBoxLayout();
-    setLayout(mainLayout);
+    auto mainLayout = new QVBoxLayout(this);
 
     auto topLayout = new QHBoxLayout();
     auto reloadButton = new QPushButton("Reload", this);

@@ -1,4 +1,5 @@
 #include "QtPlugin.h"
+#include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "Views/ViewVirtualTable.h"
 #include "pluginmain.h"
@@ -87,9 +88,18 @@ void QtPlugin::ShowTab()
     GuiShowQWidgetTab(gsSpelunky2MainWindow);
 }
 
+struct S2Plugin::QtPluginStruct
+{
+    void static inline resetSpelunky2Data()
+    {
+        gsViewToolbar->mMDIArea->closeAllSubWindows();
+        S2Plugin::Spelunky2::reset();
+    };
+};
+
 void QtPlugin::Detach()
 {
-    gsViewToolbar->resetSpelunky2Data();
+    S2Plugin::QtPluginStruct::resetSpelunky2Data();
 }
 
 void QtPlugin::MenuPrepare([[maybe_unused]] int hMenu) {}

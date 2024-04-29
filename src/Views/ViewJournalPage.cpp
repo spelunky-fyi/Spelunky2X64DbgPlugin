@@ -87,7 +87,6 @@ void S2Plugin::ViewJournalPage::initializeUI()
     mMainTreeView->updateTableHeader();
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
 }
 

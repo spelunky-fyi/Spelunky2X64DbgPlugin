@@ -35,7 +35,6 @@ void S2Plugin::ViewVirtualTable::initializeUI()
 {
     mMainLayout = new QVBoxLayout(this);
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
 
     mMainTabWidget = new QTabWidget(this);
     mMainTabWidget->setDocumentMode(false);

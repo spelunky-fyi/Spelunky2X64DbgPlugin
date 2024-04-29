@@ -64,7 +64,6 @@ void S2Plugin::ViewSaveGame::initializeUI()
     mMainTreeView->updateTableHeader();
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
 }
 

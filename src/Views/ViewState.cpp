@@ -22,7 +22,7 @@ S2Plugin::ViewState::ViewState(uintptr_t state, QWidget* parent) : QWidget(paren
 
 void S2Plugin::ViewState::initializeUI()
 {
-    mMainLayout = new QVBoxLayout();
+    mMainLayout = new QVBoxLayout(this);
     mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
@@ -63,7 +63,6 @@ void S2Plugin::ViewState::initializeUI()
     mMainTreeView->updateTableHeader();
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
 }
 

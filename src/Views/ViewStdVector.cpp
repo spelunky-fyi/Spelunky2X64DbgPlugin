@@ -25,8 +25,7 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
 
 void S2Plugin::ViewStdVector::initializeRefreshLayout()
 {
-    mMainLayout = new QVBoxLayout();
-    setLayout(mMainLayout);
+    mMainLayout = new QVBoxLayout(this);
 
     auto refreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(refreshLayout);

@@ -35,7 +35,6 @@ void S2Plugin::ViewLogger::initializeUI()
 {
     mMainLayout = new QVBoxLayout(this);
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
 
     mTopLayout = new QHBoxLayout(this);
     mTopLayout->addWidget(new QLabel("Sample period:", this));

@@ -133,7 +133,6 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
     layout->addStretch();
     layout->addLayout(buttonLayout);
 
-    setLayout(layout);
     mLineEditDecValue->setFocus();
     mLineEditDecValue->selectAll();
 }

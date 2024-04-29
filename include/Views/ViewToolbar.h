@@ -19,34 +19,37 @@ namespace S2Plugin
         Q_OBJECT
       public:
         ViewToolbar(QMdiArea* mdiArea, QWidget* parent = nullptr);
-        void showEntity(uintptr_t offset);
+        void showEntity(uintptr_t address);
         void showState(uintptr_t statePtr);
-        void resetSpelunky2Data();
+        void showStdVector(uintptr_t address, const std::string& typeName);
+        void showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
+        void showVirtualFunctions(uintptr_t address, const std::string& typeName);
+        void showJournalPage(uintptr_t address, const std::string& pageType);
+        void showLevelGen(uintptr_t address);
 
       public slots:
         ViewEntityDB* showEntityDB();
         ViewParticleDB* showParticleDB();
         ViewTextureDB* showTextureDB();
-        void showMainThreadState();
-        void showGameManager();
-        void showLevelGen();
-        void showEntities();
-        ViewVirtualTable* showVirtualTableLookup();
         void showStringsTable();
         ViewCharacterDB* showCharacterDB();
+
+        void showMainThreadState();
+        void showGameManager();
+        void showMainThreadLevelGen();
+        void showEntities();
+        ViewVirtualTable* showVirtualTableLookup();
         void showSaveGame();
         void showLogger();
-        void showVirtualFunctions(size_t offset, const std::string& typeName);
         void showOnline();
-        void showStdVector(size_t offset, const std::string& typeName);
-        void showStdMap(size_t offset, const std::string& keytypeName, const std::string& valuetypeName);
-        void showJournalPage(size_t offset, const std::string& pageType);
         void showThreads();
+
+      private slots:
         void clearLabels();
         void reloadConfig();
 
       private:
         QMdiArea* mMDIArea;
-        QVBoxLayout* mMainLayout;
+        friend struct QtPluginStruct;
     };
 } // namespace S2Plugin

@@ -31,13 +31,12 @@ namespace std
 S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* parent) : QWidget(parent)
 {
     setWindowIcon(getCavemanIcon());
-    auto mainLayout = new QVBoxLayout();
+    auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
 
     mMainTabWidget = new QTabWidget();
     mMainTabWidget->setDocumentMode(false);
     mainLayout->addWidget(mMainTabWidget);
-    setLayout(mainLayout);
 
     auto tabLookup = new QWidget();
     auto tabCompare = new QWidget();

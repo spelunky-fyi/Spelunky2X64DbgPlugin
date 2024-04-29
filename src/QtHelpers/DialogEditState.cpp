@@ -84,8 +84,6 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
     layout->addLayout(gridLayout);
     layout->addStretch();
     layout->addLayout(buttonLayout);
-
-    setLayout(layout);
 }
 
 QSize S2Plugin::DialogEditState::minimumSizeHint() const

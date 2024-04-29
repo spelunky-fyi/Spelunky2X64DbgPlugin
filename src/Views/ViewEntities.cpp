@@ -10,22 +10,70 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QTimer>
+#include <QVBoxLayout>
 
 S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
 
     auto config = Configuration::get();
     mLayer0Offset = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
     mLayer1Offset = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
     mLayerMapOffset = config->offsetForField(config->typeFieldsOfDefaultStruct("LayerPointer"), "entities_by_mask");
 
-    initializeRefreshAndFilter();
-    initializeTreeView();
+    // initializeRefreshAndFilter
+    {
+        auto filterLayout = new QGridLayout();
+
+        auto refreshButton = new QPushButton("Refresh", this);
+        QObject::connect(refreshButton, &QPushButton::clicked, this, &ViewEntities::refreshEntities);
+        filterLayout->addWidget(refreshButton, 0, 0);
+
+        auto label = new QLabel("Filter:", this);
+        filterLayout->addWidget(label, 0, 1);
+
+        mFilterLineEdit = new QLineEdit(this);
+        mFilterLineEdit->setPlaceholderText("Search for UID (dec or hex starting with 0x) or (part of) the entity name");
+        QObject::connect(mFilterLineEdit, &QLineEdit::textChanged, this, &ViewEntities::refreshEntities);
+        filterLayout->addWidget(mFilterLineEdit, 0, 2, 1, 6);
+
+        mCheckboxLayer0 = new QCheckBox("Front layer (0)", this);
+        mCheckboxLayer0->setChecked(true);
+        QObject::connect(mCheckboxLayer0, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
+        filterLayout->addWidget(mCheckboxLayer0, 2, 2);
+
+        mCheckboxLayer1 = new QCheckBox("Back layer (0)", this);
+        QObject::connect(mCheckboxLayer1, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
+        filterLayout->addWidget(mCheckboxLayer1, 2, 3);
+
+        int row = 3;
+        int col = 2;
+        for (auto& checkbox : mCheckbox)
+        {
+            checkbox.mCheckbox = new QCheckBox(checkbox.name + " (0)", this);
+            QObject::connect(checkbox.mCheckbox, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
+            filterLayout->addWidget(checkbox.mCheckbox, row, col);
+            ++col;
+            if (col == 9)
+            {
+                col = 2;
+                ++row;
+            }
+        }
+
+        auto horLayout = new QHBoxLayout();
+        horLayout->addLayout(filterLayout);
+        horLayout->addStretch();
+        mainLayout->addLayout(horLayout);
+    }
+
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->setEnableChangeHighlighting(false);
+    mainLayout->addWidget(mMainTreeView);
+
     setWindowIcon(getCavemanIcon());
 
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    mainLayout->setMargin(5);
 
     setWindowTitle("Entities");
     mMainTreeView->setVisible(true);
@@ -33,60 +81,6 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
     refreshEntities();
     mFilterLineEdit->setFocus();
-}
-
-void S2Plugin::ViewEntities::initializeTreeView()
-{
-    mMainTreeView = new TreeViewMemoryFields(this);
-    mMainTreeView->setEnableChangeHighlighting(false);
-
-    mMainLayout->addWidget(mMainTreeView);
-}
-
-void S2Plugin::ViewEntities::initializeRefreshAndFilter()
-{
-    auto filterLayout = new QGridLayout(this);
-
-    auto refreshButton = new QPushButton("Refresh", this);
-    QObject::connect(refreshButton, &QPushButton::clicked, this, &ViewEntities::refreshEntities);
-    filterLayout->addWidget(refreshButton, 0, 0);
-
-    auto label = new QLabel("Filter:", this);
-    filterLayout->addWidget(label, 0, 1);
-
-    mFilterLineEdit = new QLineEdit(this);
-    mFilterLineEdit->setPlaceholderText("Search for UID (dec or hex starting with 0x) or (part of) the entity name");
-    QObject::connect(mFilterLineEdit, &QLineEdit::textChanged, this, &ViewEntities::refreshEntities);
-    filterLayout->addWidget(mFilterLineEdit, 0, 2, 1, 6);
-
-    mCheckboxLayer0 = new QCheckBox("Front layer (0)", this);
-    mCheckboxLayer0->setChecked(true);
-    QObject::connect(mCheckboxLayer0, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
-    filterLayout->addWidget(mCheckboxLayer0, 2, 2);
-
-    mCheckboxLayer1 = new QCheckBox("Back layer (0)", this);
-    QObject::connect(mCheckboxLayer1, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
-    filterLayout->addWidget(mCheckboxLayer1, 2, 3);
-
-    int row = 3;
-    int col = 2;
-    for (auto& checkbox : mCheckbox)
-    {
-        checkbox.mCheckbox = new QCheckBox(checkbox.name + " (0)", this);
-        QObject::connect(checkbox.mCheckbox, &QCheckBox::stateChanged, this, &ViewEntities::refreshEntities);
-        filterLayout->addWidget(checkbox.mCheckbox, row, col);
-        ++col;
-        if (col == 9)
-        {
-            col = 2;
-            ++row;
-        }
-    }
-
-    auto horLayout = new QHBoxLayout(this);
-    horLayout->addLayout(filterLayout);
-    horLayout->addStretch();
-    mMainLayout->addLayout(horLayout);
 }
 
 void S2Plugin::ViewEntities::refreshEntities()

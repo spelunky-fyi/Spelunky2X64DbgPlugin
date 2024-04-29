@@ -26,7 +26,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(QWidget* parent) : QWidget(parent)
 
 void S2Plugin::ViewLevelGen::initializeUI()
 {
-    mMainLayout = new QVBoxLayout();
+    mMainLayout = new QVBoxLayout(this);
     mRefreshLayout = new QHBoxLayout();
     mMainLayout->addLayout(mRefreshLayout);
 
@@ -111,7 +111,6 @@ void S2Plugin::ViewLevelGen::initializeUI()
     }
 
     mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
     mMainTreeView->setVisible(true);
 }
 
