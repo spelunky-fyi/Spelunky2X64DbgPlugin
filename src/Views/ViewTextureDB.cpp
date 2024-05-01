@@ -33,7 +33,7 @@ void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
     }
 }
 
-void S2Plugin::ViewTextureDB::showID(uint32_t id)
+void S2Plugin::ViewTextureDB::showID(ID_type id)
 {
     if (!isValidRecordID(id))
         return;

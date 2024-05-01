@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Data/Entity.h"
+#include <QBrush>
+#include <QPaintEvent>
+#include <QSize>
 #include <QWidget>
 #include <array>
 #include <cstdint>

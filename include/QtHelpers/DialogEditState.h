@@ -3,6 +3,11 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QLineEdit>
+#include <QSize>
+#include <QString>
+#include <QWidget>
+#include <cstdint>
+#include <string>
 
 namespace S2Plugin
 {

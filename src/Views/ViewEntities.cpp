@@ -9,7 +9,7 @@
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QLabel>
-#include <QTimer>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)

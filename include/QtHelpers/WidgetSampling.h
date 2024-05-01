@@ -1,7 +1,12 @@
 #pragma once
 
+#include <QFont>
+#include <QFontMetrics>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPointF>
+#include <QSize>
+#include <QString>
 #include <QWidget>
 
 namespace S2Plugin

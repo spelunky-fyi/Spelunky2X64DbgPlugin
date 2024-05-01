@@ -1,14 +1,10 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QStandardItemModel>
-#include <QTimer>
-#include <QTreeView>
-#include <QVBoxLayout>
-#include <memory>
+#include <QSize>
+#include <QTabWidget>
+#include <QWidget>
+#include <cstdint>
+#include <string>
 #include <unordered_map>
 
 namespace S2Plugin
@@ -20,7 +16,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewLevelGen(QWidget* parent = nullptr);
+        ViewLevelGen(uintptr_t address, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;
@@ -28,26 +24,15 @@ namespace S2Plugin
 
       private slots:
         void refreshLevelGen();
-        void toggleAutoRefresh(int newLevelGen);
-        void autoRefreshIntervalChanged(const QString& text);
         void label();
         void levelGenRoomsPointerClicked();
 
       private:
-        QVBoxLayout* mMainLayout;
         QTabWidget* mMainTabWidget;
-        QWidget* mTabData;
-        QWidget* mTabRooms;
-
-        // TOP REFRESH LAYOUT
-        QHBoxLayout* mRefreshLayout;
-        QPushButton* mRefreshButton;
-        QCheckBox* mAutoRefreshCheckBox;
-        QLineEdit* mAutoRefreshIntervalLineEdit;
-        std::unique_ptr<QTimer> mAutoRefreshTimer;
 
         // TAB DATA
         TreeViewMemoryFields* mMainTreeView;
+        uintptr_t mLevelGenPtr;
 
         // TAB LEVEL
         std::unordered_map<std::string, WidgetSpelunkyRooms*> mRoomsWidgets; // field_name -> widget*

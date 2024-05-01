@@ -6,17 +6,14 @@
 #include "Views/ViewEntities.h"
 #include "Views/ViewEntity.h"
 #include "Views/ViewEntityDB.h"
-#include "Views/ViewGameManager.h"
 #include "Views/ViewJournalPage.h"
 #include "Views/ViewLevelGen.h"
 #include "Views/ViewLogger.h"
-#include "Views/ViewOnline.h"
 #include "Views/ViewParticleDB.h"
-#include "Views/ViewSaveGame.h"
-#include "Views/ViewState.h"
 #include "Views/ViewStdMap.h"
 #include "Views/ViewStdVector.h"
 #include "Views/ViewStringsTable.h"
+#include "Views/ViewStruct.h"
 #include "Views/ViewTextureDB.h"
 #include "Views/ViewThreads.h"
 #include "Views/ViewVirtualFunctions.h"
@@ -25,6 +22,7 @@
 #include <QMdiSubWindow>
 #include <QPushButton>
 #include <QString>
+#include <QVBoxLayout>
 
 S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWidget(parent, Qt::WindowFlags()), mMDIArea(mdiArea)
 {
@@ -154,9 +152,9 @@ void S2Plugin::ViewToolbar::showStdMap(uintptr_t address, const std::string& key
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void S2Plugin::ViewToolbar::showJournalPage(uintptr_t address, const std::string& pageType)
+void S2Plugin::ViewToolbar::showJournalPage(uintptr_t address)
 {
-    auto w = new ViewJournalPage(address, pageType);
+    auto w = new ViewJournalPage(address);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -164,7 +162,7 @@ void S2Plugin::ViewToolbar::showJournalPage(uintptr_t address, const std::string
 
 void S2Plugin::ViewToolbar::showState(uintptr_t address)
 {
-    auto w = new ViewState(address);
+    auto w = new ViewStruct(address, Configuration::get()->typeFields(MemoryFieldType::State), "State");
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -172,9 +170,10 @@ void S2Plugin::ViewToolbar::showState(uintptr_t address)
 
 void S2Plugin::ViewToolbar::showLevelGen(uintptr_t address)
 {
-    auto w = new ViewLevelGen();
-    mMDIArea->addSubWindow(w);
-    w->setVisible(true);
+    auto w = new ViewLevelGen(address);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void S2Plugin::ViewToolbar::showEntity(uintptr_t address)
@@ -265,7 +264,7 @@ void S2Plugin::ViewToolbar::showGameManager()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameManagerPtr() != 0)
     {
-        auto w = new ViewGameManager();
+        auto w = new ViewStruct(Spelunky2::get()->get_GameManagerPtr(), Configuration::get()->typeFields(MemoryFieldType::GameManager), "GameManager");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);
@@ -300,7 +299,7 @@ void S2Plugin::ViewToolbar::showOnline()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_OnlinePtr() != 0)
     {
-        auto w = new ViewOnline();
+        auto w = new ViewStruct(Spelunky2::get()->get_OnlinePtr(), Configuration::get()->typeFields(MemoryFieldType::Online), "Online");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);
@@ -322,7 +321,7 @@ void S2Plugin::ViewToolbar::showSaveGame()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_SaveDataPtr() != 0)
     {
-        auto w = new ViewSaveGame();
+        auto w = new ViewStruct(Spelunky2::get()->get_SaveDataPtr(), Configuration::get()->typeFields(MemoryFieldType::SaveGame), "SaveGame");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);

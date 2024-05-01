@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPoint>
+#include <QSize>
 #include <QWidget>
 
 namespace S2Plugin

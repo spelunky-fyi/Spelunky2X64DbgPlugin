@@ -1,11 +1,14 @@
 #include "Views/ViewThreads.h"
 
+#include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
 
 static const uint32_t gsColThreadName = 0;
 static const uint32_t gsColTEBAddress = 1;
@@ -27,14 +30,14 @@ S2Plugin::ViewThreads::ViewThreads(QWidget* parent) : QWidget(parent)
 
 void S2Plugin::ViewThreads::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
 
     auto horLayout = new QHBoxLayout(this);
     auto refreshButton = new QPushButton("Refresh", this);
     horLayout->addWidget(refreshButton);
     QObject::connect(refreshButton, &QPushButton::clicked, this, &ViewThreads::refreshThreads);
     horLayout->addStretch();
-    mMainLayout->addLayout(horLayout);
+    mainLayout->addLayout(horLayout);
 
     mMainTable = new QTableWidget(this);
     mMainTable->setColumnCount(3);
@@ -46,11 +49,12 @@ void S2Plugin::ViewThreads::initializeUI()
     mMainTable->horizontalHeader()->setStretchLastSection(true);
     mMainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mMainTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    mMainTable->setItemDelegate(&mHTMLDelegate);
-    mHTMLDelegate.setCenterVertically(true);
+    auto HTMLDelegate = new StyledItemDelegateHTML(this);
+    mMainTable->setItemDelegate(HTMLDelegate);
+    HTMLDelegate->setCenterVertically(true);
     QObject::connect(mMainTable, &QTableWidget::cellClicked, this, &ViewThreads::cellClicked);
 
-    mMainLayout->addWidget(mMainTable);
+    mainLayout->addWidget(mMainTable);
 }
 
 void S2Plugin::ViewThreads::refreshThreads()

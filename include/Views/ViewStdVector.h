@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <memory>
-#include <vector>
+#include <QSize>
+#include <QWidget>
+#include <cstdint>
+#include <string>
 
 namespace S2Plugin
 {
@@ -24,20 +22,13 @@ namespace S2Plugin
       private slots:
         void refreshVectorContents();
         void refreshData();
-        void toggleAutoRefresh(int newState);
-        void autoRefreshIntervalChanged(const QString& text);
 
       private:
         std::string mVectorType;
         uintptr_t mVectorOffset;
         size_t mVectorTypeSize;
 
-        QVBoxLayout* mMainLayout;
         TreeViewMemoryFields* mMainTreeView;
-        QPushButton* mRefreshDataButton;
-        QCheckBox* mAutoRefreshCheckBox;
-        QLineEdit* mAutoRefreshIntervalLineEdit;
-        std::unique_ptr<QTimer> mAutoRefreshTimer;
 
         void initializeRefreshLayout();
     };

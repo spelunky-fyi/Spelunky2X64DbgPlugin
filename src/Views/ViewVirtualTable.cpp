@@ -13,9 +13,9 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QHeaderView>
-#include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <fstream>
 
 S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
@@ -31,36 +31,43 @@ S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
     setWindowTitle("Virtual Table");
 }
 
+enum TABS
+{
+    DATA = 0,
+    LOOKUP = 1,
+    GATHER = 2,
+};
+
 void S2Plugin::ViewVirtualTable::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mMainLayout->setMargin(5);
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
 
-    mMainTabWidget = new QTabWidget(this);
+    mMainTabWidget = new QTabWidget();
     mMainTabWidget->setDocumentMode(false);
-    mMainLayout->addWidget(mMainTabWidget);
+    mainLayout->addWidget(mMainTabWidget);
 
-    mTabData = new QWidget();
-    mTabData->setLayout(new QVBoxLayout(mTabData));
-    mTabData->layout()->setMargin(10);
-    mTabData->setObjectName("datawidget");
-    mTabData->setStyleSheet("QWidget#datawidget {border: 1px solid #999;}");
+    auto tabData = new QWidget();
+    tabData->setLayout(new QVBoxLayout());
+    tabData->layout()->setMargin(10);
+    tabData->setObjectName("datawidget");
+    tabData->setStyleSheet("QWidget#datawidget {border: 1px solid #999;}");
 
-    mTabLookup = new QWidget();
-    mTabLookup->setLayout(new QVBoxLayout(mTabLookup));
-    mTabLookup->layout()->setMargin(10);
-    mTabLookup->setObjectName("lookupwidget");
-    mTabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
+    auto tabLookup = new QWidget();
+    tabLookup->setLayout(new QVBoxLayout());
+    tabLookup->layout()->setMargin(10);
+    tabLookup->setObjectName("lookupwidget");
+    tabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
 
-    mTabGather = new QWidget();
-    mTabGather->setLayout(new QVBoxLayout(mTabGather));
-    mTabGather->layout()->setMargin(10);
-    mTabGather->setObjectName("gatherwidget");
-    mTabGather->setStyleSheet("QWidget#gatherwidget {border: 1px solid #999;}");
+    auto tabGather = new QWidget();
+    tabGather->setLayout(new QVBoxLayout());
+    tabGather->layout()->setMargin(10);
+    tabGather->setObjectName("gatherwidget");
+    tabGather->setStyleSheet("QWidget#gatherwidget {border: 1px solid #999;}");
 
-    mMainTabWidget->addTab(mTabData, "Data");
-    mMainTabWidget->addTab(mTabLookup, "Lookup");
-    mMainTabWidget->addTab(mTabGather, "Gather");
+    mMainTabWidget->addTab(tabData, "Data");
+    mMainTabWidget->addTab(tabLookup, "Lookup");
+    mMainTabWidget->addTab(tabGather, "Gather");
 
     // TAB DATA
     {
@@ -93,7 +100,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         auto tmpLayout = new QHBoxLayout(this);
         tmpLayout->addLayout(topLayout);
         tmpLayout->addStretch();
-        dynamic_cast<QVBoxLayout*>(mTabData->layout())->addLayout(tmpLayout);
+        dynamic_cast<QVBoxLayout*>(tabData->layout())->addLayout(tmpLayout);
 
         mDataTable = new QTableView(this);
         mSortFilterProxy->setSourceModel(mModel);
@@ -111,7 +118,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
 
         QObject::connect(mDataTable, &QTableView::clicked, this, &ViewVirtualTable::tableEntryClicked);
 
-        dynamic_cast<QVBoxLayout*>(mTabData->layout())->addWidget(mDataTable);
+        dynamic_cast<QVBoxLayout*>(tabData->layout())->addWidget(mDataTable);
     }
 
     // TAB LOOKUP
@@ -127,7 +134,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
 
         topLayout->addStretch();
 
-        dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addLayout(topLayout);
+        dynamic_cast<QVBoxLayout*>(tabLookup->layout())->addLayout(topLayout);
 
         mLookupResultsTable = new QTableWidget(this);
         mLookupResultsTable->setAlternatingRowColors(true);
@@ -141,7 +148,7 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         mLookupResultsTable->setColumnWidth(1, 325);
         mLookupResultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-        dynamic_cast<QVBoxLayout*>(mTabLookup->layout())->addWidget(mLookupResultsTable);
+        dynamic_cast<QVBoxLayout*>(tabLookup->layout())->addWidget(mLookupResultsTable);
     }
 
     // TAB GATHER
@@ -163,9 +170,9 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         mGatherProgressLabel = new QLabel("", this);
         topLayout->addWidget(mGatherProgressLabel);
 
-        mHideCompletedCheckbox = new QCheckBox("Hide completed", this);
-        QObject::connect(mHideCompletedCheckbox, &QCheckBox::stateChanged, this, &ViewVirtualTable::showGatherHideCompletedCheckBoxStateChanged);
-        topLayout->addWidget(mHideCompletedCheckbox);
+        auto hideCompletedCheckbox = new QCheckBox("Hide completed", this);
+        QObject::connect(hideCompletedCheckbox, &QCheckBox::stateChanged, this, &ViewVirtualTable::showGatherHideCompletedCheckBoxStateChanged);
+        topLayout->addWidget(hideCompletedCheckbox);
 
         topLayout->addStretch();
 
@@ -181,25 +188,25 @@ void S2Plugin::ViewVirtualTable::initializeUI()
         QObject::connect(exportCppEnumBtn, &QPushButton::clicked, this, &ViewVirtualTable::exportCppEnum);
         topLayout->addWidget(exportCppEnumBtn);
 
-        dynamic_cast<QVBoxLayout*>(mTabGather->layout())->addLayout(topLayout);
+        dynamic_cast<QVBoxLayout*>(tabGather->layout())->addLayout(topLayout);
 
-        mGatherTable = new QTableView(this);
+        auto gatherTable = new QTableView(this);
         mGatherSortFilterProxy->setSourceModel(mGatherModel);
-        mGatherTable->setModel(mGatherSortFilterProxy);
-        mGatherTable->setAlternatingRowColors(true);
-        mGatherTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-        mGatherTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-        mGatherTable->verticalHeader()->setDefaultSectionSize(19);
-        mGatherTable->verticalHeader()->setVisible(false);
-        mGatherTable->setItemDelegate(new StyledItemDelegateHTML(this));
-        mGatherTable->setColumnWidth(gsColGatherID, 50);
-        mGatherTable->setColumnWidth(gsColGatherName, 200);
-        mGatherTable->setColumnWidth(gsColGatherVirtualTableOffset, 125);
-        mGatherTable->setColumnWidth(gsColGatherCollision1Present, 75);
-        mGatherTable->setColumnWidth(gsColGatherCollision2Present, 75);
-        mGatherTable->horizontalHeader()->setStretchLastSection(true);
+        gatherTable->setModel(mGatherSortFilterProxy);
+        gatherTable->setAlternatingRowColors(true);
+        gatherTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        gatherTable->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+        gatherTable->verticalHeader()->setDefaultSectionSize(19);
+        gatherTable->verticalHeader()->setVisible(false);
+        gatherTable->setItemDelegate(new StyledItemDelegateHTML(this));
+        gatherTable->setColumnWidth(gsColGatherID, 50);
+        gatherTable->setColumnWidth(gsColGatherName, 200);
+        gatherTable->setColumnWidth(gsColGatherVirtualTableOffset, 125);
+        gatherTable->setColumnWidth(gsColGatherCollision1Present, 75);
+        gatherTable->setColumnWidth(gsColGatherCollision2Present, 75);
+        gatherTable->horizontalHeader()->setStretchLastSection(true);
 
-        dynamic_cast<QVBoxLayout*>(mTabGather->layout())->addWidget(mGatherTable);
+        dynamic_cast<QVBoxLayout*>(tabGather->layout())->addWidget(gatherTable);
         updateGatherProgress();
     }
 }
@@ -290,7 +297,7 @@ void S2Plugin::ViewVirtualTable::processLookupAddressText()
 
 void S2Plugin::ViewVirtualTable::showLookupAddress(size_t address)
 {
-    mMainTabWidget->setCurrentWidget(mTabLookup);
+    mMainTabWidget->setCurrentIndex(TABS::LOOKUP);
     mLookupAddressLineEdit->setText(QString::asprintf("%016llX", address));
     lookupAddress(address);
 }

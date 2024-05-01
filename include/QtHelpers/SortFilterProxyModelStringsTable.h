@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QModelIndex>
 #include <QSortFilterProxyModel>
 #include <QString>
 

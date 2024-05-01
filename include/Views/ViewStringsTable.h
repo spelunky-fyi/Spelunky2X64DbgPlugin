@@ -1,7 +1,9 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QLineEdit>
+#include <QModelIndex>
+#include <QSize>
+#include <QString>
 #include <QTableView>
 #include <QWidget>
 #include <cstdint>
@@ -24,17 +26,15 @@ namespace S2Plugin
       protected:
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
+
+      protected slots:
         void cellClicked(const QModelIndex& index);
         void filterTextChanged(const QString& text);
         void reload();
 
       private:
-        QLineEdit* mFilterLineEdit;
         QTableView* mMainTableView;
         SortFilterProxyModelStringsTable* mModelProxy;
-        StyledItemDelegateHTML mHTMLDelegate;
-
-        void initializeUI();
     };
 
 } // namespace S2Plugin

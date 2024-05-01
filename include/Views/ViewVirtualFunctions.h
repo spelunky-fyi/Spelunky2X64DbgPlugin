@@ -2,8 +2,10 @@
 
 #include <QLineEdit>
 #include <QModelIndex>
+#include <QSize>
 #include <QTableView>
 #include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {
@@ -11,7 +13,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewVirtualFunctions(const std::string& typeName, size_t offset, QWidget* parent = nullptr);
+        ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;
@@ -22,12 +24,9 @@ namespace S2Plugin
         void jumpToFunction();
 
       private:
-        std::string mTypeName;
-        size_t mMemoryOffset;
+        uintptr_t mMemoryAddress;
 
         QLineEdit* mJumpToLineEdit;
         QTableView* mFunctionsTable;
-
-        void initializeUI();
     };
 } // namespace S2Plugin

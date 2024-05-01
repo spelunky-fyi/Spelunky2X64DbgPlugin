@@ -10,9 +10,12 @@
 #include <QTableWidget>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include <QVariant>
 #include <QWidget>
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 /* Things to implement:
  * setWindowTitle

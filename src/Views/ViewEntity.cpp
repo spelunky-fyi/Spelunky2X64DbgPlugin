@@ -5,20 +5,27 @@
 #include "Data/Entity.h"
 #include "QtHelpers/CPPSyntaxHighlighter.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 #include "QtPlugin.h"
 #include "pluginmain.h"
+#include <QAbstractItemView>
+#include <QColor>
 #include <QFont>
+#include <QFontMetrics>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QStandardItemModel>
+#include <QVBoxLayout>
 #include <string>
+#include <vector>
 
 S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget(parent), mEntityPtr(entityOffset)
 {
     initializeUI();
     setWindowIcon(getCavemanIcon());
-
-    mMainLayout->setMargin(5);
 
     setWindowTitle(QString::asprintf("Entity %s 0x%016llX", Entity{mEntityPtr}.entityTypeName().c_str(), entityOffset));
     mMainTreeView->setVisible(true);
@@ -33,7 +40,6 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
     mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
     mSpelunkyLevel->paintEntity(mEntityPtr, QColor(222, 52, 235));
     mSpelunkyLevel->update();
-    toggleAutoRefresh(Qt::Checked);
     auto entityClassName = Entity{mEntityPtr}.entityClassName();
 
     // the combobox is set as Entity by default, so we have to manually call interpretAsChanged
@@ -43,66 +49,35 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
         mInterpretAsComboBox->setCurrentText(QString::fromStdString(entityClassName));
 }
 
+enum TABS
+{
+    FIELDS = 0,
+    MEMORY = 1,
+    LEVEL = 2,
+    CPP = 3,
+};
+
 void S2Plugin::ViewEntity::initializeUI()
 {
-    mMainLayout = new QVBoxLayout(this);
-    mTopLayout = new QHBoxLayout();
-    mMainLayout->addLayout(mTopLayout);
-
-    mMainTabWidget = new QTabWidget(this);
-    mMainTabWidget->setDocumentMode(false);
-    QObject::connect(mMainTabWidget, &QTabWidget::currentChanged, this, &ViewEntity::tabChanged);
-    mMainLayout->addWidget(mMainTabWidget);
-
-    mTabFields = new QWidget();
-    mTabMemory = new QWidget();
-    mTabLevel = new QWidget();
-    mTabCPP = new QWidget();
-    mTabFields->setLayout(new QVBoxLayout(mTabFields));
-    mTabFields->layout()->setMargin(0);
-    mTabMemory->setLayout(new QHBoxLayout(mTabMemory));
-    mTabMemory->layout()->setMargin(0);
-    mTabLevel->setLayout(new QVBoxLayout(mTabLevel));
-    mTabLevel->layout()->setMargin(0);
-    mTabCPP->setLayout(new QVBoxLayout(mTabCPP));
-    mTabCPP->layout()->setMargin(0);
-
-    mMainTabWidget->addTab(mTabFields, "Fields");
-    mMainTabWidget->addTab(mTabMemory, "Memory");
-    mMainTabWidget->addTab(mTabLevel, "Level");
-    mMainTabWidget->addTab(mTabCPP, "C++");
+    auto mainLayout = new QVBoxLayout(this);
+    auto topLayout = new QHBoxLayout();
+    mainLayout->addLayout(topLayout);
 
     // TOP LAYOUT
-    mRefreshButton = new QPushButton("Refresh", this);
-    mTopLayout->addWidget(mRefreshButton);
-    QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewEntity::refreshEntity);
 
-    mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewEntity::refreshEntity);
+    auto autoRefresh = new WidgetAutorefresh("100", this);
+    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewEntity::refreshEntity);
+    topLayout->addWidget(autoRefresh);
 
-    mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
-    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
-    mTopLayout->addWidget(mAutoRefreshCheckBox);
-    QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewEntity::toggleAutoRefresh);
-
-    mAutoRefreshIntervalLineEdit = new QLineEdit(this);
-    mAutoRefreshIntervalLineEdit->setFixedWidth(50);
-    mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("100");
-    mTopLayout->addWidget(mAutoRefreshIntervalLineEdit);
-    QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewEntity::autoRefreshIntervalChanged);
-
-    mTopLayout->addWidget(new QLabel("milliseconds", this));
-
-    mTopLayout->addStretch();
+    topLayout->addStretch();
 
     auto labelButton = new QPushButton("Label", this);
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewEntity::label);
-    mTopLayout->addWidget(labelButton);
+    topLayout->addWidget(labelButton);
 
-    mTopLayout->addWidget(new QLabel("Interpret as:", this));
+    topLayout->addWidget(new QLabel("Interpret as:", this));
     mInterpretAsComboBox = new QComboBox(this);
-    // mInterpretAsComboBox->addItem("");
+    mInterpretAsComboBox->addItem("Reset");
     mInterpretAsComboBox->addItem("Entity");
     mInterpretAsComboBox->insertSeparator(2);
     std::vector<std::string> classNames;
@@ -116,7 +91,31 @@ void S2Plugin::ViewEntity::initializeUI()
         mInterpretAsComboBox->addItem(QString::fromStdString(className));
     }
     QObject::connect(mInterpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewEntity::interpretAsChanged);
-    mTopLayout->addWidget(mInterpretAsComboBox);
+    topLayout->addWidget(mInterpretAsComboBox);
+
+    // TABS
+    mMainTabWidget = new QTabWidget(this);
+    mMainTabWidget->setDocumentMode(false);
+    QObject::connect(mMainTabWidget, &QTabWidget::currentChanged, this, &ViewEntity::tabChanged);
+    mainLayout->addWidget(mMainTabWidget);
+
+    auto tabFields = new QWidget();
+    auto tabMemory = new QWidget();
+    auto tabLevel = new QWidget();
+    auto tabCPP = new QWidget();
+    tabFields->setLayout(new QVBoxLayout());
+    tabFields->layout()->setMargin(0);
+    tabMemory->setLayout(new QHBoxLayout());
+    tabMemory->layout()->setMargin(0);
+    tabLevel->setLayout(new QVBoxLayout());
+    tabLevel->layout()->setMargin(0);
+    tabCPP->setLayout(new QVBoxLayout());
+    tabCPP->layout()->setMargin(0);
+
+    mMainTabWidget->addTab(tabFields, "Fields");
+    mMainTabWidget->addTab(tabMemory, "Memory");
+    mMainTabWidget->addTab(tabLevel, "Level");
+    mMainTabWidget->addTab(tabCPP, "C++");
 
     // TAB FIELDS
     mMainTreeView = new TreeViewMemoryFields(this);
@@ -127,31 +126,31 @@ void S2Plugin::ViewEntity::initializeUI()
     mMainTreeView->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
     mMainTreeView->setAcceptDrops(true);
     QObject::connect(mMainTreeView, &TreeViewMemoryFields::entityOffsetDropped, this, &ViewEntity::entityOffsetDropped);
-    mTabFields->layout()->addWidget(mMainTreeView);
+    tabFields->layout()->addWidget(mMainTreeView);
 
     // TAB MEMORY
-    auto scroll = new QScrollArea(mTabMemory);
+    auto scroll = new QScrollArea(tabMemory);
     mMemoryView = new WidgetMemoryView(scroll);
     scroll->setStyleSheet("background-color: #fff;");
     scroll->setWidget(mMemoryView);
     scroll->setVisible(true);
-    mTabMemory->layout()->addWidget(scroll);
+    tabMemory->layout()->addWidget(scroll);
 
-    mMemoryComparisonScrollArea = new QScrollArea(mTabMemory);
+    mMemoryComparisonScrollArea = new QScrollArea(tabMemory);
     mMemoryComparisonView = new WidgetMemoryView(mMemoryComparisonScrollArea);
     mMemoryComparisonScrollArea->setStyleSheet("background-color: #fff;");
     mMemoryComparisonScrollArea->setWidget(mMemoryComparisonView);
     mMemoryComparisonScrollArea->setVisible(true);
-    mTabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
+    tabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
     mMemoryComparisonScrollArea->setVisible(false);
 
     // TAB LEVEL
-    scroll = new QScrollArea(mTabLevel);
+    scroll = new QScrollArea(tabLevel);
     mSpelunkyLevel = new WidgetSpelunkyLevel(mEntityPtr, scroll);
     scroll->setStyleSheet("background-color: #fff;");
     scroll->setWidget(mSpelunkyLevel);
     scroll->setVisible(true);
-    mTabLevel->layout()->addWidget(scroll);
+    tabLevel->layout()->addWidget(scroll);
 
     // TAB CPP
     mCPPTextEdit = new QTextEdit(this);
@@ -170,44 +169,23 @@ void S2Plugin::ViewEntity::initializeUI()
     mCPPTextEdit->document()->setDocumentMargin(10);
     mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
 
-    mTabCPP->layout()->addWidget(mCPPTextEdit);
+    tabCPP->layout()->addWidget(mCPPTextEdit);
+    mainLayout->setMargin(5);
+    autoRefresh->toggleAutoRefresh(true);
 }
 
 void S2Plugin::ViewEntity::refreshEntity()
 {
     mMainTreeView->updateTree();
-    if (mMainTabWidget->currentWidget() == mTabMemory)
+    if (mMainTabWidget->currentIndex() == TABS::MEMORY)
     {
         mMemoryView->update();
         mMemoryComparisonView->update();
         updateComparedMemoryViewHighlights();
     }
-    else if (mMainTabWidget->currentWidget() == mTabLevel)
+    else if (mMainTabWidget->currentIndex() == TABS::LEVEL)
     {
         mSpelunkyLevel->update();
-    }
-}
-
-void S2Plugin::ViewEntity::toggleAutoRefresh(int newState)
-{
-    if (newState == Qt::Unchecked)
-    {
-        mAutoRefreshTimer->stop();
-        mRefreshButton->setEnabled(true);
-    }
-    else
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-        mAutoRefreshTimer->start();
-        mRefreshButton->setEnabled(false);
-    }
-}
-
-void S2Plugin::ViewEntity::autoRefreshIntervalChanged(const QString& text)
-{
-    if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
-    {
-        mAutoRefreshTimer->setInterval(text.toUInt());
     }
 }
 
@@ -225,11 +203,15 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
 {
     if (!classType.isEmpty())
     {
-        auto textStr = classType.toStdString();
+        Entity entity{mEntityPtr};
+        if (classType == "Reset")
+        {
+            mInterpretAsComboBox->setCurrentText(QString::fromStdString(entity.entityClassName()));
+            return;
+        }
+
         static const auto colors = {QColor(255, 214, 222), QColor(232, 206, 227), QColor(199, 186, 225), QColor(187, 211, 236), QColor(236, 228, 197), QColor(193, 219, 204)};
         auto config = Configuration::get();
-
-        Entity entity{mEntityPtr};
         auto hierarchy = Entity::classHierarchy(classType.toStdString());
 
         mMainTreeView->clear();
@@ -283,7 +265,6 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             recursiveHighlight(*it + ".", config->typeFieldsOfEntitySubclass(*it), recursiveHighlight);
         }
 
-        // mInterpretAsComboBox->setCurrentText("");
         mMainTreeView->updateTree(0, 0, true);
         mEntitySize = delta;
         updateMemoryViewOffsetAndSize();
@@ -385,7 +366,7 @@ void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)
 
 void S2Plugin::ViewEntity::tabChanged()
 {
-    if (mMainTabWidget->currentWidget() == mTabCPP)
+    if (mMainTabWidget->currentIndex() == TABS::CPP)
     {
         mCPPSyntaxHighlighter->clearRules();
         CPPGenerator g{};

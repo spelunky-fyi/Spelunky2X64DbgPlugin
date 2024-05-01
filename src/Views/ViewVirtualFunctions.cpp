@@ -9,19 +9,15 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, size_t offset, QWidget* parent) : QWidget(parent), mTypeName(typeName), mMemoryOffset(offset)
+S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
 {
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Virtual Functions of %1").arg(QString::fromStdString(typeName)));
-}
 
-void S2Plugin::ViewVirtualFunctions::initializeUI()
-{
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
 
-    auto topLayout = new QHBoxLayout(this);
+    auto topLayout = new QHBoxLayout();
     mainLayout->addLayout(topLayout);
 
     topLayout->addWidget(new QLabel("Jump to function at index:", this));
@@ -39,7 +35,7 @@ void S2Plugin::ViewVirtualFunctions::initializeUI()
     auto HTMLDelegate = new StyledItemDelegateHTML(this);
     HTMLDelegate->setCenterVertically(true);
 
-    auto model = new ItemModelVirtualFunctions(mTypeName, mMemoryOffset, this);
+    auto model = new ItemModelVirtualFunctions(typeName, mMemoryAddress, this);
     auto sortFilterProxy = new SortFilterProxyModelVirtualFunctions(this);
     sortFilterProxy->setSourceModel(model);
 
@@ -96,7 +92,7 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
 
 void S2Plugin::ViewVirtualFunctions::jumpToFunction()
 {
-    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8ull));
+    auto address = Script::Memory::ReadQword(mMemoryAddress + (mJumpToLineEdit->text().toUInt() * 8ull));
     GuiDisasmAt(address, GetContextData(UE_CIP));
     GuiShowCpu();
 }

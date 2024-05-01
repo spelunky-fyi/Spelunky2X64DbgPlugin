@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QObject>
 #include <QTimer>
 #include <any>
 #include <cstdint>

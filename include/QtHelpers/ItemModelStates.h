@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QAbstractItemModel>
+#include <QModelIndex>
 #include <QSortFilterProxyModel>
+#include <QVariant>
 #include <cstdint>
 #include <string>
 #include <vector>

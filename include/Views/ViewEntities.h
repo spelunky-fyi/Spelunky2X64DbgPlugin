@@ -2,8 +2,9 @@
 
 #include <QCheckBox>
 #include <QLineEdit>
-#include <QPushButton>
+#include <QSize>
 #include <QString>
+#include <QWidget>
 #include <array>
 
 namespace S2Plugin

@@ -1,8 +1,11 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QObject>
+#include <QModelIndex>
 #include <QSortFilterProxyModel>
+#include <QString>
+#include <QVariant>
+#include <cstdint>
 
 namespace S2Plugin
 {

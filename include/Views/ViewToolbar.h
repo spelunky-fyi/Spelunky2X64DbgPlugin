@@ -2,7 +2,7 @@
 
 #include <QDockWidget>
 #include <QMdiArea>
-#include <QVBoxLayout>
+#include <QWidget>
 #include <cstdint>
 #include <string>
 
@@ -24,7 +24,7 @@ namespace S2Plugin
         void showStdVector(uintptr_t address, const std::string& typeName);
         void showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
-        void showJournalPage(uintptr_t address, const std::string& pageType);
+        void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
 
       public slots:

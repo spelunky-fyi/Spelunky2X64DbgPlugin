@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QModelIndex>
+#include <QPainter>
+#include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 
 namespace S2Plugin

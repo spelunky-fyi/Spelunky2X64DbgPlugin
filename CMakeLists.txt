@@ -67,15 +67,12 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewTextureDB.h
 	include/Views/ViewEntity.h
 	include/Views/ViewEntities.h
-	include/Views/ViewState.h
-	include/Views/ViewSaveGame.h
-	include/Views/ViewGameManager.h
+	include/Views/ViewStruct.h
 	include/Views/ViewLevelGen.h
 	include/Views/ViewVirtualTable.h
 	include/Views/ViewStringsTable.h
 	include/Views/ViewLogger.h
 	include/Views/ViewVirtualFunctions.h
-	include/Views/ViewOnline.h
 	include/Views/ViewStdVector.h
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
@@ -102,6 +99,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
 	include/QtHelpers/WidgetDatabaseView.h
+	include/QtHelpers/WidgetAutorefresh.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
@@ -121,15 +119,12 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewTextureDB.cpp
 	src/Views/ViewEntity.cpp
 	src/Views/ViewEntities.cpp
-	src/Views/ViewState.cpp
-	src/Views/ViewSaveGame.cpp
-	src/Views/ViewGameManager.cpp
+	src/Views/ViewStruct.cpp
 	src/Views/ViewLevelGen.cpp
 	src/Views/ViewVirtualTable.cpp
 	src/Views/ViewStringsTable.cpp
 	src/Views/ViewLogger.cpp
 	src/Views/ViewVirtualFunctions.cpp
-	src/Views/ViewOnline.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
 	src/Views/ViewJournalPage.cpp
@@ -151,6 +146,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
 	src/QtHelpers/WidgetDatabaseView.cpp
+	src/QtHelpers/WidgetAutorefresh.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc
 )

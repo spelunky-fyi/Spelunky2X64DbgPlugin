@@ -8,7 +8,6 @@
 #include "Data/VirtualTableLookup.h"
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 
 namespace S2Plugin
 {

@@ -2253,7 +2253,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        getToolbar()->showJournalPage(rawValue, "JournalPage");
+                        getToolbar()->showJournalPage(rawValue);
                     }
                     break;
                 }

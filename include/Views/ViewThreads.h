@@ -1,11 +1,8 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
+#include <QSize>
 #include <QTableWidget>
-#include <QVBoxLayout>
 #include <QWidget>
-#include <memory>
-#include <vector>
 
 namespace S2Plugin
 {
@@ -24,9 +21,6 @@ namespace S2Plugin
         void refreshThreads();
 
       private:
-        StyledItemDelegateHTML mHTMLDelegate;
-
-        QVBoxLayout* mMainLayout;
         QTableWidget* mMainTable;
 
         void initializeUI();

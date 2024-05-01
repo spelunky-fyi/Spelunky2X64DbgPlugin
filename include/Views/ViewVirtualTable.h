@@ -1,11 +1,14 @@
 #pragma once
 
-#include <QCheckBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QModelIndex>
+#include <QSize>
+#include <QString>
+#include <QTabWidget>
 #include <QTableView>
 #include <QTableWidget>
-#include <QVBoxLayout>
-#include <memory>
+#include <QWidget>
 
 namespace S2Plugin
 {
@@ -43,12 +46,7 @@ namespace S2Plugin
         void showGatherHideCompletedCheckBoxStateChanged(int state);
 
       private:
-        QVBoxLayout* mMainLayout;
-
         QTabWidget* mMainTabWidget;
-        QWidget* mTabData;
-        QWidget* mTabLookup;
-        QWidget* mTabGather;
 
         // DATA
         QTableView* mDataTable;
@@ -60,11 +58,9 @@ namespace S2Plugin
         QTableWidget* mLookupResultsTable;
 
         // GATHER
-        QTableView* mGatherTable;
         ItemModelGatherVirtualData* mGatherModel;
         SortFilterProxyModelGatherVirtualData* mGatherSortFilterProxy;
         QLabel* mGatherProgressLabel;
-        QCheckBox* mHideCompletedCheckbox;
 
         void initializeUI();
         void lookupAddress(size_t address);

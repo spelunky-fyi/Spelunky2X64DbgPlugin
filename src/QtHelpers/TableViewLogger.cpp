@@ -23,8 +23,7 @@ S2Plugin::TableViewLogger::TableViewLogger(Logger* logger, QWidget* parent) : QT
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::SingleSelection);
 
-    mColorPickerDelegate = std::make_unique<StyledItemDelegateColorPicker>();
-    setItemDelegateForColumn(gsLogFieldColColor, mColorPickerDelegate.get());
+    setItemDelegateForColumn(gsLogFieldColColor, new StyledItemDelegateColorPicker(this));
 
     QObject::connect(this, static_cast<void (QTableView::*)(const QModelIndex&)>(&QTableView::clicked), this, &TableViewLogger::cellClicked);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QBrush>
+#include <QModelIndex>
 #include <QPainter>
 #include <QStyledItemDelegate>
 
@@ -7,6 +9,8 @@ namespace S2Plugin
 {
     class StyledItemDelegateColorPicker : public QStyledItemDelegate
     {
+        using QStyledItemDelegate::QStyledItemDelegate;
+
       protected:
         void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
         {

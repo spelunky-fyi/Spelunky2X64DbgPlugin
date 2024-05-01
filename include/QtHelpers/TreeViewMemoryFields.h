@@ -1,9 +1,14 @@
 #pragma once
 
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QWidget>
 #include <array>
-#include <memory>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -47,13 +52,22 @@ namespace S2Plugin
         void updateTableHeader(bool restoreColumnWidths = true);
         void setEnableChangeHighlighting(bool b) noexcept;
 
-        void updateTree(uintptr_t newAddr = 0, uintptr_t newComparisonAddr = 0, bool initial = false);
+        void updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
                        bool disableChangeHighlightingForField = false);
 
-        void labelAll(std::string_view prefix = {});
-
         ColumnFilter activeColumns;
+        void labelAll(std::string_view prefix);
+
+      public slots:
+        void labelAll() // for the slots so we don't corrupt the parameters
+        {
+            labelAll({});
+        }
+        void updateTree()
+        {
+            updateTree(0, 0, false);
+        }
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;

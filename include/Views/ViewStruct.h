@@ -1,33 +1,26 @@
 #pragma once
 
 #include <QSize>
-#include <QString>
 #include <QWidget>
 #include <cstdint>
+#include <vector>
 
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
+    struct MemoryField;
 
-    class ViewJournalPage : public QWidget
+    class ViewStruct : public QWidget
     {
         Q_OBJECT
       public:
-        ViewJournalPage(uintptr_t address, QWidget* parent = nullptr);
+        ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string name, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 
-      private slots:
-        void refreshJournalPage();
-        void label();
-        void interpretAsChanged(const QString& text);
-
       private:
-        uintptr_t mPageAddress;
         TreeViewMemoryFields* mMainTreeView;
-
-        void initializeUI();
     };
 } // namespace S2Plugin

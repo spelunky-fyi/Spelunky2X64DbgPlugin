@@ -2,7 +2,6 @@
 
 #include "pluginmain.h"
 #include <cstdint>
-#include <memory>
 #include <string>
 
 namespace S2Plugin

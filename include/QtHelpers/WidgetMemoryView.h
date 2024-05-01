@@ -1,5 +1,11 @@
 #pragma once
 
+#include <QColor>
+#include <QFont>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QRect>
+#include <QSize>
 #include <QString>
 #include <QStyleOptionTabWidgetFrame>
 #include <QWidget>

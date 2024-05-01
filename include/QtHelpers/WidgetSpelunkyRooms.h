@@ -1,7 +1,15 @@
 #pragma once
 
+#include <QFont>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QSize>
+#include <QString>
 #include <QWidget>
+#include <cstdint>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace S2Plugin
 {

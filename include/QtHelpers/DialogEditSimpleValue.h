@@ -2,6 +2,10 @@
 
 #include <QDialog>
 #include <QLineEdit>
+#include <QSize>
+#include <QString>
+#include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {

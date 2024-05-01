@@ -1,17 +1,13 @@
 #pragma once
 
-#include <QCheckBox>
 #include <QComboBox>
-#include <QLineEdit>
-#include <QPushButton>
 #include <QScrollArea>
-#include <QStandardItemModel>
+#include <QSize>
+#include <QString>
 #include <QTabWidget>
 #include <QTextEdit>
-#include <QTimer>
-#include <QTreeView>
-#include <QVBoxLayout>
-#include <memory>
+#include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {
@@ -32,31 +28,19 @@ namespace S2Plugin
 
       private slots:
         void refreshEntity();
-        void toggleAutoRefresh(int newState);
-        void autoRefreshIntervalChanged(const QString& text);
         void interpretAsChanged(const QString& text);
         void label();
         void entityOffsetDropped(size_t entityOffset);
         void tabChanged();
 
       private:
-        QVBoxLayout* mMainLayout;
-        QHBoxLayout* mTopLayout;
         QTabWidget* mMainTabWidget;
-        QWidget* mTabFields;
-        QWidget* mTabMemory;
-        QWidget* mTabLevel;
-        QWidget* mTabCPP;
 
         uintptr_t mEntityPtr;
         uintptr_t mComparisonEntityPtr{0};
         size_t mEntitySize{0};
 
         // TOP LAYOUT
-        QPushButton* mRefreshButton;
-        QCheckBox* mAutoRefreshCheckBox;
-        QLineEdit* mAutoRefreshIntervalLineEdit;
-        std::unique_ptr<QTimer> mAutoRefreshTimer;
         QComboBox* mInterpretAsComboBox;
 
         // TAB FIELDS
