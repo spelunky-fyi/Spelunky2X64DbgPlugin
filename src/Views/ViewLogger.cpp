@@ -17,23 +17,9 @@ S2Plugin::ViewLogger::ViewLogger(QWidget* parent) : QWidget(parent)
 {
     mLogger = new Logger(this);
 
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("Logger");
-}
 
-QSize S2Plugin::ViewLogger::sizeHint() const
-{
-    return QSize(650, 450);
-}
-
-QSize S2Plugin::ViewLogger::minimumSizeHint() const
-{
-    return QSize(150, 150);
-}
-
-void S2Plugin::ViewLogger::initializeUI()
-{
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
 
@@ -121,6 +107,16 @@ void S2Plugin::ViewLogger::initializeUI()
     mSamplingWidget = new WidgetSampling(this);
     mSamplingWidget->setHidden(true);
     mainLayout->addWidget(mSamplingWidget);
+}
+
+QSize S2Plugin::ViewLogger::sizeHint() const
+{
+    return QSize(650, 450);
+}
+
+QSize S2Plugin::ViewLogger::minimumSizeHint() const
+{
+    return QSize(150, 150);
 }
 
 void S2Plugin::ViewLogger::startLogging()

@@ -29,7 +29,5 @@ namespace S2Plugin
         size_t mVectorTypeSize;
 
         TreeViewMemoryFields* mMainTreeView;
-
-        void initializeRefreshLayout();
     };
 } // namespace S2Plugin

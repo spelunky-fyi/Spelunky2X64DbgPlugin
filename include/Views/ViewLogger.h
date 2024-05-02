@@ -48,7 +48,6 @@ namespace S2Plugin
         QTableView* mSamplesTableView;
         ItemModelLoggerSamples* mSamplesTableModel;
 
-        void initializeUI();
         void startLogging();
     };
 } // namespace S2Plugin

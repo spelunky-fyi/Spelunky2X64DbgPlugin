@@ -26,9 +26,9 @@ S2Plugin::ViewVirtualTable::ViewVirtualTable(QWidget* parent) : QWidget(parent)
     mGatherSortFilterProxy = new SortFilterProxyModelGatherVirtualData(this);
     mGatherSortFilterProxy->sort(gsColGatherID);
 
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("Virtual Table");
+    initializeUI();
 }
 
 enum TABS

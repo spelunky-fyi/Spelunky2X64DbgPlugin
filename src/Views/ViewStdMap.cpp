@@ -21,7 +21,6 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
     mMapKeyAlignment = config->getAlingment(keytypeName);
     mMapValueAlignment = config->getAlingment(valuetypeName);
 
-    initializeRefreshLayout();
     setWindowIcon(getCavemanIcon());
 
     if (mMapValueTypeSize == 0)
@@ -29,14 +28,8 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
     else
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
 
-    refreshMapContents();
-}
-
-void S2Plugin::ViewStdMap::initializeRefreshLayout()
-{
     auto mainLayout = new QVBoxLayout(this);
-
-    auto refreshLayout = new QHBoxLayout(this);
+    auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
     auto refreshMapButton = new QPushButton("Refresh map", this);
@@ -54,6 +47,7 @@ void S2Plugin::ViewStdMap::initializeRefreshLayout()
     mainLayout->addWidget(mMainTreeView);
     mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
+    refreshMapContents();
 }
 
 void S2Plugin::ViewStdMap::refreshMapContents()

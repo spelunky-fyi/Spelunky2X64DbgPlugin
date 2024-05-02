@@ -33,7 +33,5 @@ namespace S2Plugin
         uint8_t mMapValueAlignment;
 
         TreeViewMemoryFields* mMainTreeView;
-
-        void initializeRefreshLayout();
     };
 } // namespace S2Plugin

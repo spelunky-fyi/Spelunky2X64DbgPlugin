@@ -15,19 +15,9 @@
 
 S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidget(parent), mLevelGenPtr(address)
 {
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("LevelGen");
-    mMainTreeView->updateTree(0, 0, true);
-    mMainTreeView->setColumnWidth(gsColField, 125);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-}
 
-void S2Plugin::ViewLevelGen::initializeUI()
-{
     auto mainLayout = new QVBoxLayout(this);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
@@ -65,6 +55,11 @@ void S2Plugin::ViewLevelGen::initializeUI()
         tabData->layout()->addWidget(mMainTreeView);
 
         mMainTreeView->setColumnWidth(gsColValue, 250);
+        mMainTreeView->setColumnWidth(gsColField, 125);
+        mMainTreeView->setColumnWidth(gsColValueHex, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
+        mMainTreeView->setColumnWidth(gsColType, 100);
         mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::levelGenRoomsPointerClicked, this, &ViewLevelGen::levelGenRoomsPointerClicked);
@@ -97,6 +92,7 @@ void S2Plugin::ViewLevelGen::initializeUI()
     mainLayout->setMargin(5);
     mMainTreeView->setVisible(true);
     autoRefresh->toggleAutoRefresh(true);
+    mMainTreeView->updateTree(0, 0, true); // just initial refresh so we don't the all fields marked as just changed (red)
 }
 
 void S2Plugin::ViewLevelGen::refreshLevelGen()

@@ -22,17 +22,11 @@ static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
 S2Plugin::ViewThreads::ViewThreads(QWidget* parent) : QWidget(parent)
 {
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("Threads");
-    refreshThreads();
-}
 
-void S2Plugin::ViewThreads::initializeUI()
-{
     auto mainLayout = new QVBoxLayout(this);
-
-    auto horLayout = new QHBoxLayout(this);
+    auto horLayout = new QHBoxLayout();
     auto refreshButton = new QPushButton("Refresh", this);
     horLayout->addWidget(refreshButton);
     QObject::connect(refreshButton, &QPushButton::clicked, this, &ViewThreads::refreshThreads);
@@ -55,6 +49,7 @@ void S2Plugin::ViewThreads::initializeUI()
     QObject::connect(mMainTable, &QTableWidget::cellClicked, this, &ViewThreads::cellClicked);
 
     mainLayout->addWidget(mMainTable);
+    refreshThreads();
 }
 
 void S2Plugin::ViewThreads::refreshThreads()

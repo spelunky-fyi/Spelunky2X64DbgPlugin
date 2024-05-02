@@ -22,7 +22,5 @@ namespace S2Plugin
 
       private:
         QTableWidget* mMainTable;
-
-        void initializeUI();
     };
 } // namespace S2Plugin

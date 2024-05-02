@@ -14,17 +14,10 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
 {
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
-    initializeRefreshLayout();
     setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
 
-    refreshVectorContents();
-}
-
-void S2Plugin::ViewStdVector::initializeRefreshLayout()
-{
     auto mainLayout = new QVBoxLayout(this);
-
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
@@ -42,6 +35,7 @@ void S2Plugin::ViewStdVector::initializeRefreshLayout()
     mainLayout->addWidget(mMainTreeView);
     mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
+    refreshVectorContents();
 }
 
 void S2Plugin::ViewStdVector::refreshVectorContents()

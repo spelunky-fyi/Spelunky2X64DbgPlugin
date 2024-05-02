@@ -12,19 +12,9 @@
 
 S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) : QWidget(parent), mPageAddress(address)
 {
-    initializeUI();
     setWindowIcon(getCavemanIcon());
     setWindowTitle("JournalPage");
 
-    mMainTreeView->setColumnWidth(gsColField, 125);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-}
-
-void S2Plugin::ViewJournalPage::initializeUI()
-{
     auto mainLayout = new QVBoxLayout(this);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
@@ -67,6 +57,11 @@ void S2Plugin::ViewJournalPage::initializeUI()
     mainLayout->addWidget(mMainTreeView);
 
     mMainTreeView->setColumnWidth(gsColValue, 250);
+    mMainTreeView->setColumnWidth(gsColField, 125);
+    mMainTreeView->setColumnWidth(gsColValueHex, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
+    mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->updateTableHeader();
 
     mainLayout->setMargin(5);

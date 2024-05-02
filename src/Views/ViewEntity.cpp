@@ -22,19 +22,20 @@
 #include <string>
 #include <vector>
 
+enum TABS
+{
+    FIELDS = 0,
+    MEMORY = 1,
+    LEVEL = 2,
+    CPP = 3,
+};
+
 S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget(parent), mEntityPtr(entityOffset)
 {
-    initializeUI();
     setWindowIcon(getCavemanIcon());
-
     setWindowTitle(QString::asprintf("Entity %s 0x%016llX", Entity{mEntityPtr}.entityTypeName().c_str(), entityOffset));
-    mMainTreeView->setVisible(true);
 
-    mMainTreeView->setColumnWidth(gsColField, 175);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
-    mMainTreeView->setColumnWidth(gsColType, 100);
+    initializeUI();
     updateMemoryViewOffsetAndSize();
 
     mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
@@ -48,14 +49,6 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
     else
         mInterpretAsComboBox->setCurrentText(QString::fromStdString(entityClassName));
 }
-
-enum TABS
-{
-    FIELDS = 0,
-    MEMORY = 1,
-    LEVEL = 2,
-    CPP = 3,
-};
 
 void S2Plugin::ViewEntity::initializeUI()
 {
@@ -120,6 +113,11 @@ void S2Plugin::ViewEntity::initializeUI()
     // TAB FIELDS
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setColumnWidth(gsColValue, 250);
+    mMainTreeView->setColumnWidth(gsColField, 175);
+    mMainTreeView->setColumnWidth(gsColValueHex, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
+    mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setVisible(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainTreeView->updateTableHeader();

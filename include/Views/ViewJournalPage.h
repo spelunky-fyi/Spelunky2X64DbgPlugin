@@ -27,7 +27,5 @@ namespace S2Plugin
       private:
         uintptr_t mPageAddress;
         TreeViewMemoryFields* mMainTreeView;
-
-        void initializeUI();
     };
 } // namespace S2Plugin
