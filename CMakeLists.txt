@@ -21,7 +21,7 @@ include(CPM.cmake)
 
 CPMAddPackage(
 	NAME x64dbg
-	SOURCE_DIR "${CMAKE_HOME_DIRECTORY}/3rdParty/x64dbg-src"
+	SYSTEM SOURCE_DIR "${CMAKE_HOME_DIRECTORY}/3rdParty/x64dbg-src"
 )
 
 set(Qt5Core_DIR "${Qt5ROOT}/lib/cmake/Qt5Core")
@@ -162,7 +162,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE 	Qt5::Core
 # Set the plugin as the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-target_compile_options(Spelunky2 PRIVATE /W4)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4)
 
 # Copy the plugin to the x64dbg plugins folder
 
