@@ -18,6 +18,7 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
 
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
@@ -31,9 +32,7 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
 
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mMainTreeView->setVisible(true);
     mainLayout->addWidget(mMainTreeView);
-    mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
     refreshVectorContents();
 }
@@ -86,14 +85,13 @@ void S2Plugin::ViewStdVector::refreshVectorContents()
         field.name = "obj_" + std::to_string(x);
         mMainTreeView->addMemoryField(field, field.name, vectorBegin + x * mVectorTypeSize, x * mVectorTypeSize);
     }
-    refreshData();
-
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewStdVector::refreshData()

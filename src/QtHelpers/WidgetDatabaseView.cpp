@@ -60,7 +60,6 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         mSearchLineEdit->setPlaceholderText("Search");
         topLayout->addWidget(mSearchLineEdit);
         QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &WidgetDatabaseView::searchFieldReturnPressed);
-        mSearchLineEdit->setVisible(false);
 
         auto labelButton = new QPushButton("Label", this);
         QObject::connect(labelButton, &QPushButton::clicked, this, &WidgetDatabaseView::label);
@@ -128,9 +127,7 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         tabCompare->layout()->addWidget(mCompareTreeWidget);
     }
 
-    mSearchLineEdit->setVisible(true);
     mSearchLineEdit->setFocus();
-    mMainTreeView->setVisible(true);
 }
 
 QSize S2Plugin::WidgetDatabaseView::minimumSizeHint() const

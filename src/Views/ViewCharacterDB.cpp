@@ -46,7 +46,7 @@ void S2Plugin::ViewCharacterDB::label() const
     auto& characterDB = Spelunky2::get()->get_CharacterDB();
     auto offset = characterDB.addressOfIndex(0); // ptr
     uintptr_t indexOffset = model->data(model->index(0, gsColField), gsRoleMemoryAddress).toULongLong();
-    size_t index = (indexOffset - offset) / characterDB.characterSize();
+    uint8_t index = static_cast<uint8_t>((indexOffset - offset) / characterDB.characterSize());
     if (index < characterDB.charactersCount())
     {
         name = '[' + characterDB.characterNamesStringList()[index].toStdString() + ']';

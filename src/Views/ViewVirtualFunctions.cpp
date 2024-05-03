@@ -16,7 +16,6 @@ S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName
 
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
-
     auto topLayout = new QHBoxLayout();
     mainLayout->addLayout(topLayout);
 

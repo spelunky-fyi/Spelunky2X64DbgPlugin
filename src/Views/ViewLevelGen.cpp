@@ -19,6 +19,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
     setWindowTitle("LevelGen");
 
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
@@ -37,22 +38,15 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
     mainLayout->addWidget(mMainTabWidget);
 
     // TABS
-    auto tabData = new QWidget();
-    auto tabRooms = new QWidget();
-    tabData->setLayout(new QVBoxLayout());
-    tabData->layout()->setMargin(0);
-    tabData->setObjectName("datawidget");
-    tabRooms->setLayout(new QVBoxLayout());
-    tabRooms->layout()->setMargin(0);
+    mMainTreeView = new TreeViewMemoryFields(this);
+    auto tabRooms = new QScrollArea(this);
 
-    mMainTabWidget->addTab(tabData, "Data");
+    mMainTabWidget->addTab(mMainTreeView, "Data");
     mMainTabWidget->addTab(tabRooms, "Rooms");
 
     // TAB DATA
     {
-        mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", mLevelGenPtr);
-        tabData->layout()->addWidget(mMainTreeView);
 
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColField, 125);
@@ -67,10 +61,9 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
 
     // TAB ROOMS
     {
-        auto scroll = new QScrollArea(this);
-        scroll->setWidgetResizable(true);
+        tabRooms->setWidgetResizable(true);
         auto containerWidget = new QWidget(this);
-        scroll->setWidget(containerWidget);
+        tabRooms->setWidget(containerWidget);
         auto containerLayout = new QVBoxLayout(containerWidget);
 
         for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
@@ -86,13 +79,9 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
                 containerLayout->addWidget(roomWidget);
             }
         }
-        dynamic_cast<QVBoxLayout*>(tabRooms->layout())->addWidget(scroll);
     }
-
-    mainLayout->setMargin(5);
-    mMainTreeView->setVisible(true);
     autoRefresh->toggleAutoRefresh(true);
-    mMainTreeView->updateTree(0, 0, true); // just initial refresh so we don't the all fields marked as just changed (red)
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewLevelGen::refreshLevelGen()

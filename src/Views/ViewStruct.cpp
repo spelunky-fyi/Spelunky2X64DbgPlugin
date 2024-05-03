@@ -16,9 +16,9 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     mMainTreeView = new TreeViewMemoryFields(this);
 
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
-    mainLayout->setMargin(5);
 
     auto autoRefresh = new WidgetAutorefresh("100", this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, mMainTreeView, static_cast<void (TreeViewMemoryFields::*)()>(&TreeViewMemoryFields::updateTree));
@@ -40,8 +40,7 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->updateTableHeader();
-    mMainTreeView->setVisible(true);
-
+    mMainTreeView->updateTree(0, 0, true);
     autoRefresh->toggleAutoRefresh(true);
 }
 

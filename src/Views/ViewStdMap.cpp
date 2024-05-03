@@ -29,6 +29,7 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
 
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
@@ -43,9 +44,7 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setEnableChangeHighlighting(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
-    mMainTreeView->setVisible(true);
     mainLayout->addWidget(mMainTreeView);
-    mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
     refreshMapContents();
 }
@@ -122,21 +121,20 @@ void S2Plugin::ViewStdMap::refreshMapContents()
         parent_field.name = "obj_" + std::to_string(x);
         parent = mMainTreeView->addMemoryField(parent_field, parent_field.name, 0, 0);
 
-        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, parent);
+        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, 0, parent);
 
         if (mMapValueTypeSize == 0) // StdSet
             continue;
 
-        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, parent);
+        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, 0, parent);
     }
-    refreshData();
-
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewStdMap::refreshData()

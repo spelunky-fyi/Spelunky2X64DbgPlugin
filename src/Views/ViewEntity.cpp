@@ -38,11 +38,7 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
     initializeUI();
     updateMemoryViewOffsetAndSize();
 
-    mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
-    mSpelunkyLevel->paintEntity(mEntityPtr, QColor(222, 52, 235));
-    mSpelunkyLevel->update();
     auto entityClassName = Entity{mEntityPtr}.entityClassName();
-
     // the combobox is set as Entity by default, so we have to manually call interpretAsChanged
     if (entityClassName == "Entity")
         interpretAsChanged(QString::fromStdString(entityClassName));
@@ -57,7 +53,6 @@ void S2Plugin::ViewEntity::initializeUI()
     mainLayout->addLayout(topLayout);
 
     // TOP LAYOUT
-
     auto autoRefresh = new WidgetAutorefresh("100", this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewEntity::refreshEntity);
     topLayout->addWidget(autoRefresh);
@@ -92,82 +87,73 @@ void S2Plugin::ViewEntity::initializeUI()
     QObject::connect(mMainTabWidget, &QTabWidget::currentChanged, this, &ViewEntity::tabChanged);
     mainLayout->addWidget(mMainTabWidget);
 
-    auto tabFields = new QWidget();
+    mMainTreeView = new TreeViewMemoryFields();
     auto tabMemory = new QWidget();
-    auto tabLevel = new QWidget();
-    auto tabCPP = new QWidget();
-    tabFields->setLayout(new QVBoxLayout());
-    tabFields->layout()->setMargin(0);
+    auto tabLevel = new QScrollArea();
+    mCPPTextEdit = new QTextEdit();
+
     tabMemory->setLayout(new QHBoxLayout());
     tabMemory->layout()->setMargin(0);
-    tabLevel->setLayout(new QVBoxLayout());
-    tabLevel->layout()->setMargin(0);
-    tabCPP->setLayout(new QVBoxLayout());
-    tabCPP->layout()->setMargin(0);
 
-    mMainTabWidget->addTab(tabFields, "Fields");
+    mMainTabWidget->addTab(mMainTreeView, "Fields");
     mMainTabWidget->addTab(tabMemory, "Memory");
     mMainTabWidget->addTab(tabLevel, "Level");
-    mMainTabWidget->addTab(tabCPP, "C++");
+    mMainTabWidget->addTab(mCPPTextEdit, "C++");
 
     // TAB FIELDS
-    mMainTreeView = new TreeViewMemoryFields(this);
-    mMainTreeView->setColumnWidth(gsColValue, 250);
-    mMainTreeView->setColumnWidth(gsColField, 175);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-    mMainTreeView->setVisible(false);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-    mMainTreeView->updateTableHeader();
-    mMainTreeView->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
-    mMainTreeView->setAcceptDrops(true);
-    QObject::connect(mMainTreeView, &TreeViewMemoryFields::entityOffsetDropped, this, &ViewEntity::entityOffsetDropped);
-    tabFields->layout()->addWidget(mMainTreeView);
-
+    {
+        mMainTreeView->setColumnWidth(gsColValue, 250);
+        mMainTreeView->setColumnWidth(gsColField, 175);
+        mMainTreeView->setColumnWidth(gsColValueHex, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
+        mMainTreeView->setColumnWidth(gsColType, 100);
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->updateTableHeader();
+        mMainTreeView->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
+        mMainTreeView->setAcceptDrops(true);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::entityOffsetDropped, this, &ViewEntity::entityOffsetDropped);
+    }
     // TAB MEMORY
-    auto scroll = new QScrollArea(tabMemory);
-    mMemoryView = new WidgetMemoryView(scroll);
-    scroll->setStyleSheet("background-color: #fff;");
-    scroll->setWidget(mMemoryView);
-    scroll->setVisible(true);
-    tabMemory->layout()->addWidget(scroll);
+    {
+        auto scroll = new QScrollArea(tabMemory);
+        mMemoryView = new WidgetMemoryView(scroll);
+        scroll->setStyleSheet("background-color: #fff;");
+        scroll->setWidget(mMemoryView);
+        tabMemory->layout()->addWidget(scroll);
 
-    mMemoryComparisonScrollArea = new QScrollArea(tabMemory);
-    mMemoryComparisonView = new WidgetMemoryView(mMemoryComparisonScrollArea);
-    mMemoryComparisonScrollArea->setStyleSheet("background-color: #fff;");
-    mMemoryComparisonScrollArea->setWidget(mMemoryComparisonView);
-    mMemoryComparisonScrollArea->setVisible(true);
-    tabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
-    mMemoryComparisonScrollArea->setVisible(false);
-
+        mMemoryComparisonScrollArea = new QScrollArea(tabMemory);
+        mMemoryComparisonView = new WidgetMemoryView(mMemoryComparisonScrollArea);
+        mMemoryComparisonScrollArea->setStyleSheet("background-color: #fff;");
+        mMemoryComparisonScrollArea->setWidget(mMemoryComparisonView);
+        tabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
+        mMemoryComparisonScrollArea->setVisible(false);
+    }
     // TAB LEVEL
-    scroll = new QScrollArea(tabLevel);
-    mSpelunkyLevel = new WidgetSpelunkyLevel(mEntityPtr, scroll);
-    scroll->setStyleSheet("background-color: #fff;");
-    scroll->setWidget(mSpelunkyLevel);
-    scroll->setVisible(true);
-    tabLevel->layout()->addWidget(scroll);
-
+    {
+        mSpelunkyLevel = new WidgetSpelunkyLevel(mEntityPtr, tabLevel);
+        mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
+        mSpelunkyLevel->paintEntity(mEntityPtr, QColor(222, 52, 235));
+        tabLevel->setStyleSheet("background-color: #fff;");
+        tabLevel->setWidget(mSpelunkyLevel);
+    }
     // TAB CPP
-    mCPPTextEdit = new QTextEdit(this);
-    mCPPTextEdit->setReadOnly(true);
-    auto font = QFont("Courier", 10);
-    font.setFixedPitch(true);
-    font.setStyleHint(QFont::Monospace);
-    auto fontMetrics = QFontMetrics(font);
-    mCPPTextEdit->setFont(font);
-    mCPPTextEdit->setTabStopWidth(4 * fontMetrics.width(' '));
-    mCPPTextEdit->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
-    QPalette palette = mCPPTextEdit->palette();
-    palette.setColor(QPalette::Base, QColor("#1E1E1E"));
-    palette.setColor(QPalette::Text, QColor("#D4D4D4"));
-    mCPPTextEdit->setPalette(palette);
-    mCPPTextEdit->document()->setDocumentMargin(10);
-    mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
-
-    tabCPP->layout()->addWidget(mCPPTextEdit);
+    {
+        mCPPTextEdit->setReadOnly(true);
+        auto font = QFont("Courier", 10);
+        font.setFixedPitch(true);
+        font.setStyleHint(QFont::Monospace);
+        auto fontMetrics = QFontMetrics(font);
+        mCPPTextEdit->setFont(font);
+        mCPPTextEdit->setTabStopWidth(4 * fontMetrics.width(' '));
+        mCPPTextEdit->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
+        QPalette palette = mCPPTextEdit->palette();
+        palette.setColor(QPalette::Base, QColor("#1E1E1E"));
+        palette.setColor(QPalette::Text, QColor("#D4D4D4"));
+        mCPPTextEdit->setPalette(palette);
+        mCPPTextEdit->document()->setDocumentMargin(10);
+        mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
+    }
     mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
 }

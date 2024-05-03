@@ -14,7 +14,7 @@ S2Plugin::ViewParticleDB::ViewParticleDB(QWidget* parent) : WidgetDatabaseView(M
     particleNameCompleter->setFilterMode(Qt::MatchContains);
     QObject::connect(particleNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewParticleDB::searchFieldCompleterActivated);
     mSearchLineEdit->setCompleter(particleNameCompleter);
-    mCompareTableWidget->setRowCount(particleEmitters.count());
+    mCompareTableWidget->setRowCount(static_cast<int>(particleEmitters.count()));
     showID(1);
 }
 

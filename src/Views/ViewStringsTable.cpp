@@ -19,8 +19,9 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
     setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable().count()));
 
     auto mainLayout = new QVBoxLayout(this);
-
     auto topLayout = new QHBoxLayout();
+    mainLayout->addLayout(topLayout);
+
     auto reloadButton = new QPushButton("Reload", this);
     topLayout->addWidget(reloadButton);
     QObject::connect(reloadButton, &QPushButton::clicked, this, &ViewStringsTable::reload);
@@ -29,7 +30,6 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
     filterLineEdit->setPlaceholderText("Search id or text");
     QObject::connect(filterLineEdit, &QLineEdit::textChanged, this, &ViewStringsTable::filterTextChanged);
     topLayout->addWidget(filterLineEdit);
-    mainLayout->addLayout(topLayout);
 
     mMainTableView = new QTableView(this);
     mMainTableView->setAlternatingRowColors(true);

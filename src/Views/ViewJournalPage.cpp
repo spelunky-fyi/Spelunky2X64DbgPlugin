@@ -16,6 +16,7 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     setWindowTitle("JournalPage");
 
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
@@ -63,9 +64,7 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->updateTableHeader();
-
-    mainLayout->setMargin(5);
-    mMainTreeView->setVisible(true);
+    mMainTreeView->updateTree(0, 0, true);
     autoRefresh->toggleAutoRefresh(true);
 }
 

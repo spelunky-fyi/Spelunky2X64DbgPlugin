@@ -14,8 +14,11 @@
 
 S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
 {
-    auto mainLayout = new QVBoxLayout(this);
+    setWindowIcon(getCavemanIcon());
+    setWindowTitle("Entities");
 
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto config = Configuration::get();
     mLayer0Offset = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
     mLayer1Offset = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
@@ -66,19 +69,12 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
         horLayout->addStretch();
         mainLayout->addLayout(horLayout);
     }
-
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setEnableChangeHighlighting(false);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
+
     mainLayout->addWidget(mMainTreeView);
 
-    setWindowIcon(getCavemanIcon());
-
-    mainLayout->setMargin(5);
-
-    setWindowTitle("Entities");
-    mMainTreeView->setVisible(true);
-
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
     refreshEntities();
     mFilterLineEdit->setFocus();
 }
@@ -206,11 +202,9 @@ void S2Plugin::ViewEntities::refreshEntities()
         checkbox.mCheckbox->setText(QString(checkbox.name + " (%1)").arg(field_count));
     }
     setWindowTitle(QString("%1 Entities").arg(totalEntities));
-
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
     mMainTreeView->updateTree();
