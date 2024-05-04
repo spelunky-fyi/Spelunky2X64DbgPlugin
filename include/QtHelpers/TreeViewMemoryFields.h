@@ -46,11 +46,16 @@ namespace S2Plugin
       public:
         TreeViewMemoryFields(QWidget* parent = nullptr);
 
-        void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, QStandardItem* parent = nullptr);
-        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent = nullptr);
+        void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, uint8_t deltaPrefixCount = 0,
+                             QStandardItem* parent = nullptr);
+        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, uint8_t deltaPrefixCount = 0,
+                                      QStandardItem* parent = nullptr);
         void clear();
         void updateTableHeader(bool restoreColumnWidths = true);
-        void setEnableChangeHighlighting(bool b) noexcept;
+        void setEnableChangeHighlighting(bool b) noexcept
+        {
+            mEnableChangeHighlighting = b;
+        }
 
         void updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,

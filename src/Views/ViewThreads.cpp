@@ -141,12 +141,17 @@ void S2Plugin::ViewThreads::cellClicked(int row, int column)
     auto clickedItem = mMainTable->item(row, column);
     if (column == gsColTEBAddress)
     {
-        GuiDumpAt(clickedItem->data(gsRoleMemoryAddress).toULongLong());
-        GuiShowCpu();
+        auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+        if (addr != 0)
+        {
+            GuiDumpAt(addr);
+            GuiShowCpu();
+        }
     }
     else if (column == gsColStateAddress)
     {
         auto statePtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-        getToolbar()->showState(statePtr);
+        if (statePtr != 0)
+            getToolbar()->showState(statePtr);
     }
 }

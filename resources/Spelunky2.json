@@ -9051,7 +9051,7 @@
       { "field": "padding3?", "type": "UnsignedDword" },
       {
         "field": "sub_theme",
-        "type": "ThemeInfoName",
+        "type": "ThemeInfoPointer",
         "comment": "for cosmic ocean"
       },
       { "field": "unknown3", "type": "UnsignedDword" },

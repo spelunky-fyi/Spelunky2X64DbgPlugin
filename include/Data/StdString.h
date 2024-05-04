@@ -76,5 +76,5 @@ namespace S2Plugin
     };
 
     using StdString = StdBasicString<char>;
-    using StdWstring = StdBasicString<char16_t>;
+    using StdWstring = StdBasicString<ushort>;
 } // namespace S2Plugin
