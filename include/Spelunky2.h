@@ -13,8 +13,6 @@ namespace S2Plugin
 {
     constexpr uint32_t TEB_offset = 0x120;
 
-    class EntityDB;
-
     struct Spelunky2
     {
         static Spelunky2* get();

@@ -85,6 +85,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSpelunkyRooms.h
 	include/QtHelpers/DialogEditSimpleValue.h
 	include/QtHelpers/DialogEditState.h
+	include/QtHelpers/DialogEditString.h
 	include/QtHelpers/TableWidgetItemNumeric.h
 	include/QtHelpers/TreeWidgetItemNumeric.h
 	include/QtHelpers/ItemModelVirtualTable.h
@@ -136,6 +137,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/WidgetSpelunkyRooms.cpp
 	src/QtHelpers/DialogEditSimpleValue.cpp
 	src/QtHelpers/DialogEditState.cpp
+	src/QtHelpers/DialogEditString.cpp
 	src/QtHelpers/ItemModelVirtualTable.cpp
 	src/QtHelpers/ItemModelVirtualFunctions.cpp
 	src/QtHelpers/SortFilterProxyModelStringsTable.cpp

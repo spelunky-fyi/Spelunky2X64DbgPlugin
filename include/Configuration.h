@@ -26,7 +26,7 @@ namespace S2Plugin
      * [[ Roles explanation: ]]
      * The first 5 roles are all saved to the name field
      * those are used as information about the row
-     * memory address in the name field are used just for row update and should not be used for anything else
+     * memory address in the name field are used just for row update and shouldn't really be used for anything else
      *
      * value, comparison value, memoryaddress and delta fields all should contain the `gsRoleRawValue` data
      * (may differ with some special types)
@@ -155,6 +155,7 @@ namespace S2Plugin
         std::string firstParameterType;
         std::string secondParameterType;
         std::string comment;
+        // size in bytes
         size_t get_size() const;
 
         // For checking duplicate names

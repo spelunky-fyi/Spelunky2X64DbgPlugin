@@ -5,7 +5,7 @@
 
 QString S2Plugin::StringsTable::stringForIndex(uint32_t idx) const
 {
-    if (count() < idx)
+    if (count() <= idx)
     {
         return QString("INVALID OR NOT APPLICABLE");
     }

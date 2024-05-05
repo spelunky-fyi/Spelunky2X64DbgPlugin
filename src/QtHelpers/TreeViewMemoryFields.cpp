@@ -11,6 +11,7 @@
 #include "Data/TextureDB.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "QtHelpers/DialogEditState.h"
+#include "QtHelpers/DialogEditString.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
@@ -887,12 +888,8 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Flag: // can't be pointer, always have parent
         {
-            constexpr auto getDataFrom = [](const QModelIndex& idx, int col, int role)
-            {
-                auto mod = idx.model();
-                auto parentIndex = idx.parent();
-                return mod->data(mod->index(idx.row(), col, parentIndex), role);
-            };
+            constexpr auto getDataFrom = [](const QModelIndex& idx, int col, int role) { return idx.sibling(idx.row(), col).data(role); };
+
             // [Known Issue]: null memory address is not handled
             auto flagIndex = itemField->data(gsRoleFlagIndex).toUInt();
             uint mask = (1 << (flagIndex - 1));
@@ -1913,12 +1910,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
 void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
 {
     auto clickedItem = mModel->itemFromIndex(index);
-    constexpr auto getDataFrom = [](const QModelIndex& idx, int col, int role)
-    {
-        auto mod = idx.model();
-        auto parentIndex = idx.parent();
-        return mod->data(mod->index(idx.row(), col, parentIndex), role);
-    };
+    constexpr auto getDataFrom = [](const QModelIndex& idx, int col, int role) { return idx.sibling(idx.row(), col).data(role); };
 
     switch (index.column())
     {
@@ -2179,7 +2171,6 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::UnsignedQword:
                 case MemoryFieldType::Float:
                 case MemoryFieldType::Double:
-                case MemoryFieldType::UTF16Char:
                 case MemoryFieldType::StringsTableID:
                 {
                     auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
@@ -2215,14 +2206,61 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 {
                     bool isPointer = getDataFrom(index, gsColField, gsRoleIsPointer).toBool();
                     if (isPointer)
+                }
+                case MemoryFieldType::UTF16Char:
                     {
-                        auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                        if (addr != 0)
-                        {
-                            GuiDumpAt(addr);
-                            GuiShowCpu();
-                        }
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (offset != 0)
+                    {
+                        auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
+                        QChar c = static_cast<ushort>(clickedItem->data(gsRoleRawValue).toUInt());
+                        auto dialog = new DialogEditString(fieldName, c, offset, 1, dataType, this);
+                        dialog->exec();
                     }
+                    break;
+                }
+                case MemoryFieldType::UTF16StringFixedSize:
+                {
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (offset != 0)
+                    {
+                        int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
+                        auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
+                        auto stringData = std::make_unique<ushort[]>(size);
+                        Script::Memory::Read(offset, stringData.get(), size, nullptr);
+                        auto s = QString::fromUtf16(stringData.get());
+                        auto dialog = new DialogEditString(fieldName, s, offset, size / 2 - 1, dataType, this);
+                        dialog->exec();
+                    }
+                    break;
+                }
+                case MemoryFieldType::ConstCharPointer:
+                {
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (offset != 0)
+                        {
+                        auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
+                        auto s = QString::fromStdString(ReadConstString(offset));
+                        // [Known Issue]: Now way to safely determinate allowed lenght, so we just allow as much characters as there is already
+                        auto dialog = new DialogEditString(fieldName, s, offset, s.length(), dataType, this);
+                        dialog->exec();
+                    }
+                    break;
+                        }
+                case MemoryFieldType::UTF8StringFixedSize:
+                {
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (offset != 0)
+                    {
+                        int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
+                        auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
+                        auto stringData = std::make_unique<char[]>(size);
+                        Script::Memory::Read(offset, stringData.get(), size, nullptr);
+                        auto s = QString::fromUtf8(stringData.get());
+                        auto dialog = new DialogEditString(fieldName, s, offset, size - 1, dataType, this);
+                        dialog->exec();
+                    }
+                    break;
                 }
             }
             emit memoryFieldValueUpdated(index.row(), clickedItem->parent());
