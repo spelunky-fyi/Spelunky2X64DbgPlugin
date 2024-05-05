@@ -2045,11 +2045,10 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        auto id = Script::Memory::ReadDword(rawValue + 20);
                         auto view = getToolbar()->showEntityDB();
                         if (view != nullptr)
                         {
-                            view->showID(id); // TODO: use pointer, not ID
+                            view->showRAW(rawValue);
                         }
                     }
                     break;
@@ -2059,11 +2058,10 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        auto id = Script::Memory::ReadQword(rawValue);
                         auto view = getToolbar()->showTextureDB();
                         if (view != nullptr)
                         {
-                            view->showID(id);
+                            view->showRAW(rawValue);
                         }
                     }
                     break;
@@ -2117,11 +2115,10 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        auto id = Script::Memory::ReadDword(rawValue); // TODO: use pointer
                         auto view = getToolbar()->showParticleDB();
                         if (view != nullptr)
                         {
-                            view->showID(id);
+                            view->showRAW(rawValue);
                         }
                     }
                     break;
@@ -2197,6 +2194,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::LevelGenRoomsPointer:
                 case MemoryFieldType::LevelGenRoomsMetaPointer:
                 {
+                    // available only in the level gen
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {

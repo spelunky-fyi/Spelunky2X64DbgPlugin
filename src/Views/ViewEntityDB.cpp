@@ -30,6 +30,12 @@ void S2Plugin::ViewEntityDB::searchFieldCompleterActivated()
     searchFieldReturnPressed();
 }
 
+void S2Plugin::ViewEntityDB::showRAW(uintptr_t address)
+{
+    switchToLookupTab();
+    mMainTreeView->updateTree(address);
+}
+
 void S2Plugin::ViewEntityDB::showID(ID_type id)
 {
     if (id > Configuration::get()->entityList().highestID())

@@ -12,6 +12,7 @@ namespace S2Plugin
       public:
         ViewParticleDB(QWidget* parent = nullptr);
         void showID(ID_type id) override;
+        void showRAW(uintptr_t address);
 
       protected:
         QSize sizeHint() const override;

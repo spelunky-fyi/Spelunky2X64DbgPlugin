@@ -33,6 +33,11 @@ void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
     }
 }
 
+void S2Plugin::ViewTextureDB::showRAW(uintptr_t address)
+{
+    mMainTreeView->updateTree(address);
+}
+
 void S2Plugin::ViewTextureDB::showID(ID_type id)
 {
     if (!isValidRecordID(id))

@@ -28,6 +28,11 @@ void S2Plugin::ViewParticleDB::searchFieldCompleterActivated()
     searchFieldReturnPressed();
 }
 
+void S2Plugin::ViewParticleDB::showRAW(uintptr_t address)
+{
+    mMainTreeView->updateTree(address);
+}
+
 void S2Plugin::ViewParticleDB::showID(ID_type id)
 {
     // ids start from 1
