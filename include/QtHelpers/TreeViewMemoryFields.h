@@ -63,6 +63,7 @@ namespace S2Plugin
 
         ColumnFilter activeColumns;
         void labelAll(std::string_view prefix);
+        void expandLast();
 
       public slots:
         void labelAll() // for the slots so we don't corrupt the parameters

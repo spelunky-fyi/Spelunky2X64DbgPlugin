@@ -2408,3 +2408,11 @@ void S2Plugin::TreeViewMemoryFields::labelAll(std::string_view prefix)
     auto parrent = mModel->invisibleRootItem();
     labelChildren(parrent, prefix);
 }
+
+void S2Plugin::TreeViewMemoryFields::expandLast()
+{
+    auto mod = model();
+    auto rows = mod->rowCount();
+    if (rows != 0)
+        expand(mod->index(mod->rowCount() - 1, 0));
+}

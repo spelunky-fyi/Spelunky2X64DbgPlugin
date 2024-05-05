@@ -115,7 +115,7 @@ namespace S2Plugin
         EntitySubclass,               // a subclass of an entity defined in json
         DefaultStructType,            // a struct defined in json
         UndeterminedThemeInfoPointer, // used to look up the theme pointer in the levelgen and show the correct theme name
-        ThemeInfoPointer,                // same as above, but does not add struct tree
+        ThemeInfoPointer,             // same as above, but does not add struct tree
         LevelGenRoomsPointer,         // used to make the level gen rooms title clickable
         LevelGenRoomsMetaPointer,     // used to make the level gen rooms title clickable
         JournalPagePointer,           // used to make journal page in vector clickable

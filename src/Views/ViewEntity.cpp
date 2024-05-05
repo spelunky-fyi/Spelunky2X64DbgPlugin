@@ -49,6 +49,7 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
 void S2Plugin::ViewEntity::initializeUI()
 {
     auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto topLayout = new QHBoxLayout();
     mainLayout->addLayout(topLayout);
 
@@ -154,7 +155,6 @@ void S2Plugin::ViewEntity::initializeUI()
         mCPPTextEdit->document()->setDocumentMargin(10);
         mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
     }
-    mainLayout->setMargin(5);
     autoRefresh->toggleAutoRefresh(true);
 }
 
@@ -201,7 +201,6 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
         mMainTreeView->clear();
         mMemoryView->clearHighlights();
         mMainTreeView->updateTableHeader();
-        uint8_t counter = 0;
         size_t delta = 0;
         uint8_t colorIndex = 0;
         auto recursiveHighlight = [&](std::string prefix, const std::vector<MemoryField>& fields, auto&& self) -> void
@@ -240,16 +239,13 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             headerField.name = "<b>" + *it + "</b>";
             headerField.type = MemoryFieldType::EntitySubclass;
             headerField.jsonName = *it;
-            auto item = mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
-            if (++counter == hierarchy.size()) // expand last subclass
-            {
-                mMainTreeView->expand(item->index());
-            }
+            mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
             // highlights fields in memory view, also updates delta
             recursiveHighlight(*it + ".", config->typeFieldsOfEntitySubclass(*it), recursiveHighlight);
         }
 
         mMainTreeView->updateTree(0, 0, true);
+        mMainTreeView->expandLast();
         mEntitySize = delta;
         updateMemoryViewOffsetAndSize();
     }
@@ -312,7 +308,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
         QStandardItem* currentClass = root->child(idx, gsColField);
         if (currentClass->data(gsRoleType).value<MemoryFieldType>() != MemoryFieldType::EntitySubclass)
         {
-            displayError("Error in `updateComparedMemoryViewHighlights`, found non EntitySubclass member in main tree");
+            dprintf("Error in `updateComparedMemoryViewHighlights`, found non EntitySubclass member in main tree");
             return;
         }
         highlightFields(currentClass, highlightFields);

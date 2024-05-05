@@ -94,7 +94,26 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
     {
         auto pageType = text.toStdString();
         mMainTreeView->clear();
-        mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(pageType), pageType, mPageAddress);
+        static std::vector<MemoryField> structs;
+        if (structs.empty())
+        {
+            structs.resize(2);
+            structs[0].type = MemoryFieldType::DefaultStructType;
+            structs[0].jsonName = "JournalPage";
+            structs[0].name = "JournalPage";
+            structs[1].type = MemoryFieldType::DefaultStructType;
+        }
+        if (text == "JournalPage")
+        {
+            mMainTreeView->addMemoryFields({structs[0]}, pageType, mPageAddress);
+        }
+        else
+        {
+            structs[1].name = pageType;
+            structs[1].jsonName = pageType;
+            mMainTreeView->addMemoryFields(structs, pageType, mPageAddress);
+        }
+        mMainTreeView->expandLast();
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
