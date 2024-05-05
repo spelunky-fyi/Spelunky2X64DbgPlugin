@@ -77,7 +77,6 @@
     "ScreenTitlePointer",
     "ScreenMenuPointer",
     "ScreenOptionsPointer",
-    "ScreenSeedInputPointer",
     "ScreenCharacterSelectPointer",
     "ScreenArenaMenuPointer",
     "ScreenArenaItemsPointer",
@@ -1033,7 +1032,7 @@
         "type": "ScreenPointer",
         "comment": "all handled by the Online struct"
       },
-      { "field": "screen_seed_input", "type": "ScreenSeedInputPointer" },
+      { "field": "screen_seed_input", "type": "ScreenSeedInput", "pointer": true },
       {
         "field": "unknown_screen_character_select?",
         "type": "DataPointer",
@@ -2645,9 +2644,6 @@
       { "field": "base_screen", "type": "ScreenBase" },
       { "field": "ouroboros", "type": "TextureRenderingInfo" },
       { "field": "ouroboros_angle", "type": "Float" }
-    ],
-    "ScreenSeedInputPointer": [
-      { "field": "screen", "type": "ScreenSeedInput" }
     ],
     "ScreenSeedInput": [
       { "field": "base_screen", "type": "ScreenBase" },
