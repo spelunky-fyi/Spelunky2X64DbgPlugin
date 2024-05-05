@@ -8134,48 +8134,7 @@
       { "field": "unknown14", "type": "Bool" },
       { "field": "unknown15", "type": "UnsignedByte" },
       { "field": "unknown16", "type": "UnsignedByte" },
-      { "field": "unknown17", "type": "UnsignedDword" },
-      { "field": "unknown18", "type": "UnsignedDword" },
-      { "field": "unknown19", "type": "UnsignedDword" },
-      {
-        "field": "entity_items_begin",
-        "type": "DataPointer",
-        "comment": "begin of the memory that holds the items of entities"
-      },
-      { "field": "unknown21", "type": "DataPointer" },
-      { "field": "unknown22", "type": "DataPointer" },
-      { "field": "unknown23", "type": "Bool" },
-      {
-        "field": "layer_freeze?",
-        "type": "Bool",
-        "comment": "locking mechanism?"
-      },
-      { "field": "unknown25", "type": "UnsignedByte" },
-      { "field": "unknown26", "type": "UnsignedByte" },
-      { "field": "unknown27", "type": "UnsignedDword" },
-      { "field": "unknown28", "type": "UnsignedQword" },
-      { "field": "unknown29", "type": "UnsignedQword" },
-      { "field": "unknown30", "type": "UnsignedQword" },
-      { "field": "unknown31", "type": "UnsignedQword" },
-      { "field": "unknown32", "type": "UnsignedQword" },
-      { "field": "unknown33", "type": "UnsignedDword" },
-      { "field": "unknown34", "type": "UnsignedDword" },
-      { "field": "unknown35", "type": "DataPointer" },
-      { "field": "unknown36", "type": "DataPointer" },
-      { "field": "unknown37", "type": "DataPointer" },
-      { "field": "unknown38", "type": "Bool" },
-      { "field": "unknown39", "type": "Bool" },
-      { "field": "unknown40", "type": "UnsignedByte" },
-      { "field": "unknown41", "type": "UnsignedByte" },
-      { "field": "unknown42", "type": "UnsignedDword" },
-      { "field": "unknown43", "type": "UnsignedQword" },
-      { "field": "unknown44", "type": "UnsignedQword" },
-      { "field": "unknown45", "type": "UnsignedQword" },
-      {
-        "field": "unknown46",
-        "type": "UnsignedQword",
-        "comment": "next layer below"
-      }
+      { "field": "unknown17", "type": "UnsignedDword" }
     ],
     "PointerToPointerToEntityList": [
       {
