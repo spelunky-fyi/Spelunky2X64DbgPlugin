@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QLineEdit>
 #include <QSize>
+#include <QSpinBox>
 #include <QString>
 #include <QWidget>
 #include <cstdint>
@@ -25,13 +26,13 @@ namespace S2Plugin
       private slots:
         void cancelBtnClicked();
         void changeBtnClicked();
-        void decValueChanged();
+        void decValueChanged(const QString& text);
 
       private:
         uintptr_t mMemoryAddress;
         MemoryFieldType mFieldType;
 
-        QLineEdit* mLineEditDecValue;
+        QAbstractSpinBox* mSpinBox;
         QLineEdit* mLineEditHexValue;
     };
 } // namespace S2Plugin
