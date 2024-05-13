@@ -1861,21 +1861,28 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::EntitySubclass:
         {
-            // can't be a pointer, nothing to do here
+            // can't be a pointer
+            if (isExpanded(itemField->index()))
+                itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
+            else
+                itemValue->setData("<font color='#aaa'><u>[Expand]</u></font>", Qt::DisplayRole);
+
             if (shouldUpdateChildren)
             {
                 for (int x = 0; x < itemField->rowCount(); ++x)
-                {
                     updateRow(x, newAddr, newAddrComparison, itemField);
-                }
             }
             break;
         }
         case MemoryFieldType::DefaultStructType:
         {
+            if (isExpanded(itemField->index()))
+                itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
+            else
+                itemValue->setData("<font color='#aaa'><u>[Expand]</u></font>", Qt::DisplayRole);
+
             if (isPointer)
             {
-                itemValue->setData(itemValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
                 if (comparisonActive)
                 {
                     itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
@@ -1893,6 +1900,11 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Dummy:
         {
+            if (isExpanded(itemField->index()))
+                itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
+            else
+                itemValue->setData("<font color='#aaa'><u>[Expand]</u></font>", Qt::DisplayRole);
+
             if (shouldUpdateChildren)
             {
                 for (int x = 0; x < itemField->rowCount(); ++x)
@@ -2214,12 +2226,19 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     break;
                 }
                 case MemoryFieldType::DefaultStructType:
+                case MemoryFieldType::EntitySubclass:
+                case MemoryFieldType::Dummy:
                 {
-                    bool isPointer = getDataFrom(index, gsColField, gsRoleIsPointer).toBool();
-                    if (isPointer)
+                    auto fieldIndex = index.sibling(index.row(), gsColField);
+                    if (isExpanded(fieldIndex))
+                        collapse(fieldIndex);
+                    else
+                        expand(index.sibling(index.row(), gsColField));
+
+                    break;
                 }
                 case MemoryFieldType::UTF16Char:
-                    {
+                {
                     auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (offset != 0)
                     {
@@ -2249,7 +2268,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 {
                     auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (offset != 0)
-                        {
+                    {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto s = QString::fromStdString(ReadConstString(offset));
                         // [Known Issue]: Now way to safely determinate allowed lenght, so we just allow as much characters as there is already
@@ -2257,7 +2276,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         dialog->exec();
                     }
                     break;
-                        }
+                }
                 case MemoryFieldType::UTF8StringFixedSize:
                 {
                     auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
