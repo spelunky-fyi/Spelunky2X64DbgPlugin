@@ -221,7 +221,7 @@ namespace S2Plugin
         int getAlingment(const std::string& type) const;
         bool isPermanentPointer(const std::string& type) const
         {
-            return mPointerTypes.find(type) != mPointerTypes.end();
+            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
         }
         bool isJsonStruct(const std::string type) const
         {
@@ -246,6 +246,11 @@ namespace S2Plugin
         RoomCode roomCodeForID(uint16_t code) const;
         std::string getEntityName(uint32_t type) const;
 
+        const std::vector<std::string>& getJournalPageNames()
+        {
+            return mJournalPages;
+        }
+
       private:
         static Configuration* ptr;
         bool initialisedCorrectly = false;
@@ -257,7 +262,9 @@ namespace S2Plugin
         std::unordered_map<MemoryFieldType, std::vector<MemoryField>> mTypeFieldsMain;
         std::unordered_map<std::string, std::vector<MemoryField>> mTypeFieldsEntitySubclasses;
         std::unordered_map<std::string, std::vector<MemoryField>> mTypeFieldsStructs;
-        std::unordered_set<std::string> mPointerTypes; // pointers defined in pointer_types in json
+        std::vector<std::string> mPointerTypes; // pointers defined in pointer_types in json
+
+        std::vector<std::string> mJournalPages;
 
         std::unordered_map<std::string, size_t> mTypeFieldsStructsSizes;
 

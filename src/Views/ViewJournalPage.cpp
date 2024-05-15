@@ -31,29 +31,16 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     refreshLayout->addWidget(new QLabel("Interpret as:", this));
 
     auto interpretAsComboBox = new QComboBox(this);
-    // TODO get from json
-    // also, guess page by the vtable maybe?
-    interpretAsComboBox->addItem("JournalPage");
-    interpretAsComboBox->addItem("JournalPageProgress");
-    interpretAsComboBox->addItem("JournalPageJournalMenu");
-    interpretAsComboBox->addItem("JournalPagePlaces");
-    interpretAsComboBox->addItem("JournalPagePeople");
-    interpretAsComboBox->addItem("JournalPageBestiary");
-    interpretAsComboBox->addItem("JournalPageItems");
-    interpretAsComboBox->addItem("JournalPageTraps");
-    interpretAsComboBox->addItem("JournalPageStory");
-    interpretAsComboBox->addItem("JournalPageFeats");
-    interpretAsComboBox->addItem("JournalPageDeathCause");
-    interpretAsComboBox->addItem("JournalPageDeathMenu");
-    interpretAsComboBox->addItem("JournalPageRecap");
-    interpretAsComboBox->addItem("JournalPagePlayerProfile");
-    interpretAsComboBox->addItem("JournalPageLastGamePlayed");
+
+    auto config = Configuration::get();
+    for (auto& pageName : config->getJournalPageNames())
+        interpretAsComboBox->addItem(QString::fromStdString(pageName));
 
     QObject::connect(interpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
     refreshLayout->addWidget(interpretAsComboBox);
 
     mMainTreeView = new TreeViewMemoryFields(this);
-    mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
+    mMainTreeView->addMemoryFields(config->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mainLayout->addWidget(mMainTreeView);
 

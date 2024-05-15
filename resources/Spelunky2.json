@@ -114,6 +114,23 @@
     "EntityList": 8,
     "ItemOwnerDetails": 4
   },
+  "journal_pages": [
+    "JournalPage",
+    "JournalPageProgress",
+    "JournalPageJournalMenu",
+    "JournalPagePlaces",
+    "JournalPagePeople",
+    "JournalPageBestiary",
+    "JournalPageItems",
+    "JournalPageTraps",
+    "JournalPageStory",
+    "JournalPageFeats",
+    "JournalPageDeathCause",
+    "JournalPageDeathMenu",
+    "JournalPageRecap",
+    "JournalPagePlayerProfile",
+    "JournalPageLastGamePlayed"
+  ],
   "refs": {
     "screen_states": {
       "-1": "Game startup",

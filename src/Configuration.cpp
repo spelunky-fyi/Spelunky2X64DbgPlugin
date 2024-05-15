@@ -264,9 +264,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     memField.type = MemoryFieldType::DefaultStructType; // just initial
     std::string fieldTypeStr = field["type"].get<std::string>();
 
-    bool knownPointer = mPointerTypes.find(fieldTypeStr) != mPointerTypes.end();
-
-    if (knownPointer || value_or(field, "pointer", false))
+    if (isPermanentPointer(fieldTypeStr) || value_or(field, "pointer", false))
     {
         memField.isPointer = true;
         memField.size = sizeof(uintptr_t);
@@ -476,9 +474,11 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 void S2Plugin::Configuration::processJSON(ordered_json& j)
 {
     for (const auto& t : j["pointer_types"])
-    {
-        mPointerTypes.emplace(t.get<std::string>());
-    }
+        mPointerTypes.emplace_back(t.get<std::string>());
+
+    for (const auto& t : j["journal_pages"])
+        mJournalPages.emplace_back(t.get<std::string>());
+
     for (const auto& [key, jsonValue] : j["struct_alignments"].items())
     {
         uint8_t val = jsonValue.get<uint8_t>();
@@ -497,7 +497,6 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
         }
         mRefs[key] = std::move(vec);
     }
-
     for (const auto& [key, jsonArray] : j["fields"].items())
     {
         std::vector<MemoryField> vec;
