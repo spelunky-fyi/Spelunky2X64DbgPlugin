@@ -2262,7 +2262,7 @@
       { "field": "scroll_text", "type": "StringsTableID" },
       { "field": "shake_offset_x", "type": "Float" },
       { "field": "shake_offset_y", "type": "Float" },
-      { "field": "unknown30", "type": "Bool" },
+      { "field": "loaded_once", "type": "Bool", "comment": "Set to true when going from title to menu screen for the first time, makes sure the animation play once" },
       { "field": "unknown31", "type": "Byte" },
       { "field": "unknown32", "type": "Word" }
     ],
