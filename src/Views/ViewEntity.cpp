@@ -111,9 +111,7 @@ void S2Plugin::ViewEntity::initializeUI()
         mMainTreeView->setColumnWidth(gsColType, 100);
         mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
-        mMainTreeView->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
-        mMainTreeView->setAcceptDrops(true);
-        QObject::connect(mMainTreeView, &TreeViewMemoryFields::entityOffsetDropped, this, &ViewEntity::entityOffsetDropped);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::offsetDropped, this, &ViewEntity::entityOffsetDropped);
     }
     // TAB MEMORY
     {
@@ -328,7 +326,7 @@ void S2Plugin::ViewEntity::label()
     mMainTreeView->labelAll(ss.str());
 }
 
-void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)
+void S2Plugin::ViewEntity::entityOffsetDropped(uintptr_t entityOffset)
 {
     if (mComparisonEntityPtr != 0)
     {
@@ -336,11 +334,7 @@ void S2Plugin::ViewEntity::entityOffsetDropped(size_t entityOffset)
     }
 
     mComparisonEntityPtr = entityOffset;
-    mMainTreeView->activeColumns.enable(gsColComparisonValue).enable(gsColComparisonValueHex);
-    mMainTreeView->setColumnHidden(gsColComparisonValue, false);
-    mMainTreeView->setColumnHidden(gsColComparisonValueHex, false);
     mMemoryComparisonScrollArea->setVisible(true);
-    mMainTreeView->updateTree(0, mComparisonEntityPtr);
     updateMemoryViewOffsetAndSize();
 }
 

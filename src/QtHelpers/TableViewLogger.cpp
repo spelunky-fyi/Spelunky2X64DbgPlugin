@@ -3,6 +3,7 @@
 #include "Data/Logger.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "QtHelpers/StyledItemDelegateColorPicker.h"
+#include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtPlugin.h"
 #include <QColorDialog>
 #include <QFont>
@@ -13,7 +14,6 @@
 #include <QPainter>
 #include <QTextCodec>
 #include <QUuid>
-#include <nlohmann/json.hpp>
 
 S2Plugin::TableViewLogger::TableViewLogger(Logger* logger, QWidget* parent) : QTableView(parent), mLogger(logger)
 {
@@ -30,18 +30,14 @@ S2Plugin::TableViewLogger::TableViewLogger(Logger* logger, QWidget* parent) : QT
 
 void S2Plugin::TableViewLogger::dragEnterEvent(QDragEnterEvent* event)
 {
-    if (event->mimeData()->hasFormat("spelunky/memoryfield"))
-    {
+    if (event->mimeData()->property(gsDragDropMemoryField_UID).isValid())
         event->acceptProposedAction();
-    }
 }
 
 void S2Plugin::TableViewLogger::dragMoveEvent(QDragMoveEvent* event)
 {
-    if (event->mimeData()->hasFormat("spelunky/memoryfield"))
-    {
+    if (event->mimeData()->property(gsDragDropMemoryField_UID).isValid())
         event->accept();
-    }
 }
 
 void S2Plugin::TableViewLogger::dropEvent(QDropEvent* event)
@@ -50,14 +46,8 @@ void S2Plugin::TableViewLogger::dropEvent(QDropEvent* event)
 
     auto fieldsModel = qobject_cast<ItemModelLoggerFields*>(model());
 
-    auto dropData = event->mimeData()->data("spelunky/memoryfield");
-    auto codec = QTextCodec::codecForName("UTF-8");
-    auto str = codec->toUnicode(dropData);
-
-    auto j = nlohmann::json::parse(str.toStdString());
-
     LoggerField field;
-    field.type = static_cast<MemoryFieldType>(j[gsJSONDragDropMemoryField_Type].get<uint64_t>());
+    field.type = event->mimeData()->property(gsDragDropMemoryField_Type).value<MemoryFieldType>();
     switch (field.type)
     {
         // List allowed types
@@ -97,8 +87,8 @@ void S2Plugin::TableViewLogger::dropEvent(QDropEvent* event)
         }
     }
     field.uuid = QUuid::createUuid().toString().toStdString();
-    field.memoryAddr = j[gsJSONDragDropMemoryField_Address].get<uint64_t>();
-    field.name = j[gsJSONDragDropMemoryField_UID].get<std::string>();
+    field.memoryAddr = event->mimeData()->property(gsDragDropMemoryField_Address).toULongLong();
+    field.name = event->mimeData()->property(gsDragDropMemoryField_UID).toString().toStdString();
     field.color = defaultColors[fieldsModel->rowCount() % defaultColors.size()];
 
     mLogger->addField(field);

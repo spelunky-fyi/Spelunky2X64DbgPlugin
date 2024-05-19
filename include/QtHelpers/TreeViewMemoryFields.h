@@ -19,6 +19,12 @@ namespace S2Plugin
 {
     struct MemoryField;
 
+    constexpr char* gsDragDropMemoryField_UID = "uid";
+    constexpr char* gsDragDropMemoryField_Address = "addr";
+    constexpr char* gsDragDropMemoryField_Type = "type";
+    constexpr char* gsDragDropMemoryField_IsPointer = "pointer";
+    constexpr char* gsDragDropMemoryField_RefName = "ref";
+
     struct ColumnFilter
     {
         constexpr ColumnFilter& enable(uint8_t h)
@@ -84,7 +90,7 @@ namespace S2Plugin
       signals:
         void memoryFieldValueUpdated(int row, QStandardItem* parrent);
         void levelGenRoomsPointerClicked();
-        void entityOffsetDropped(size_t offset);
+        void offsetDropped(uintptr_t offset);
 
       private slots:
         void cellClicked(const QModelIndex& index);

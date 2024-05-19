@@ -3,6 +3,7 @@
 #include "Data/CharacterDB.h"
 #include "Data/EntityDB.h"
 #include "Data/ParticleDB.h"
+#include "Data/State.h"
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
@@ -44,6 +45,10 @@ namespace S2Plugin
         const EntityDB& get_EntityDB();
         const StringsTable& get_StringsTable();
         const VirtualTableLookup& get_VirtualTableLookup();
+        State get_State() const
+        {
+            return State{get_StatePtr()};
+        }
         //
 
         uintptr_t find(const char* pattern, uintptr_t start = 0, size_t size = 0) const;

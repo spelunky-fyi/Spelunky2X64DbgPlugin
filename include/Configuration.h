@@ -52,10 +52,6 @@ namespace S2Plugin
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
     constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 11; // for entity uid to not look for the uid twice
 
-    constexpr char* gsJSONDragDropMemoryField_UID = "uid";
-    constexpr char* gsJSONDragDropMemoryField_Address = "addr";
-    constexpr char* gsJSONDragDropMemoryField_Type = "type";
-
     // new types need to be added to
     // - the MemoryFieldType enum
     // - gsMemoryFieldType in Configuration.cpp
@@ -177,8 +173,8 @@ namespace S2Plugin
         RoomCode(uint16_t _id, std::string _name, QColor _color) : id(_id), name(_name), color(_color){};
     };
 
-    Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType)
-    Q_DECLARE_METATYPE(std::string)
+    Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType);
+    Q_DECLARE_METATYPE(std::string);
 
     class Configuration
     {

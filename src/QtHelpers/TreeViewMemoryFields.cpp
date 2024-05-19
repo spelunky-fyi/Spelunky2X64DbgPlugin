@@ -33,7 +33,6 @@
 #include <QTextCodec>
 #include <inttypes.h>
 #include <iomanip>
-#include <nlohmann/json.hpp>
 #include <sstream>
 #include <string>
 
@@ -44,9 +43,9 @@ S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(QWidget* parent) : QTreeVie
     mModel = new QStandardItemModel(this);
     setModel(mModel);
 
-    setDragDropMode(QAbstractItemView::DragDropMode::DragOnly);
+    setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
     setDragEnabled(true);
-    setAcceptDrops(false);
+    setAcceptDrops(true);
 
     setStyleSheet("QTreeView::branch:has-siblings:!adjoins-item {\
     border-image: url(:/images/vline.png) 0;\
@@ -164,9 +163,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
     };
 
     if (parent == nullptr)
-    {
         parent = mModel->invisibleRootItem();
-    }
+
     uint8_t flags = 0;
     QStandardItem* returnField = nullptr;
     switch (field.type)
@@ -300,6 +298,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::EntitySubclass:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, 0);
+            returnField->setData(memoryAddress, gsRoleMemoryAddress);
             addMemoryFields(Configuration::get()->typeFieldsOfEntitySubclass(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
             break;
         }
@@ -1887,7 +1886,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             else
                 itemValue->setData("<font color='#aaa'><u>[Expand]</u></font>", Qt::DisplayRole);
 
-                if (comparisonActive)
+            if (comparisonActive)
                 itemComparisonValue->setData(itemValue->data(Qt::DisplayRole), Qt::DisplayRole);
 
             if (shouldUpdateChildren)
@@ -2316,15 +2315,18 @@ void S2Plugin::TreeViewMemoryFields::clear()
 
 void S2Plugin::TreeViewMemoryFields::dragEnterEvent(QDragEnterEvent* event)
 {
-    if (event->mimeData()->hasFormat("spelunky/entityoffset"))
+    if (event->mimeData()->property(gsDragDropMemoryField_Address).isValid())
     {
+        if (qobject_cast<TreeViewMemoryFields*>(event->source()) == this)
+            return;
+
         event->acceptProposedAction();
     }
 }
 
 void S2Plugin::TreeViewMemoryFields::dragMoveEvent(QDragMoveEvent* event)
 {
-    if (event->mimeData()->hasFormat("spelunky/entityoffset"))
+    if (event->mimeData()->property(gsDragDropMemoryField_Address).isValid())
     {
         event->accept();
     }
@@ -2332,47 +2334,285 @@ void S2Plugin::TreeViewMemoryFields::dragMoveEvent(QDragMoveEvent* event)
 
 void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
 {
-    auto dropData = event->mimeData()->data("spelunky/entityoffset");
-    emit entityOffsetDropped(dropData.toULongLong());
-    event->acceptProposedAction();
+    if (qobject_cast<TreeViewMemoryFields*>(event->source()) == this)
+        return;
+
+    auto dropData = event->mimeData()->property(gsDragDropMemoryField_Address);
+    if (auto addr = dropData.toULongLong(); addr != 0)
+    {
+        uintptr_t dataAddr = addr; // just for convenience
+        if (event->mimeData()->property(gsDragDropMemoryField_IsPointer).toBool())
+        {
+            dataAddr = Script::Memory::ReadQword(addr);
+            if (!Script::Memory::IsValidPtr(dataAddr))
+                return;
+        }
+        auto rootItem = mModel->invisibleRootItem();
+        auto getThisTypeName = [rootItem]() -> QString
+        {
+            auto parrent = rootItem;
+            for (int idx = 0; idx < parrent->rowCount(); ++idx)
+            {
+                auto item = parrent->child(idx, gsColField);
+                if (item == nullptr)
+                    break;
+
+                auto data = item->data(gsRoleUID);
+                if (data.isValid())
+                {
+                    auto str = data.toString();
+                    auto dot = str.indexOf('.');
+                    if (dot != -1)
+                        return str.left(dot);
+                }
+                if (item->hasChildren())
+                {
+                    parrent = item;
+                    idx = 0;
+                }
+            }
+            return {};
+        };
+
+        switch (event->mimeData()->property(gsDragDropMemoryField_Type).value<MemoryFieldType>())
+        {
+            case MemoryFieldType::DataPointer:
+            {
+                // allow all
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::EntityPointer:
+            {
+                if (getThisTypeName() != "Entity")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::EntityUID:
+            {
+                if (getThisTypeName() != "Entity")
+                    return;
+
+                auto uid = Script::Memory::ReadDword(dataAddr);
+                auto entityPtr = Spelunky2::get()->get_State().findEntitybyUID(uid);
+                if (entityPtr == 0)
+                    return;
+
+                addr = entityPtr;
+                break;
+            }
+            case MemoryFieldType::EntitySubclass:
+            {
+                if (getThisTypeName() != "Entity")
+                    return;
+
+                break;
+            }
+            case MemoryFieldType::EntityDBPointer:
+            {
+                if (getThisTypeName() != "EntityDB")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::EntityDBID:
+            {
+                if (getThisTypeName() != "EntityDB")
+                    return;
+
+                auto id = Script::Memory::ReadDword(dataAddr);
+                addr = Spelunky2::get()->get_EntityDB().addressOfIndex(id);
+                break;
+            }
+            case MemoryFieldType::ParticleDBPointer:
+            {
+                if (getThisTypeName() != "ParticleDB")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::ParticleDBID:
+            {
+                if (getThisTypeName() != "ParticleDB")
+                    return;
+
+                auto id = Script::Memory::ReadDword(dataAddr);
+                addr = Spelunky2::get()->get_ParticleDB().addressOfIndex(id);
+                break;
+            }
+            case MemoryFieldType::TextureDBPointer:
+            {
+                if (getThisTypeName() != "TextureDB")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::TextureDBID:
+            {
+                if (getThisTypeName() != "TextureDB")
+                    return;
+
+                auto id = Script::Memory::ReadDword(dataAddr);
+                addr = Spelunky2::get()->get_TextureDB().addressOfID(id);
+                break;
+            }
+            case MemoryFieldType::CharacterDBID:
+            {
+                if (getThisTypeName() != "CharacterDB")
+                    return;
+
+                auto id = Script::Memory::ReadByte(dataAddr);
+                addr = Spelunky2::get()->get_CharacterDB().addressOfIndex(id);
+                break;
+            }
+            case MemoryFieldType::VirtualFunctionTable:
+            {
+                // since it's always the first item in struct, we allow using it like an anchor to the whole struct
+                auto refName = event->mimeData()->property(gsDragDropMemoryField_RefName).value<std::string>();
+                if (getThisTypeName() != QString::fromStdString(refName))
+                    return;
+                break;
+            }
+            case MemoryFieldType::DefaultStructType:
+            {
+                if (getThisTypeName() != event->mimeData()->property(gsDragDropMemoryField_RefName).toString())
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::JournalPagePointer:
+            {
+                if (getThisTypeName() != "JournalPage")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::LevelGenPointer:
+            {
+                if (getThisTypeName() != "LevelGen")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            case MemoryFieldType::LevelGenRoomsMetaPointer:
+            case MemoryFieldType::LevelGenRoomsPointer:
+            {
+                if (getThisTypeName() != "LevelGen")
+                    return;
+
+                break;
+            }
+            case MemoryFieldType::ThemeInfoPointer:
+            case MemoryFieldType::UndeterminedThemeInfoPointer:
+            {
+                if (getThisTypeName() != "ThemeInfo")
+                    return;
+
+                addr = dataAddr;
+                break;
+            }
+            default:
+                return;
+        }
+        if (addr == 0) // just in case some bad id's
+            return;
+
+        activeColumns.enable(gsColComparisonValue).enable(gsColComparisonValueHex);
+        setColumnHidden(gsColComparisonValue, false);
+        setColumnHidden(gsColComparisonValueHex, false);
+        updateTree(0, addr);
+        emit offsetDropped(addr);
+        event->acceptProposedAction();
+    }
 }
 
 void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions)
 {
-    auto ix = selectedIndexes();
-    if (ix.count() == 0)
-    {
+    QModelIndex index = currentIndex();
+    if (!index.isValid())
         return;
-    }
-    constexpr auto getDataFrom = [](const QModelIndex& idx, int col, int role) { return idx.sibling(idx.row(), col).data(role); };
 
-    QDrag* drag = new QDrag(this);
+    if (index.column() != gsColField)
+        index = index.sibling(index.row(), gsColField);
+
     auto mimeData = new QMimeData();
+    mimeData->setProperty(gsDragDropMemoryField_UID, index.data(gsRoleUID));
+    mimeData->setProperty(gsDragDropMemoryField_Address, index.data(gsRoleMemoryAddress));
 
-    auto& index = ix.at(0);
-
-    // for spelunky/entityoffset: dragging an entity from ViewEntities on top of ViewEntity for comparison
-    auto entityItem = mModel->item(index.row(), gsColMemoryAddress); // TODO: maybe not needed? try to use spelunky/memoryfield data, also allow only entity pointer?
-    if (entityItem != nullptr)
+    if (currentIndex().column() == gsColMemoryAddress) // if you grab memory address treat it like data pointer
     {
-        auto entityData = entityItem->data(gsRoleRawValue);
-        if (entityData.isValid())
+        mimeData->setProperty(gsDragDropMemoryField_Type, QVariant::fromValue(MemoryFieldType::DataPointer));
+        // set as not pointer, so it does not read the memory first
+        mimeData->setProperty(gsDragDropMemoryField_IsPointer, false);
+    }
+    else
+    {
+        mimeData->setProperty(gsDragDropMemoryField_Type, index.data(gsRoleType));
+        mimeData->setProperty(gsDragDropMemoryField_IsPointer, index.data(gsRoleIsPointer));
+
+        switch (index.data(gsRoleType).value<MemoryFieldType>())
         {
-            mimeData->setData("spelunky/entityoffset", QByteArray().setNum(Script::Memory::ReadQword(entityData.toULongLong())));
+            case MemoryFieldType::VirtualFunctionTable:
+                mimeData->setProperty(gsDragDropMemoryField_RefName, index.data(gsRoleRefName));
+                break;
+
+            case MemoryFieldType::LevelGenRoomsMetaPointer:
+            case MemoryFieldType::LevelGenRoomsPointer:
+            {
+                auto indexDelta = index.sibling(index.row(), gsColMemoryAddressDelta);
+                if (!indexDelta.isValid())
+                    return;
+
+                // note that we set the address to be of whole level gen, not the pointer
+                // if in future we need this pointer, will have to use different solution (adding delta value property instead)
+                mimeData->setProperty(gsDragDropMemoryField_Address, index.data(gsRoleMemoryAddress).toULongLong() - indexDelta.data(gsRoleRawValue).toULongLong());
+                mimeData->setProperty(gsDragDropMemoryField_IsPointer, false);
+                break;
+            }
+            case MemoryFieldType::DefaultStructType:
+            {
+                auto indexType = index.sibling(index.row(), gsColType);
+                if (!indexType.isValid())
+                    return;
+
+                auto typeName = indexType.data(Qt::DisplayRole).toString();
+                auto colon = typeName.indexOf(':'); // to get rid of the "<b>P</b>: "
+                if (colon == -1)
+                    mimeData->setProperty(gsDragDropMemoryField_RefName, typeName);
+                else
+                    mimeData->setProperty(gsDragDropMemoryField_RefName, typeName.mid(colon + 2));
+
+                break;
+            }
+            case MemoryFieldType::EntitySubclass:
+            {
+                auto indexType = index.sibling(index.row(), gsColType);
+                if (!indexType.isValid())
+                    return;
+
+                auto typeName = indexType.data(Qt::DisplayRole).toString();
+                if (typeName != "Entity")
+                {
+                    auto indexDelta = index.sibling(index.row(), gsColMemoryAddressDelta);
+                    mimeData->setProperty(gsDragDropMemoryField_Address, index.data(gsRoleMemoryAddress).toULongLong() - indexDelta.data(gsRoleRawValue).toULongLong());
+                }
+
+                break;
+            }
+            case MemoryFieldType::None:
+            case MemoryFieldType::Dummy:
+                return;
         }
     }
-
-    // for spelunky/memoryfield: dragging any memoryfield onto ViewLogger
-
-    nlohmann::json o;
-    o[gsJSONDragDropMemoryField_UID] = getDataFrom(index, gsColField, gsRoleUID).toString().toStdString();
-    o[gsJSONDragDropMemoryField_Address] = getDataFrom(index, gsColField, gsRoleMemoryAddress).toULongLong();
-    o[gsJSONDragDropMemoryField_Type] = getDataFrom(index, gsColField, gsRoleType).value<MemoryFieldType>();
-    auto json = QString::fromStdString(o.dump());
-
-    auto codec = QTextCodec::codecForName("UTF-8");
-    mimeData->setData("spelunky/memoryfield", codec->fromUnicode(json));
-
+    QDrag* drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->exec();
 }

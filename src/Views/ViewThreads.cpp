@@ -16,10 +16,6 @@ static const uint32_t gsColStateAddress = 2;
 
 static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
-// TODO review (crashes)
-
-// TODO: check for null in click event, add more columns, add spel2 function to get ptr based on the different heapbase
-
 S2Plugin::ViewThreads::ViewThreads(QWidget* parent) : QWidget(parent)
 {
     setWindowIcon(getCavemanIcon());

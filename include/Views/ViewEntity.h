@@ -30,7 +30,7 @@ namespace S2Plugin
         void refreshEntity();
         void interpretAsChanged(const QString& text);
         void label();
-        void entityOffsetDropped(size_t entityOffset);
+        void entityOffsetDropped(uintptr_t entityOffset);
         void tabChanged();
 
       private:
