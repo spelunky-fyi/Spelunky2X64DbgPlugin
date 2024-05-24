@@ -65,6 +65,7 @@ namespace S2Plugin
         void fieldUpdated(int row, QStandardItem* parrent);
         void fieldExpanded(const QModelIndex& index);
         void comparisonFieldChosen();
+        void comparisonFlagChosen(const QString& text);
         void compareGroupByCheckBoxClicked(int state);
         void comparisonCellClicked(int row, int column);
         void groupedComparisonItemClicked(QTreeWidgetItem* item);
@@ -73,14 +74,16 @@ namespace S2Plugin
         QLineEdit* mSearchLineEdit;
         TreeViewMemoryFields* mMainTreeView;
         QTableWidget* mCompareTableWidget;
+        bool mFieldChoosen{false};
 
       private:
         QTabWidget* mMainTabWidget;
         QComboBox* mCompareFieldComboBox;
+        QComboBox* mCompareFlagComboBox;
         QTreeWidget* mCompareTreeWidget;
 
-        void populateComparisonTableWidget();
-        void populateComparisonTreeWidget();
+        void populateComparisonTableWidget(const QVariant& fieldData);
+        void populateComparisonTreeWidget(const QVariant& fieldData);
         size_t populateComparisonCombobox(const std::vector<MemoryField>& fields, size_t offset = 0, std::string prefix = {});
         static std::pair<QString, QVariant> valueForField(const QVariant& data, uintptr_t addr);
     };

@@ -7,8 +7,8 @@
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
+#include <QString>
 #include <cstdint>
-#include <string>
 
 namespace S2Plugin
 {
@@ -54,7 +54,7 @@ namespace S2Plugin
         uintptr_t find(const char* pattern, uintptr_t start = 0, size_t size = 0) const;
         uintptr_t find_between(const char* pattern, uintptr_t start = 0, uintptr_t end = 0) const;
 
-        std::string themeNameOfOffset(uintptr_t offset) const;
+        const QString& themeNameOfOffset(uintptr_t offset) const;
 
       private:
         static Spelunky2* ptr;

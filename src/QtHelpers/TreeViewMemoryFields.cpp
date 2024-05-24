@@ -146,7 +146,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         auto itemFieldType = new QStandardItem();
         itemFieldType->setEditable(false);
 
-        QString typeName = field.isPointer ? "<b>P</b>: " : ""; // TODO: add color?
+        QString typeName = field.isPointer ? "<b>P</b>: " : ""; // add color?
         if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
             typeName += QString::fromStdString(field.jsonName);
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
@@ -1688,14 +1688,14 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             if (valueMemoryOffset == 0)
                 itemValue->setData("n/a", Qt::DisplayRole);
             else
-                itemValue->setData(QString::fromStdString(Spelunky2::get()->themeNameOfOffset(valueMemoryOffset)), Qt::DisplayRole);
+                itemValue->setData(Spelunky2::get()->themeNameOfOffset(valueMemoryOffset), Qt::DisplayRole);
 
             if (comparisonActive)
             {
                 if (valueComparisonMemoryOffset == 0)
                     itemComparisonValue->setData("n/a", Qt::DisplayRole);
                 else
-                    itemComparisonValue->setData(QString::fromStdString(Spelunky2::get()->themeNameOfOffset(valueMemoryOffset)), Qt::DisplayRole);
+                    itemComparisonValue->setData(Spelunky2::get()->themeNameOfOffset(valueMemoryOffset), Qt::DisplayRole);
 
                 itemComparisonValue->setBackground(itemComparisonValueHex->background());
             }
@@ -1720,7 +1720,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             if (comparisonActive)
             {
                 // we can't show comparison version since it's a tab, not a new window
-                // TODO: maybe add comparison in the show rooms tab?
+                // maybe add comparison in the show rooms tab?
                 itemComparisonValue->setData({}, Qt::DisplayRole);
                 itemComparisonValue->setData(0, gsRoleMemoryAddress);
 
@@ -1825,7 +1825,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         {
             std::optional<size_t> value;
             // we use the size to check if it was changed
-            // TODO: don't use updateField, make struct with two size_t values for comparison and hold (will also be needed for std::list)
             value = updateField<size_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x8, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
             if (value.has_value())
             {
@@ -1842,7 +1841,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 {
                     itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
                 }
-                // TODO maybe it should be based on the pointer not size?
+                // maybe it should be based on the pointer not size?
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
                     itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
@@ -1858,7 +1857,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Skip:
         {
-            // TODO
+            // TODO when setting for skip is done
             break;
         }
         case MemoryFieldType::EntitySubclass:
@@ -2146,7 +2145,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (rawValue != 0)
                     {
-                        // TODO: maybe use the "entity interpret as" for vtable? (it's doable)
+                        // maybe use the "entity interpret as" for vtable? (it's doable)
                         auto vftType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleRefName));
                         if (vftType == "Entity") // in case of Entity, we have to see what the entity is interpreted as, and show those functions
                         {
