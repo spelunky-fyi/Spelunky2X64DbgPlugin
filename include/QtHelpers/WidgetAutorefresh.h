@@ -3,6 +3,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QString>
 #include <QTimer>
 #include <QWidget>
@@ -13,19 +14,19 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        WidgetAutorefresh(const QString& initialInterval, QWidget* parrent = nullptr);
+        WidgetAutorefresh(int initialInterval, QWidget* parrent = nullptr);
       signals:
         void refresh();
 
       public slots:
         void toggleAutoRefresh(bool checked);
       protected slots:
-        void autoRefreshIntervalChanged(const QString& text);
+        void autoRefreshIntervalChanged(int val);
 
       private:
         QPushButton* mRefreshButton;
         QCheckBox* mAutoRefreshCheckBox;
         QTimer* mAutoRefreshTimer;
-        QLineEdit* mAutoRefreshIntervalLineEdit;
+        QSpinBox* mAutoRefreshIntervalQSpinBox;
     };
 } // namespace S2Plugin

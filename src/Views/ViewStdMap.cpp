@@ -37,7 +37,7 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
     QObject::connect(refreshMapButton, &QPushButton::clicked, this, &ViewStdMap::refreshMapContents);
     refreshLayout->addWidget(refreshMapButton);
 
-    auto autoRefresh = new WidgetAutorefresh("100", this);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdMap::refreshData);
     refreshLayout->addWidget(autoRefresh);
 

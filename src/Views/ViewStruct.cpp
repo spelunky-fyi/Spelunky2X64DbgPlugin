@@ -20,7 +20,7 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
-    auto autoRefresh = new WidgetAutorefresh("100", this);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, mMainTreeView, static_cast<void (TreeViewMemoryFields::*)()>(&TreeViewMemoryFields::updateTree));
     refreshLayout->addWidget(autoRefresh);
 

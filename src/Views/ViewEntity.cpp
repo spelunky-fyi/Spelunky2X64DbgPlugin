@@ -54,7 +54,7 @@ void S2Plugin::ViewEntity::initializeUI()
     mainLayout->addLayout(topLayout);
 
     // TOP LAYOUT
-    auto autoRefresh = new WidgetAutorefresh("100", this);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewEntity::refreshEntity);
     topLayout->addWidget(autoRefresh);
 

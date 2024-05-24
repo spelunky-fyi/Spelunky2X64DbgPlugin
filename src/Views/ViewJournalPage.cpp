@@ -20,7 +20,7 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
-    auto autoRefresh = new WidgetAutorefresh("100", this);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewJournalPage::refreshJournalPage);
     refreshLayout->addWidget(autoRefresh);
 

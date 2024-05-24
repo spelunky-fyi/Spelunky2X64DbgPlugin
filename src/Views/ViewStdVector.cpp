@@ -26,7 +26,7 @@ S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t 
     QObject::connect(refreshVectorButton, &QPushButton::clicked, this, &ViewStdVector::refreshVectorContents);
     refreshLayout->addWidget(refreshVectorButton);
 
-    auto autoRefresh = new WidgetAutorefresh("100", this);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
     refreshLayout->addWidget(autoRefresh);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdVector::refreshData);
 

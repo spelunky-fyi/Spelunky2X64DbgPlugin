@@ -23,7 +23,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
     auto refreshLayout = new QHBoxLayout();
     mainLayout->addLayout(refreshLayout);
 
-    auto autoRefresh = new WidgetAutorefresh("500", this);
+    auto autoRefresh = new WidgetAutorefresh(500, this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewLevelGen::refreshLevelGen);
     refreshLayout->addWidget(autoRefresh);
 
