@@ -49,6 +49,7 @@ namespace S2Plugin
         // TAB MEMORY
         WidgetMemoryView* mMemoryView;
         WidgetMemoryView* mMemoryComparisonView;
+        QScrollArea* mMemoryScrollArea;
         QScrollArea* mMemoryComparisonScrollArea;
 
         // TAB LEVEL

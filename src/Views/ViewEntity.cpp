@@ -17,6 +17,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QScrollBar>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 #include <string>
@@ -115,11 +116,11 @@ void S2Plugin::ViewEntity::initializeUI()
     }
     // TAB MEMORY
     {
-        auto scroll = new QScrollArea(tabMemory);
-        mMemoryView = new WidgetMemoryView(scroll);
-        scroll->setStyleSheet("background-color: #fff;");
-        scroll->setWidget(mMemoryView);
-        tabMemory->layout()->addWidget(scroll);
+        mMemoryScrollArea = new QScrollArea(tabMemory);
+        mMemoryView = new WidgetMemoryView(mMemoryScrollArea);
+        mMemoryScrollArea->setStyleSheet("background-color: #fff;");
+        mMemoryScrollArea->setWidget(mMemoryView);
+        tabMemory->layout()->addWidget(mMemoryScrollArea);
 
         mMemoryComparisonScrollArea = new QScrollArea(tabMemory);
         mMemoryComparisonView = new WidgetMemoryView(mMemoryComparisonScrollArea);
@@ -127,12 +128,21 @@ void S2Plugin::ViewEntity::initializeUI()
         mMemoryComparisonScrollArea->setWidget(mMemoryComparisonView);
         tabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
         mMemoryComparisonScrollArea->setVisible(false);
+
+        connect(mMemoryScrollArea->horizontalScrollBar(), &QScrollBar::valueChanged, mMemoryComparisonScrollArea->horizontalScrollBar(), &QScrollBar::setValue);
+        connect(mMemoryScrollArea->verticalScrollBar(), &QScrollBar::valueChanged, mMemoryComparisonScrollArea->verticalScrollBar(), &QScrollBar::setValue);
+        connect(mMemoryComparisonScrollArea->horizontalScrollBar(), &QScrollBar::valueChanged, mMemoryScrollArea->horizontalScrollBar(), &QScrollBar::setValue);
+        connect(mMemoryComparisonScrollArea->verticalScrollBar(), &QScrollBar::valueChanged, mMemoryScrollArea->verticalScrollBar(), &QScrollBar::setValue);
     }
     // TAB LEVEL
     {
         mSpelunkyLevel = new WidgetSpelunkyLevel(mEntityPtr, tabLevel);
         mSpelunkyLevel->paintFloor(QColor(160, 160, 160));
         mSpelunkyLevel->paintEntity(mEntityPtr, QColor(222, 52, 235));
+        // to many entities
+        // mSpelunkyLevel->paintEntityMask(0x4000, QColor(255, 87, 6));  // lava
+        // mSpelunkyLevel->paintEntityMask(0x2000, QColor(6, 213, 249)); // water
+        mSpelunkyLevel->paintEntityMask(0x80, QColor(85, 170, 170)); // active floors
         tabLevel->setStyleSheet("background-color: #fff;");
         tabLevel->setWidget(mSpelunkyLevel);
     }
@@ -167,7 +177,7 @@ void S2Plugin::ViewEntity::refreshEntity()
     }
     else if (mMainTabWidget->currentIndex() == TABS::LEVEL)
     {
-        mSpelunkyLevel->update();
+        mSpelunkyLevel->updateLevel();
     }
 }
 
@@ -334,8 +344,10 @@ void S2Plugin::ViewEntity::entityOffsetDropped(uintptr_t entityOffset)
     }
 
     mComparisonEntityPtr = entityOffset;
+    mSpelunkyLevel->paintEntity(entityOffset, QColor(232, 134, 30));
     mMemoryComparisonScrollArea->setVisible(true);
     updateMemoryViewOffsetAndSize();
+    mMemoryScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 void S2Plugin::ViewEntity::tabChanged()

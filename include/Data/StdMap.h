@@ -16,7 +16,7 @@ namespace S2Plugin
     struct StdMap
     {
         // only for the template
-        StdMap(size_t addr) : address(addr)
+        StdMap(uintptr_t addr) : address(addr)
         {
             keytype_size = sizeof(Key);
             valuetype_size = sizeof(Value);
@@ -24,13 +24,13 @@ namespace S2Plugin
         };
 
         // value size only needed for value() function
-        StdMap(size_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize) : address(addr)
+        StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize) : address(addr)
         {
             keytype_size = keySize;
             valuetype_size = sizeof(Value);
             set_offsets(keyAlignment, valueAlignment);
         };
-        StdMap(size_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize, size_t valueSize) : address(addr)
+        StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize, size_t valueSize) : address(addr)
         {
             keytype_size = keySize;
             valuetype_size = valueSize;
@@ -72,11 +72,11 @@ namespace S2Plugin
                 }
                 return (Value)Script::Memory::ReadQword(value_address);
             }
-            size_t key_ptr() const
+            uintptr_t key_ptr() const
             {
                 return node_ptr + parent_map->key_offset;
             }
-            size_t value_ptr() const
+            uintptr_t value_ptr() const
             {
                 return node_ptr + parent_map->value_offset;
             }
@@ -102,6 +102,11 @@ namespace S2Plugin
             bool is_nil() const
             {
                 return (bool)Script::Memory::ReadByte(node_ptr + 0x19);
+            }
+            // returning value ptr instead of value itself since it's more usefull for us
+            std::pair<Key, uintptr_t> operator*()
+            {
+                return {key(), value_ptr()};
             }
             Node operator++()
             {
@@ -159,9 +164,10 @@ namespace S2Plugin
             {
                 return other.node_ptr != node_ptr;
             }
-            size_t node_ptr;
 
           private:
+            uintptr_t node_ptr;
+            // need reference to the map object so we can get offsets and alignments
             const StdMap<Key, Value>* parent_map;
         };
 
