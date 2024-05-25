@@ -1045,7 +1045,11 @@
         "type": "ScreenPointer",
         "comment": "all handled by the Online struct"
       },
-      { "field": "screen_seed_input", "type": "ScreenSeedInput", "pointer": true },
+      {
+        "field": "screen_seed_input",
+        "type": "ScreenSeedInput",
+        "pointer": true
+      },
       {
         "field": "unknown_screen_character_select?",
         "type": "DataPointer",
@@ -1478,7 +1482,7 @@
       { "field": "menu", "type": "MenuInsert", "pointer": true },
       { "field": "confirmation_panel", "type": "TextureRenderingInfo" },
       { "field": "prompt_question", "type": "MultiLineTextRenderingPointer" },
-      { "field": "prompt_menu", "type": "MenuInsert", "pointer": true  },
+      { "field": "prompt_menu", "type": "MenuInsert", "pointer": true },
       { "field": "unknown8", "type": "Bool" },
       { "field": "padding_probably2", "type": "UnsignedByte" },
       { "field": "padding_probably3", "type": "UnsignedWord" },
@@ -2162,7 +2166,11 @@
       { "field": "scroll_text", "type": "StringsTableID" },
       { "field": "shake_offset_x", "type": "Float" },
       { "field": "shake_offset_y", "type": "Float" },
-      { "field": "loaded_once", "type": "Bool", "comment": "Set to true when going from title to menu screen for the first time, makes sure the animation play once" },
+      {
+        "field": "loaded_once",
+        "type": "Bool",
+        "comment": "Set to true when going from title to menu screen for the first time, makes sure the animation play once"
+      },
       { "field": "unknown31", "type": "Byte" },
       { "field": "unknown32", "type": "Word" }
     ],
@@ -2428,7 +2436,8 @@
       { "field": "padding_probably15", "type": "UnsignedDword" },
       {
         "field": "credits_progression",
-        "type": "Float", "pointer": true
+        "type": "Float",
+        "pointer": true
       },
       {
         "field": "unknown57",
@@ -4952,7 +4961,11 @@
     "LogicUnderwaterBubbles": [
       { "field": "base_logic", "type": "Logic" },
       { "field": "gravity_direction", "type": "Float" },
-      { "field": "droplets_spawn_chance", "type": "Word", "comment": "inverse chance" },
+      {
+        "field": "droplets_spawn_chance",
+        "type": "Word",
+        "comment": "inverse chance"
+      },
       { "field": "droplets_enabled", "type": "Bool" }
     ],
     "LogicDiceShop": [
@@ -5922,7 +5935,8 @@
       },
       {
         "field": "credits_progression",
-        "type": "Float", "pointer": true,
+        "type": "Float",
+        "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "explosion_loop", "type": "SoundMeta" },
@@ -5949,7 +5963,8 @@
       { "field": "base_screen", "type": "ScreenBase" },
       {
         "field": "credits_progression",
-        "type": "Float", "pointer": true,
+        "type": "Float",
+        "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "bg_music_info", "type": "SoundMeta" },
@@ -9225,8 +9240,8 @@
       { "field": "y", "type": "Float" }
     ],
     "CutsceneBehavior": [
-    {
-      "field": "__vftable",
+      {
+        "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
@@ -9239,7 +9254,7 @@
             "params": "Movable* entity"
           }
         }
-    },
+      },
       { "field": "unknown1", "type": "Qword" },
       { "field": "unknown2", "type": "Qword" }
     ],
