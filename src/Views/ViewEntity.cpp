@@ -171,8 +171,8 @@ void S2Plugin::ViewEntity::refreshEntity()
     mMainTreeView->updateTree();
     if (mMainTabWidget->currentIndex() == TABS::MEMORY)
     {
-        mMemoryView->update();
-        mMemoryComparisonView->update();
+        mMemoryView->updateMemory();
+        mMemoryComparisonView->updateMemory();
         updateComparedMemoryViewHighlights();
     }
     else if (mMainTabWidget->currentIndex() == TABS::LEVEL)
@@ -261,10 +261,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
 
 void S2Plugin::ViewEntity::updateMemoryViewOffsetAndSize()
 {
-    constexpr size_t smallEntityBucket = 0xD0;
-    constexpr size_t bigEntityBucket = 0x188;
-
-    size_t bytesShown = mEntitySize > smallEntityBucket ? bigEntityBucket : smallEntityBucket;
+    size_t bytesShown = mEntitySize > gSmallEntityBucket ? gBigEntityBucket : gSmallEntityBucket;
 
     mMemoryView->setOffsetAndSize(mEntityPtr, bytesShown);
     mMemoryComparisonView->setOffsetAndSize(mComparisonEntityPtr, bytesShown);

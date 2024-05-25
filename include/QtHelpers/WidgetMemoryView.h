@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Data/Entity.h"
 #include <QColor>
 #include <QFont>
 #include <QMouseEvent>
@@ -45,18 +46,21 @@ namespace S2Plugin
         void clearHighlights();
         void addHighlightedField(std::string tooltip, size_t offset, int size, QColor color);
 
+        void updateMemory();
+
       protected:
         void paintEvent(QPaintEvent* event) override;
         void mouseMoveEvent(QMouseEvent* event) override;
 
       private:
-        size_t mOffset = 0;
-        size_t mSize = 0;
+        uintptr_t mAddress{0};
+        size_t mSize{0};
         QFont mFont;
         QSize mTextAdvance;
         uint8_t mSpaceAdvance;
 
         std::vector<HighlightedField> mHighlightedFields;
         std::vector<ToolTipRect> mToolTipRects;
+        uint8_t mMemoryData[gBigEntityBucket] = {};
     };
 } // namespace S2Plugin
