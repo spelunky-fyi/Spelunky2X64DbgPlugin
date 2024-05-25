@@ -21,7 +21,7 @@ include(CPM.cmake)
 
 CPMAddPackage(
 	NAME x64dbg
-	SOURCE_DIR "${CMAKE_HOME_DIRECTORY}/3rdParty/x64dbg-src"
+	SYSTEM SOURCE_DIR "${CMAKE_HOME_DIRECTORY}/3rdParty/x64dbg-src"
 )
 
 set(Qt5Core_DIR "${Qt5ROOT}/lib/cmake/Qt5Core")
@@ -67,15 +67,12 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewTextureDB.h
 	include/Views/ViewEntity.h
 	include/Views/ViewEntities.h
-	include/Views/ViewState.h
-	include/Views/ViewSaveGame.h
-	include/Views/ViewGameManager.h
+	include/Views/ViewStruct.h
 	include/Views/ViewLevelGen.h
 	include/Views/ViewVirtualTable.h
 	include/Views/ViewStringsTable.h
 	include/Views/ViewLogger.h
 	include/Views/ViewVirtualFunctions.h
-	include/Views/ViewOnline.h
 	include/Views/ViewStdVector.h
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
@@ -88,6 +85,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSpelunkyRooms.h
 	include/QtHelpers/DialogEditSimpleValue.h
 	include/QtHelpers/DialogEditState.h
+	include/QtHelpers/DialogEditString.h
 	include/QtHelpers/TableWidgetItemNumeric.h
 	include/QtHelpers/TreeWidgetItemNumeric.h
 	include/QtHelpers/ItemModelVirtualTable.h
@@ -101,7 +99,9 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSampling.h
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
-	include/QtHelpers/DatabaseHelper.h
+	include/QtHelpers/WidgetDatabaseView.h
+	include/QtHelpers/WidgetAutorefresh.h
+	include/QtHelpers/LongLongSpinBox.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
@@ -121,41 +121,35 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewTextureDB.cpp
 	src/Views/ViewEntity.cpp
 	src/Views/ViewEntities.cpp
-	src/Views/ViewState.cpp
-	src/Views/ViewSaveGame.cpp
-	src/Views/ViewGameManager.cpp
+	src/Views/ViewStruct.cpp
 	src/Views/ViewLevelGen.cpp
 	src/Views/ViewVirtualTable.cpp
 	src/Views/ViewStringsTable.cpp
 	src/Views/ViewLogger.cpp
 	src/Views/ViewVirtualFunctions.cpp
-	src/Views/ViewOnline.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
-	src/QtHelpers/StyledItemDelegateColorPicker.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp
 	src/QtHelpers/WidgetMemoryView.cpp
 	src/QtHelpers/WidgetSpelunkyLevel.cpp
 	src/QtHelpers/WidgetSpelunkyRooms.cpp
 	src/QtHelpers/DialogEditSimpleValue.cpp
 	src/QtHelpers/DialogEditState.cpp
-	src/QtHelpers/TableWidgetItemNumeric.cpp
-	src/QtHelpers/TreeWidgetItemNumeric.cpp
+	src/QtHelpers/DialogEditString.cpp
 	src/QtHelpers/ItemModelVirtualTable.cpp
 	src/QtHelpers/ItemModelVirtualFunctions.cpp
 	src/QtHelpers/SortFilterProxyModelStringsTable.cpp
-	src/QtHelpers/ItemModelStates.cpp
 	src/QtHelpers/ItemModelGatherVirtualData.cpp
 	src/QtHelpers/CPPSyntaxHighlighter.cpp
 	src/QtHelpers/TableViewLogger.cpp
 	src/QtHelpers/ItemModelLoggerFields.cpp
-	src/QtHelpers/WidgetSampling.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
-	src/QtHelpers/DatabaseHelper.cpp
+	src/QtHelpers/WidgetDatabaseView.cpp
+	src/QtHelpers/WidgetAutorefresh.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc
 )
@@ -171,7 +165,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE 	Qt5::Core
 # Set the plugin as the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-target_compile_options(Spelunky2 PRIVATE /W4)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4)
 
 # Copy the plugin to the x64dbg plugins folder
 

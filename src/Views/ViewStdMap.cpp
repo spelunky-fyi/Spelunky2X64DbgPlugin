@@ -3,23 +3,17 @@
 #include "Configuration.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/WidgetAutorefresh.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
-#include <QCheckBox>
-#include <QCloseEvent>
-#include <QHeaderView>
-#include <QLabel>
-#include <QLineEdit>
 #include <QPushButton>
-#include <QTimer>
-#include <Qlayout>
+#include <QString>
+#include <QVBoxLayout>
 
-S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytypeName, const std::string& valuetypeName, uintptr_t mapOffset, QWidget* parent)
-    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mmapOffset(mapOffset), QWidget(parent)
+S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::string& valuetypeName, uintptr_t address, QWidget* parent)
+    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mMapAddress(address), QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout(this);
-
     auto config = Configuration::get();
     mMapKeyTypeSize = config->getTypeSize(keytypeName);
     mMapValueTypeSize = config->getTypeSize(valuetypeName);
@@ -27,70 +21,40 @@ S2Plugin::ViewStdMap::ViewStdMap(ViewToolbar* toolbar, const std::string& keytyp
     mMapKeyAlignment = config->getAlingment(keytypeName);
     mMapValueAlignment = config->getAlingment(valuetypeName);
 
-    initializeRefreshLayout();
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
-    mMainTreeView->setEnableChangeHighlighting(false);
-
-    mMainLayout->addWidget(mMainTreeView);
-    setWindowIcon(QIcon(":/icons/caveman.png"));
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    setWindowIcon(getCavemanIcon());
 
     if (mMapValueTypeSize == 0)
         setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
     else
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
-    mMainTreeView->setVisible(true);
 
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
+    auto refreshLayout = new QHBoxLayout();
+    mainLayout->addLayout(refreshLayout);
+
+    auto refreshMapButton = new QPushButton("Refresh map", this);
+    QObject::connect(refreshMapButton, &QPushButton::clicked, this, &ViewStdMap::refreshMapContents);
+    refreshLayout->addWidget(refreshMapButton);
+
+    auto autoRefresh = new WidgetAutorefresh(100, this);
+    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdMap::refreshData);
+    refreshLayout->addWidget(autoRefresh);
+
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->setEnableChangeHighlighting(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
+    mainLayout->addWidget(mMainTreeView);
+    autoRefresh->toggleAutoRefresh(true);
     refreshMapContents();
-    toggleAutoRefresh(Qt::Checked);
-}
-
-void S2Plugin::ViewStdMap::initializeRefreshLayout()
-{
-    auto refreshLayout = new QHBoxLayout(this);
-    mMainLayout->addLayout(refreshLayout);
-
-    auto refreshVectorButton = new QPushButton("Refresh map", this);
-    QObject::connect(refreshVectorButton, &QPushButton::clicked, this, &ViewStdMap::refreshMapContents);
-    refreshLayout->addWidget(refreshVectorButton);
-
-    mRefreshDataButton = new QPushButton("Refresh data", this);
-    refreshLayout->addWidget(mRefreshDataButton);
-    QObject::connect(mRefreshDataButton, &QPushButton::clicked, this, &ViewStdMap::refreshData);
-
-    mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewStdMap::autoRefreshTimerTrigger);
-
-    mAutoRefreshCheckBox = new QCheckBox("Auto-refresh data every", this);
-    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
-    refreshLayout->addWidget(mAutoRefreshCheckBox);
-    QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewStdMap::toggleAutoRefresh);
-
-    mAutoRefreshIntervalLineEdit = new QLineEdit(this);
-    mAutoRefreshIntervalLineEdit->setFixedWidth(50);
-    mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("3000");
-    refreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
-    QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewStdMap::autoRefreshIntervalChanged);
-
-    refreshLayout->addWidget(new QLabel("milliseconds", this));
-    refreshLayout->addStretch();
-}
-
-void S2Plugin::ViewStdMap::closeEvent(QCloseEvent* event)
-{
-    delete this;
 }
 
 void S2Plugin::ViewStdMap::refreshMapContents()
 {
-    if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mmapOffset)))
+    if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mMapAddress)))
         return;
 
-    StdMap the_map{mmapOffset, mMapKeyAlignment, mMapValueAlignment, mMapKeyTypeSize};
+    StdMap the_map{mMapAddress, mMapKeyAlignment, mMapValueAlignment, mMapKeyTypeSize};
     auto config = Configuration::get();
     mMainTreeView->clear();
 
@@ -157,21 +121,20 @@ void S2Plugin::ViewStdMap::refreshMapContents()
         parent_field.name = "obj_" + std::to_string(x);
         parent = mMainTreeView->addMemoryField(parent_field, parent_field.name, 0, 0);
 
-        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, parent);
+        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, 0, parent);
 
         if (mMapValueTypeSize == 0) // StdSet
             continue;
 
-        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, parent);
+        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, 0, parent);
     }
-    refreshData();
-
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewStdMap::refreshData()
@@ -187,32 +150,4 @@ QSize S2Plugin::ViewStdMap::sizeHint() const
 QSize S2Plugin::ViewStdMap::minimumSizeHint() const
 {
     return QSize(150, 150);
-}
-
-void S2Plugin::ViewStdMap::toggleAutoRefresh(int newState)
-{
-    if (newState == Qt::Unchecked)
-    {
-        mAutoRefreshTimer->stop();
-        mRefreshDataButton->setEnabled(true);
-    }
-    else
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-        mAutoRefreshTimer->start();
-        mRefreshDataButton->setEnabled(false);
-    }
-}
-
-void S2Plugin::ViewStdMap::autoRefreshIntervalChanged(const QString& text)
-{
-    if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-    }
-}
-
-void S2Plugin::ViewStdMap::autoRefreshTimerTrigger()
-{
-    refreshData();
 }

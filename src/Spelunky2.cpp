@@ -138,12 +138,12 @@ uintptr_t S2Plugin::Spelunky2::get_SaveDataPtr()
     return heapBaseAddr + heapOffsetSaveGame;
 }
 
-std::string S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const // TODO use QString?
+const QString& S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const
 {
     auto config = Configuration::get();
     uintptr_t firstThemeOffset = config->offsetForField(MemoryFieldType::LevelGen, "theme_dwelling", get_LevelGenPtr());
 
-    const static auto themeNames = {
+    static const QStringList themeNames = {
         "DWELLING",     "JUNGLE",       "VOLCANA", "OLMEC", "TIDE POOL", "TEMPLE",         "ICE CAVES", "NEO BABYLON", "SUNKEN CITY",
         "COSMIC OCEAN", "CITY OF GOLD", "DUAT",    "ABZU",  "TIAMAT",    "EGGPLANT WORLD", "HUNDUN",    "BASE CAMP",   "ARENA",
     };
@@ -151,8 +151,8 @@ std::string S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const // TO
     {
         uintptr_t testPtr = Script::Memory::ReadQword(firstThemeOffset + idx * 0x8ull);
         if (testPtr == offset)
-            return *(themeNames.begin() + idx);
+            return themeNames.at(idx);
     }
-
-    return "UNKNOWN THEME";
+    static const QString unknown{"UNKNOWN THEME"};
+    return unknown;
 }

@@ -4,14 +4,15 @@
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QKeyEvent>
+#include <QModelIndex>
 #include <QPaintEvent>
 #include <QTableView>
-#include <memory>
+#include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {
     class Logger;
-    class StyledItemDelegateColorPicker;
 
     static constexpr uint8_t gsLogFieldColColor = 0;
     static constexpr uint8_t gsLogFieldColMemoryOffset = 1;
@@ -35,7 +36,6 @@ namespace S2Plugin
         void cellClicked(const QModelIndex& index);
 
       private:
-        std::unique_ptr<StyledItemDelegateColorPicker> mColorPickerDelegate;
         Logger* mLogger;
     };
 } // namespace S2Plugin

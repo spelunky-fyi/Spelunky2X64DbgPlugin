@@ -1,46 +1,32 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
 #include <QLineEdit>
+#include <QModelIndex>
+#include <QSize>
 #include <QTableView>
-#include <QVBoxLayout>
-#include <memory>
+#include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {
-    class ViewToolbar;
-    class ItemModelVirtualFunctions;
-    class SortFilterProxyModelVirtualFunctions;
-
     class ViewVirtualFunctions : public QWidget
     {
         Q_OBJECT
       public:
-        ViewVirtualFunctions(const std::string& typeName, size_t offset, ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 
       private slots:
         void tableEntryClicked(const QModelIndex& index);
-        void jumpToFunction(bool b);
+        void jumpToFunction();
 
       private:
-        std::string mTypeName;
-        size_t mMemoryOffset;
-        ViewToolbar* mToolbar;
-        QVBoxLayout* mMainLayout;
+        uintptr_t mMemoryAddress;
 
-        QHBoxLayout* mTopLayout;
         QLineEdit* mJumpToLineEdit;
-
         QTableView* mFunctionsTable;
-        StyledItemDelegateHTML mHTMLDelegate;
-        std::unique_ptr<ItemModelVirtualFunctions> mModel;
-        std::unique_ptr<SortFilterProxyModelVirtualFunctions> mSortFilterProxy;
-
-        void initializeUI();
     };
 } // namespace S2Plugin

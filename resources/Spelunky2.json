@@ -114,6 +114,23 @@
     "EntityList": 8,
     "ItemOwnerDetails": 4
   },
+  "journal_pages": [
+    "JournalPage",
+    "JournalPageProgress",
+    "JournalPageJournalMenu",
+    "JournalPagePlaces",
+    "JournalPagePeople",
+    "JournalPageBestiary",
+    "JournalPageItems",
+    "JournalPageTraps",
+    "JournalPageStory",
+    "JournalPageFeats",
+    "JournalPageDeathCause",
+    "JournalPageDeathMenu",
+    "JournalPageRecap",
+    "JournalPagePlayerProfile",
+    "JournalPageLastGamePlayed"
+  ],
   "refs": {
     "screen_states": {
       "-1": "Game startup",
@@ -1556,7 +1573,6 @@
       { "field": "unknown28", "type": "UnsignedDword" },
       { "field": "unknown29", "type": "DataPointer" }
     ],
-    "JournalPagePointer": [],
     "JournalPage": [
       {
         "field": "__vftable",
@@ -1565,46 +1581,23 @@
           "0": { "name": "~JournalPage", "params": "", "return": "" },
           "1": { "name": "v_unknown1", "params": "", "return": "" },
           "2": { "name": "v_unknown2", "params": "", "return": "" },
-          "3": { "name": "v_unknown3", "params": "", "return": "" },
+          "3": { "name": "v_unknown3", "params": "", "return": "bool" },
           "4": { "name": "render", "params": "", "return": "" }
         }
       },
       { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" }
+      { "field": "page_number", "type": "UnsignedDword" },
+      { "field": "padding", "type": "UnsignedDword" }
     ],
     "JournalPageProgress": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "coffeestain_top", "type": "TextureRenderingInfo" }
     ],
     "JournalPageJournalMenu": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "menu", "type": "MenuInsert" },
       { "field": "journal_text_info", "type": "TextRenderingInfoPointer" },
       { "field": "completion_badge", "type": "TextureRenderingInfo" }
     ],
     "JournalPagePlaces": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       {
         "field": "show_main_image",
         "type": "Bool",
@@ -1632,14 +1625,6 @@
     ],
     "JournalPagePeople": [
       {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
-      {
         "field": "show_main_image",
         "type": "Bool",
         "comment": "in case of undiscovered entry"
@@ -1666,14 +1651,6 @@
       { "field": "character_drawing", "type": "TextureRenderingInfo" }
     ],
     "JournalPageBestiary": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       {
         "field": "show_main_image",
         "type": "Bool",
@@ -1732,14 +1709,6 @@
     ],
     "JournalPageItems": [
       {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
-      {
         "field": "show_main_image",
         "type": "Bool",
         "comment": "in case of undiscovered entry"
@@ -1767,14 +1736,6 @@
       { "field": "unknown15", "type": "UnsignedDword" }
     ],
     "JournalPageTraps": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       {
         "field": "show_main_image",
         "type": "Bool",
@@ -1807,24 +1768,8 @@
       { "field": "unknown19", "type": "UnsignedDword" },
       { "field": "unknown20", "type": "UnsignedDword" }
     ],
-    "JournalPageStory": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" }
-    ],
+    "JournalPageStory": [],
     "JournalPageFeats": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       {
         "field": "chapter_title_text_info",
         "type": "TextRenderingInfoPointer"
@@ -1832,25 +1777,9 @@
       { "field": "feat_icons", "type": "TextureRenderingInfo" }
     ],
     "JournalPageDeathCause": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "death_cause_text_info", "type": "TextRenderingInfoPointer" }
     ],
     "JournalPageDeathMenu": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "menu", "type": "MenuInsert" },
       { "field": "game_over_text_info", "type": "TextRenderingInfoPointer" },
       { "field": "level_text_info", "type": "TextRenderingInfoPointer" },
@@ -1860,24 +1789,8 @@
       { "field": "time_text_info", "type": "TextRenderingInfoPointer" },
       { "field": "time_value_text_info", "type": "TextRenderingInfoPointer" }
     ],
-    "JournalPageRecap": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" }
-    ],
+    "JournalPageRecap": [],
     "JournalPagePlayerProfile": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "player_icon", "type": "TextureRenderingInfo" },
       { "field": "player_icon_id", "type": "UnsignedDword" },
       { "field": "unknown4", "type": "Float" },
@@ -1937,14 +1850,6 @@
       }
     ],
     "JournalPageLastGamePlayed": [
-      {
-        "field": "__vftable",
-        "type": "DataPointer",
-        "comment": "see JournalPagePointer"
-      },
-      { "field": "background", "type": "TextureRenderingInfo" },
-      { "field": "page_number", "type": "UnsignedDword" },
-      { "field": "-", "type": "Skip", "offset": 4 },
       { "field": "main_image", "type": "TextureRenderingInfo" },
       {
         "field": "last_game_played_text_info",
@@ -8246,48 +8151,7 @@
       { "field": "unknown14", "type": "Bool" },
       { "field": "unknown15", "type": "UnsignedByte" },
       { "field": "unknown16", "type": "UnsignedByte" },
-      { "field": "unknown17", "type": "UnsignedDword" },
-      { "field": "unknown18", "type": "UnsignedDword" },
-      { "field": "unknown19", "type": "UnsignedDword" },
-      {
-        "field": "entity_items_begin",
-        "type": "DataPointer",
-        "comment": "begin of the memory that holds the items of entities"
-      },
-      { "field": "unknown21", "type": "DataPointer" },
-      { "field": "unknown22", "type": "DataPointer" },
-      { "field": "unknown23", "type": "Bool" },
-      {
-        "field": "layer_freeze?",
-        "type": "Bool",
-        "comment": "locking mechanism?"
-      },
-      { "field": "unknown25", "type": "UnsignedByte" },
-      { "field": "unknown26", "type": "UnsignedByte" },
-      { "field": "unknown27", "type": "UnsignedDword" },
-      { "field": "unknown28", "type": "UnsignedQword" },
-      { "field": "unknown29", "type": "UnsignedQword" },
-      { "field": "unknown30", "type": "UnsignedQword" },
-      { "field": "unknown31", "type": "UnsignedQword" },
-      { "field": "unknown32", "type": "UnsignedQword" },
-      { "field": "unknown33", "type": "UnsignedDword" },
-      { "field": "unknown34", "type": "UnsignedDword" },
-      { "field": "unknown35", "type": "DataPointer" },
-      { "field": "unknown36", "type": "DataPointer" },
-      { "field": "unknown37", "type": "DataPointer" },
-      { "field": "unknown38", "type": "Bool" },
-      { "field": "unknown39", "type": "Bool" },
-      { "field": "unknown40", "type": "UnsignedByte" },
-      { "field": "unknown41", "type": "UnsignedByte" },
-      { "field": "unknown42", "type": "UnsignedDword" },
-      { "field": "unknown43", "type": "UnsignedQword" },
-      { "field": "unknown44", "type": "UnsignedQword" },
-      { "field": "unknown45", "type": "UnsignedQword" },
-      {
-        "field": "unknown46",
-        "type": "UnsignedQword",
-        "comment": "next layer below"
-      }
+      { "field": "unknown17", "type": "UnsignedDword" }
     ],
     "PointerToPointerToEntityList": [
       {
@@ -9051,7 +8915,7 @@
       { "field": "padding3?", "type": "UnsignedDword" },
       {
         "field": "sub_theme",
-        "type": "ThemeInfoName",
+        "type": "ThemeInfoPointer",
         "comment": "for cosmic ocean"
       },
       { "field": "unknown3", "type": "UnsignedDword" },

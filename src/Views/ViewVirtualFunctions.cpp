@@ -1,65 +1,56 @@
 #include "Views/ViewVirtualFunctions.h"
+
 #include "QtHelpers/ItemModelVirtualFunctions.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
-#include "Views/ViewToolbar.h"
+#include "QtPlugin.h"
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QLabel>
 #include <QPushButton>
+#include <QVBoxLayout>
 
-S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, size_t offset, ViewToolbar* toolbar, QWidget* parent)
-    : QWidget(parent), mTypeName(typeName), mMemoryOffset(offset), mToolbar(toolbar)
+S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
 {
-    mModel = std::make_unique<ItemModelVirtualFunctions>(typeName, offset, toolbar, this);
-    mSortFilterProxy = std::make_unique<SortFilterProxyModelVirtualFunctions>(typeName, toolbar, this);
-
-    initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Virtual Functions of %1").arg(QString::fromStdString(typeName)));
-}
 
-void S2Plugin::ViewVirtualFunctions::initializeUI()
-{
-    mMainLayout = new QVBoxLayout(this);
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
+    auto topLayout = new QHBoxLayout();
+    mainLayout->addLayout(topLayout);
 
-    mTopLayout = new QHBoxLayout(this);
-    mMainLayout->addLayout(mTopLayout);
-
-    mTopLayout->addWidget(new QLabel("Jump to function at index:", this));
+    topLayout->addWidget(new QLabel("Jump to function at index:", this));
 
     mJumpToLineEdit = new QLineEdit(this);
     mJumpToLineEdit->setValidator(new QIntValidator(0, 5000, this));
     mJumpToLineEdit->setFixedWidth(100);
-    mTopLayout->addWidget(mJumpToLineEdit);
+    topLayout->addWidget(mJumpToLineEdit);
 
     auto jumpBtn = new QPushButton("Jump", this);
     QObject::connect(jumpBtn, &QPushButton::clicked, this, &ViewVirtualFunctions::jumpToFunction);
-    mTopLayout->addWidget(jumpBtn);
-    mTopLayout->addStretch();
+    topLayout->addWidget(jumpBtn);
+    topLayout->addStretch();
 
-    mHTMLDelegate.setCenterVertically(true);
+    auto HTMLDelegate = new StyledItemDelegateHTML(this);
+    HTMLDelegate->setCenterVertically(true);
+
+    auto model = new ItemModelVirtualFunctions(typeName, mMemoryAddress, this);
+    auto sortFilterProxy = new SortFilterProxyModelVirtualFunctions(this);
+    sortFilterProxy->setSourceModel(model);
 
     mFunctionsTable = new QTableView(this);
-    mSortFilterProxy->setSourceModel(mModel.get());
-    mFunctionsTable->setModel(mSortFilterProxy.get());
+    mFunctionsTable->setModel(sortFilterProxy);
     mFunctionsTable->setAlternatingRowColors(true);
     mFunctionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mFunctionsTable->horizontalHeader()->setStretchLastSection(true);
-    mFunctionsTable->setItemDelegate(&mHTMLDelegate);
+    mFunctionsTable->setItemDelegate(HTMLDelegate);
     mFunctionsTable->setColumnWidth(gsColFunctionIndex, 50);
     mFunctionsTable->setColumnWidth(gsColFunctionTableAddress, 130);
     mFunctionsTable->setColumnWidth(gsColFunctionFunctionAddress, 130);
-    mSortFilterProxy->sort(0);
-    mMainLayout->addWidget(mFunctionsTable);
+    sortFilterProxy->sort(0);
+    mainLayout->addWidget(mFunctionsTable);
 
     QObject::connect(mFunctionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);
-}
-
-void S2Plugin::ViewVirtualFunctions::closeEvent(QCloseEvent* event)
-{
-    delete this;
 }
 
 QSize S2Plugin::ViewVirtualFunctions::sizeHint() const
@@ -74,10 +65,8 @@ QSize S2Plugin::ViewVirtualFunctions::minimumSizeHint() const
 
 void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
 {
-    auto mappedIndex = mSortFilterProxy->mapToSource(index);
-
-    auto column = mappedIndex.column();
-    switch (column)
+    auto model = mFunctionsTable->model();
+    switch (index.column())
     {
         case gsColFunctionIndex:
         case gsColFunctionSignature:
@@ -85,14 +74,14 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
             break;
         case gsColFunctionFunctionAddress:
         {
-            auto address = mModel->data(mappedIndex, gsRoleFunctionFunctionAddress).value<size_t>();
+            auto address = model->data(index, gsRoleFunctionFunctionAddress).value<size_t>();
             GuiDisasmAt(address, GetContextData(UE_CIP));
             GuiShowCpu();
             break;
         }
         case gsColFunctionTableAddress:
         {
-            auto address = mModel->data(mappedIndex, gsRoleFunctionTableAddress).value<size_t>();
+            auto address = model->data(index, gsRoleFunctionTableAddress).value<size_t>();
             GuiDumpAt(address);
             GuiShowCpu();
             break;
@@ -100,9 +89,9 @@ void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
     }
 }
 
-void S2Plugin::ViewVirtualFunctions::jumpToFunction(bool b)
+void S2Plugin::ViewVirtualFunctions::jumpToFunction()
 {
-    auto address = Script::Memory::ReadQword(mMemoryOffset + (mJumpToLineEdit->text().toUInt() * 8ull));
+    auto address = Script::Memory::ReadQword(mMemoryAddress + (mJumpToLineEdit->text().toUInt() * 8ull));
     GuiDisasmAt(address, GetContextData(UE_CIP));
     GuiShowCpu();
 }

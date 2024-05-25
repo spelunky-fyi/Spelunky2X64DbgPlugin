@@ -47,11 +47,16 @@ namespace S2Plugin
         {
             return mTextures;
         }
+        size_t highestID() const
+        {
+            return mHighestID;
+        }
 
       private:
-        size_t ptr{0};
+        uintptr_t ptr{0};
         std::unordered_map<uint32_t, std::pair<std::string, uintptr_t>> mTextures; // id -> {name, address}
         QStringList mTextureNamesStringList;
+        size_t mHighestID;
 
         TextureDB() = default;
         ~TextureDB(){};

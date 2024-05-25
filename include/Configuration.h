@@ -4,7 +4,6 @@
 #include <QColor>
 #include <QMetaEnum>
 #include <cstdint>
-#include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
@@ -27,7 +26,7 @@ namespace S2Plugin
      * [[ Roles explanation: ]]
      * The first 5 roles are all saved to the name field
      * those are used as information about the row
-     * memory address in the name field are used just for row update and should not be used for anything else
+     * memory address in the name field are used just for row update and shouldn't really be used for anything else
      *
      * value, comparison value, memoryaddress and delta fields all should contain the `gsRoleRawValue` data
      * (may differ with some special types)
@@ -52,10 +51,6 @@ namespace S2Plugin
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
     constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 11; // for entity uid to not look for the uid twice
-
-    constexpr char* gsJSONDragDropMemoryField_UID = "uid";
-    constexpr char* gsJSONDragDropMemoryField_Address = "addr";
-    constexpr char* gsJSONDragDropMemoryField_Type = "type";
 
     // new types need to be added to
     // - the MemoryFieldType enum
@@ -116,7 +111,7 @@ namespace S2Plugin
         EntitySubclass,               // a subclass of an entity defined in json
         DefaultStructType,            // a struct defined in json
         UndeterminedThemeInfoPointer, // used to look up the theme pointer in the levelgen and show the correct theme name
-        ThemeInfoName,                // same as above, but does not add struct tree
+        ThemeInfoPointer,             // same as above, but does not add struct tree
         LevelGenRoomsPointer,         // used to make the level gen rooms title clickable
         LevelGenRoomsMetaPointer,     // used to make the level gen rooms title clickable
         JournalPagePointer,           // used to make journal page in vector clickable
@@ -156,6 +151,7 @@ namespace S2Plugin
         std::string firstParameterType;
         std::string secondParameterType;
         std::string comment;
+        // size in bytes
         size_t get_size() const;
 
         // For checking duplicate names
@@ -177,8 +173,8 @@ namespace S2Plugin
         RoomCode(uint16_t _id, std::string _name, QColor _color) : id(_id), name(_name), color(_color){};
     };
 
-    Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType)
-    Q_DECLARE_METATYPE(std::string)
+    Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType);
+    Q_DECLARE_METATYPE(std::string);
 
     class Configuration
     {
@@ -221,7 +217,7 @@ namespace S2Plugin
         int getAlingment(const std::string& type) const;
         bool isPermanentPointer(const std::string& type) const
         {
-            return mPointerTypes.find(type) != mPointerTypes.end();
+            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
         }
         bool isJsonStruct(const std::string type) const
         {
@@ -246,6 +242,11 @@ namespace S2Plugin
         RoomCode roomCodeForID(uint16_t code) const;
         std::string getEntityName(uint32_t type) const;
 
+        const std::vector<std::string>& getJournalPageNames()
+        {
+            return mJournalPages;
+        }
+
       private:
         static Configuration* ptr;
         bool initialisedCorrectly = false;
@@ -257,7 +258,9 @@ namespace S2Plugin
         std::unordered_map<MemoryFieldType, std::vector<MemoryField>> mTypeFieldsMain;
         std::unordered_map<std::string, std::vector<MemoryField>> mTypeFieldsEntitySubclasses;
         std::unordered_map<std::string, std::vector<MemoryField>> mTypeFieldsStructs;
-        std::unordered_set<std::string> mPointerTypes; // pointers defined in pointer_types in json
+        std::vector<std::string> mPointerTypes; // pointers defined in pointer_types in json
+
+        std::vector<std::string> mJournalPages;
 
         std::unordered_map<std::string, size_t> mTypeFieldsStructsSizes;
 

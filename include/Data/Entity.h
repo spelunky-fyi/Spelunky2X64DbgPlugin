@@ -6,6 +6,9 @@
 
 namespace S2Plugin
 {
+    constexpr size_t gSmallEntityBucket = 0xD0;
+    constexpr size_t gBigEntityBucket = 0x188;
+
     class Entity
     {
       public:

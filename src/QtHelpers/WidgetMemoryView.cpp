@@ -1,10 +1,12 @@
 #include "QtHelpers/WidgetMemoryView.h"
+
 #include "pluginmain.h"
 #include <QEvent>
 #include <QFontMetrics>
 #include <QHelpEvent>
 #include <QPainter>
 #include <QToolTip>
+#include <cmath>
 
 static constexpr uint32_t gsMarginHor = 10;
 static constexpr uint32_t gsMarginVer = 5;
@@ -17,9 +19,9 @@ S2Plugin::WidgetMemoryView::WidgetMemoryView(QWidget* parent) : QWidget(parent)
     setMouseTracking(true);
 }
 
-void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent*)
 {
-    if (mOffset != 0 && mSize != 0)
+    if (mAddress != 0 && mSize != 0)
     {
         QPainter painter(this);
         painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -31,7 +33,7 @@ void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
         uint32_t y = gsMarginVer + mTextAdvance.height();
         uint32_t index = 0;
         bool addToolTips = mToolTipRects.empty();
-        for (size_t opCounter = mOffset; opCounter < (mOffset + mSize); ++opCounter)
+        for (uintptr_t opCounter = mAddress; opCounter < (mAddress + mSize); ++opCounter)
         {
             // paint highlighted fields
             painter.setPen(Qt::transparent);
@@ -49,8 +51,7 @@ void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent* event)
 
             // paint hex values
             painter.setPen(QPen(Qt::SolidLine));
-            // TODO: don't read on refresh rate
-            auto str = QString("%1").arg(Script::Memory::ReadByte(opCounter), 2, 16, QChar('0'));
+            auto str = QString("%1").arg(mMemoryData[opCounter - mAddress], 2, 16, QChar('0'));
             painter.drawText(x, y, str);
             x += mTextAdvance.width() + mSpaceAdvance;
             index++;
@@ -77,7 +78,7 @@ QSize S2Plugin::WidgetMemoryView::minimumSizeHint() const
 
 void S2Plugin::WidgetMemoryView::setOffsetAndSize(size_t offset, size_t size)
 {
-    mOffset = offset;
+    mAddress = offset;
     mSize = size;
     update();
     updateGeometry();
@@ -91,7 +92,7 @@ void S2Plugin::WidgetMemoryView::clearHighlights()
     update();
 }
 
-void S2Plugin::WidgetMemoryView::addHighlightedField(std::string tooltip, size_t offset, size_t size, QColor color)
+void S2Plugin::WidgetMemoryView::addHighlightedField(std::string tooltip, size_t offset, int size, QColor color)
 {
     mHighlightedFields.emplace_back(std::move(tooltip), offset, size, std::move(color));
 }
@@ -107,4 +108,10 @@ void S2Plugin::WidgetMemoryView::mouseMoveEvent(QMouseEvent* event)
             return;
         }
     }
+}
+
+void S2Plugin::WidgetMemoryView::updateMemory()
+{
+    Script::Memory::Read(mAddress, &mMemoryData, gBigEntityBucket, nullptr);
+    update();
 }

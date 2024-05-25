@@ -32,7 +32,5 @@ S2Plugin::VirtualTableEntry S2Plugin::VirtualTableLookup::findPrecedingEntryWith
         }
         counter--;
     }
-
-    VirtualTableEntry dummy;
-    return dummy;
+    return {};
 }

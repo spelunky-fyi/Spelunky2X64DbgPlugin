@@ -1,66 +1,31 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
-#include <QCloseEvent>
-#include <QComboBox>
-#include <QLineEdit>
-#include <QModelIndex>
-#include <QSize>
-#include <QString>
-#include <QTabWidget>
-#include <QTableWidget>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QWidget>
-#include <cstdint>
+#include "QtHelpers/WidgetDatabaseView.h"
 
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
-    class ViewToolbar;
 
-    class ViewCharacterDB : public QWidget
+    class ViewCharacterDB : public WidgetDatabaseView
     {
         Q_OBJECT
       public:
-        ViewCharacterDB(ViewToolbar* toolbar, uint8_t index = 0, QWidget* parent = nullptr);
-        void showIndex(uint8_t index);
+        ViewCharacterDB(QWidget* parent = nullptr);
+        void showID(ID_type id) override;
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
-        QSize minimumSizeHint() const override;
+        void label() const override;
+        ID_type highestRecordID() const override;
+        bool isValidRecordID(ID_type) const override
+        {
+            return true;
+        }
+        std::optional<ID_type> getIDForName(QString name) const override;
+        QString recordNameForID(ID_type id) const override;
+        uintptr_t addressOfRecordID(ID_type id) const override;
 
       private slots:
-        void searchFieldReturnPressed();
-        void searchFieldCompleterActivated(const QString& text);
-        void label();
-        void fieldUpdated(const QString& fieldName);
-        void fieldExpanded(const QModelIndex& index);
-        void comparisonFieldChosen(const QString& fieldName);
-        void compareGroupByCheckBoxClicked(int state);
-        void comparisonCellClicked(int row, int column);
-        void groupedComparisonItemClicked(QTreeWidgetItem* item, int column);
-
-      private:
-        StyledItemDelegateHTML mHTMLDelegate;
-
-        QTabWidget* mMainTabWidget;
-        QWidget* mTabLookup;
-        QWidget* mTabCompare;
-
-        // LOOKUP
-        TreeViewMemoryFields* mMainTreeView;
-        QLineEdit* mSearchLineEdit;
-
-        // COMPARE
-        QComboBox* mCompareFieldComboBox;
-        QTableWidget* mCompareTableWidget;
-        QTreeWidget* mCompareTreeWidget;
-
-        void initializeUI();
-        void updateFieldValues();
-        void populateComparisonTableWidget();
-        void populateComparisonTreeWidget();
+        void searchFieldCompleterActivated();
     };
 } // namespace S2Plugin

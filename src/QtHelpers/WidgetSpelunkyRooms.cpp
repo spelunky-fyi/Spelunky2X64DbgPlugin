@@ -3,7 +3,6 @@
 #include "Data/State.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QEvent>
 #include <QFontMetrics>
@@ -26,7 +25,7 @@ S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName,
     setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
 }
 
-void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
 {
     auto config = Configuration::get();
     QPainter painter(this);

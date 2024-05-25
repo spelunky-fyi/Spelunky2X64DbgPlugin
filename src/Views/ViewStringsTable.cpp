@@ -1,38 +1,35 @@
 #include "Views/ViewStringsTable.h"
+
 #include "Data/StringsTable.h"
 #include "QtHelpers/SortFilterProxyModelStringsTable.h"
+#include "QtHelpers/StyledItemDelegateHTML.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QHeaderView>
-#include <QModelIndex>
+#include <QLineEdit>
 #include <QPushButton>
-#include <QString>
 #include <QVBoxLayout>
 
 constexpr uint32_t gsRoleRawValue = 1;
 
 S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 {
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable().count()));
-    initializeUI();
-}
 
-void S2Plugin::ViewStringsTable::initializeUI()
-{
-    auto mainLayout = new QVBoxLayout();
-    setLayout(mainLayout);
-
+    auto mainLayout = new QVBoxLayout(this);
     auto topLayout = new QHBoxLayout();
+    mainLayout->addLayout(topLayout);
+
     auto reloadButton = new QPushButton("Reload", this);
     topLayout->addWidget(reloadButton);
     QObject::connect(reloadButton, &QPushButton::clicked, this, &ViewStringsTable::reload);
 
-    mFilterLineEdit = new QLineEdit(this);
-    mFilterLineEdit->setPlaceholderText("Search id or text");
-    QObject::connect(mFilterLineEdit, &QLineEdit::textChanged, this, &ViewStringsTable::filterTextChanged);
-    topLayout->addWidget(mFilterLineEdit);
-    mainLayout->addLayout(topLayout);
+    auto filterLineEdit = new QLineEdit(this);
+    filterLineEdit->setPlaceholderText("Search id or text");
+    QObject::connect(filterLineEdit, &QLineEdit::textChanged, this, &ViewStringsTable::filterTextChanged);
+    topLayout->addWidget(filterLineEdit);
 
     mMainTableView = new QTableView(this);
     mMainTableView->setAlternatingRowColors(true);
@@ -42,9 +39,10 @@ void S2Plugin::ViewStringsTable::initializeUI()
     mMainTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mMainTableView->horizontalHeader()->setStretchLastSection(true);
     mMainTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    mHTMLDelegate.setCenterVertically(true);
-    mMainTableView->setItemDelegateForColumn(gsColStringTableOffset, &mHTMLDelegate);
-    mMainTableView->setItemDelegateForColumn(gsColStringMemoryOffset, &mHTMLDelegate);
+    auto HTMLDelegate = new StyledItemDelegateHTML(this);
+    HTMLDelegate->setCenterVertically(true);
+    mMainTableView->setItemDelegateForColumn(gsColStringTableOffset, HTMLDelegate);
+    mMainTableView->setItemDelegateForColumn(gsColStringMemoryOffset, HTMLDelegate);
     QObject::connect(mMainTableView, &QTableView::clicked, this, &ViewStringsTable::cellClicked);
     mainLayout->addWidget(mMainTableView);
 
@@ -60,6 +58,7 @@ void S2Plugin::ViewStringsTable::initializeUI()
     mMainTableView->setColumnWidth(gsColStringMemoryOffset, 130);
     mMainTableView->setWordWrap(true);
 }
+
 void S2Plugin::ViewStringsTable::reload()
 {
     auto& stringTable = Spelunky2::get()->get_StringsTable();
@@ -67,7 +66,7 @@ void S2Plugin::ViewStringsTable::reload()
     stringTable.modelCache()->setHorizontalHeaderLabels({"ID", "Table offset", "Memory offset", "Value"});
     auto parrent = stringTable.modelCache()->invisibleRootItem();
 
-    for (size_t idx = 0; idx < stringTable.count(); ++idx)
+    for (uint32_t idx = 0; idx < stringTable.count(); ++idx)
     {
         QStandardItem* fieldID = new QStandardItem(QString::number(idx));
         auto offset = stringTable.addressOfIndex(idx);
@@ -96,11 +95,6 @@ QSize S2Plugin::ViewStringsTable::sizeHint() const
 QSize S2Plugin::ViewStringsTable::minimumSizeHint() const
 {
     return QSize(150, 150);
-}
-
-void S2Plugin::ViewStringsTable::closeEvent(QCloseEvent* event)
-{
-    delete this;
 }
 
 void S2Plugin::ViewStringsTable::cellClicked(const QModelIndex& index)

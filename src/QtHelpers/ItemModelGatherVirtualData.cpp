@@ -1,4 +1,5 @@
 #include "QtHelpers/ItemModelGatherVirtualData.h"
+
 #include "Configuration.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
@@ -20,16 +21,6 @@ enum VIRT_FUNC : uint32_t
     ENTITY_COLLISION2 = 26,
     MOVABLE_DAMAGE = 48,
 };
-
-S2Plugin::ItemModelGatherVirtualData::ItemModelGatherVirtualData(QObject* parent) : QAbstractItemModel(parent)
-{
-    parseJSON();
-}
-
-Qt::ItemFlags S2Plugin::ItemModelGatherVirtualData::flags(const QModelIndex& index) const
-{
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
-}
 
 QVariant S2Plugin::ItemModelGatherVirtualData::data(const QModelIndex& index, int role) const
 {
@@ -61,26 +52,6 @@ QVariant S2Plugin::ItemModelGatherVirtualData::data(const QModelIndex& index, in
         }
     }
     return QVariant();
-}
-
-int S2Plugin::ItemModelGatherVirtualData::rowCount(const QModelIndex& parent) const
-{
-    return mEntries.size();
-}
-
-int S2Plugin::ItemModelGatherVirtualData::columnCount(const QModelIndex& parent) const
-{
-    return 10;
-}
-
-QModelIndex S2Plugin::ItemModelGatherVirtualData::index(int row, int column, const QModelIndex& parent) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex S2Plugin::ItemModelGatherVirtualData::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
 }
 
 QVariant S2Plugin::ItemModelGatherVirtualData::headerData(int section, Qt::Orientation orientation, int role) const
@@ -545,11 +516,6 @@ std::string S2Plugin::ItemModelGatherVirtualData::dumpCppEnum() const
     return ss.str();
 }
 
-bool S2Plugin::ItemModelGatherVirtualData::isEntryCompleted(size_t index) const
-{
-    return mEntries.at(index).virtualTableOffset != 0;
-}
-
 void S2Plugin::ItemModelGatherVirtualData::gatherAvailableVirtuals()
 {
     auto& vtl = Spelunky2::get()->get_VirtualTableLookup();
@@ -609,23 +575,5 @@ void S2Plugin::ItemModelGatherVirtualData::gatherAvailableVirtuals()
             entry.statemachinePresent = isVirtImplemented(entry.virtualTableOffset + VIRT_FUNC::ENTITY_STATEMACHINE);
         }
     }
-    endResetModel();
-}
-
-S2Plugin::SortFilterProxyModelGatherVirtualData::SortFilterProxyModelGatherVirtualData(QObject* parent) : QSortFilterProxyModel(parent) {}
-
-bool S2Plugin::SortFilterProxyModelGatherVirtualData::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
-{
-    if (mHideCompleted && dynamic_cast<ItemModelGatherVirtualData*>(sourceModel())->isEntryCompleted(sourceRow))
-    {
-        return false;
-    }
-    return true;
-}
-
-void S2Plugin::SortFilterProxyModelGatherVirtualData::setHideCompleted(bool b)
-{
-    beginResetModel();
-    mHideCompleted = b;
     endResetModel();
 }

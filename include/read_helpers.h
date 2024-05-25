@@ -20,6 +20,7 @@ namespace S2Plugin
         if (addr == 0)
             return {};
         // reads thru the characters twice but avoids static buffers or resizing string by adding characters one by one
+        // which is apparently what the basic string constructor does when constructing from const char* pointer
         constexpr auto char_size = sizeof(T);
 
         size_t size = 0;

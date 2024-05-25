@@ -3,13 +3,6 @@
 #include "Data/Logger.h"
 #include "QtHelpers/TableViewLogger.h"
 
-S2Plugin::ItemModelLoggerSamples::ItemModelLoggerSamples(Logger* logger, QObject* parent) : QAbstractItemModel(parent), mLogger(logger) {}
-
-Qt::ItemFlags S2Plugin::ItemModelLoggerSamples::flags(const QModelIndex& index) const
-{
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
-}
-
 QVariant S2Plugin::ItemModelLoggerSamples::data(const QModelIndex& index, int role) const
 {
     if (role == Qt::DisplayRole)
@@ -83,24 +76,14 @@ QVariant S2Plugin::ItemModelLoggerSamples::data(const QModelIndex& index, int ro
     return QVariant();
 }
 
-int S2Plugin::ItemModelLoggerSamples::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelLoggerSamples::rowCount(const QModelIndex&) const
 {
-    return mLogger->sampleCount();
+    return static_cast<int>(mLogger->sampleCount());
 }
 
-int S2Plugin::ItemModelLoggerSamples::columnCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelLoggerSamples::columnCount(const QModelIndex&) const
 {
-    return mLogger->fieldCount() + 1;
-}
-
-QModelIndex S2Plugin::ItemModelLoggerSamples::index(int row, int column, const QModelIndex& parent) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex S2Plugin::ItemModelLoggerSamples::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
+    return static_cast<int>(mLogger->fieldCount() + 1);
 }
 
 QVariant S2Plugin::ItemModelLoggerSamples::headerData(int section, Qt::Orientation orientation, int role) const
@@ -116,10 +99,4 @@ QVariant S2Plugin::ItemModelLoggerSamples::headerData(int section, Qt::Orientati
         }
     }
     return QVariant();
-}
-
-void S2Plugin::ItemModelLoggerSamples::reset()
-{
-    beginResetModel();
-    endResetModel();
 }

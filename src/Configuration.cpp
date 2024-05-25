@@ -1,5 +1,5 @@
 #include "Configuration.h"
-#include "Spelunky2.h"
+
 #include "pluginmain.h"
 #include <QDir>
 #include <QFileInfo>
@@ -134,7 +134,7 @@ namespace S2Plugin
         {MemoryFieldType::ConstCharPointer, "Const char*", "const char*", "ConstCharPointer", 8, true},
         {MemoryFieldType::ConstCharPointerPointer, "Const char**", "const char**", "ConstCharPointerPointer", 8, true},                         // there is more then just pointer to pointer?
         {MemoryFieldType::UndeterminedThemeInfoPointer, "UndeterminedThemeInfoPointer", "ThemeInfo*", "UndeterminedThemeInfoPointer", 8, true}, // display theme name and add ThemeInfo fields
-        {MemoryFieldType::ThemeInfoName, "ThemeInfoName", "ThemeInfo*", "ThemeInfoName", 8, true},                                              // just theme name
+        {MemoryFieldType::ThemeInfoPointer, "ThemeInfoPointer", "ThemeInfo*", "ThemeInfoPointer", 8, true},                                     // just theme name
         {MemoryFieldType::LevelGenRoomsPointer, "LevelGenRoomsPointer", "LevelGenRooms*", "LevelGenRoomsPointer", 8, true},
         {MemoryFieldType::LevelGenRoomsMetaPointer, "LevelGenRoomsMetaPointer", "LevelGenRoomsMeta*", "LevelGenRoomsMetaPointer", 8, true},
         {MemoryFieldType::JournalPagePointer, "JournalPagePointer", "JournalPage*", "JournalPagePointer", 8, true},
@@ -264,9 +264,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     memField.type = MemoryFieldType::DefaultStructType; // just initial
     std::string fieldTypeStr = field["type"].get<std::string>();
 
-    bool knownPointer = mPointerTypes.find(fieldTypeStr) != mPointerTypes.end();
-
-    if (knownPointer || value_or(field, "pointer", false))
+    if (isPermanentPointer(fieldTypeStr) || value_or(field, "pointer", false))
     {
         memField.isPointer = true;
         memField.size = sizeof(uintptr_t);
@@ -476,9 +474,11 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 void S2Plugin::Configuration::processJSON(ordered_json& j)
 {
     for (const auto& t : j["pointer_types"])
-    {
-        mPointerTypes.emplace(t.get<std::string>());
-    }
+        mPointerTypes.emplace_back(t.get<std::string>());
+
+    for (const auto& t : j["journal_pages"])
+        mJournalPages.emplace_back(t.get<std::string>());
+
     for (const auto& [key, jsonValue] : j["struct_alignments"].items())
     {
         uint8_t val = jsonValue.get<uint8_t>();
@@ -497,7 +497,6 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
         }
         mRefs[key] = std::move(vec);
     }
-
     for (const auto& [key, jsonArray] : j["fields"].items())
     {
         std::vector<MemoryField> vec;

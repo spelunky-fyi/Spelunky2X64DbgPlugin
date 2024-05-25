@@ -1,10 +1,14 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QModelIndex>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QWidget>
 #include <array>
-#include <memory>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,8 +17,13 @@
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     struct MemoryField;
+
+    constexpr char* gsDragDropMemoryField_UID = "uid";
+    constexpr char* gsDragDropMemoryField_Address = "addr";
+    constexpr char* gsDragDropMemoryField_Type = "type";
+    constexpr char* gsDragDropMemoryField_IsPointer = "pointer";
+    constexpr char* gsDragDropMemoryField_RefName = "ref";
 
     struct ColumnFilter
     {
@@ -41,22 +50,36 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        TreeViewMemoryFields(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        TreeViewMemoryFields(QWidget* parent = nullptr);
 
-        void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, QStandardItem* parent = nullptr);
-        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, QStandardItem* parent = nullptr);
+        void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, uint8_t deltaPrefixCount = 0,
+                             QStandardItem* parent = nullptr);
+        QStandardItem* addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, uint8_t deltaPrefixCount = 0,
+                                      QStandardItem* parent = nullptr);
         void clear();
         void updateTableHeader(bool restoreColumnWidths = true);
-        void setEnableChangeHighlighting(bool b) noexcept;
+        void setEnableChangeHighlighting(bool b) noexcept
+        {
+            mEnableChangeHighlighting = b;
+        }
 
-        void expandItem(QStandardItem* item);
-        void updateTree(uintptr_t newAddr = 0, uintptr_t newComparisonAddr = 0, bool initial = false);
+        void updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
                        bool disableChangeHighlightingForField = false);
 
-        void labelAll(std::string_view prefix = {});
-
         ColumnFilter activeColumns;
+        void labelAll(std::string_view prefix);
+        void expandLast();
+
+      public slots:
+        void labelAll() // for the slots so we don't corrupt the parameters
+        {
+            labelAll({});
+        }
+        void updateTree()
+        {
+            updateTree(0, 0, false);
+        }
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
@@ -65,17 +88,15 @@ namespace S2Plugin
         void startDrag(Qt::DropActions supportedActions) override;
 
       signals:
-        void memoryFieldValueUpdated(const QString& fieldName);
+        void memoryFieldValueUpdated(int row, QStandardItem* parrent);
         void levelGenRoomsPointerClicked();
-        void entityOffsetDropped(size_t offset);
+        void offsetDropped(uintptr_t offset);
 
       private slots:
         void cellClicked(const QModelIndex& index);
 
       private:
-        ViewToolbar* mToolbar;
         QStandardItemModel* mModel;
-        StyledItemDelegateHTML mHTMLDelegate;
         std::array<uint32_t, 9> mSavedColumnWidths = {0};
         bool mEnableChangeHighlighting = true;
     };

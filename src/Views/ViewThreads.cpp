@@ -1,11 +1,14 @@
 #include "Views/ViewThreads.h"
-#include "Configuration.h"
-#include "Data/State.h"
+
+#include "QtHelpers/StyledItemDelegateHTML.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
 
 static const uint32_t gsColThreadName = 0;
 static const uint32_t gsColTEBAddress = 1;
@@ -13,28 +16,18 @@ static const uint32_t gsColStateAddress = 2;
 
 static const uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
-// TODO review (crashes)
-
-// TODO: check for null in click event, add more columns, add spel2 function to get ptr based on the different heapbase
-
-S2Plugin::ViewThreads::ViewThreads(ViewToolbar* toolbar) : QWidget(toolbar), mToolbar(toolbar)
+S2Plugin::ViewThreads::ViewThreads(QWidget* parent) : QWidget(parent)
 {
-    initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("Threads");
-    refreshThreads();
-}
 
-void S2Plugin::ViewThreads::initializeUI()
-{
-    mMainLayout = new QVBoxLayout(this);
-
-    auto horLayout = new QHBoxLayout(this);
+    auto mainLayout = new QVBoxLayout(this);
+    auto horLayout = new QHBoxLayout();
     auto refreshButton = new QPushButton("Refresh", this);
     horLayout->addWidget(refreshButton);
     QObject::connect(refreshButton, &QPushButton::clicked, this, &ViewThreads::refreshThreads);
     horLayout->addStretch();
-    mMainLayout->addLayout(horLayout);
+    mainLayout->addLayout(horLayout);
 
     mMainTable = new QTableWidget(this);
     mMainTable->setColumnCount(3);
@@ -46,11 +39,13 @@ void S2Plugin::ViewThreads::initializeUI()
     mMainTable->horizontalHeader()->setStretchLastSection(true);
     mMainTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     mMainTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    mMainTable->setItemDelegate(&mHTMLDelegate);
-    mHTMLDelegate.setCenterVertically(true);
+    auto HTMLDelegate = new StyledItemDelegateHTML(this);
+    mMainTable->setItemDelegate(HTMLDelegate);
+    HTMLDelegate->setCenterVertically(true);
     QObject::connect(mMainTable, &QTableWidget::cellClicked, this, &ViewThreads::cellClicked);
 
-    mMainLayout->addWidget(mMainTable);
+    mainLayout->addWidget(mMainTable);
+    refreshThreads();
 }
 
 void S2Plugin::ViewThreads::refreshThreads()
@@ -127,11 +122,6 @@ void S2Plugin::ViewThreads::refreshThreads()
     }
 }
 
-void S2Plugin::ViewThreads::closeEvent(QCloseEvent* event)
-{
-    delete this;
-}
-
 QSize S2Plugin::ViewThreads::sizeHint() const
 {
     return QSize(550, 375);
@@ -147,12 +137,17 @@ void S2Plugin::ViewThreads::cellClicked(int row, int column)
     auto clickedItem = mMainTable->item(row, column);
     if (column == gsColTEBAddress)
     {
-        GuiDumpAt(clickedItem->data(gsRoleMemoryAddress).toULongLong());
-        GuiShowCpu();
+        auto addr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+        if (addr != 0)
+        {
+            GuiDumpAt(addr);
+            GuiShowCpu();
+        }
     }
     else if (column == gsColStateAddress)
     {
         auto statePtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-        mToolbar->showState(statePtr);
+        if (statePtr != 0)
+            getToolbar()->showState(statePtr);
     }
 }

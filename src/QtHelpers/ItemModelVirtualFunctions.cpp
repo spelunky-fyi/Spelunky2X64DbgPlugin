@@ -1,18 +1,6 @@
 #include "QtHelpers/ItemModelVirtualFunctions.h"
 #include "Configuration.h"
-#include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
-
-S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, ViewToolbar* toolbar, QObject* parent)
-    : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress), mToolbar(toolbar)
-{
-}
-
-Qt::ItemFlags S2Plugin::ItemModelVirtualFunctions::flags(const QModelIndex& index) const
-{
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemNeverHasChildren;
-}
 
 QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int role) const
 {
@@ -54,24 +42,9 @@ QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int
     return QVariant();
 }
 
-int S2Plugin::ItemModelVirtualFunctions::rowCount(const QModelIndex& parent) const
+int S2Plugin::ItemModelVirtualFunctions::rowCount(const QModelIndex&) const
 {
-    return Configuration::get()->virtualFunctionsOfType(mTypeName).size();
-}
-
-int S2Plugin::ItemModelVirtualFunctions::columnCount(const QModelIndex& parent) const
-{
-    return 4;
-}
-
-QModelIndex S2Plugin::ItemModelVirtualFunctions::index(int row, int column, const QModelIndex& parent) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex S2Plugin::ItemModelVirtualFunctions::parent(const QModelIndex& index) const
-{
-    return QModelIndex();
+    return static_cast<int>(Configuration::get()->virtualFunctionsOfType(mTypeName).size());
 }
 
 QVariant S2Plugin::ItemModelVirtualFunctions::headerData(int section, Qt::Orientation orientation, int role) const
@@ -91,17 +64,4 @@ QVariant S2Plugin::ItemModelVirtualFunctions::headerData(int section, Qt::Orient
         }
     }
     return QVariant();
-}
-
-S2Plugin::SortFilterProxyModelVirtualFunctions::SortFilterProxyModelVirtualFunctions(const std::string& typeName, ViewToolbar* toolbar, QObject* parent)
-    : QSortFilterProxyModel(parent), mTypeName(typeName), mToolbar(toolbar)
-{
-    setSortRole(gsRoleFunctionIndex);
-}
-
-bool S2Plugin::SortFilterProxyModelVirtualFunctions::lessThan(const QModelIndex& left, const QModelIndex& right) const
-{
-    auto leftValue = sourceModel()->data(left, gsRoleFunctionIndex).toLongLong();
-    auto rightValue = sourceModel()->data(right, gsRoleFunctionIndex).toLongLong();
-    return leftValue < rightValue;
 }

@@ -1,4 +1,5 @@
 #include "QtPlugin.h"
+#include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
 #include "Views/ViewVirtualTable.h"
 #include "pluginmain.h"
@@ -10,6 +11,7 @@
 QMainWindow* gsSpelunky2MainWindow;
 QMdiArea* gsMDIArea;
 S2Plugin::ViewToolbar* gsViewToolbar;
+QPixmap gsCavemanIcon;
 
 static HANDLE hSetupEvent;
 static HANDLE hStopEvent;
@@ -43,8 +45,9 @@ void QtPlugin::Setup()
 {
     QWidget* parent = getParent();
 
+    gsCavemanIcon = QPixmap(":/icons/caveman.png");
     gsSpelunky2MainWindow = new QMainWindow();
-    gsSpelunky2MainWindow->setWindowIcon(QIcon(":/icons/caveman.png"));
+    gsSpelunky2MainWindow->setWindowIcon(QIcon(gsCavemanIcon));
     gsMDIArea = new QMdiArea();
     gsSpelunky2MainWindow->setCentralWidget(gsMDIArea);
     gsSpelunky2MainWindow->setWindowTitle("Spelunky 2");
@@ -55,8 +58,8 @@ void QtPlugin::Setup()
     GuiAddQWidgetTab(gsSpelunky2MainWindow);
 
     auto cavemanBytes = getResourceBytes(":/icons/caveman.png");
-    ICONDATA cavemanIcon{cavemanBytes.data(), (duint)(cavemanBytes.size())};
-    _plugin_menuseticon(S2Plugin::hMenuDisasm, &cavemanIcon);
+    ICONDATA icon{cavemanBytes.data(), (duint)(cavemanBytes.size())};
+    _plugin_menuseticon(S2Plugin::hMenuDisasm, &icon);
     _plugin_menuaddentry(S2Plugin::hMenuDisasm, MENU_DISASM_LOOKUP_IN_VIRTUAL_TABLE, "Lookup in virtual table");
 
     SetEvent(hSetupEvent);
@@ -85,12 +88,21 @@ void QtPlugin::ShowTab()
     GuiShowQWidgetTab(gsSpelunky2MainWindow);
 }
 
+struct S2Plugin::QtPluginStruct
+{
+    void static inline resetSpelunky2Data()
+    {
+        gsViewToolbar->mMDIArea->closeAllSubWindows();
+        S2Plugin::Spelunky2::reset();
+    };
+};
+
 void QtPlugin::Detach()
 {
-    gsViewToolbar->resetSpelunky2Data();
+    S2Plugin::QtPluginStruct::resetSpelunky2Data();
 }
 
-void QtPlugin::MenuPrepare(int hMenu) {}
+void QtPlugin::MenuPrepare([[maybe_unused]] int hMenu) {}
 
 void QtPlugin::MenuEntry(int hEntry)
 {
@@ -134,4 +146,14 @@ void QtPlugin::MenuEntry(int hEntry)
         }
         break;
     }
+}
+
+QIcon S2Plugin::getCavemanIcon()
+{
+    return QIcon(gsCavemanIcon);
+}
+
+S2Plugin::ViewToolbar* S2Plugin::getToolbar()
+{
+    return gsViewToolbar;
 }

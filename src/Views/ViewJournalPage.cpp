@@ -1,134 +1,63 @@
 #include "Views/ViewJournalPage.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
-#include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
-#include "pluginmain.h"
-#include <QCloseEvent>
+#include "QtHelpers/WidgetAutorefresh.h"
+#include "QtPlugin.h"
+#include <QComboBox>
 #include <QHeaderView>
 #include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-S2Plugin::ViewJournalPage::ViewJournalPage(ViewToolbar* toolbar, uintptr_t offset, const std::string& pageType, QWidget* parent)
-    : QWidget(parent), mOffset(offset), mPageType(pageType), mToolbar(toolbar)
+S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) : QWidget(parent), mPageAddress(address)
 {
-    initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("JournalPage");
 
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
+    auto refreshLayout = new QHBoxLayout();
+    mainLayout->addLayout(refreshLayout);
+
+    auto autoRefresh = new WidgetAutorefresh(100, this);
+    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewJournalPage::refreshJournalPage);
+    refreshLayout->addWidget(autoRefresh);
+
+    refreshLayout->addStretch();
+    auto labelButton = new QPushButton("Label", this);
+    QObject::connect(labelButton, &QPushButton::clicked, this, &ViewJournalPage::label);
+    refreshLayout->addWidget(labelButton);
+    refreshLayout->addWidget(new QLabel("Interpret as:", this));
+
+    auto interpretAsComboBox = new QComboBox(this);
+
+    auto config = Configuration::get();
+    for (auto& pageName : config->getJournalPageNames())
+        interpretAsComboBox->addItem(QString::fromStdString(pageName));
+
+    QObject::connect(interpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
+    refreshLayout->addWidget(interpretAsComboBox);
+
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->addMemoryFields(config->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+    mainLayout->addWidget(mMainTreeView);
+
+    mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
-    toggleAutoRefresh(Qt::Checked);
-}
-
-void S2Plugin::ViewJournalPage::initializeUI()
-{
-    mMainLayout = new QVBoxLayout(this);
-    mRefreshLayout = new QHBoxLayout(this);
-    mMainLayout->addLayout(mRefreshLayout);
-
-    mRefreshButton = new QPushButton("Refresh", this);
-    mRefreshLayout->addWidget(mRefreshButton);
-    QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewJournalPage::refreshJournalPage);
-
-    mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewJournalPage::autoRefreshTimerTrigger);
-
-    mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
-    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
-    mRefreshLayout->addWidget(mAutoRefreshCheckBox);
-    QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewJournalPage::toggleAutoRefresh);
-
-    mAutoRefreshIntervalLineEdit = new QLineEdit(this);
-    mAutoRefreshIntervalLineEdit->setFixedWidth(50);
-    mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("100");
-    mRefreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
-    QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewJournalPage::autoRefreshIntervalChanged);
-
-    mRefreshLayout->addWidget(new QLabel("milliseconds", this));
-
-    mRefreshLayout->addStretch();
-
-    mRefreshLayout->addWidget(new QLabel("Interpret as:", this));
-    mInterpretAsComboBox = new QComboBox(this);
-    // TODO get from json
-    // also, guess page by the vtable
-    mInterpretAsComboBox->addItem("JournalPage");
-    mInterpretAsComboBox->addItem("JournalPageProgress");
-    mInterpretAsComboBox->addItem("JournalPageJournalMenu");
-    mInterpretAsComboBox->addItem("JournalPagePlaces");
-    mInterpretAsComboBox->addItem("JournalPagePeople");
-    mInterpretAsComboBox->addItem("JournalPageBestiary");
-    mInterpretAsComboBox->addItem("JournalPageItems");
-    mInterpretAsComboBox->addItem("JournalPageTraps");
-    mInterpretAsComboBox->addItem("JournalPageStory");
-    mInterpretAsComboBox->addItem("JournalPageFeats");
-    mInterpretAsComboBox->addItem("JournalPageDeathCause");
-    mInterpretAsComboBox->addItem("JournalPageDeathMenu");
-    mInterpretAsComboBox->addItem("JournalPageRecap");
-    mInterpretAsComboBox->addItem("JournalPagePlayerProfile");
-    mInterpretAsComboBox->addItem("JournalPageLastGamePlayed");
-
-    QObject::connect(mInterpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
-    mRefreshLayout->addWidget(mInterpretAsComboBox);
-    mRefreshLayout->addStretch();
-
-    auto labelButton = new QPushButton("Label", this);
-    QObject::connect(labelButton, &QPushButton::clicked, this, &ViewJournalPage::label);
-    mRefreshLayout->addWidget(labelButton);
-
-    mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
-    mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(mPageType), mPageType, mOffset);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-    mMainLayout->addWidget(mMainTreeView);
-
-    mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->updateTableHeader();
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
-    mMainTreeView->setVisible(true);
-}
-
-void S2Plugin::ViewJournalPage::closeEvent(QCloseEvent* event)
-{
-    delete this;
+    mMainTreeView->updateTree(0, 0, true);
+    autoRefresh->toggleAutoRefresh(true);
 }
 
 void S2Plugin::ViewJournalPage::refreshJournalPage()
 {
     mMainTreeView->updateTree();
-}
-
-void S2Plugin::ViewJournalPage::toggleAutoRefresh(int newState)
-{
-    if (newState == Qt::Unchecked)
-    {
-        mAutoRefreshTimer->stop();
-        mRefreshButton->setEnabled(true);
-    }
-    else
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-        mAutoRefreshTimer->start();
-        mRefreshButton->setEnabled(false);
-    }
-}
-
-void S2Plugin::ViewJournalPage::autoRefreshIntervalChanged(const QString& text)
-{
-    if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-    }
-}
-
-void S2Plugin::ViewJournalPage::autoRefreshTimerTrigger()
-{
-    refreshJournalPage();
 }
 
 QSize S2Plugin::ViewJournalPage::sizeHint() const
@@ -150,12 +79,30 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
 {
     if (!text.isEmpty())
     {
-        mPageType = text.toStdString();
+        auto pageType = text.toStdString();
         mMainTreeView->clear();
-        mMainTreeView->addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(mPageType), mPageType, mOffset);
+        static std::vector<MemoryField> structs;
+        if (structs.empty())
+        {
+            structs.resize(2);
+            structs[0].type = MemoryFieldType::DefaultStructType;
+            structs[0].jsonName = "JournalPage";
+            structs[0].name = "JournalPage";
+            structs[1].type = MemoryFieldType::DefaultStructType;
+        }
+        if (text == "JournalPage")
+        {
+            mMainTreeView->addMemoryFields({structs[0]}, pageType, mPageAddress);
+        }
+        else
+        {
+            structs[1].name = pageType;
+            structs[1].jsonName = pageType;
+            mMainTreeView->addMemoryFields(structs, pageType, mPageAddress);
+        }
+        mMainTreeView->expandLast();
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
-        // mInterpretAsComboBox->setCurrentText("");
     }
 }

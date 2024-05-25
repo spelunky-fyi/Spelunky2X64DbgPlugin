@@ -2,14 +2,13 @@
 
 #include <QCheckBox>
 #include <QLineEdit>
-#include <QPushButton>
+#include <QSize>
 #include <QString>
-#include <QVBoxLayout>
+#include <QWidget>
 #include <array>
 
 namespace S2Plugin
 {
-    class ViewToolbar;
     class TreeViewMemoryFields;
 
     enum class MASK : uint32_t
@@ -34,10 +33,9 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewEntities(ViewToolbar* toolbar, QWidget* parent = nullptr);
+        ViewEntities(QWidget* parent = nullptr);
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 
@@ -51,7 +49,6 @@ namespace S2Plugin
             const MASK mask;
             const QString name;
         };
-        QVBoxLayout* mMainLayout;
         TreeViewMemoryFields* mMainTreeView;
 
         QCheckBox* mCheckboxLayer0;
@@ -77,12 +74,8 @@ namespace S2Plugin
 
         QLineEdit* mFilterLineEdit;
 
-        ViewToolbar* mToolbar;
         uintptr_t mLayer0Offset = 0;
         uintptr_t mLayer1Offset = 0;
         uintptr_t mLayerMapOffset = 0;
-
-        void initializeTreeView();
-        void initializeRefreshAndFilter();
     };
 } // namespace S2Plugin
