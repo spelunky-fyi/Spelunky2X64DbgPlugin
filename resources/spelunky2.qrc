@@ -1,5 +1,20 @@
 <RCC>
-    <qresource prefix="/icons">
-        <file>caveman.png</file>
-    </qresource>
+  <qresource prefix="/icons">
+    <file>caveman.png</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="vline.png">stylesheet-vline.png</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="branch-more.png">stylesheet-branch-more.png</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="branch-end.png">stylesheet-branch-end.png</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="branch-closed.png">stylesheet-branch-closed.png</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="branch-open.png">stylesheet-branch-open.png</file>
+  </qresource>
 </RCC>

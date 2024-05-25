@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  prettier:
+  build:
     name: Automated prettier
 
     runs-on: ubuntu-latest
@@ -17,7 +17,8 @@ jobs:
           prettier_options: --write resources/Spelunky2.json
           commit_message: "Automated prettier changes"
 
-  build:
+  notify:
+    needs: build
     name: Autobuild
 
     runs-on: windows-latest
@@ -33,7 +34,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: C:\Qt
-          key: ${{ runner.os }}-Qt563 # don't think QT version will change?
+          key: ${{ runner.os }}-Qt563
 
       - name: Download Qt if Needed
         if: steps.cache-qt.outputs.cache-hit != 'true'
@@ -48,7 +49,7 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: C:\Qt
-          key: ${{ runner.os }}-Qt563 # don't think QT version will change?
+          key: ${{ runner.os }}-Qt563
 
       - name: Build
         run: |

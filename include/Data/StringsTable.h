@@ -20,7 +20,7 @@ namespace S2Plugin
         {
             return ptr + idx * sizeof(uintptr_t);
         }
-        uintptr_t stringaddressOfIndex(uint32_t idx) const;
+        uintptr_t stringAddressOfIndex(uint32_t idx) const;
         size_t count() const
         {
             return size;

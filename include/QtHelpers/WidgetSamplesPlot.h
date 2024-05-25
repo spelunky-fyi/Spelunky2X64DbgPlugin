@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPoint>
+#include <QSize>
 #include <QWidget>
 
 namespace S2Plugin
@@ -12,15 +15,29 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        WidgetSamplesPlot(Logger* logger, QWidget* parent = nullptr);
+        WidgetSamplesPlot(Logger* logger, QWidget* parent = nullptr) : QWidget(parent), mLogger(logger)
+        {
+            setMouseTracking(true);
+            setCursor(Qt::CrossCursor);
+        }
 
         QSize minimumSizeHint() const override;
-        QSize sizeHint() const override;
+        QSize sizeHint() const override
+        {
+            return minimumSizeHint();
+        }
 
       protected:
         void paintEvent(QPaintEvent* event) override;
-        void mouseMoveEvent(QMouseEvent* event) override;
-        void leaveEvent(QEvent* event) override;
+        void mouseMoveEvent(QMouseEvent* event) override
+        {
+            mCurrentMousePos = event->pos();
+            update();
+        }
+        void leaveEvent(QEvent*) override
+        {
+            update();
+        }
 
       private:
         Logger* mLogger;

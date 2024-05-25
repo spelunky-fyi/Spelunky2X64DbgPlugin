@@ -1,87 +1,59 @@
 #include "Views/ViewLevelGen.h"
+
 #include "Configuration.h"
-#include "Data/EntityDB.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetSpelunkyRooms.h"
-#include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
+#include "QtPlugin.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
+#include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
+#include <QPushButton>
 #include <QScrollArea>
+#include <QVBoxLayout>
 
-S2Plugin::ViewLevelGen::ViewLevelGen(ViewToolbar* toolbar, QWidget* parent) : QWidget(parent), mToolbar(toolbar)
+S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidget(parent), mLevelGenPtr(address)
 {
-    initializeUI();
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     setWindowTitle("LevelGen");
-    mMainTreeView->updateTree(0, 0, true);
-    mMainTreeView->setColumnWidth(gsColField, 125);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-    toggleAutoRefresh(Qt::Checked);
-}
 
-void S2Plugin::ViewLevelGen::initializeUI()
-{
-    mMainLayout = new QVBoxLayout();
-    mRefreshLayout = new QHBoxLayout();
-    mMainLayout->addLayout(mRefreshLayout);
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
+    auto refreshLayout = new QHBoxLayout();
+    mainLayout->addLayout(refreshLayout);
 
-    mMainTabWidget = new QTabWidget(this);
-    mMainTabWidget->setDocumentMode(false);
-    mMainLayout->addWidget(mMainTabWidget);
+    auto autoRefresh = new WidgetAutorefresh(500, this);
+    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewLevelGen::refreshLevelGen);
+    refreshLayout->addWidget(autoRefresh);
 
-    // TOP REFRESH LAYOUT
-    mRefreshButton = new QPushButton("Refresh", this);
-    mRefreshLayout->addWidget(mRefreshButton);
-    QObject::connect(mRefreshButton, &QPushButton::clicked, this, &ViewLevelGen::refreshLevelGen);
-
-    mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewLevelGen::autoRefreshTimerTrigger);
-
-    mAutoRefreshCheckBox = new QCheckBox("Auto-refresh every", this);
-    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
-    mRefreshLayout->addWidget(mAutoRefreshCheckBox);
-    QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewLevelGen::toggleAutoRefresh);
-
-    mAutoRefreshIntervalLineEdit = new QLineEdit(this);
-    mAutoRefreshIntervalLineEdit->setFixedWidth(50);
-    mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("500");
-    mRefreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
-    QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewLevelGen::autoRefreshIntervalChanged);
-
-    mRefreshLayout->addWidget(new QLabel("milliseconds", this));
-
-    mRefreshLayout->addStretch();
+    refreshLayout->addStretch();
 
     auto labelButton = new QPushButton("Label", this);
     QObject::connect(labelButton, &QPushButton::clicked, this, &ViewLevelGen::label);
-    mRefreshLayout->addWidget(labelButton);
+    refreshLayout->addWidget(labelButton);
+
+    mMainTabWidget = new QTabWidget(this);
+    mMainTabWidget->setDocumentMode(false);
+    mainLayout->addWidget(mMainTabWidget);
 
     // TABS
-    mTabData = new QWidget();
-    mTabRooms = new QWidget();
-    mTabData->setLayout(new QVBoxLayout(mTabData));
-    mTabData->layout()->setMargin(0);
-    mTabData->setObjectName("datawidget");
-    mTabRooms->setLayout(new QVBoxLayout(mTabRooms));
-    mTabRooms->layout()->setMargin(0);
+    mMainTreeView = new TreeViewMemoryFields(this);
+    auto tabRooms = new QScrollArea(this);
 
-    mMainTabWidget->addTab(mTabData, "Data");
-    mMainTabWidget->addTab(mTabRooms, "Rooms");
+    mMainTabWidget->addTab(mMainTreeView, "Data");
+    mMainTabWidget->addTab(tabRooms, "Rooms");
 
     // TAB DATA
     {
-        mMainTreeView = new TreeViewMemoryFields(mToolbar, this);
-        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", Spelunky2::get()->get_LevelGenPtr());
-        mTabData->layout()->addWidget(mMainTreeView);
+        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", mLevelGenPtr);
 
         mMainTreeView->setColumnWidth(gsColValue, 250);
+        mMainTreeView->setColumnWidth(gsColField, 125);
+        mMainTreeView->setColumnWidth(gsColValueHex, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
+        mMainTreeView->setColumnWidth(gsColType, 100);
         mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader();
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::levelGenRoomsPointerClicked, this, &ViewLevelGen::levelGenRoomsPointerClicked);
@@ -89,10 +61,9 @@ void S2Plugin::ViewLevelGen::initializeUI()
 
     // TAB ROOMS
     {
-        auto scroll = new QScrollArea(this);
-        scroll->setWidgetResizable(true);
+        tabRooms->setWidgetResizable(true);
         auto containerWidget = new QWidget(this);
-        scroll->setWidget(containerWidget);
+        tabRooms->setWidget(containerWidget);
         auto containerLayout = new QVBoxLayout(containerWidget);
 
         for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
@@ -108,26 +79,18 @@ void S2Plugin::ViewLevelGen::initializeUI()
                 containerLayout->addWidget(roomWidget);
             }
         }
-        dynamic_cast<QVBoxLayout*>(mTabRooms->layout())->addWidget(scroll);
     }
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
-    mMainTreeView->setVisible(true);
-}
-
-void S2Plugin::ViewLevelGen::closeEvent(QCloseEvent* event)
-{
-    delete this;
+    autoRefresh->toggleAutoRefresh(true);
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewLevelGen::refreshLevelGen()
 {
     mMainTreeView->updateTree();
 
-    if (mMainTabWidget->currentWidget() == mTabRooms)
+    if (mMainTabWidget->currentIndex() == 0)
     {
-        auto offset = Spelunky2::get()->get_LevelGenPtr(); // TODO: save ptr to sturct on view open
+        auto offset = mLevelGenPtr;
         for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
         {
             if (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
@@ -138,34 +101,6 @@ void S2Plugin::ViewLevelGen::refreshLevelGen()
             offset += field.get_size();
         }
     }
-}
-
-void S2Plugin::ViewLevelGen::toggleAutoRefresh(int newLevelGen)
-{
-    if (newLevelGen == Qt::Unchecked)
-    {
-        mAutoRefreshTimer->stop();
-        mRefreshButton->setEnabled(true);
-    }
-    else
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-        mAutoRefreshTimer->start();
-        mRefreshButton->setEnabled(false);
-    }
-}
-
-void S2Plugin::ViewLevelGen::autoRefreshIntervalChanged(const QString& text)
-{
-    if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-    }
-}
-
-void S2Plugin::ViewLevelGen::autoRefreshTimerTrigger()
-{
-    refreshLevelGen();
 }
 
 QSize S2Plugin::ViewLevelGen::sizeHint() const
@@ -185,5 +120,5 @@ void S2Plugin::ViewLevelGen::label()
 
 void S2Plugin::ViewLevelGen::levelGenRoomsPointerClicked()
 {
-    mMainTabWidget->setCurrentWidget(mTabRooms);
+    mMainTabWidget->setCurrentIndex(1);
 }

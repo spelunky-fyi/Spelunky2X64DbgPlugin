@@ -1,6 +1,7 @@
 #include "QtHelpers/DialogEditState.h"
 #include "Configuration.h"
 #include "QtHelpers/ItemModelStates.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QGridLayout>
@@ -15,7 +16,7 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
 {
     setModal(true);
     setWindowTitle("Change value");
-    setWindowIcon(QIcon(":/icons/caveman.png"));
+    setWindowIcon(getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
     // STATES
@@ -83,8 +84,6 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
     layout->addLayout(gridLayout);
     layout->addStretch();
     layout->addLayout(buttonLayout);
-
-    setLayout(layout);
 }
 
 QSize S2Plugin::DialogEditState::minimumSizeHint() const
@@ -141,7 +140,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
     accept();
 }
 
-void S2Plugin::DialogEditState::stateComboBoxChanged(int index)
+void S2Plugin::DialogEditState::stateComboBoxChanged()
 {
     auto currentState = mStatesComboBox->currentData().toString();
     mStateLineEdit->setText(currentState);

@@ -2,7 +2,6 @@
 
 #include "pluginmain.h"
 #include <cstdint>
-#include <memory>
 #include <string>
 
 namespace S2Plugin
@@ -77,5 +76,5 @@ namespace S2Plugin
     };
 
     using StdString = StdBasicString<char>;
-    using StdWstring = StdBasicString<char16_t>;
+    using StdWstring = StdBasicString<ushort>;
 } // namespace S2Plugin

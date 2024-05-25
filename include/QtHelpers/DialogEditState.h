@@ -3,6 +3,11 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QLineEdit>
+#include <QSize>
+#include <QString>
+#include <QWidget>
+#include <cstdint>
+#include <string>
 
 namespace S2Plugin
 {
@@ -24,7 +29,7 @@ namespace S2Plugin
       private slots:
         void cancelBtnClicked();
         void changeBtnClicked();
-        void stateComboBoxChanged(int index);
+        void stateComboBoxChanged();
 
       private:
         uintptr_t mMemoryAddress;

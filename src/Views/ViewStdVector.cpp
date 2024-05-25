@@ -1,73 +1,40 @@
 #include "Views/ViewStdVector.h"
+
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/WidgetAutorefresh.h"
+#include "QtPlugin.h"
 #include "Spelunky2.h"
-#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
-#include <QCloseEvent>
-#include <QHeaderView>
-#include <QLabel>
-#include <QLineEdit>
-#include <QTimer>
+#include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
 
-S2Plugin::ViewStdVector::ViewStdVector(ViewToolbar* toolbar, const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent)
-    : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
+S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent) : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
 {
-    mMainLayout = new QVBoxLayout();
-
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
-    initializeRefreshLayout();
-    mMainTreeView = new TreeViewMemoryFields(toolbar, this);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mMainLayout->addWidget(mMainTreeView);
-    setWindowIcon(QIcon(":/icons/caveman.png"));
-
-    mMainLayout->setMargin(5);
-    setLayout(mMainLayout);
-
+    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
-    mMainTreeView->setVisible(true);
 
-    refreshVectorContents();
-    toggleAutoRefresh(Qt::Checked);
-}
-
-void S2Plugin::ViewStdVector::initializeRefreshLayout()
-{
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(5);
     auto refreshLayout = new QHBoxLayout();
-    mMainLayout->addLayout(refreshLayout);
+    mainLayout->addLayout(refreshLayout);
 
     auto refreshVectorButton = new QPushButton("Refresh vector", this);
     QObject::connect(refreshVectorButton, &QPushButton::clicked, this, &ViewStdVector::refreshVectorContents);
     refreshLayout->addWidget(refreshVectorButton);
 
-    mRefreshDataButton = new QPushButton("Refresh data", this);
-    refreshLayout->addWidget(mRefreshDataButton);
-    QObject::connect(mRefreshDataButton, &QPushButton::clicked, this, &ViewStdVector::refreshData);
+    auto autoRefresh = new WidgetAutorefresh(100, this);
+    refreshLayout->addWidget(autoRefresh);
+    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdVector::refreshData);
 
-    mAutoRefreshTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mAutoRefreshTimer.get(), &QTimer::timeout, this, &ViewStdVector::autoRefreshTimerTrigger);
-
-    mAutoRefreshCheckBox = new QCheckBox("Auto-refresh data every", this);
-    mAutoRefreshCheckBox->setCheckState(Qt::Checked);
-    refreshLayout->addWidget(mAutoRefreshCheckBox);
-    QObject::connect(mAutoRefreshCheckBox, &QCheckBox::clicked, this, &ViewStdVector::toggleAutoRefresh);
-
-    mAutoRefreshIntervalLineEdit = new QLineEdit(this);
-    mAutoRefreshIntervalLineEdit->setFixedWidth(50);
-    mAutoRefreshIntervalLineEdit->setValidator(new QIntValidator(100, 5000, this));
-    mAutoRefreshIntervalLineEdit->setText("100");
-    refreshLayout->addWidget(mAutoRefreshIntervalLineEdit);
-    QObject::connect(mAutoRefreshIntervalLineEdit, &QLineEdit::textChanged, this, &ViewStdVector::autoRefreshIntervalChanged);
-
-    refreshLayout->addWidget(new QLabel("milliseconds", this));
-    refreshLayout->addStretch();
-}
-
-void S2Plugin::ViewStdVector::closeEvent(QCloseEvent* event)
-{
-    delete this;
+    mMainTreeView = new TreeViewMemoryFields(this);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
+    mainLayout->addWidget(mMainTreeView);
+    autoRefresh->toggleAutoRefresh(true);
+    refreshVectorContents();
 }
 
 void S2Plugin::ViewStdVector::refreshVectorContents()
@@ -118,14 +85,13 @@ void S2Plugin::ViewStdVector::refreshVectorContents()
         field.name = "obj_" + std::to_string(x);
         mMainTreeView->addMemoryField(field, field.name, vectorBegin + x * mVectorTypeSize, x * mVectorTypeSize);
     }
-    refreshData();
-
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    mMainTreeView->updateTree(0, 0, true);
 }
 
 void S2Plugin::ViewStdVector::refreshData()
@@ -141,32 +107,4 @@ QSize S2Plugin::ViewStdVector::sizeHint() const
 QSize S2Plugin::ViewStdVector::minimumSizeHint() const
 {
     return QSize(150, 150);
-}
-
-void S2Plugin::ViewStdVector::toggleAutoRefresh(int newState)
-{
-    if (newState == Qt::Unchecked)
-    {
-        mAutoRefreshTimer->stop();
-        mRefreshDataButton->setEnabled(true);
-    }
-    else
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-        mAutoRefreshTimer->start();
-        mRefreshDataButton->setEnabled(false);
-    }
-}
-
-void S2Plugin::ViewStdVector::autoRefreshIntervalChanged(const QString& text)
-{
-    if (mAutoRefreshCheckBox->checkState() == Qt::Checked)
-    {
-        mAutoRefreshTimer->setInterval(mAutoRefreshIntervalLineEdit->text().toUInt());
-    }
-}
-
-void S2Plugin::ViewStdVector::autoRefreshTimerTrigger()
-{
-    refreshData();
 }

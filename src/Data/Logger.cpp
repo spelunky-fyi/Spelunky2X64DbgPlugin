@@ -15,7 +15,7 @@ void S2Plugin::Logger::addField(const LoggerField& field)
     }
 }
 
-void S2Plugin::Logger::removeFieldAt(size_t fieldIndex)
+void S2Plugin::Logger::removeFieldAt(int fieldIndex)
 {
     if (mTableModel != nullptr)
     {
@@ -27,7 +27,7 @@ void S2Plugin::Logger::removeFieldAt(size_t fieldIndex)
     }
 }
 
-void S2Plugin::Logger::start(size_t samplePeriod, size_t duration)
+void S2Plugin::Logger::start(int samplePeriod, int duration)
 {
     mSamples.clear();
 

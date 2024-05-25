@@ -2,6 +2,11 @@
 
 #include <QDialog>
 #include <QLineEdit>
+#include <QSize>
+#include <QSpinBox>
+#include <QString>
+#include <QWidget>
+#include <cstdint>
 
 namespace S2Plugin
 {
@@ -27,7 +32,7 @@ namespace S2Plugin
         uintptr_t mMemoryAddress;
         MemoryFieldType mFieldType;
 
-        QLineEdit* mLineEditDecValue;
+        QAbstractSpinBox* mSpinBox;
         QLineEdit* mLineEditHexValue;
     };
 } // namespace S2Plugin

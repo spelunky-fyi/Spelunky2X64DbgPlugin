@@ -3,18 +3,16 @@
 #include "Data/CharacterDB.h"
 #include "Data/EntityDB.h"
 #include "Data/ParticleDB.h"
+#include "Data/State.h"
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
+#include <QString>
 #include <cstdint>
-#include <string>
-#include <unordered_map>
 
 namespace S2Plugin
 {
     constexpr uint32_t TEB_offset = 0x120;
-
-    class EntityDB;
 
     struct Spelunky2
     {
@@ -47,12 +45,16 @@ namespace S2Plugin
         const EntityDB& get_EntityDB();
         const StringsTable& get_StringsTable();
         const VirtualTableLookup& get_VirtualTableLookup();
+        State get_State() const
+        {
+            return State{get_StatePtr()};
+        }
         //
 
         uintptr_t find(const char* pattern, uintptr_t start = 0, size_t size = 0) const;
         uintptr_t find_between(const char* pattern, uintptr_t start = 0, uintptr_t end = 0) const;
 
-        std::string themeNameOfOffset(uintptr_t offset) const;
+        const QString& themeNameOfOffset(uintptr_t offset) const;
 
       private:
         static Spelunky2* ptr;

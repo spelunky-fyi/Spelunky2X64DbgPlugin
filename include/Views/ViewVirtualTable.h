@@ -1,12 +1,14 @@
 #pragma once
 
-#include "QtHelpers/StyledItemDelegateHTML.h"
-#include <QCheckBox>
 #include <QLabel>
+#include <QLineEdit>
+#include <QModelIndex>
+#include <QSize>
+#include <QString>
+#include <QTabWidget>
 #include <QTableView>
 #include <QTableWidget>
-#include <QVBoxLayout>
-#include <memory>
+#include <QWidget>
 
 namespace S2Plugin
 {
@@ -24,7 +26,6 @@ namespace S2Plugin
         void updateGatherProgress();
 
       protected:
-        void closeEvent(QCloseEvent* event) override;
         QSize sizeHint() const override;
         QSize minimumSizeHint() const override;
 
@@ -45,29 +46,21 @@ namespace S2Plugin
         void showGatherHideCompletedCheckBoxStateChanged(int state);
 
       private:
-        QVBoxLayout* mMainLayout;
-
         QTabWidget* mMainTabWidget;
-        QWidget* mTabData;
-        QWidget* mTabLookup;
-        QWidget* mTabGather;
 
         // DATA
         QTableView* mDataTable;
-        std::unique_ptr<ItemModelVirtualTable> mModel;
-        std::unique_ptr<SortFilterProxyModelVirtualTable> mSortFilterProxy;
-        StyledItemDelegateHTML mHTMLDelegate;
+        ItemModelVirtualTable* mModel;
+        SortFilterProxyModelVirtualTable* mSortFilterProxy;
 
         // LOOKUP
         QLineEdit* mLookupAddressLineEdit;
         QTableWidget* mLookupResultsTable;
 
         // GATHER
-        QTableView* mGatherTable;
-        std::unique_ptr<ItemModelGatherVirtualData> mGatherModel;
-        std::unique_ptr<SortFilterProxyModelGatherVirtualData> mGatherSortFilterProxy;
+        ItemModelGatherVirtualData* mGatherModel;
+        SortFilterProxyModelGatherVirtualData* mGatherSortFilterProxy;
         QLabel* mGatherProgressLabel;
-        QCheckBox* mHideCompletedCheckbox;
 
         void initializeUI();
         void lookupAddress(size_t address);

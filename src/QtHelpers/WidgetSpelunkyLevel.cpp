@@ -1,4 +1,5 @@
 #include "QtHelpers/WidgetSpelunkyLevel.h"
+
 #include "Configuration.h"
 #include "Data/StdMap.h"
 #include "Spelunky2.h"
@@ -13,24 +14,30 @@ S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidge
     mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities_begin", stateptr);
     mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities_begin", stateptr);
 
-    auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", stateptr);
-    mLevelWidth = Script::Memory::ReadDword(offset) * 10;
-    mLevelHeight = Script::Memory::ReadDword(offset + 4) * 8;
+    // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", stateptr);
+    // mLevelWidth = Script::Memory::ReadDword(offset) * 10;
+    // mLevelHeight = Script::Memory::ReadDword(offset + 4) * 8;
 
-    if (mLevelWidth == 0)
-    {
-        mLevelWidth = msLevelMaxWidth;
-        mLevelHeight = msLevelMaxHeight;
-    }
-    else
-    {
-        // add border size
-        mLevelWidth += 5;
-        mLevelHeight += 5;
-    }
+    // if (mLevelWidth == 0)
+    //{
+    //     mLevelWidth = msLevelMaxWidth;
+    //     mLevelHeight = msLevelMaxHeight;
+    // }
+    // else
+    //{
+    //     // add border size
+    //     mLevelWidth += 5;
+    //     mLevelHeight += 5;
+
+    //    // limit just in case
+    //    if (mLevelWidth > msLevelMaxWidth)
+    //        mLevelWidth = msLevelMaxWidth;
+    //    if (mLevelHeight > msLevelMaxHeight)
+    //        mLevelHeight = msLevelMaxHeight;
+    //}
 }
 
-void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent* event)
+void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
 {
     auto painter = QPainter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -45,20 +52,14 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent* event)
     painter.setPen(Qt::transparent);
     if (mPaintFloors)
     {
-        // painting floors is quite expensive, any optimisations are always welcome (like maybe use provided event to not draw obstructed parts of the level?)
-        // TODO: don't read on refresh rate
+        // painting floors is quite expensive, any optimisations are always welcome (like maybe use provided event to not draw obstructed parts of the level view?)
         painter.setBrush(mFloorColor);
-        auto gridAddr = layerToDraw == 0 ? mGridEntitiesAddr.first : mGridEntitiesAddr.second;
         // y: 0-125, x: 0-85
         // note: the y = 125 is at the top of a level and the level is build from the top
-        for (uint8_t y = msLevelMaxHeight - mLevelHeight; y < 126; ++y)
-        {
-            for (uint8_t x = 0; x <= mLevelWidth; ++x)
-            {
-                if (Script::Memory::ReadQword(gridAddr + y * (86 * sizeof(uintptr_t)) + x * sizeof(uintptr_t)) != 0)
+        for (uint8_t y = 0; y < msLevelMaxHeight + 1; ++y)
+            for (uint8_t x = 0; x <= msLevelMaxWidth + 1; ++x)
+                if (mLevelFloors[y][x] != 0)
                     painter.drawRect(QRectF(msMarginHor + x, msMarginVer + msLevelMaxHeight - y, 1.0, 1.0));
-            }
-        }
     }
     if (mEntityMasksToPaint != 0)
     {
@@ -67,29 +68,17 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent* event)
         {
             if ((mEntityMasksToPaint >> bit_number) & 1)
             {
-                auto itr = maskMap.find(1u << bit_number);
-                if (itr != maskMap.end())
-                {
-                    painter.setBrush(mEntityMaskColors[bit_number]);
-                    // TODO: change to proper struct when done
-                    auto ent_list = itr.value_ptr();
-                    auto pointers = Script::Memory::ReadQword(ent_list);
-                    auto list_count = Script::Memory::ReadDword(ent_list + 20);
-                    for (uint idx = 0; idx < list_count; idx++)
-                    {
-                        Entity ent{Script::Memory::ReadQword(pointers + idx * sizeof(uintptr_t))};
-                        auto [entityX, entityY] = ent.abs_position();
-                        painter.drawRect(QRectF(msMarginHor + entityX, msMarginVer + msLevelMaxHeight - entityY, 1.0, 1.0));
-                    }
-                }
+                painter.setBrush(mEntityMaskColors[bit_number]);
+                for (auto& [posX, posY] : mEntitiesMaskCoordinates[bit_number])
+                    painter.drawRect(QRectF(msMarginHor + posX, msMarginVer + msLevelMaxHeight - posY, 1.0, 1.0));
             }
         }
     }
 
-    for (auto& [entity, color] : mEntitiesToPaint)
+    for (auto& entity : mEntitiesToPaint)
     {
-        auto [entityX, entityY] = entity.abs_position();
-        painter.setBrush(color);
+        const auto& [entityX, entityY] = entity.pos;
+        painter.setBrush(entity.color);
         painter.drawRect(QRectF(msMarginHor + entityX, msMarginVer + msLevelMaxHeight - entityY, 1.0, 1.0));
     }
 
@@ -126,6 +115,9 @@ void S2Plugin::WidgetSpelunkyLevel::clearAllPaintedEntities()
     mEntitiesToPaint.clear();
     mEntityMasksToPaint = 0;
     mPaintFloors = false;
+    for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
+        mEntitiesMaskCoordinates[bit_number].clear();
+
     update();
 }
 
@@ -133,7 +125,7 @@ void S2Plugin::WidgetSpelunkyLevel::clearPaintedEntity(uintptr_t addr)
 {
     for (auto cur = mEntitiesToPaint.begin(); cur < mEntitiesToPaint.end(); ++cur)
     {
-        if (cur->first.ptr() == addr)
+        if (cur->ent.ptr() == addr)
         {
             mEntitiesToPaint.erase(cur);
             break;
@@ -151,4 +143,49 @@ QSize S2Plugin::WidgetSpelunkyLevel::minimumSizeHint() const
 QSize S2Plugin::WidgetSpelunkyLevel::sizeHint() const
 {
     return minimumSizeHint();
+}
+
+void S2Plugin::WidgetSpelunkyLevel::updateLevel()
+{
+    uint8_t layerToDraw = Entity{mMainEntityAddr}.layer();
+    if (mPaintFloors)
+    {
+        auto gridAddr = layerToDraw == 0 ? mGridEntitiesAddr.first : mGridEntitiesAddr.second;
+        // Maybe don't read the whole array?
+        constexpr auto dataSize = (msLevelMaxHeight + 1) * ((msLevelMaxWidth + 1) * sizeof(uintptr_t));
+        Script::Memory::Read(gridAddr, &mLevelFloors, dataSize, nullptr);
+    }
+    for (auto& entity : mEntitiesToPaint)
+        entity.pos = entity.ent.abs_position();
+
+    if (mEntityMasksToPaint != 0)
+    {
+        StdMap<uint32_t, size_t> maskMap{layerToDraw == 0 ? mMaskMapAddr.first : mMaskMapAddr.second};
+        for (auto [key, value_ptr] : maskMap)
+        {
+            uint8_t bit_number = std::log2(key);
+            mEntitiesMaskCoordinates[bit_number].clear();
+            if ((mEntityMasksToPaint & key) != 0)
+            {
+                // TODO: change to proper struct when done
+                auto pointers = Script::Memory::ReadQword(value_ptr);
+                auto list_count = Script::Memory::ReadDword(value_ptr + 20);
+
+                mEntitiesMaskCoordinates[bit_number].reserve(list_count);
+                std::vector<uintptr_t> entities;
+                entities.resize(list_count);
+                Script::Memory::Read(pointers, entities.data(), list_count * sizeof(uintptr_t), nullptr);
+
+                for (auto entityAddr : entities)
+                {
+                    if (entityAddr == 0)
+                        continue;
+
+                    Entity ent{entityAddr};
+                    mEntitiesMaskCoordinates[bit_number].emplace_back(ent.abs_position());
+                }
+            }
+        }
+    }
+    update();
 }

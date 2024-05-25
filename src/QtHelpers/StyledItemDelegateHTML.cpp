@@ -1,5 +1,7 @@
 #include "QtHelpers/StyledItemDelegateHTML.h"
+#include <QAbstractTextDocumentLayout>
 #include <QPainter>
+#include <QSize>
 #include <QTextDocument>
 
 void S2Plugin::StyledItemDelegateHTML::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -14,7 +16,7 @@ void S2Plugin::StyledItemDelegateHTML::paint(QPainter* painter, const QStyleOpti
 
     options.text = "";
     options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
-
+    QSize iconSize = options.icon.actualSize(options.rect.size());
     if (mCenterVertically)
     {
         doc.setTextWidth(options.rect.width());
@@ -23,10 +25,19 @@ void S2Plugin::StyledItemDelegateHTML::paint(QPainter* painter, const QStyleOpti
     }
     else
     {
-        painter->translate(options.rect.left(), options.rect.top() - 2);
+        painter->translate(options.rect.left() + iconSize.width(), options.rect.top() - 2);
     }
-    QRect clip(0, 0, options.rect.width(), options.rect.height());
-    doc.drawContents(painter, clip);
+    QRect clip(0, 0, options.rect.width() + iconSize.width(), options.rect.height());
+    // doc.drawContents(painter, clip);
+
+    painter->setClipRect(clip);
+    QAbstractTextDocumentLayout::PaintContext ctx;
+    auto newColor = index.data(Qt::TextColorRole);
+    if (!newColor.isNull())
+        ctx.palette.setColor(QPalette::Text, newColor.value<QColor>());
+
+    ctx.clip = clip;
+    doc.documentLayout()->draw(painter, ctx);
 
     painter->restore();
 }
@@ -41,9 +52,4 @@ QSize S2Plugin::StyledItemDelegateHTML::sizeHint(const QStyleOptionViewItem& opt
     doc.setTextWidth(options.rect.width());
     doc.setDocumentMargin(2);
     return QSize(doc.idealWidth(), doc.size().height());
-}
-
-void S2Plugin::StyledItemDelegateHTML::setCenterVertically(bool b)
-{
-    mCenterVertically = b;
 }
