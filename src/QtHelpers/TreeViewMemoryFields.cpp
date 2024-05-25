@@ -752,13 +752,18 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Float:
         {
-            std::optional<float> value;
-            value = updateField<float>(itemField, valueMemoryOffset, itemValue, "%f", itemValueHex, isPointer, "0x%08X", true, !pointerUpdate, highlightColor);
+            std::optional<uint32_t> value;
+            value = updateField<uint32_t>(itemField, valueMemoryOffset, itemValue, nullptr, itemValueHex, isPointer, "0x%08X", true, !pointerUpdate, highlightColor);
+            if (value.has_value())
+                itemValue->setData(QString::asprintf("%f", reinterpret_cast<float&>(value.value())), Qt::DisplayRole);
 
             if (comparisonActive)
             {
-                std::optional<float> comparisonValue;
-                comparisonValue = updateField<float>(itemField, valueComparisonMemoryOffset, itemComparisonValue, "%f", itemComparisonValueHex, isPointer, "0x%08X", false, false, highlightColor);
+                std::optional<uint32_t> comparisonValue;
+                comparisonValue =
+                    updateField<uint32_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, nullptr, itemComparisonValueHex, isPointer, "0x%08X", false, false, highlightColor);
+                if (comparisonValue.has_value())
+                    itemComparisonValue->setData(QString::asprintf("%f", reinterpret_cast<float&>(comparisonValue.value())), Qt::DisplayRole);
 
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
@@ -768,13 +773,18 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Double:
         {
-            std::optional<double> value;
-            value = updateField<double>(itemField, valueMemoryOffset, itemValue, "%lf", itemValueHex, isPointer, "0x%016llX", true, !pointerUpdate, highlightColor);
+            std::optional<size_t> value;
+            value = updateField<size_t>(itemField, valueMemoryOffset, itemValue, nullptr, itemValueHex, isPointer, "0x%016llX", true, !pointerUpdate, highlightColor);
+            if (value.has_value())
+                itemValue->setData(QString::asprintf("%lf", reinterpret_cast<double&>(value.value())), Qt::DisplayRole);
 
             if (comparisonActive)
             {
-                std::optional<double> comparisonValue;
-                comparisonValue = updateField<double>(itemField, valueComparisonMemoryOffset, itemComparisonValue, "%lf", itemComparisonValueHex, isPointer, "0x%016llX", false, false, highlightColor);
+                std::optional<size_t> comparisonValue;
+                comparisonValue =
+                    updateField<size_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, nullptr, itemComparisonValueHex, isPointer, "0x%016llX", false, false, highlightColor);
+                if (comparisonValue.has_value())
+                    itemComparisonValue->setData(QString::asprintf("%lf", reinterpret_cast<double&>(comparisonValue.value())), Qt::DisplayRole);
 
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
