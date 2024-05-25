@@ -21,7 +21,6 @@
     "ScreenTransitionPointer",
     "ScreenWinPointer",
     "ScreenCreditsPointer",
-    "ScrollingCreditsProgressionPointer",
     "ScreenScoresPointer",
     "ScreenConstellationPointer",
     "ScreenRecapPointer",
@@ -62,7 +61,6 @@
     "LiquidPhysicsPointer",
     "CameraPointer",
     "UnorderedMapEndBucketPointer",
-    "UnorderedMapPointer",
     "UnorderedMapBucketPointer",
     "UnorderedMapBucketPointer2",
     "StdVectorPointerIllumination",
@@ -70,7 +68,7 @@
     "SpecialLevelGeneration",
     "LevelGenDataPointer",
     "AITargetsPointer",
-    "SaveGameHeapOffsetPointer",
+    "SaveGameDataPointer",
     "ScreenLogoPointer",
     "ScreenIntroPointer",
     "ScreenProloguePointer",
@@ -83,7 +81,6 @@
     "ScreenOnlineLobbyPointer",
     "ScreenOnlineLoadingPointer",
     "PauseUIPointer",
-    "MenuInsertPointer",
     "JournalUIPointer",
     "BackgroundMusicManagerPointer",
     "Ai_func",
@@ -95,7 +92,6 @@
     "MapBucket1",
     "MysteryLiquidPointer1",
     "MysteryLiquidPointer2",
-    "EntityRegionsPointer",
     "PointerToPushBlocksMap",
     "PointerToFloorsMap",
     "PointerToFloatSet",
@@ -998,7 +994,7 @@
     ],
     "GameManager": [
       { "field": "backgroundmusic", "type": "BackgroundMusicManagerPointer" },
-      { "field": "savegame", "type": "SaveGameHeapOffsetPointer" },
+      { "field": "savegame", "type": "SaveGameDataPointer" },
       {
         "field": "buttons_controls",
         "type": "Flags32",
@@ -1429,7 +1425,6 @@
         "comment": "for XInput used in XInputSetState"
       }
     ],
-    "MenuInsertPointer": [{ "field": "menu", "type": "MenuInsert" }],
     "MenuInsert": [
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
@@ -1463,10 +1458,10 @@
       { "field": "woodpanel_top", "type": "TextureRenderingInfo" },
       { "field": "scroll", "type": "TextureRenderingInfo" },
       { "field": "padding_probably1", "type": "UnsignedDword" },
-      { "field": "menu", "type": "MenuInsertPointer" },
+      { "field": "menu", "type": "MenuInsert", "pointer": true },
       { "field": "confirmation_panel", "type": "TextureRenderingInfo" },
       { "field": "prompt_question", "type": "MultiLineTextRenderingPointer" },
-      { "field": "prompt_menu", "type": "MenuInsertPointer" },
+      { "field": "prompt_menu", "type": "MenuInsert", "pointer": true  },
       { "field": "unknown8", "type": "Bool" },
       { "field": "padding_probably2", "type": "UnsignedByte" },
       { "field": "padding_probably3", "type": "UnsignedWord" },
@@ -1976,7 +1971,7 @@
       { "field": "sticker19", "type": "TextureRenderingInfo" },
       { "field": "sticker20", "type": "TextureRenderingInfo" }
     ],
-    "SaveGameHeapOffsetPointer": [
+    "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "UnsignedQword" },
       { "field": "journal_popup_ui", "type": "JournalPopupUI" }
     ],
@@ -2528,7 +2523,7 @@
       { "field": "padding_probably15", "type": "UnsignedDword" },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer"
+        "type": "Float", "pointer": true
       },
       {
         "field": "unknown57",
@@ -3867,9 +3862,6 @@
       { "field": "unknown6", "type": "UnsignedDword" },
       { "field": "unknown7", "type": "UnsignedDword" },
       { "field": "unknown8", "type": "UnsignedByte" }
-    ],
-    "UnorderedMapPointer": [
-      { "field": "unordered_map", "type": "UnorderedMap" }
     ],
     "ShopsInfo": [
       {
@@ -6025,7 +6017,7 @@
       },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer",
+        "type": "Float", "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "explosion_loop", "type": "SoundMeta" },
@@ -6052,14 +6044,11 @@
       { "field": "base_screen", "type": "ScreenBase" },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer",
+        "type": "Float", "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "bg_music_info", "type": "SoundMeta" },
       { "field": "unknown4", "type": "UnsignedQword" }
-    ],
-    "ScrollingCreditsProgressionPointer": [
-      { "field": "timer", "type": "Float" }
     ],
     "ScreenScoresPointer": [
       { "field": "base_screen", "type": "ScreenBase" },
@@ -8139,7 +8128,7 @@
         "type": "EntityList",
         "comment": "char + fx + mons + item + logical + mount + activefloor + BG (excluding BG_SHOP, BG_LEVEL_*)"
       },
-      { "field": "unknown1", "type": "EntityRegionsPointer" },
+      { "field": "unknown1", "type": "EntityRegions", "pointer": true },
       {
         "field": "entities_by_mask",
         "type": "StdMap",
@@ -8320,9 +8309,6 @@
       },
       { "field": "size", "type": "UnsignedByte" },
       { "field": "cap", "type": "UnsignedByte" }
-    ],
-    "EntityRegionsPointer": [
-      { "field": "entity_regions", "type": "EntityRegions" }
     ],
     "EntityListPointer": [
       { "field": "entity_1", "type": "EntityPointer" },
