@@ -134,7 +134,7 @@ namespace S2Plugin
         {MemoryFieldType::ConstCharPointer, "Const char*", "const char*", "ConstCharPointer", 8, true},
         {MemoryFieldType::ConstCharPointerPointer, "Const char**", "const char**", "ConstCharPointerPointer", 8, true},                         // there is more then just pointer to pointer?
         {MemoryFieldType::UndeterminedThemeInfoPointer, "UndeterminedThemeInfoPointer", "ThemeInfo*", "UndeterminedThemeInfoPointer", 8, true}, // display theme name and add ThemeInfo fields
-        {MemoryFieldType::ThemeInfoPointer, "ThemeInfoPointer", "ThemeInfo*", "ThemeInfoPointer", 8, true},                                     // just theme name
+        {MemoryFieldType::COThemeInfoPointer, "COThemeInfoPointer", "ThemeInfo*", "COThemeInfoPointer", 8, true},                               // just theme name
         {MemoryFieldType::LevelGenRoomsPointer, "LevelGenRoomsPointer", "LevelGenRooms*", "LevelGenRoomsPointer", 8, true},
         {MemoryFieldType::LevelGenRoomsMetaPointer, "LevelGenRoomsMetaPointer", "LevelGenRoomsMeta*", "LevelGenRoomsMetaPointer", 8, true},
         {MemoryFieldType::JournalPagePointer, "JournalPagePointer", "JournalPage*", "JournalPagePointer", 8, true},
