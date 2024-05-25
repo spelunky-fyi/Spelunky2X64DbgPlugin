@@ -21,7 +21,6 @@
     "ScreenTransitionPointer",
     "ScreenWinPointer",
     "ScreenCreditsPointer",
-    "ScrollingCreditsProgressionPointer",
     "ScreenScoresPointer",
     "ScreenConstellationPointer",
     "ScreenRecapPointer",
@@ -62,7 +61,6 @@
     "LiquidPhysicsPointer",
     "CameraPointer",
     "UnorderedMapEndBucketPointer",
-    "UnorderedMapPointer",
     "UnorderedMapBucketPointer",
     "UnorderedMapBucketPointer2",
     "StdVectorPointerIllumination",
@@ -70,21 +68,19 @@
     "SpecialLevelGeneration",
     "LevelGenDataPointer",
     "AITargetsPointer",
-    "SaveGameHeapOffsetPointer",
+    "SaveGameDataPointer",
     "ScreenLogoPointer",
     "ScreenIntroPointer",
     "ScreenProloguePointer",
     "ScreenTitlePointer",
     "ScreenMenuPointer",
     "ScreenOptionsPointer",
-    "ScreenSeedInputPointer",
     "ScreenCharacterSelectPointer",
     "ScreenArenaMenuPointer",
     "ScreenArenaItemsPointer",
     "ScreenOnlineLobbyPointer",
     "ScreenOnlineLoadingPointer",
     "PauseUIPointer",
-    "MenuInsertPointer",
     "JournalUIPointer",
     "BackgroundMusicManagerPointer",
     "Ai_func",
@@ -96,12 +92,10 @@
     "MapBucket1",
     "MysteryLiquidPointer1",
     "MysteryLiquidPointer2",
-    "EntityRegionsPointer",
     "PointerToPushBlocksMap",
     "PointerToFloorsMap",
     "PointerToFloatSet",
     "MultiLineTextRenderingPointer",
-    "EntityLogicPointer",
     "PointerToPointerToEntityList",
     "InputsByControllerPointer",
     "MovableBehavior"
@@ -1017,7 +1011,7 @@
     ],
     "GameManager": [
       { "field": "backgroundmusic", "type": "BackgroundMusicManagerPointer" },
-      { "field": "savegame", "type": "SaveGameHeapOffsetPointer" },
+      { "field": "savegame", "type": "SaveGameDataPointer" },
       {
         "field": "buttons_controls",
         "type": "Flags32",
@@ -1051,7 +1045,7 @@
         "type": "ScreenPointer",
         "comment": "all handled by the Online struct"
       },
-      { "field": "screen_seed_input", "type": "ScreenSeedInputPointer" },
+      { "field": "screen_seed_input", "type": "ScreenSeedInput", "pointer": true },
       {
         "field": "unknown_screen_character_select?",
         "type": "DataPointer",
@@ -1448,7 +1442,6 @@
         "comment": "for XInput used in XInputSetState"
       }
     ],
-    "MenuInsertPointer": [{ "field": "menu", "type": "MenuInsert" }],
     "MenuInsert": [
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
@@ -1482,10 +1475,10 @@
       { "field": "woodpanel_top", "type": "TextureRenderingInfo" },
       { "field": "scroll", "type": "TextureRenderingInfo" },
       { "field": "padding_probably1", "type": "UnsignedDword" },
-      { "field": "menu", "type": "MenuInsertPointer" },
+      { "field": "menu", "type": "MenuInsert", "pointer": true },
       { "field": "confirmation_panel", "type": "TextureRenderingInfo" },
       { "field": "prompt_question", "type": "MultiLineTextRenderingPointer" },
-      { "field": "prompt_menu", "type": "MenuInsertPointer" },
+      { "field": "prompt_menu", "type": "MenuInsert", "pointer": true  },
       { "field": "unknown8", "type": "Bool" },
       { "field": "padding_probably2", "type": "UnsignedByte" },
       { "field": "padding_probably3", "type": "UnsignedWord" },
@@ -1883,7 +1876,7 @@
       { "field": "sticker19", "type": "TextureRenderingInfo" },
       { "field": "sticker20", "type": "TextureRenderingInfo" }
     ],
-    "SaveGameHeapOffsetPointer": [
+    "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "UnsignedQword" },
       { "field": "journal_popup_ui", "type": "JournalPopupUI" }
     ],
@@ -2169,7 +2162,7 @@
       { "field": "scroll_text", "type": "StringsTableID" },
       { "field": "shake_offset_x", "type": "Float" },
       { "field": "shake_offset_y", "type": "Float" },
-      { "field": "unknown30", "type": "Bool" },
+      { "field": "loaded_once", "type": "Bool", "comment": "Set to true when going from title to menu screen for the first time, makes sure the animation play once" },
       { "field": "unknown31", "type": "Byte" },
       { "field": "unknown32", "type": "Word" }
     ],
@@ -2435,7 +2428,7 @@
       { "field": "padding_probably15", "type": "UnsignedDword" },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer"
+        "type": "Float", "pointer": true
       },
       {
         "field": "unknown57",
@@ -2551,9 +2544,6 @@
       { "field": "base_screen", "type": "ScreenBase" },
       { "field": "ouroboros", "type": "TextureRenderingInfo" },
       { "field": "ouroboros_angle", "type": "Float" }
-    ],
-    "ScreenSeedInputPointer": [
-      { "field": "screen", "type": "ScreenSeedInput" }
     ],
     "ScreenSeedInput": [
       { "field": "base_screen", "type": "ScreenBase" },
@@ -3778,9 +3768,6 @@
       { "field": "unknown7", "type": "UnsignedDword" },
       { "field": "unknown8", "type": "UnsignedByte" }
     ],
-    "UnorderedMapPointer": [
-      { "field": "unordered_map", "type": "UnorderedMap" }
-    ],
     "ShopsInfo": [
       {
         "field": "restricted_items",
@@ -4964,9 +4951,9 @@
     ],
     "LogicUnderwaterBubbles": [
       { "field": "base_logic", "type": "Logic" },
-      { "field": "unknown3", "type": "Float" },
-      { "field": "unknown4", "type": "Word" },
-      { "field": "unknown5", "type": "Byte" }
+      { "field": "gravity_direction", "type": "Float" },
+      { "field": "droplets_spawn_chance", "type": "Word", "comment": "inverse chance" },
+      { "field": "droplets_enabled", "type": "Bool" }
     ],
     "LogicDiceShop": [
       { "field": "base_logic", "type": "Logic" },
@@ -5935,7 +5922,7 @@
       },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer",
+        "type": "Float", "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "explosion_loop", "type": "SoundMeta" },
@@ -5962,14 +5949,11 @@
       { "field": "base_screen", "type": "ScreenBase" },
       {
         "field": "credits_progression",
-        "type": "ScrollingCreditsProgressionPointer",
+        "type": "Float", "pointer": true,
         "comment": "points to float timer that indicates how far in the scrolling credits we are"
       },
       { "field": "bg_music_info", "type": "SoundMeta" },
       { "field": "unknown4", "type": "UnsignedQword" }
-    ],
-    "ScrollingCreditsProgressionPointer": [
-      { "field": "timer", "type": "Float" }
     ],
     "ScreenScoresPointer": [
       { "field": "base_screen", "type": "ScreenBase" },
@@ -8049,7 +8033,7 @@
         "type": "EntityList",
         "comment": "char + fx + mons + item + logical + mount + activefloor + BG (excluding BG_SHOP, BG_LEVEL_*)"
       },
-      { "field": "unknown1", "type": "EntityRegionsPointer" },
+      { "field": "unknown1", "type": "EntityRegions", "pointer": true },
       {
         "field": "entities_by_mask",
         "type": "StdMap",
@@ -8103,7 +8087,7 @@
       {
         "field": "entity_regions",
         "type": "StdMap",
-        "keytype": "UnsignedDword",
+        "keytype": "EntityUID",
         "valuetype": "EntityRegions",
         "comment": "key is uid, all entities except FX, FLOOR, DECORATION, BG, SHADOW and LOGICAL"
       },
@@ -8189,9 +8173,6 @@
       },
       { "field": "size", "type": "UnsignedByte" },
       { "field": "cap", "type": "UnsignedByte" }
-    ],
-    "EntityRegionsPointer": [
-      { "field": "entity_regions", "type": "EntityRegions" }
     ],
     "EntityListPointer": [
       { "field": "entity_1", "type": "EntityPointer" },
@@ -8915,7 +8896,7 @@
       { "field": "padding3?", "type": "UnsignedDword" },
       {
         "field": "sub_theme",
-        "type": "ThemeInfoPointer",
+        "type": "COThemeInfoPointer",
         "comment": "for cosmic ocean"
       },
       { "field": "unknown3", "type": "UnsignedDword" },
@@ -9243,8 +9224,22 @@
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" }
     ],
-    "EntityLogicPointer": [
-      { "field": "__vftable", "type": "DataPointer" },
+    "CutsceneBehavior": [
+    {
+      "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": {
+            "name": "~CutsceneBehavior",
+            "params": "",
+            "return": ""
+          },
+          "1": {
+            "name": "update",
+            "params": "Movable* entity"
+          }
+        }
+    },
       { "field": "unknown1", "type": "Qword" },
       { "field": "unknown2", "type": "Qword" }
     ],

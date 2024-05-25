@@ -204,7 +204,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::LevelGenRoomsPointer:
         case MemoryFieldType::LevelGenRoomsMetaPointer:
         case MemoryFieldType::JournalPagePointer:
-        case MemoryFieldType::ThemeInfoPointer:
+        case MemoryFieldType::COThemeInfoPointer:
         case MemoryFieldType::UTF16Char:
         case MemoryFieldType::IPv4Address:
         {
@@ -1692,7 +1692,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
-        case MemoryFieldType::ThemeInfoPointer:
+        case MemoryFieldType::COThemeInfoPointer:
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             if (valueMemoryOffset == 0)
@@ -2519,7 +2519,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
 
                 break;
             }
-            case MemoryFieldType::ThemeInfoPointer:
+            case MemoryFieldType::COThemeInfoPointer:
             case MemoryFieldType::UndeterminedThemeInfoPointer:
             {
                 if (getThisTypeName() != "ThemeInfo")
