@@ -73,16 +73,16 @@ QTreeView::branch:open:has-children:has-siblings  {\
 void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta, uint8_t deltaPrefixCount,
                                                      QStandardItem* parent)
 {
-    size_t currentOffset = structAddr;
+    size_t currentAddr = structAddr;
     size_t currentDelta = initialDelta;
 
     for (auto& field : fields)
     {
-        addMemoryField(field, mainName + "." + field.name, currentOffset, currentDelta, deltaPrefixCount, parent);
+        addMemoryField(field, mainName + "." + field.name, currentAddr, currentDelta, deltaPrefixCount, parent);
         auto size = field.get_size();
         currentDelta += size;
         if (structAddr != 0)
-            currentOffset += size;
+            currentAddr += size;
     }
 }
 
@@ -167,6 +167,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
     uint8_t flags = 0;
     QStandardItem* returnField = nullptr;
+    auto config = Configuration::get();
     switch (field.type)
     {
         case MemoryFieldType::Skip:
@@ -258,8 +259,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 }
                 auto flagFieldItem = createAndInsertItem(flagField, fieldNameOverride + "." + flagField.name, flagsParent, 0, showDelta);
                 flagFieldItem->setData(x, gsRoleFlagIndex);
-                auto flagName = Configuration::get()->flagTitle(field.firstParameterType, x);
-                QString realFlagName = QString::fromStdString(flagName.empty() ? Configuration::get()->flagTitle("unknown", x) : flagName); // TODO: don't show unknown unless it was chosen in settings
+                auto flagName = config->flagTitle(field.firstParameterType, x);
+                QString realFlagName = QString::fromStdString(flagName.empty() ? config->flagTitle("unknown", x) : flagName); // TODO: don't show unknown unless it was chosen in settings
 
                 flagsParent->child(x - 1, gsColValue)->setData(realFlagName, Qt::DisplayRole);
             }
@@ -269,7 +270,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
-            addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             break;
         }
         case MemoryFieldType::StdVector:
@@ -277,9 +278,9 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             if (field.isPointer)
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
             break;
         }
@@ -289,9 +290,9 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             returnField->setData(QVariant::fromValue(field.secondParameterType), gsRoleStdContainerSecondParameterType);
             if (field.isPointer)
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
             break;
         }
@@ -299,16 +300,36 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, 0);
             returnField->setData(memoryAddress, gsRoleMemoryAddress);
-            addMemoryFields(Configuration::get()->typeFieldsOfEntitySubclass(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+            addMemoryFields(config->typeFieldsOfEntitySubclass(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+            break;
+        }
+        case MemoryFieldType::Array:
+        {
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+            returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
+            returnField->setData(field.numberOfElements, gsRoleSize);
+            if (field.numberOfElements <= 10) // TODO: get the number from settings when done
+            {
+                MemoryField index = config->nameToMemoryField(field.firstParameterType);
+                if (field.isPointer)
+                    delta = 0;
+
+                for (size_t idx = 0; idx < field.numberOfElements; ++idx)
+                {
+                    index.name = "index_" + std::to_string(idx);
+                    addMemoryField(index, fieldNameOverride + index.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1 : deltaPrefixCount, returnField);
+                    delta += index.get_size();
+                }
+            }
             break;
         }
         case MemoryFieldType::DefaultStructType:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
-                addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+                addMemoryFields(config->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
             break;
         }
@@ -316,9 +337,9 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             else
-                addMemoryFields(Configuration::get()->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
             break;
         }
@@ -1888,6 +1909,19 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
+        case MemoryFieldType::Array:
+        {
+            if (!itemField->hasChildren())
+            {
+                if (valueMemoryOffset == 0)
+                    itemValue->setData({}, Qt::DisplayRole);
+                else
+                    itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+
+                break;
+            }
+            [[fallthrough]];
+        }
         case MemoryFieldType::DefaultStructType:
         {
             if (isExpanded(itemField->index()))
@@ -2236,6 +2270,22 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         getToolbar()->showJournalPage(rawValue);
                     }
                     break;
+                }
+                case MemoryFieldType::Array:
+                {
+                    auto mainField = index.sibling(index.row(), gsColField);
+                    if (!mainField.child(0, 0).isValid())
+                    {
+                        auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                        if (rawValue == 0)
+                            return;
+
+                        auto typeName = qvariant_cast<std::string>(mainField.data(gsRoleStdContainerFirstParameterType));
+
+                        getToolbar()->showArray(rawValue, mainField.data(Qt::DisplayRole).toString().toStdString(), typeName, mainField.data(gsRoleSize).toULongLong());
+                        break;
+                    }
+                    [[fallthrough]];
                 }
                 case MemoryFieldType::DefaultStructType:
                 case MemoryFieldType::EntitySubclass:

@@ -126,6 +126,7 @@ namespace S2Plugin
         Online,
         IPv4Address,
         Double,
+        Array,
     };
 
     struct VirtualFunction
@@ -153,6 +154,8 @@ namespace S2Plugin
         std::string comment;
         // size in bytes
         size_t get_size() const;
+        // length, size of array etc.
+        size_t numberOfElements{0};
 
         // For checking duplicate names
         bool operator==(const MemoryField& other) const
@@ -209,6 +212,8 @@ namespace S2Plugin
         static std::string_view getTypeDisplayName(MemoryFieldType type);
         static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
+        // unknown name will be created as DefaultStructType
+        MemoryField nameToMemoryField(const std::string& name) const;
 
         uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t base_addr = 0) const;
         uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t base_addr = 0) const;

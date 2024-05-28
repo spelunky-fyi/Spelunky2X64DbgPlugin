@@ -26,6 +26,7 @@ namespace S2Plugin
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
+        void showArray(uintptr_t address, std::string name, std::string arrayTypeName, size_t length);
 
       public slots:
         ViewEntityDB* showEntityDB();

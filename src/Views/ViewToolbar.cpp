@@ -184,6 +184,15 @@ void S2Plugin::ViewToolbar::showEntity(uintptr_t address)
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
+void S2Plugin::ViewToolbar::showArray(uintptr_t address, std::string name, std::string arrayTypeName, size_t length)
+{
+    auto field = Configuration::get()->nameToMemoryField(arrayTypeName);
+    auto w = new ViewArray(address, std::move(field), length, arrayTypeName + " " + name);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
 //
 // slots:
 //

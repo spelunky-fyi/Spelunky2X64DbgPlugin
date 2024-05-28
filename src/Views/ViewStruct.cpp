@@ -44,6 +44,26 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     autoRefresh->toggleAutoRefresh(true);
 }
 
+S2Plugin::ViewArray::ViewArray(uintptr_t address, MemoryField field, size_t num, const std::string name, QWidget* parent) : ViewStruct(address, {}, name, parent)
+{
+    size_t currentAddr = address;
+    size_t currentDelta = 0;
+    size_t size = field.get_size();
+    field.name = "index_000";
+
+    for (size_t idx = 0; idx < num; ++idx)
+    {
+        auto indexString = std::to_string(idx);
+        auto itr = 9 - indexString.length(); // 9 - lenght of "index_000"
+        field.name.replace(itr, indexString.length(), indexString);
+
+        mMainTreeView->addMemoryField(field, name + "." + field.name, currentAddr, currentDelta, 0, nullptr);
+        currentDelta += size;
+        if (address != 0)
+            currentAddr += size;
+    }
+}
+
 QSize S2Plugin::ViewStruct::sizeHint() const
 {
     return QSize(750, 1050);

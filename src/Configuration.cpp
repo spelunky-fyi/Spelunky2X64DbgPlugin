@@ -143,6 +143,7 @@ namespace S2Plugin
         {MemoryFieldType::CharacterDBID, "CharacterDBID", "uint8_t", "CharacterDBID", 1, false},
         {MemoryFieldType::VirtualFunctionTable, "VirtualFunctionTable", "size_t*", "VirtualFunctionTable", 8, true},
         {MemoryFieldType::IPv4Address, "IPv4Address", "uint32_t", "IPv4Address", 4, false},
+        {MemoryFieldType::Array, "Array", "", "Array", 0, false},
         // Other
         //{MemoryFieldType::EntitySubclass, "", "", "", 0},
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},
@@ -409,6 +410,52 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             }
             break;
         }
+        case MemoryFieldType::UTF16StringFixedSize:
+        {
+            if (field.contains("length"))
+            {
+                memField.numberOfElements = field["length"].get<size_t>();
+                memField.size = memField.numberOfElements * 2;
+                break;
+            }
+            else if (memField.size == 0)
+                throw std::runtime_error("Missing `lenght` or `offset` parameter for UTF16StringFixedSize (" + struct_name + "." + memField.name + ")");
+
+            memField.numberOfElements = memField.size / 2;
+            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
+        case MemoryFieldType::UTF8StringFixedSize:
+        {
+            if (field.contains("length"))
+                memField.size = field["length"].get<size_t>();
+
+            if (memField.size == 0)
+                throw std::runtime_error("Missing valid `lenght` or `offset` parameter for UTF8StringFixedSize (" + struct_name + "." + memField.name + ")");
+
+            memField.numberOfElements = memField.size;
+            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
+        case MemoryFieldType::Array:
+        {
+            if (field.contains("length"))
+            {
+                memField.numberOfElements = field["length"].get<size_t>();
+                if (memField.numberOfElements == 0)
+                    throw std::runtime_error("Size 0 not allowed for Array type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `length` parameter for Array (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("arraytype"))
+                memField.firstParameterType = field["arraytype"].get<std::string>();
+            else
+                throw std::runtime_error("Missing `arraytype` parameter for Array (" + struct_name + "." + memField.name + ")");
+
+            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
         case MemoryFieldType::DefaultStructType:
             memField.jsonName = fieldTypeStr;
             break;
@@ -566,7 +613,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFields(co
     auto it = mTypeFieldsMain.find(type);
     if (it == mTypeFieldsMain.end())
     {
-        // no error since we can use this to check if type is a struct
+        // no error since we can use this to check if type is a struct (have fields)
         // dprintf("unknown key requested in Configuration::typeFields() (t=%s id=%d)\n", gsMemoryFieldType.at(type).display_name.data(), type);
         static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
@@ -794,8 +841,11 @@ size_t S2Plugin::MemoryField::get_size() const
 
     if (size == 0)
     {
-        // no entity sub class, shouldn't be needed
-
+        if (type == MemoryFieldType::Array)
+        {
+            const_cast<MemoryField*>(this)->size = numberOfElements * Configuration::get()->getTypeSize(firstParameterType);
+            return size;
+        }
         if (jsonName.empty())
         {
             size_t new_size = 0;
@@ -806,7 +856,6 @@ size_t S2Plugin::MemoryField::get_size() const
             const_cast<MemoryField*>(this)->size = new_size;
             return size;
         }
-
         const_cast<MemoryField*>(this)->size = Configuration::get()->getTypeSize(jsonName, type == MemoryFieldType::EntitySubclass);
     }
     return size;
@@ -898,6 +947,7 @@ uintptr_t S2Plugin::Configuration::offsetForField(MemoryFieldType type, std::str
 
 uintptr_t S2Plugin::Configuration::offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t addr) const
 {
+    // [Known Issue]: can't get element from an Array
     bool last = false;
     size_t currentDelimiter = fieldUID.find('.');
 
@@ -943,4 +993,23 @@ bool S2Plugin::Configuration::isPointerType(MemoryFieldType type)
         return false;
 
     return it->second.isPointer;
+}
+
+S2Plugin::MemoryField S2Plugin::Configuration::nameToMemoryField(const std::string& name) const
+{
+    MemoryField field;
+    auto type = getBuiltInType(name);
+    if (type == MemoryFieldType::None)
+    {
+        field.type = MemoryFieldType::DefaultStructType;
+        field.jsonName = name;
+        field.isPointer = isPermanentPointer(name);
+    }
+    else
+    {
+        field.type = type;
+        field.isPointer = isPointerType(type);
+        field.size = getBuiltInTypeSize(type);
+    }
+    return field;
 }
