@@ -50,7 +50,8 @@ namespace S2Plugin
     constexpr uint16_t gsRoleStdContainerFirstParameterType = Qt::UserRole + 8;
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
-    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 11; // for entity uid to not look for the uid twice
+    constexpr uint16_t gsRoleColumns = Qt::UserRole + 11;       // for Matrix
+    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 12; // for entity uid to not look for the uid twice
 
     // new types need to be added to
     // - the MemoryFieldType enum
@@ -127,6 +128,7 @@ namespace S2Plugin
         IPv4Address,
         Double,
         Array,
+        Matrix,
     };
 
     struct VirtualFunction
@@ -149,13 +151,21 @@ namespace S2Plugin
         // jsonName only if applicable: if a type is not a MemoryFieldType, but fully defined in the json file
         // then save its name so we can compare later
         std::string jsonName;
+        // parameter types for stuff like vectors, maps etc.
         std::string firstParameterType;
         std::string secondParameterType;
         std::string comment;
         // size in bytes
         size_t get_size() const;
+        union
+        {
         // length, size of array etc.
         size_t numberOfElements{0};
+            // row count for matrix
+            size_t rows;
+        };
+        // column count for matrix
+        size_t columns{0};
 
         // For checking duplicate names
         bool operator==(const MemoryField& other) const
@@ -166,6 +176,7 @@ namespace S2Plugin
       private:
         size_t size{0};
         friend class Configuration;
+        friend class ViewMatrix;
     };
 
     struct RoomCode

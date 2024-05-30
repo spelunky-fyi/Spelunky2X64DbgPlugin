@@ -144,6 +144,7 @@ namespace S2Plugin
         {MemoryFieldType::VirtualFunctionTable, "VirtualFunctionTable", "size_t*", "VirtualFunctionTable", 8, true},
         {MemoryFieldType::IPv4Address, "IPv4Address", "uint32_t", "IPv4Address", 4, false},
         {MemoryFieldType::Array, "Array", "", "Array", 0, false},
+        {MemoryFieldType::Matrix, "Matrix", "", "Matrix", 0, false},
         // Other
         //{MemoryFieldType::EntitySubclass, "", "", "", 0},
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},
@@ -443,7 +444,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             {
                 memField.numberOfElements = field["length"].get<size_t>();
                 if (memField.numberOfElements == 0)
-                    throw std::runtime_error("Size 0 not allowed for Array type (" + struct_name + "." + memField.name + ")");
+                    throw std::runtime_error("Length 0 not allowed for Array type (" + struct_name + "." + memField.name + ")");
             }
             else
                 throw std::runtime_error("Missing `length` parameter for Array (" + struct_name + "." + memField.name + ")");
@@ -453,7 +454,32 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             else
                 throw std::runtime_error("Missing `arraytype` parameter for Array (" + struct_name + "." + memField.name + ")");
 
-            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
+        case MemoryFieldType::Matrix:
+        {
+            if (field.contains("matrixtype"))
+                memField.firstParameterType = field["matrixtype"].get<std::string>();
+            else
+                throw std::runtime_error("Missing `matrixtype` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("row"))
+            {
+                memField.rows = field["row"].get<size_t>();
+                if (memField.rows == 0)
+                    throw std::runtime_error("Size 0 not allowed for Matrix type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `row` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("col"))
+            {
+                memField.columns = field["col"].get<size_t>();
+                if (memField.columns == 0)
+                    throw std::runtime_error("Size 0 not allowed for Matrix type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `col` parameter for Matrix (" + struct_name + "." + memField.name + ")");
             break;
         }
         case MemoryFieldType::DefaultStructType:
@@ -846,6 +872,11 @@ size_t S2Plugin::MemoryField::get_size() const
             const_cast<MemoryField*>(this)->size = numberOfElements * Configuration::get()->getTypeSize(firstParameterType);
             return size;
         }
+        if (type == MemoryFieldType::Matrix)
+        {
+            const_cast<MemoryField*>(this)->size = rows * columns * Configuration::get()->getTypeSize(firstParameterType);
+            return size;
+        }
         if (jsonName.empty())
         {
             size_t new_size = 0;
@@ -947,7 +978,7 @@ uintptr_t S2Plugin::Configuration::offsetForField(MemoryFieldType type, std::str
 
 uintptr_t S2Plugin::Configuration::offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t addr) const
 {
-    // [Known Issue]: can't get element from an Array
+    // [Known Issue]: can't get element from an Array or Matrix
     bool last = false;
     size_t currentDelimiter = fieldUID.find('.');
 

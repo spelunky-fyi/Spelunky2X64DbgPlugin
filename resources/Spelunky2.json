@@ -6950,47 +6950,35 @@
       },
       {
         "field": "entities_by_region1",
-        "type": "EntityList",
+        "type": "Matrix",
+        "row": 31,
+        "col": 21,
+        "matrixtype": "EntityList",
         "comment": "31*21*EntityList"
-      },
-      {
-        "field": "skip2",
-        "type": "Skip",
-        "offset": 15600,
-        "comment": "31*21*EntityList (minus on above)"
       },
       {
         "field": "entities_by_region2",
-        "type": "EntityList",
+        "type": "Matrix",
+        "row": 31,
+        "col": 21,
+        "matrixtype": "EntityList",
         "comment": "31*21*EntityList"
-      },
-      {
-        "field": "skip3",
-        "type": "Skip",
-        "offset": 15600,
-        "comment": "31*21*EntityList (minus on above)"
       },
       {
         "field": "entities_by_region3",
-        "type": "EntityList",
+        "type": "Matrix",
+        "row": 31,
+        "col": 21,
+        "matrixtype": "EntityList",
         "comment": "31*21*EntityList"
-      },
-      {
-        "field": "skip4",
-        "type": "Skip",
-        "offset": 15600,
-        "comment": "31*21*EntityList (minus on above)"
       },
       {
         "field": "entities_by_region4",
-        "type": "EntityList",
+        "type": "Matrix",
+        "row": 31,
+        "col": 21,
+        "matrixtype": "EntityList",
         "comment": "31*21*EntityList"
-      },
-      {
-        "field": "skip5",
-        "type": "Skip",
-        "offset": 15600,
-        "comment": "31*21*EntityList (minus on above)"
       },
       {
         "field": "entity_regions",
@@ -6999,18 +6987,20 @@
         "valuetype": "EntityRegions",
         "comment": "key is uid, all entities except FX, FLOOR, DECORATION, BG, SHADOW and LOGICAL"
       },
-      { "field": "grid_entities_begin", "type": "Qword" },
       {
-        "field": "skip6",
-        "type": "Skip",
-        "offset": 86680,
+        "field": "grid_entities",
+        "type": "Matrix",
+        "row": 126,
+        "col": 86,
+        "matrixtype": "EntityPointer",
         "comment": "grid_entities 126*86*8 minus the one above"
       },
-      { "field": "entities_overlaping_grid_begin", "type": "EntityList" },
       {
-        "field": "skip7",
-        "type": "Skip",
-        "offset": 260040,
+        "field": "entities_overlaping_grid",
+        "type": "Matrix",
+        "row": 126,
+        "col": 86,
+        "matrixtype": "EntityList",
         "comment": "126*86*EntityList (minus the Qword above)"
       },
       { "field": "unknown_entities2", "type": "EntityList" },
@@ -8069,14 +8059,14 @@
       {
         "field": "unknown1",
         "type": "DataPointer",
-        "comment": "some sort of array?"
+        "comment": "some sort of container"
       },
       {
-        "field": "unknown2",
+        "field": "size",
         "type": "Dword",
         "comment": "related to the level size?"
       },
-      { "field": "unknown3", "type": "Dword" },
+      { "field": "cap", "type": "Dword" },
       { "field": "unknown4", "type": "DataPointer" },
       { "field": "unknown5", "type": "DataPointer" },
       { "field": "unknown6", "type": "DataPointer" },

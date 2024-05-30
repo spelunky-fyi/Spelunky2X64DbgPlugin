@@ -44,24 +44,30 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     autoRefresh->toggleAutoRefresh(true);
 }
 
-S2Plugin::ViewArray::ViewArray(uintptr_t address, MemoryField field, size_t num, const std::string name, QWidget* parent) : ViewStruct(address, {}, name, parent)
+S2Plugin::ViewArray::ViewArray(uintptr_t address, std::string arrayTypeName, size_t num, std::string name, QWidget* parent)
+    : ViewStruct(0, {}, arrayTypeName + " " + name + '[' + std::to_string(num) + ']', parent)
 {
-    size_t currentAddr = address;
-    size_t currentDelta = 0;
-    size_t size = field.get_size();
-    field.name = "index_000";
+    MemoryField array;
+    array.name = name;
+    array.type = MemoryFieldType::Array;
+    array.firstParameterType = arrayTypeName;
+    array.secondParameterType = '#'; // just to let it know it should put all the elements in, no array element
+    array.numberOfElements = num;
+    mMainTreeView->addMemoryField(array, {}, address, 0);
+}
 
-    for (size_t idx = 0; idx < num; ++idx)
-    {
-        auto indexString = std::to_string(idx);
-        auto itr = 9 - indexString.length(); // 9 - lenght of "index_000"
-        field.name.replace(itr, indexString.length(), indexString);
-
-        mMainTreeView->addMemoryField(field, name + "." + field.name, currentAddr, currentDelta, 0, nullptr);
-        currentDelta += size;
-        if (address != 0)
-            currentAddr += size;
-    }
+S2Plugin::ViewMatrix::ViewMatrix(uintptr_t address, std::string arrayTypeName, size_t rows, size_t columns, std::string name, QWidget* parent)
+    : ViewStruct(0, {}, arrayTypeName + " " + name + '[' + std::to_string(rows) + "][" + std::to_string(columns) + ']', parent)
+{
+    MemoryField matrix;
+    matrix.name = name;
+    matrix.type = MemoryFieldType::Matrix;
+    matrix.firstParameterType = arrayTypeName;
+    matrix.secondParameterType = '$'; // just to let it know it should put all the elements in, no matrix element
+                                      // it can't be # since we still want the array to be placed normally, just no size limit
+    matrix.rows = rows;
+    matrix.columns = columns;
+    mMainTreeView->addMemoryField(matrix, {}, address, 0);
 }
 
 QSize S2Plugin::ViewStruct::sizeHint() const

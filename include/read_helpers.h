@@ -7,7 +7,7 @@
 namespace S2Plugin
 {
     template <typename T>
-    T Read(uintptr_t addr)
+    [[nodiscard]] T Read(uintptr_t addr)
     {
         T x{};
         Script::Memory::Read(addr, &x, sizeof(T), nullptr);
@@ -15,7 +15,7 @@ namespace S2Plugin
     }
 
     template <typename T>
-    std::basic_string<T> ReadConstBasicString(uintptr_t addr)
+    [[nodiscard]] std::basic_string<T> ReadConstBasicString(uintptr_t addr)
     {
         if (addr == 0)
             return {};
@@ -38,7 +38,7 @@ namespace S2Plugin
             dprintf("[ReadConstBasicString] read (bytes): %d expected: %d\n", read_size, size * char_size);
         return str;
     }
-    inline std::string ReadConstString(uintptr_t addr)
+    [[nodiscard]] inline std::string ReadConstString(uintptr_t addr)
     {
         return ReadConstBasicString<char>(addr);
     }

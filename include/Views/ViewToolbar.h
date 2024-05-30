@@ -27,6 +27,7 @@ namespace S2Plugin
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
         void showArray(uintptr_t address, std::string name, std::string arrayTypeName, size_t length);
+        void showMatrix(uintptr_t address, std::string name, std::string arrayTypeName, size_t rows, size_t columns);
 
       public slots:
         ViewEntityDB* showEntityDB();

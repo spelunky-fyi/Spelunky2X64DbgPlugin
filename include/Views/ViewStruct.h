@@ -26,6 +26,11 @@ namespace S2Plugin
     class ViewArray : public ViewStruct
     {
       public:
-        ViewArray(uintptr_t address, MemoryField field, size_t num, const std::string name, QWidget* parent = nullptr);
+        ViewArray(uintptr_t address, std::string arrayTypeName, size_t num, std::string name, QWidget* parent = nullptr);
+    };
+    class ViewMatrix : public ViewStruct
+    {
+      public:
+        ViewMatrix(uintptr_t address, std::string arrayTypeName, size_t row, size_t col, std::string name, QWidget* parent = nullptr);
     };
 } // namespace S2Plugin

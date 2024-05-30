@@ -147,7 +147,11 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         itemFieldType->setEditable(false);
 
         QString typeName = field.isPointer ? "<b>P</b>: " : ""; // add color?
-        if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
+        if (field.type == MemoryFieldType::Matrix)
+            typeName += QString("%1[%2][%3]").arg(QString::fromStdString(field.firstParameterType)).arg(field.rows).arg(field.columns);
+        else if (field.type == MemoryFieldType::Array)
+            typeName += QString("%1[%2]").arg(QString::fromStdString(field.firstParameterType)).arg(field.numberOfElements);
+        else if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
             typeName += QString::fromStdString(field.jsonName);
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
             typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
@@ -305,20 +309,71 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         }
         case MemoryFieldType::Array:
         {
-            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
-            returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
-            returnField->setData(field.numberOfElements, gsRoleSize);
-            if (field.numberOfElements <= 10) // TODO: get the number from settings when done
+            if (field.secondParameterType == "#")
+                returnField = parent;
+            else
+            {
+                returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+                returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
+                returnField->setData(field.numberOfElements, gsRoleSize);
+            }
+
+            if (field.numberOfElements <= 30 || field.secondParameterType == "#" || field.secondParameterType == "$") // TODO: get the number from settings when done
             {
                 MemoryField index = config->nameToMemoryField(field.firstParameterType);
+                index.name = field.name + '[';
+                auto initialNameSize = index.name.size();
+
                 if (field.isPointer)
                     delta = 0;
 
                 for (size_t idx = 0; idx < field.numberOfElements; ++idx)
                 {
-                    index.name = "index_" + std::to_string(idx);
+                    index.name.erase(initialNameSize);
+                    index.name += std::to_string(idx) + ']';
+
                     addMemoryField(index, fieldNameOverride + index.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1 : deltaPrefixCount, returnField);
                     delta += index.get_size();
+                    if (memoryAddress != 0)
+                        memoryAddress += index.get_size();
+                }
+            }
+            break;
+        }
+        case MemoryFieldType::Matrix:
+        {
+            if (field.secondParameterType == "$")
+                returnField = parent;
+            else
+            {
+                returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+                returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
+                returnField->setData(field.rows, gsRoleSize);
+                returnField->setData(field.columns, gsRoleColumns);
+            }
+
+            if (field.rows <= 30 || field.secondParameterType == "$") // TODO: get the number from settings when done
+                                                                      // columns limit dealt by the array
+            {
+                if (field.isPointer)
+                    delta = 0;
+
+                MemoryField row;
+                row.numberOfElements = field.columns;
+                row.firstParameterType = field.firstParameterType;
+                row.secondParameterType = field.secondParameterType;
+                row.type = MemoryFieldType::Array;
+                row.name = field.name + '[';
+                auto initialNameSize = row.name.size();
+
+                for (size_t idx = 0; idx < field.rows; ++idx)
+                {
+                    row.name.erase(initialNameSize);
+                    row.name += std::to_string(idx) + ']';
+                    addMemoryField(row, fieldNameOverride + row.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1 : deltaPrefixCount, returnField);
+                    delta += row.get_size();
+                    if (memoryAddress != 0)
+                        memoryAddress += row.get_size();
                 }
             }
             break;
@@ -1910,6 +1965,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             break;
         }
         case MemoryFieldType::Array:
+        case MemoryFieldType::Matrix:
         {
             if (!itemField->hasChildren())
             {
@@ -2270,6 +2326,25 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         getToolbar()->showJournalPage(rawValue);
                     }
                     break;
+                }
+                case MemoryFieldType::Matrix:
+                {
+                    auto mainField = index.sibling(index.row(), gsColField);
+                    if (!mainField.child(0, 0).isValid())
+                    {
+                        auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                        if (rawValue == 0)
+                            return;
+
+                        auto typeName = qvariant_cast<std::string>(mainField.data(gsRoleStdContainerFirstParameterType));
+
+                        auto rows = mainField.data(gsRoleSize).toULongLong();
+                        auto columns = mainField.data(gsRoleColumns).toULongLong();
+
+                        getToolbar()->showMatrix(rawValue, mainField.data(Qt::DisplayRole).toString().toStdString(), typeName, rows, columns);
+                        break;
+                    }
+                    [[fallthrough]]; // can't just fall into DefaultStructType, but it shoudln't matter as array will do the same check and fall futher anyway
                 }
                 case MemoryFieldType::Array:
                 {

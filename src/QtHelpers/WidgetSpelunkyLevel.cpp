@@ -63,7 +63,6 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
     }
     if (mEntityMasksToPaint != 0)
     {
-        StdMap<uint32_t, size_t> maskMap{layerToDraw == 0 ? mMaskMapAddr.first : mMaskMapAddr.second};
         for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
         {
             if ((mEntityMasksToPaint >> bit_number) & 1)
