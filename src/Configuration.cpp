@@ -260,7 +260,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
 
     MemoryField memField;
     memField.name = field["field"].get<std::string>();
-    memField.comment = value_or(field, "commment", ""s);
+    memField.comment = value_or(field, "comment", ""s);
     memField.type = MemoryFieldType::DefaultStructType; // just initial
     std::string fieldTypeStr = field["type"].get<std::string>();
 
