@@ -1,6 +1,7 @@
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 
 #include "Configuration.h"
+#include "Data/EntityList.h"
 #include "Data/StdMap.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
@@ -154,6 +155,7 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
         constexpr auto dataSize = (msLevelMaxHeight + 1) * ((msLevelMaxWidth + 1) * sizeof(uintptr_t));
         Script::Memory::Read(gridAddr, &mLevelFloors, dataSize, nullptr);
     }
+
     for (auto& entity : mEntitiesToPaint)
         entity.pos = entity.ent.abs_position();
 
@@ -166,14 +168,9 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
             mEntitiesMaskCoordinates[bit_number].clear();
             if ((mEntityMasksToPaint & key) != 0)
             {
-                // TODO: change to proper struct when done
-                auto pointers = Script::Memory::ReadQword(value_ptr);
-                auto list_count = Script::Memory::ReadDword(value_ptr + 20);
-
-                mEntitiesMaskCoordinates[bit_number].reserve(list_count);
-                std::vector<uintptr_t> entities;
-                entities.resize(list_count);
-                Script::Memory::Read(pointers, entities.data(), list_count * sizeof(uintptr_t), nullptr);
+                EntityList entityList{value_ptr};
+                mEntitiesMaskCoordinates[bit_number].reserve(entityList.size());
+                std::vector<uintptr_t> entities = entityList.getAllEntities();
 
                 for (auto entityAddr : entities)
                 {

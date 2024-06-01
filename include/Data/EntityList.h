@@ -5,30 +5,33 @@
 #include "read_helpers.h"
 #include <cstdint>
 #include <utility>
+#include <vector>
 
 namespace S2Plugin
 {
-
+    // this shoudl only ever be used as temporary
     class EntityList
     {
       public:
-        EntityList(uintptr_t _address) : address(_address){};
+        EntityList(uintptr_t address)
+        {
+            Script::Memory::Read(address, this, sizeof(EntityList), nullptr);
+        };
         uintptr_t entities() const
         {
-            return Script::Memory::ReadQword(address);
+            return mEntities;
         }
-
         uintptr_t uids() const
         {
-            return Script::Memory::ReadQword(address + sizeof(uintptr_t));
+            return mUids;
         }
         uint32_t capacity() const
         {
-            return Script::Memory::ReadDword(address + sizeof(uintptr_t) * 2);
+            return mCap;
         }
         uint32_t size() const
         {
-            return Script::Memory::ReadDword(address + sizeof(uintptr_t) * 2 + sizeof(uint32_t));
+            return mSize;
         }
         struct Iterator
         {
@@ -37,7 +40,7 @@ namespace S2Plugin
             {
                 advance(index);
             }
-            void advance(int count) noexcept // should probably be int64 ?
+            void advance(int count) noexcept // should probably be int64
             {
                 addr.first += count * sizeof(uintptr_t);
                 addr.second += count * sizeof(uint32_t);
@@ -96,16 +99,12 @@ namespace S2Plugin
 
         Iterator begin() const
         {
-            uintptr_t pointers[2] = {0, 0};
-            // slightly faster then reading both thru ReadQword
-            Script::Memory::Read(address, &pointers, sizeof(uintptr_t) * 2, nullptr);
-            return {pointers[0], pointers[1]};
+            return {entities(), uids()};
         }
         Iterator end() const
         {
-            auto full = getFullStruct();
-            uintptr_t entitiesEnd = full.entities + full.size * sizeof(uintptr_t);
-            uintptr_t uidsEnd = full.uids + full.size * sizeof(uint32_t);
+            uintptr_t entitiesEnd = entities() + size() * sizeof(uintptr_t);
+            uintptr_t uidsEnd = uids() + size() * sizeof(uint32_t);
             return {entitiesEnd, uidsEnd};
         }
         const Iterator cbegin() const
@@ -136,24 +135,25 @@ namespace S2Plugin
             }
             return endIterator;
         }
+        std::vector<uintptr_t> getAllEntities() const
+        {
+            std::vector<uintptr_t> result;
+            result.resize(size());
+            Script::Memory::Read(entities(), result.data(), size() * sizeof(uintptr_t), nullptr);
+            return result;
+        }
+        std::vector<uint32_t> getAllUids() const
+        {
+            std::vector<uint32_t> result;
+            result.resize(size());
+            Script::Memory::Read(uids(), result.data(), size() * sizeof(uint32_t), nullptr);
+            return result;
+        }
 
       private:
-        uintptr_t address;
-        struct TrueEntityList
-        {
-            uintptr_t entities{0};
-            uintptr_t uids{0};
-            uint32_t cap{0};
-            uint32_t size{0};
-
-          private:
-            TrueEntityList() = delete;
-            // TrueEntityList(const TrueEntityList&) = delete;
-            // TrueEntityList& operator=(const TrueEntityList&) = delete;
-        };
-        TrueEntityList getFullStruct() const
-        {
-            return Read<TrueEntityList>(address);
-        }
+        uintptr_t mEntities{0};
+        uintptr_t mUids{0};
+        uint32_t mCap{0};
+        uint32_t mSize{0};
     };
 }; // namespace S2Plugin

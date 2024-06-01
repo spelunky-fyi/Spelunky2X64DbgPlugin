@@ -40,13 +40,16 @@ void S2Plugin::ViewEntityList::refreshEntityListContents()
 
     EntityList entityList{mEntityListAddress};
 
-    for (auto entity : entityList)
+    // TODO using custom view instead of memory view would improve performance
+    auto entities = entityList.entities();
+    auto uids = entityList.getAllUids();
+    for (size_t idx = 0; idx < entityList.size(); ++idx)
     {
         MemoryField entityField;
-        entityField.name = "uid_" + std::to_string(entity.second);
+        entityField.name = "uid_" + std::to_string(uids[idx]);
         entityField.isPointer = true;
         entityField.type = MemoryFieldType::EntityPointer;
-        mMainTreeView->addMemoryField(entityField, {}, entity.first, 0);
+        mMainTreeView->addMemoryField(entityField, {}, entities + idx * sizeof(uintptr_t), 0);
     }
 
     mMainTreeView->updateTableHeader();
