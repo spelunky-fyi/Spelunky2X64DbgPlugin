@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string name, QWidget* parent) : QWidget(parent)
+S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string& name, QWidget* parent) : QWidget(parent)
 {
     setWindowIcon(getCavemanIcon());
     setWindowTitle(QString::fromStdString(name));

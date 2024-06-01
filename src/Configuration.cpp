@@ -264,7 +264,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     memField.name = field["field"].get<std::string>();
     memField.comment = value_or(field, "commment", ""s);
     memField.type = MemoryFieldType::DefaultStructType; // just initial
-    std::string fieldTypeStr = field["type"].get<std::string>();
+    std::string_view fieldTypeStr = field["type"].get<std::string_view>();
 
     if (isPermanentPointer(fieldTypeStr) || value_or(field, "pointer", false))
     {
@@ -503,10 +503,10 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 
     for (const auto& [key, jsonValue] : j["entity_class_hierarchy"].items())
     {
-        auto value = jsonValue.get<std::string>();
+        auto value = jsonValue.get<std::string_view>();
         if (key != value)
         {
-            mEntityClassHierarchy[key] = std::move(value);
+            mEntityClassHierarchy[key] = value;
         }
     }
     for (const auto& [key, jsonValue] : j["default_entity_types"].items())

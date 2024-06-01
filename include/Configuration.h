@@ -235,7 +235,11 @@ namespace S2Plugin
         {
             return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
         }
-        bool isJsonStruct(const std::string type) const
+        bool isPermanentPointer(const std::string_view type) const
+        {
+            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
+        }
+        bool isJsonStruct(const std::string& type) const
         {
             return mTypeFieldsStructs.find(type) != mTypeFieldsStructs.end();
         }

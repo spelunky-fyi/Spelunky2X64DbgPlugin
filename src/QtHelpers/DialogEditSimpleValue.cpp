@@ -115,14 +115,27 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
             break;
         }
         case MemoryFieldType::Float:
+        {
+            auto spinbox = new QDoubleSpinBox(this);
+            spinbox->setDecimals(6);
+            spinbox->setRange(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+            QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
+            uint32_t tmp = Script::Memory::ReadDword(mMemoryAddress);
+            auto v = reinterpret_cast<float&>(tmp);
+            spinbox->setValue(v);
+            mSpinBox = spinbox;
+            break;
+        }
         case MemoryFieldType::Double:
         {
             auto spinbox = new QDoubleSpinBox(this);
-            mSpinBox = spinbox;
+            spinbox->setDecimals(15);
+            spinbox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
             QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
             size_t tmp = Script::Memory::ReadQword(mMemoryAddress);
             double v = reinterpret_cast<double&>(tmp);
             spinbox->setValue(v);
+            mSpinBox = spinbox;
             break;
         }
     }
@@ -223,7 +236,7 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
             if (obj) // probably not needed but just in case
                 v = obj->value();
 
-            Script::Memory::WriteQword(mMemoryAddress, v);
+            Script::Memory::WriteQword(mMemoryAddress, static_cast<uint64_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedQword:
@@ -316,14 +329,14 @@ void S2Plugin::DialogEditSimpleValue::decValueChanged(const QString& text)
         }
         case MemoryFieldType::Float:
         {
-            float v = text.toFloat();
+            float v = QLocale::system().toFloat(text);
             uint32_t tmp = reinterpret_cast<uint32_t&>(v);
             ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << tmp;
             break;
         }
         case MemoryFieldType::Double:
         {
-            double v = text.toDouble();
+            double v = QLocale::system().toDouble(text);
             size_t tmp = reinterpret_cast<size_t&>(v);
             ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << tmp;
             break;

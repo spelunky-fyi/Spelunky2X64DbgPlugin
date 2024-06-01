@@ -14,7 +14,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string name, QWidget* parent = nullptr);
+        ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string& name, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;

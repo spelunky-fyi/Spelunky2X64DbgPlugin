@@ -11,8 +11,8 @@ S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidge
     auto stateptr = Spelunky2::get()->get_StatePtr();
     mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.entities_by_mask", stateptr);
     mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.entities_by_mask", stateptr);
-    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities_begin", stateptr);
-    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities_begin", stateptr);
+    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities", stateptr);
+    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities", stateptr);
 
     // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", stateptr);
     // mLevelWidth = Script::Memory::ReadDword(offset) * 10;
