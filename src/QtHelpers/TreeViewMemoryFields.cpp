@@ -1880,7 +1880,12 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             value = updateField<uintptr_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x8, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
             if (value.has_value())
             {
-                itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                uintptr_t beginPointer = Script::Memory::ReadQword(valueMemoryOffset);
+                if (beginPointer == value.value())
+                    itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                else
+                    itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+
                 // maybe show hex as the begin pointer ?
             }
 
@@ -1888,10 +1893,14 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 std::optional<uintptr_t> comparisonValue;
                 auto addr = valueComparisonMemoryOffset == 0 ? 0 : valueComparisonMemoryOffset + 0x8;
-                comparisonValue = updateField<uintptr_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
+                comparisonValue = updateField<uintptr_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
-                    itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                    uintptr_t beginPointer = Script::Memory::ReadQword(valueComparisonMemoryOffset);
+                    if (beginPointer == comparisonValue.value())
+                        itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                    else
+                        itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
                 }
 
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
@@ -1914,7 +1923,10 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             value = updateField<size_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x8, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
             if (value.has_value())
             {
-                itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                if (value.value() == 0)
+                    itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                else
+                    itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
                 // maybe show hex as the pointer ?
             }
 
@@ -1922,12 +1934,53 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 std::optional<size_t> comparisonValue;
                 auto addr = valueComparisonMemoryOffset == 0 ? 0 : valueComparisonMemoryOffset + 0x8;
-                comparisonValue = updateField<size_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
+                comparisonValue = updateField<size_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
-                    itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                    if (comparisonValue.value() == 0)
+                        itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                    else
+                        itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
                 }
                 // maybe it should be based on the pointer not size?
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                if (isPointer == false)
+                    itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            if (shouldUpdateChildren)
+            {
+                std::optional<uintptr_t> addr = pointerUpdate ? valueMemoryOffset : (isPointer ? std::nullopt : newAddr);
+                std::optional<uintptr_t> comparisonAddr = comparisonPointerUpdate ? valueComparisonMemoryOffset : (isPointer ? std::nullopt : newAddrComparison);
+                for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                    updateRow(x, addr, comparisonAddr, itemField);
+            }
+            break;
+        }
+        case MemoryFieldType::EntityList:
+        {
+            std::optional<uint32_t> value;
+            // we use the size to check if it was changed
+            value = updateField<uint32_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x14, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
+            if (value.has_value())
+            {
+                if (value.value() == 0)
+                    itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                else
+                    itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+            }
+
+            if (comparisonActive)
+            {
+                std::optional<uint32_t> comparisonValue;
+                auto addr = valueComparisonMemoryOffset == 0 ? 0 : valueComparisonMemoryOffset + 0x14;
+                comparisonValue = updateField<uint32_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, true, false, highlightColor);
+                if (comparisonValue.has_value())
+                {
+                    if (comparisonValue.value() == 0)
+                        itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                    else
+                        itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                }
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
                     itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
@@ -2426,6 +2479,15 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         auto s = QString::fromUtf8(stringData.get());
                         auto dialog = new DialogEditString(fieldName, s, offset, size - 1, dataType, this);
                         dialog->exec();
+                    }
+                    break;
+                }
+                case MemoryFieldType::EntityList:
+                {
+                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (offset != 0)
+                    {
+                        getToolbar()->showEntityList(offset);
                     }
                     break;
                 }

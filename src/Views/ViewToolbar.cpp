@@ -6,6 +6,7 @@
 #include "Views/ViewEntities.h"
 #include "Views/ViewEntity.h"
 #include "Views/ViewEntityDB.h"
+#include "Views/ViewEntityList.h"
 #include "Views/ViewJournalPage.h"
 #include "Views/ViewLevelGen.h"
 #include "Views/ViewLogger.h"
@@ -195,6 +196,14 @@ void S2Plugin::ViewToolbar::showArray(uintptr_t address, std::string name, std::
 void S2Plugin::ViewToolbar::showMatrix(uintptr_t address, std::string name, std::string arrayTypeName, size_t rows, size_t columns)
 {
     auto w = new ViewMatrix(address, std::move(arrayTypeName), rows, columns, std::move(name));
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void S2Plugin::ViewToolbar::showEntityList(uintptr_t address)
+{
+    auto w = new ViewEntityList(address);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);

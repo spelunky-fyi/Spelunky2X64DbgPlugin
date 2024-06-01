@@ -145,6 +145,7 @@ namespace S2Plugin
         {MemoryFieldType::IPv4Address, "IPv4Address", "uint32_t", "IPv4Address", 4, false},
         {MemoryFieldType::Array, "Array", "", "Array", 0, false},
         {MemoryFieldType::Matrix, "Matrix", "", "Matrix", 0, false},
+        {MemoryFieldType::EntityList, "EntityList", "EntityList*", "EntityList", 24, false},
         // Other
         //{MemoryFieldType::EntitySubclass, "", "", "", 0},
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},

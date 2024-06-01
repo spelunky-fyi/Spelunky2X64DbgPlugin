@@ -129,6 +129,7 @@ namespace S2Plugin
         Double,
         Array,
         Matrix,
+        EntityList,
     };
 
     struct VirtualFunction
@@ -159,8 +160,8 @@ namespace S2Plugin
         size_t get_size() const;
         union
         {
-        // length, size of array etc.
-        size_t numberOfElements{0};
+            // length, size of array etc.
+            size_t numberOfElements{0};
             // row count for matrix
             size_t rows;
         };
@@ -249,7 +250,7 @@ namespace S2Plugin
         const std::vector<std::pair<int64_t, std::string>>& refTitlesOfField(const std::string& fieldName) const;
 
         size_t getTypeSize(const std::string& typeName, bool entitySubclass = false);
-        const EntityList& entityList() const
+        const EntityNamesList& entityList() const
         {
             return entityNames;
         };
@@ -295,7 +296,7 @@ namespace S2Plugin
         void processRoomCodesJSON(nlohmann::ordered_json& json);
         MemoryField populateMemoryField(const nlohmann::ordered_json& field, const std::string& struct_name);
 
-        EntityList entityNames;
+        EntityNamesList entityNames;
         ParticleEmittersList particleEmitters;
 
         Configuration();

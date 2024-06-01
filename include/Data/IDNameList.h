@@ -54,12 +54,12 @@ namespace S2Plugin
         ParticleEmittersList(const ParticleEmittersList&) = delete;
         ParticleEmittersList& operator=(const ParticleEmittersList&) = delete;
     };
-    class EntityList : public IDNameList
+    class EntityNamesList : public IDNameList
     {
       public:
-        explicit EntityList();
+        explicit EntityNamesList();
 
-        EntityList(const EntityList&) = delete;
-        EntityList& operator=(const EntityList&) = delete;
+        EntityNamesList(const EntityNamesList&) = delete;
+        EntityNamesList& operator=(const EntityNamesList&) = delete;
     };
 } // namespace S2Plugin

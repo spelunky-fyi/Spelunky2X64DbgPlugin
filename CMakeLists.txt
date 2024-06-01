@@ -60,6 +60,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/Logger.h
 	include/Data/StdString.h
 	include/Data/StdMap.h
+	include/Data/EntityList.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h
@@ -77,6 +78,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
 	include/Views/ViewStdMap.h
+    include/Views/ViewEntityList.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
 	include/QtHelpers/TreeViewMemoryFields.h
@@ -131,6 +133,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewStdMap.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
+	src/Views/ViewEntityList.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp
 	src/QtHelpers/WidgetMemoryView.cpp
