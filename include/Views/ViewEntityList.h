@@ -1,30 +1,22 @@
 #pragma once
 
-#include <QSize>
+#include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
 #include <string>
 
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-
-    class ViewEntityList : public QWidget
+    class ViewEntityList : public AbstractContainerView
     {
         Q_OBJECT
       public:
         ViewEntityList(uintptr_t address, QWidget* parent = nullptr);
 
       protected:
-        QSize sizeHint() const override;
-        QSize minimumSizeHint() const override;
-
-      private slots:
-        void refreshEntityListContents();
+        void reloadContainer() override;
 
       private:
         uintptr_t mEntityListAddress;
-
-        TreeViewMemoryFields* mMainTreeView;
     };
 } // namespace S2Plugin

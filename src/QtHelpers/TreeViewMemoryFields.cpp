@@ -154,6 +154,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             typeName += QString("%1[%2]").arg(QString::fromStdString(field.firstParameterType)).arg(field.numberOfElements);
         else if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
             typeName += QString::fromStdString(field.jsonName);
+        else if (field.type == MemoryFieldType::StdMap && field.secondParameterType.empty()) // exception
+            typeName += "StdSet";
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
             typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
         else
@@ -2572,7 +2574,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (address != 0)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
-                        //getToolbar()->showStdList(address, typeName, true);
+                        // getToolbar()->showStdList(address, typeName, true);
                     }
                     break;
                 }

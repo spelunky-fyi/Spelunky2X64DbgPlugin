@@ -103,6 +103,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
 	include/QtHelpers/AbstractDatabaseView.h
+	include/QtHelpers/AbstractContainerView.h
 	include/QtHelpers/WidgetAutorefresh.h
 	include/QtHelpers/LongLongSpinBox.h
 	src/Spelunky2.cpp
@@ -153,6 +154,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
 	src/QtHelpers/AbstractDatabaseView.cpp
+	src/QtHelpers/AbstractContainerView.cpp
 	src/QtHelpers/WidgetAutorefresh.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc

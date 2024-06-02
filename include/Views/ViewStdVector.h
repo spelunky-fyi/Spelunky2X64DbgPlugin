@@ -1,33 +1,24 @@
 #pragma once
 
-#include <QSize>
+#include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
 #include <string>
 
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-
-    class ViewStdVector : public QWidget
+    class ViewStdVector : public AbstractContainerView
     {
         Q_OBJECT
       public:
-        ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent = nullptr);
+        ViewStdVector(const std::string& vectorType, uintptr_t vectoraddr, QWidget* parent = nullptr);
 
       protected:
-        QSize sizeHint() const override;
-        QSize minimumSizeHint() const override;
-
-      private slots:
-        void refreshVectorContents();
-        void refreshData();
+        void reloadContainer() override;
 
       private:
         std::string mVectorType;
-        uintptr_t mVectorOffset;
+        uintptr_t mVectorAddress;
         size_t mVectorTypeSize;
-
-        TreeViewMemoryFields* mMainTreeView;
     };
 } // namespace S2Plugin

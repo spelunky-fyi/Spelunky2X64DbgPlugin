@@ -3,16 +3,11 @@
 #include "Configuration.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
-#include "QtHelpers/WidgetAutorefresh.h"
-#include "QtPlugin.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
-#include <QPushButton>
 #include <QString>
-#include <QVBoxLayout>
 
 S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::string& valuetypeName, uintptr_t address, QWidget* parent)
-    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mMapAddress(address), QWidget(parent)
+    : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mMapAddress(address), AbstractContainerView(parent)
 {
     auto config = Configuration::get();
     mMapKeyTypeSize = config->getTypeSize(keytypeName);
@@ -21,35 +16,16 @@ S2Plugin::ViewStdMap::ViewStdMap(const std::string& keytypeName, const std::stri
     mMapKeyAlignment = config->getAlingment(keytypeName);
     mMapValueAlignment = config->getAlingment(valuetypeName);
 
-    setWindowIcon(getCavemanIcon());
-
     if (mMapValueTypeSize == 0)
         setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
     else
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
 
-    auto mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(5);
-    auto refreshLayout = new QHBoxLayout();
-    mainLayout->addLayout(refreshLayout);
-
-    auto refreshMapButton = new QPushButton("Refresh map", this);
-    QObject::connect(refreshMapButton, &QPushButton::clicked, this, &ViewStdMap::refreshMapContents);
-    refreshLayout->addWidget(refreshMapButton);
-
-    auto autoRefresh = new WidgetAutorefresh(100, this);
-    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdMap::refreshData);
-    refreshLayout->addWidget(autoRefresh);
-
-    mMainTreeView = new TreeViewMemoryFields(this);
-    mMainTreeView->setEnableChangeHighlighting(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
-    mainLayout->addWidget(mMainTreeView);
-    autoRefresh->toggleAutoRefresh(true);
-    refreshMapContents();
+    reloadContainer();
 }
 
-void S2Plugin::ViewStdMap::refreshMapContents()
+void S2Plugin::ViewStdMap::reloadContainer()
 {
     if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mMapAddress)))
         return;
@@ -117,16 +93,18 @@ void S2Plugin::ViewStdMap::refreshMapContents()
     parent_field.type = MemoryFieldType::Dummy;
     for (int x = 0; _cur != _end && x < 300; ++x, ++_cur)
     {
-        QStandardItem* parent{nullptr};
-        parent_field.name = "obj_" + std::to_string(x);
-        parent = mMainTreeView->addMemoryField(parent_field, parent_field.name, 0, 0);
-
-        mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, 0, parent);
-
         if (mMapValueTypeSize == 0) // StdSet
-            continue;
-
-        mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, 0, parent);
+        {
+            key_field.name = "key_" + std::to_string(x);
+            mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0);
+        }
+        else // StdMap
+        {
+            parent_field.name = "obj_" + std::to_string(x);
+            QStandardItem* parent = mMainTreeView->addMemoryField(parent_field, parent_field.name, 0, 0);
+            mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0, 0, parent);
+            mMainTreeView->addMemoryField(value_field, value_field.name, _cur.value_ptr(), 0, 0, parent);
+        }
     }
     mMainTreeView->updateTableHeader();
     mMainTreeView->setColumnWidth(gsColField, 145);
@@ -135,19 +113,4 @@ void S2Plugin::ViewStdMap::refreshMapContents()
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
     mMainTreeView->updateTree(0, 0, true);
-}
-
-void S2Plugin::ViewStdMap::refreshData()
-{
-    mMainTreeView->updateTree();
-}
-
-QSize S2Plugin::ViewStdMap::sizeHint() const
-{
-    return QSize(750, 550);
-}
-
-QSize S2Plugin::ViewStdMap::minimumSizeHint() const
-{
-    return QSize(150, 150);
 }

@@ -2,48 +2,25 @@
 
 #include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
-#include "QtHelpers/WidgetAutorefresh.h"
-#include "QtPlugin.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
-#include <QPushButton>
 #include <QString>
-#include <QVBoxLayout>
 
-S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent) : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
+S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorAddr, QWidget* parent) : mVectorType(vectorType), mVectorAddress(vectorAddr), AbstractContainerView(parent)
 {
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 
-    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
-
-    auto mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(5);
-    auto refreshLayout = new QHBoxLayout();
-    mainLayout->addLayout(refreshLayout);
-
-    auto refreshVectorButton = new QPushButton("Refresh vector", this);
-    QObject::connect(refreshVectorButton, &QPushButton::clicked, this, &ViewStdVector::refreshVectorContents);
-    refreshLayout->addWidget(refreshVectorButton);
-
-    auto autoRefresh = new WidgetAutorefresh(100, this);
-    refreshLayout->addWidget(autoRefresh);
-    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdVector::refreshData);
-
-    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mainLayout->addWidget(mMainTreeView);
-    autoRefresh->toggleAutoRefresh(true);
-    refreshVectorContents();
+    reloadContainer();
 }
 
-void S2Plugin::ViewStdVector::refreshVectorContents()
+void S2Plugin::ViewStdVector::reloadContainer()
 {
     auto config = Configuration::get();
     mMainTreeView->clear();
 
-    uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorOffset);
-    uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorOffset + sizeof(uintptr_t));
+    uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorAddress);
+    uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorAddress + sizeof(uintptr_t));
     if (vectorBegin == vectorEnd)
         return;
 
@@ -92,19 +69,4 @@ void S2Plugin::ViewStdVector::refreshVectorContents()
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
     mMainTreeView->updateTree(0, 0, true);
-}
-
-void S2Plugin::ViewStdVector::refreshData()
-{
-    mMainTreeView->updateTree();
-}
-
-QSize S2Plugin::ViewStdVector::sizeHint() const
-{
-    return QSize(750, 550);
-}
-
-QSize S2Plugin::ViewStdVector::minimumSizeHint() const
-{
-    return QSize(150, 150);
 }
