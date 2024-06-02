@@ -4,6 +4,7 @@
 #include "Data/CharacterDB.h"
 #include "Data/Entity.h"
 #include "Data/EntityDB.h"
+#include "Data/OldStdList.h"
 #include "Data/ParticleDB.h"
 #include "Data/State.h"
 #include "Data/StdString.h"
@@ -1956,6 +1957,80 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
+        case MemoryFieldType::OldStdList:
+        {
+            std::optional<QPair<uintptr_t, uintptr_t>> value;
+            if (valueMemoryOffset == 0)
+            {
+                itemValue->setData({}, Qt::DisplayRole);
+                if (!isPointer)
+                    itemValueHex->setData({}, Qt::DisplayRole);
+
+                itemValue->setData({}, S2Plugin::gsRoleRawValue);
+                itemField->setBackground(Qt::transparent);
+            }
+            else
+            {
+                value = {0, 0};
+                Script::Memory::Read(valueMemoryOffset, &value.value(), 2 * sizeof(uintptr_t), nullptr);
+                auto dataOld = itemValue->data(S2Plugin::gsRoleRawValue);
+                auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
+                if (!dataOld.isValid() || value.value() != valueOld)
+                {
+                    itemField->setBackground(highlightColor);
+                    itemValue->setData(QVariant::fromValue(value.value()), S2Plugin::gsRoleRawValue);
+
+                    OldStdList list{valueMemoryOffset};
+                    if (list.empty())
+                        itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                    else
+                        itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                }
+                else if (!isPointer)
+                    itemField->setBackground(Qt::transparent);
+            }
+
+            if (comparisonActive)
+            {
+                std::optional<QPair<uintptr_t, uintptr_t>> comparisonValue;
+                if (valueComparisonMemoryOffset == 0)
+                {
+                    itemComparisonValue->setData({}, Qt::DisplayRole);
+                    if (!isPointer)
+                        itemComparisonValueHex->setData({}, Qt::DisplayRole);
+
+                    itemComparisonValue->setData({}, S2Plugin::gsRoleRawValue);
+                }
+                else
+                {
+                    comparisonValue = {0, 0};
+                    Script::Memory::Read(valueComparisonMemoryOffset, &comparisonValue.value(), 2 * sizeof(uintptr_t), nullptr);
+                    auto dataOld = itemComparisonValue->data(S2Plugin::gsRoleRawValue);
+                    auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
+                    if (!dataOld.isValid() || comparisonValue.value() != valueOld)
+                    {
+                        itemComparisonValue->setData(QVariant::fromValue(comparisonValue.value()), S2Plugin::gsRoleRawValue);
+
+                        OldStdList list{valueComparisonMemoryOffset};
+                        if (list.empty())
+                            itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                        else
+                            itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                    }
+                }
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                if (isPointer == false)
+                    itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            if (shouldUpdateChildren)
+            {
+                std::optional<uintptr_t> addr = pointerUpdate ? valueMemoryOffset : (isPointer ? std::nullopt : newAddr);
+                std::optional<uintptr_t> comparisonAddr = comparisonPointerUpdate ? valueComparisonMemoryOffset : (isPointer ? std::nullopt : newAddrComparison);
+                for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                    updateRow(x, addr, comparisonAddr, itemField);
+            }
+            break;
+        }
         case MemoryFieldType::EntityList:
         {
             std::optional<uint32_t> value;
@@ -2429,65 +2504,75 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::UTF16Char:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                    if (offset != 0)
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
                     {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         QChar c = static_cast<ushort>(clickedItem->data(gsRoleRawValue).toUInt());
-                        auto dialog = new DialogEditString(fieldName, c, offset, 1, dataType, this);
+                        auto dialog = new DialogEditString(fieldName, c, address, 1, dataType, this);
                         dialog->exec();
                     }
                     break;
                 }
                 case MemoryFieldType::UTF16StringFixedSize:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                    if (offset != 0)
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
                     {
                         int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto stringData = std::make_unique<ushort[]>(size);
-                        Script::Memory::Read(offset, stringData.get(), size, nullptr);
+                        Script::Memory::Read(address, stringData.get(), size, nullptr);
                         auto s = QString::fromUtf16(stringData.get());
-                        auto dialog = new DialogEditString(fieldName, s, offset, size / 2 - 1, dataType, this);
+                        auto dialog = new DialogEditString(fieldName, s, address, size / 2 - 1, dataType, this);
                         dialog->exec();
                     }
                     break;
                 }
                 case MemoryFieldType::ConstCharPointer:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                    if (offset != 0)
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
                     {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
-                        auto s = QString::fromStdString(ReadConstString(offset));
+                        auto s = QString::fromStdString(ReadConstString(address));
                         // [Known Issue]: Now way to safely determinate allowed lenght, so we just allow as much characters as there is already
-                        auto dialog = new DialogEditString(fieldName, s, offset, s.length(), dataType, this);
+                        auto dialog = new DialogEditString(fieldName, s, address, s.length(), dataType, this);
                         dialog->exec();
                     }
                     break;
                 }
                 case MemoryFieldType::UTF8StringFixedSize:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                    if (offset != 0)
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
                     {
                         int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto stringData = std::make_unique<char[]>(size);
-                        Script::Memory::Read(offset, stringData.get(), size, nullptr);
+                        Script::Memory::Read(address, stringData.get(), size, nullptr);
                         auto s = QString::fromUtf8(stringData.get());
-                        auto dialog = new DialogEditString(fieldName, s, offset, size - 1, dataType, this);
+                        auto dialog = new DialogEditString(fieldName, s, address, size - 1, dataType, this);
                         dialog->exec();
                     }
                     break;
                 }
                 case MemoryFieldType::EntityList:
                 {
-                    auto offset = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-                    if (offset != 0)
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
                     {
-                        getToolbar()->showEntityList(offset);
+                        getToolbar()->showEntityList(address);
+                    }
+                    break;
+                }
+                case MemoryFieldType::OldStdList:
+                {
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
+                    {
+                        auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
+                        //getToolbar()->showStdList(address, typeName, true);
                     }
                     break;
                 }

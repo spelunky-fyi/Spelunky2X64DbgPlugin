@@ -33,11 +33,11 @@ namespace S2Plugin
     struct MemoryField;
     using ID_type = uint32_t;
 
-    class WidgetDatabaseView : public QWidget
+    class AbstractDatabaseView : public QWidget
     {
         Q_OBJECT
       public:
-        WidgetDatabaseView(MemoryFieldType type, QWidget* parent = nullptr);
+        AbstractDatabaseView(MemoryFieldType type, QWidget* parent = nullptr);
         virtual void showID(ID_type id) = 0;
 
       protected:

@@ -1,6 +1,6 @@
 {
   // list of structs that are always used as pointers
-  // leftover of previous version but also required if type is used as secondary type (vectortype, map type etc.)
+  // leftover of previous version but also required if type is used as secondary type (vector, map, array etc.)
   // normal pointers can be defined at the specific field level with ("pointer": true)
   // structs not listed here and not defined with pointer value will be treated as inline sturct
   "pointer_types": [
@@ -1398,7 +1398,7 @@
       {
         "field": "unknown11",
         "type": "StdVector",
-        "vectortype": "DataPointer"
+        "valuetype": "DataPointer"
       },
       { "field": "unknown12", "type": "DataPointer" },
       { "field": "unknown13", "type": "CodePointer" },
@@ -1467,12 +1467,12 @@
       {
         "field": "pages",
         "type": "StdVector",
-        "vectortype": "JournalPagePointer"
+        "valuetype": "JournalPagePointer"
       },
       {
         "field": "pages_tmp",
         "type": "StdVector",
-        "vectortype": "JournalPagePointer",
+        "valuetype": "JournalPagePointer",
         "comment": "pages are constructed, saved here and later moved to the pages vector from where they are rendered"
       },
       { "field": "current_page", "type": "UnsignedDword" },
@@ -1637,7 +1637,7 @@
       {
         "field": "text_lines",
         "type": "StdVector",
-        "vectortype": "TextRenderingInfoPointer"
+        "valuetype": "TextRenderingInfoPointer"
       },
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" }
@@ -1917,7 +1917,7 @@
       {
         "field": "vector",
         "type": "StdVector",
-        "vectortype": "ScreenMenuOption"
+        "valuetype": "ScreenMenuOption"
       }
     ],
     "ScreenMenuOption": [
@@ -1996,12 +1996,12 @@
       {
         "field": "menu_tree",
         "type": "StdVector",
-        "vectortype": "ScreenMenuVector"
+        "valuetype": "ScreenMenuVector"
       },
       {
         "field": "menu_index_order",
         "type": "StdVector",
-        "vectortype": "UnsignedDword"
+        "valuetype": "UnsignedDword"
       },
       { "field": "controls", "type": "ScreenControls" },
       { "field": "selected_menu_index", "type": "UnsignedDword" },
@@ -2045,12 +2045,12 @@
       {
         "field": "menu_tree",
         "type": "StdVector",
-        "vectortype": "ScreenMenuVector"
+        "valuetype": "ScreenMenuVector"
       },
       {
         "field": "menu_index_order",
         "type": "StdVector",
-        "vectortype": "UnsignedDword"
+        "valuetype": "UnsignedDword"
       },
       {
         "field": "DOWN",
@@ -2269,7 +2269,7 @@
       {
         "field": "unknown50",
         "type": "StdVector",
-        "vectortype": "UnsignedQword"
+        "valuetype": "UnsignedQword"
       },
       { "field": "unknown51", "type": "UnsignedByte" },
       { "field": "padding_probably10", "type": "UnsignedByte" },
@@ -2278,7 +2278,7 @@
       {
         "field": "tooltip_text",
         "type": "StdVector",
-        "vectortype": "StringsTableID"
+        "valuetype": "StringsTableID"
       },
       { "field": "disable_controls", "type": "Bool" },
       { "field": "padding_probably13", "type": "UnsignedByte" },
@@ -2771,7 +2771,7 @@
       {
         "field": "option_captions",
         "type": "StdVector",
-        "vectortype": "ArenaRulesStringsEntry"
+        "valuetype": "ArenaRulesStringsEntry"
       },
       { "field": "unknown48", "type": "Bool" },
       { "field": "unknown49", "type": "UnsignedByte" },
@@ -3352,7 +3352,7 @@
       {
         "field": "entities_switching_layer",
         "type": "StdVector",
-        "vectortype": "BackLayerRelated"
+        "valuetype": "BackLayerRelated"
       },
       { "field": "layer_transition_timer", "type": "UnsignedDword" },
       { "field": "transition_to_layer", "type": "UnsignedByte" },
@@ -3605,7 +3605,7 @@
       {
         "field": "shop_owners",
         "type": "StdVector",
-        "vectortype": "ShopOwnerDetails"
+        "valuetype": "ShopOwnerDetails"
       }
     ],
     "ItemOwnerDetails": [
@@ -4125,7 +4125,7 @@
         "field": "activefloors",
         "type": "PointerToPushBlocksMap"
       },
-      { "field": "impostors", "type": "StdVector", "vectortype": "LiquidLake" },
+      { "field": "impostors", "type": "StdVector", "valuetype": "LiquidLake" },
       {
         "field": "total_liquid_spawned",
         "type": "UnsignedDword",
@@ -4317,7 +4317,7 @@
       {
         "field": "unknown13",
         "type": "StdVector",
-        "vectortype": "PointerToEntityList",
+        "valuetype": "PointerToEntityList",
         "comment": "probably not actual vector"
       }
     ],
@@ -4462,7 +4462,7 @@
       {
         "field": "torches",
         "type": "StdVector",
-        "vectortype": "EntityPointer"
+        "valuetype": "EntityPointer"
       },
       { "field": "start_countdown", "type": "UnsignedByte" },
       { "field": "unknown9", "type": "UnsignedByte" },
@@ -4502,7 +4502,7 @@
       {
         "field": "magman_spawns",
         "type": "StdVector",
-        "vectortype": "MagmamanSpawnData"
+        "valuetype": "MagmamanSpawnData"
       }
     ],
     "LogicUnderwaterBubbles": [
@@ -6299,7 +6299,7 @@
       {
         "field": "exit_doors_locations",
         "type": "StdVector",
-        "vectortype": "XY"
+        "valuetype": "XY"
       },
       {
         "field": "flags",
@@ -6546,17 +6546,17 @@
       {
         "field": "unknown47",
         "type": "StdVector",
-        "vectortype": "UnsignedQword"
+        "valuetype": "UnsignedQword"
       },
       {
         "field": "unknown48",
         "type": "StdVector",
-        "vectortype": "UnsignedQword"
+        "valuetype": "UnsignedQword"
       },
       {
         "field": "unknown49",
         "type": "StdVector",
-        "vectortype": "UnsignedQword"
+        "valuetype": "UnsignedQword"
       }
     ],
     "OnlineServer": [
@@ -6803,7 +6803,7 @@
       {
         "field": "_Vec",
         "type": "StdVector",
-        "vectortype": "UnorderedMapBucketIterator",
+        "valuetype": "UnorderedMapBucketIterator",
         "comment": "iterators for buckets, if both are pointing to end, the bucket is empty"
       },
       {
@@ -6888,14 +6888,14 @@
       {
         "field": "vector",
         "type": "StdVector",
-        "vectortype": "ParticleEmitterInfoPointer"
+        "valuetype": "ParticleEmitterInfoPointer"
       }
     ],
     "StdVectorPointerIllumination": [
       {
         "field": "vector",
         "type": "StdVector",
-        "vectortype": "IlluminationPointer"
+        "valuetype": "IlluminationPointer"
       },
       { "field": "unknown1", "type": "UnsignedDword" },
       { "field": "unknown2", "type": "UnsignedDword" }
@@ -7020,7 +7020,7 @@
       {
         "field": "unknown3",
         "type": "StdVector",
-        "vectortype": "EntityPointer"
+        "valuetype": "EntityPointer"
       },
       { "field": "unknown6", "type": "PointerToFloatSet" },
       { "field": "expired_entities", "type": "EntityList" },
@@ -7786,7 +7786,7 @@
       { "field": "unknown2", "type": "Dword", "comment": "padding probably" },
       { "field": "sound_name", "type": "StdString" }
     ],
-    "StdList": [
+    "OldStdList": [
       { "field": "back", "type": "StdListIteratorPointer" },
       { "field": "front", "type": "StdListIteratorPointer" }
     ],
@@ -7831,7 +7831,7 @@
         "type": "UnsignedDword",
         "comment": "padding probably"
       },
-      { "field": "unk1", "type": "StdList" },
+      { "field": "unk1", "type": "OldStdList" },
       {
         "field": "resize_value",
         "type": "UnsignedDword",
@@ -7842,10 +7842,10 @@
         "type": "UnsignedDword",
         "comment": "padding probably"
       },
-      { "field": "liquid_ids", "type": "StdList" },
+      { "field": "liquid_ids", "type": "OldStdList" },
       {
         "field": "unknown44",
-        "type": "StdList",
+        "type": "OldStdList",
         "comment": "all of them are -1"
       },
       {
@@ -8078,7 +8078,10 @@
         "comment": "array of entities? removed ones?"
       },
       { "field": "unknown10", "type": "DataPointer", "comment": "map?" },
-      { "field": "unknown11", "type": "Qword" }
+      { "field": "unknown11", "type": "Qword" },
+      { "field": "skip", "type": "Skip", "offset": 102472 },
+      { "field": "unknown12", "type": "Array", "length": 46, "arraytype": "UnsignedQword" },
+      { "field": "unknown13", "type": "Qword", "comment": "the end?" }
     ],
     "MysteryLiquidPointer2": [
       { "field": "last_spawn_liquid", "type": "EntityPointer" },

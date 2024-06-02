@@ -61,6 +61,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/StdString.h
 	include/Data/StdMap.h
 	include/Data/EntityList.h
+	include/Data/OldStdList.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h
@@ -101,7 +102,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSampling.h
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
-	include/QtHelpers/WidgetDatabaseView.h
+	include/QtHelpers/AbstractDatabaseView.h
 	include/QtHelpers/WidgetAutorefresh.h
 	include/QtHelpers/LongLongSpinBox.h
 	src/Spelunky2.cpp
@@ -151,7 +152,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/ItemModelLoggerFields.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
-	src/QtHelpers/WidgetDatabaseView.cpp
+	src/QtHelpers/AbstractDatabaseView.cpp
 	src/QtHelpers/WidgetAutorefresh.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc

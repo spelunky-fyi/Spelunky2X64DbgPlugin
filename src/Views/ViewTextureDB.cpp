@@ -6,7 +6,7 @@
 #include "Spelunky2.h"
 #include <QCompleter>
 
-S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : WidgetDatabaseView(MemoryFieldType::TextureDB, parent)
+S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::TextureDB, parent)
 {
     auto& textureDB = Spelunky2::get()->get_TextureDB();
     setWindowTitle(QString("Texture DB (%1 textures)").arg(textureDB.count()));

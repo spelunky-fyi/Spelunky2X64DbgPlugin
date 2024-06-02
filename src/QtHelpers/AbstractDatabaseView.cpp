@@ -1,4 +1,4 @@
-#include "QtHelpers/WidgetDatabaseView.h"
+#include "QtHelpers/AbstractDatabaseView.h"
 
 #include "Configuration.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
@@ -37,7 +37,7 @@ struct ComparisonField
 };
 Q_DECLARE_METATYPE(ComparisonField)
 
-S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* parent) : QWidget(parent)
+S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidget* parent) : QWidget(parent)
 {
     setWindowIcon(getCavemanIcon());
     auto mainLayout = new QVBoxLayout(this);
@@ -68,10 +68,10 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         mSearchLineEdit = new QLineEdit();
         mSearchLineEdit->setPlaceholderText("Search");
         topLayout->addWidget(mSearchLineEdit);
-        QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &WidgetDatabaseView::searchFieldReturnPressed);
+        QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &AbstractDatabaseView::searchFieldReturnPressed);
 
         auto labelButton = new QPushButton("Label", this);
-        QObject::connect(labelButton, &QPushButton::clicked, this, &WidgetDatabaseView::label);
+        QObject::connect(labelButton, &QPushButton::clicked, this, &AbstractDatabaseView::label);
         topLayout->addWidget(labelButton);
 
         qobject_cast<QVBoxLayout*>(tabLookup->layout())->addLayout(topLayout);
@@ -79,8 +79,8 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         mMainTreeView = new TreeViewMemoryFields(this);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->addMemoryFields(config->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
-        QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &WidgetDatabaseView::fieldUpdated);
-        QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &WidgetDatabaseView::fieldExpanded);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &AbstractDatabaseView::fieldUpdated);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &AbstractDatabaseView::fieldExpanded);
         tabLookup->layout()->addWidget(mMainTreeView);
         mMainTreeView->setColumnWidth(gsColField, 125);
         mMainTreeView->setColumnWidth(gsColValue, 250);
@@ -99,16 +99,16 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         mCompareFieldComboBox->addItem(QString::fromStdString(""));
         populateComparisonCombobox(config->typeFields(type));
 
-        QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &WidgetDatabaseView::comparisonFieldChosen);
+        QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &AbstractDatabaseView::comparisonFieldChosen);
         topLayout->addWidget(mCompareFieldComboBox);
 
         mCompareFlagComboBox = new QComboBox();
-        QObject::connect(mCompareFlagComboBox, &QComboBox::currentTextChanged, this, &WidgetDatabaseView::comparisonFlagChosen);
+        QObject::connect(mCompareFlagComboBox, &QComboBox::currentTextChanged, this, &AbstractDatabaseView::comparisonFlagChosen);
         mCompareFlagComboBox->hide();
         topLayout->addWidget(mCompareFlagComboBox);
 
         auto groupCheckbox = new QCheckBox("Group by value", this);
-        QObject::connect(groupCheckbox, &QCheckBox::stateChanged, this, &WidgetDatabaseView::compareGroupByCheckBoxClicked);
+        QObject::connect(groupCheckbox, &QCheckBox::stateChanged, this, &AbstractDatabaseView::compareGroupByCheckBoxClicked);
         topLayout->addWidget(groupCheckbox);
 
         qobject_cast<QVBoxLayout*>(tabCompare->layout())->addLayout(topLayout);
@@ -128,14 +128,14 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
         mCompareTableWidget->setColumnWidth(2, 150);
         auto HTMLDelegate = new StyledItemDelegateHTML(this);
         mCompareTableWidget->setItemDelegate(HTMLDelegate);
-        QObject::connect(mCompareTableWidget, &QTableWidget::cellClicked, this, &WidgetDatabaseView::comparisonCellClicked);
+        QObject::connect(mCompareTableWidget, &QTableWidget::cellClicked, this, &AbstractDatabaseView::comparisonCellClicked);
 
         mCompareTreeWidget = new QTreeWidget(this);
         mCompareTreeWidget->setAlternatingRowColors(true);
         mCompareTreeWidget->headerItem()->setHidden(true);
         mCompareTreeWidget->setHidden(true);
         mCompareTreeWidget->setItemDelegate(HTMLDelegate);
-        QObject::connect(mCompareTreeWidget, &QTreeWidget::itemClicked, this, &WidgetDatabaseView::groupedComparisonItemClicked);
+        QObject::connect(mCompareTreeWidget, &QTreeWidget::itemClicked, this, &AbstractDatabaseView::groupedComparisonItemClicked);
 
         tabCompare->layout()->addWidget(mCompareTableWidget);
         tabCompare->layout()->addWidget(mCompareTreeWidget);
@@ -144,12 +144,12 @@ S2Plugin::WidgetDatabaseView::WidgetDatabaseView(MemoryFieldType type, QWidget* 
     mSearchLineEdit->setFocus();
 }
 
-QSize S2Plugin::WidgetDatabaseView::minimumSizeHint() const
+QSize S2Plugin::AbstractDatabaseView::minimumSizeHint() const
 {
     return QSize(150, 150);
 }
 
-void S2Plugin::WidgetDatabaseView::searchFieldReturnPressed()
+void S2Plugin::AbstractDatabaseView::searchFieldReturnPressed()
 {
     auto text = mSearchLineEdit->text();
     bool isNumeric = false;
@@ -169,7 +169,7 @@ void S2Plugin::WidgetDatabaseView::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::WidgetDatabaseView::fieldUpdated(int row, QStandardItem* parrent)
+void S2Plugin::AbstractDatabaseView::fieldUpdated(int row, QStandardItem* parrent)
 {
     if (parrent != nullptr) // special case: for flag field need to update it's parrent, not the flag field
     {
@@ -185,19 +185,19 @@ void S2Plugin::WidgetDatabaseView::fieldUpdated(int row, QStandardItem* parrent)
     mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parrent, true);
 }
 
-void S2Plugin::WidgetDatabaseView::fieldExpanded(const QModelIndex& index)
+void S2Plugin::AbstractDatabaseView::fieldExpanded(const QModelIndex& index)
 {
     auto model = qobject_cast<QStandardItemModel*>(mMainTreeView->model());
     mMainTreeView->updateRow(index.row(), std::nullopt, std::nullopt, model->itemFromIndex(index.parent()), true);
 }
 
-void S2Plugin::WidgetDatabaseView::compareGroupByCheckBoxClicked(int state)
+void S2Plugin::AbstractDatabaseView::compareGroupByCheckBoxClicked(int state)
 {
     mCompareTableWidget->setHidden(state == Qt::Checked);
     mCompareTreeWidget->setHidden(state == Qt::Unchecked);
 }
 
-void S2Plugin::WidgetDatabaseView::comparisonFieldChosen()
+void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
 {
     mFieldChoosen = true;
     mCompareTableWidget->clearContents();
@@ -245,7 +245,7 @@ void S2Plugin::WidgetDatabaseView::comparisonFieldChosen()
     mFieldChoosen = false;
 }
 
-void S2Plugin::WidgetDatabaseView::comparisonFlagChosen(const QString& text)
+void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 {
     // protect againts infinite loops since this slot is called when adding firts element to combo box
     if (mFieldChoosen)
@@ -282,7 +282,7 @@ void S2Plugin::WidgetDatabaseView::comparisonFlagChosen(const QString& text)
     populateComparisonTreeWidget(newData);
 }
 
-void S2Plugin::WidgetDatabaseView::populateComparisonTableWidget(const QVariant& fieldData)
+void S2Plugin::AbstractDatabaseView::populateComparisonTableWidget(const QVariant& fieldData)
 {
     mCompareTableWidget->setSortingEnabled(false);
 
@@ -309,7 +309,7 @@ void S2Plugin::WidgetDatabaseView::populateComparisonTableWidget(const QVariant&
     mCompareTableWidget->sortItems(0);
 }
 
-void S2Plugin::WidgetDatabaseView::populateComparisonTreeWidget(const QVariant& fieldData)
+void S2Plugin::AbstractDatabaseView::populateComparisonTreeWidget(const QVariant& fieldData)
 {
     mCompareTreeWidget->setSortingEnabled(false);
 
@@ -352,7 +352,7 @@ void S2Plugin::WidgetDatabaseView::populateComparisonTreeWidget(const QVariant& 
     mCompareTreeWidget->sortItems(0, Qt::AscendingOrder);
 }
 
-void S2Plugin::WidgetDatabaseView::comparisonCellClicked(int row, int column)
+void S2Plugin::AbstractDatabaseView::comparisonCellClicked(int row, int column)
 {
     if (column == 1)
     {
@@ -362,7 +362,7 @@ void S2Plugin::WidgetDatabaseView::comparisonCellClicked(int row, int column)
     }
 }
 
-void S2Plugin::WidgetDatabaseView::groupedComparisonItemClicked(QTreeWidgetItem* item)
+void S2Plugin::AbstractDatabaseView::groupedComparisonItemClicked(QTreeWidgetItem* item)
 {
     if (item->childCount() == 0)
     {
@@ -371,7 +371,7 @@ void S2Plugin::WidgetDatabaseView::groupedComparisonItemClicked(QTreeWidgetItem*
     }
 }
 
-size_t S2Plugin::WidgetDatabaseView::populateComparisonCombobox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
+size_t S2Plugin::AbstractDatabaseView::populateComparisonCombobox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
 {
     for (const auto& field : fields)
     {
@@ -416,7 +416,7 @@ size_t S2Plugin::WidgetDatabaseView::populateComparisonCombobox(const std::vecto
     return offset;
 }
 
-std::pair<QString, QVariant> S2Plugin::WidgetDatabaseView::valueForField(const QVariant& data, uintptr_t addr)
+std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const QVariant& data, uintptr_t addr)
 {
     ComparisonField compData = qvariant_cast<ComparisonField>(data);
 

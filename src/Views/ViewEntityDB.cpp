@@ -7,7 +7,7 @@
 #include "Spelunky2.h"
 #include <QCompleter>
 
-S2Plugin::ViewEntityDB::ViewEntityDB(QWidget* parent) : WidgetDatabaseView(MemoryFieldType::EntityDB, parent)
+S2Plugin::ViewEntityDB::ViewEntityDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::EntityDB, parent)
 {
     auto config = Configuration::get();
     setWindowTitle(QString("Entity DB (%1 entities)").arg(config->entityList().count()));

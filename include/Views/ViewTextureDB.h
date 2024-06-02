@@ -1,12 +1,12 @@
 #pragma once
 
-#include "QtHelpers/WidgetDatabaseView.h"
+#include "QtHelpers/AbstractDatabaseView.h"
 
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
 
-    class ViewTextureDB : public WidgetDatabaseView
+    class ViewTextureDB : public AbstractDatabaseView
     {
         Q_OBJECT
       public:
