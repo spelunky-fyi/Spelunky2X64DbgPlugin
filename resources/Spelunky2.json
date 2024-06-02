@@ -3330,7 +3330,7 @@
       { "field": "layer1", "type": "LayerPointer" },
       { "field": "logic", "type": "LogicList" },
       { "field": "quests", "type": "QuestsInfoPointer" },
-      { "field": "ai_targets", "type": "Array", "pointer": true, "length": 128, "arraytype": "AITarget" },
+      { "field": "ai_targets", "type": "UnknownPointer1", "pointer": true },
       { "field": "liquid_physics", "type": "LiquidPhysicsPointer" },
       {
         "field": "particle_emitters",
@@ -3418,6 +3418,22 @@
         "type": "UnsignedDword",
         "comment": "padding probably"
       }
+    ],
+    "UnknownStruct": [
+      { "field": "unknown1", "type": "UnsignedByte" },
+      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "unknown3", "type": "UnsignedByte" },
+      { "field": "unknown4", "type": "UnsignedByte" },
+      { "field": "unknown5", "type": "UnsignedByte" },
+      { "field": "unknown6", "type": "UnsignedByte" },
+      { "field": "unknown7", "type": "UnsignedByte" },
+      { "field": "unknown8", "type": "UnsignedByte" },
+      { "field": "unknown9", "type": "UnsignedByte" }
+    ],
+    "UnknownPointer1": [
+      { "field": "ai_targets", "type": "Array", "length": 128, "arraytype": "AITarget" },
+      { "field": "unknown1", "type": "Array", "length": 19200, "arraytype": "UnknownStruct" },
+      { "field": "unknown2", "type": "UnsignedQword", "comment": "end? hopefully" }
     ],
     "BackLayerRelated": [
       { "field": "entity", "type": "EntityPointer" },
