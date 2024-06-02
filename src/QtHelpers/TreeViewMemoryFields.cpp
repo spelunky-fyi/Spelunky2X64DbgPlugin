@@ -280,6 +280,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
             break;
         }
+        case MemoryFieldType::OldStdList:
         case MemoryFieldType::StdVector:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
@@ -2574,7 +2575,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (address != 0)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
-                        // getToolbar()->showStdList(address, typeName, true);
+                        getToolbar()->showStdList(address, typeName, true);
                     }
                     break;
                 }

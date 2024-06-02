@@ -79,6 +79,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
 	include/Views/ViewStdMap.h
+	include/Views/ViewStdList.h
     include/Views/ViewEntityList.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
@@ -133,6 +134,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewVirtualFunctions.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
+	src/Views/ViewStdList.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
 	src/Views/ViewEntityList.cpp

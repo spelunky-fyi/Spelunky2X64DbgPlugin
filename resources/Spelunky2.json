@@ -7858,11 +7858,11 @@
         "type": "UnsignedDword",
         "comment": "padding probably"
       },
-      { "field": "liquid_ids", "type": "OldStdList" },
+      { "field": "liquid_ids", "type": "OldStdList", "valuetype": "UnsignedDword" },
       {
         "field": "unknown44",
         "type": "OldStdList",
-        "comment": "all of them are -1"
+        "valuetype": "Dword"
       },
       {
         "field": "list",

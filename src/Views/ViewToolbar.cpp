@@ -11,6 +11,7 @@
 #include "Views/ViewLevelGen.h"
 #include "Views/ViewLogger.h"
 #include "Views/ViewParticleDB.h"
+#include "Views/ViewStdList.h"
 #include "Views/ViewStdMap.h"
 #include "Views/ViewStdVector.h"
 #include "Views/ViewStringsTable.h"
@@ -204,6 +205,14 @@ void S2Plugin::ViewToolbar::showMatrix(uintptr_t address, std::string name, std:
 void S2Plugin::ViewToolbar::showEntityList(uintptr_t address)
 {
     auto w = new ViewEntityList(address);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void S2Plugin::ViewToolbar::showStdList(uintptr_t address, std::string valueType, bool isOldType)
+{
+    auto w = new ViewStdList(address, std::move(valueType), isOldType);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
