@@ -1,7 +1,7 @@
 #include "Views/ViewStdList.h"
 
 #include "Configuration.h"
-#include "Data/OldStdList.h"
+#include "Data/StdList.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "pluginmain.h"
 #include <QString>
@@ -54,7 +54,13 @@ void S2Plugin::ViewStdList::reloadContainer()
     }
     else
     {
-        // TODO new type implement, if found
+        StdList theList{mListAddress};
+        size_t x = 0;
+        for (auto val_addr : theList)
+        {
+            field.name = "val_" + std::to_string(x++);
+            mMainTreeView->addMemoryField(field, field.name, val_addr, 0);
+        }
     }
 
     mMainTreeView->updateTableHeader();

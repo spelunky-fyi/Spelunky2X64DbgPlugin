@@ -61,7 +61,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/StdString.h
 	include/Data/StdMap.h
 	include/Data/EntityList.h
-	include/Data/OldStdList.h
+	include/Data/StdList.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h

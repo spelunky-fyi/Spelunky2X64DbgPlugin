@@ -4,9 +4,9 @@
 #include "Data/CharacterDB.h"
 #include "Data/Entity.h"
 #include "Data/EntityDB.h"
-#include "Data/OldStdList.h"
 #include "Data/ParticleDB.h"
 #include "Data/State.h"
+#include "Data/StdList.h"
 #include "Data/StdString.h"
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
@@ -281,6 +281,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             break;
         }
         case MemoryFieldType::OldStdList:
+        case MemoryFieldType::StdList:
         case MemoryFieldType::StdVector:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
@@ -1960,6 +1961,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
+        case MemoryFieldType::StdList:
         case MemoryFieldType::OldStdList:
         {
             std::optional<QPair<uintptr_t, uintptr_t>> value;
@@ -1983,8 +1985,9 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     itemField->setBackground(highlightColor);
                     itemValue->setData(QVariant::fromValue(value.value()), S2Plugin::gsRoleRawValue);
 
-                    OldStdList list{valueMemoryOffset};
-                    if (list.empty())
+                    bool empty = (fieldType == MemoryFieldType::OldStdList && OldStdList{valueMemoryOffset}.empty()) || (fieldType == MemoryFieldType::StdList && StdList{valueMemoryOffset}.empty());
+
+                    if (empty)
                         itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
                     else
                         itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
@@ -2014,8 +2017,10 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     {
                         itemComparisonValue->setData(QVariant::fromValue(comparisonValue.value()), S2Plugin::gsRoleRawValue);
 
-                        OldStdList list{valueComparisonMemoryOffset};
-                        if (list.empty())
+                        bool empty = (fieldType == MemoryFieldType::OldStdList && OldStdList{valueComparisonMemoryOffset}.empty()) ||
+                                     (fieldType == MemoryFieldType::StdList && StdList{valueComparisonMemoryOffset}.empty());
+
+                        if (empty)
                             itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
                         else
                             itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
@@ -2576,6 +2581,16 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
                         getToolbar()->showStdList(address, typeName, true);
+                    }
+                    break;
+                }
+                case MemoryFieldType::StdList:
+                {
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
+                    {
+                        auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
+                        getToolbar()->showStdList(address, typeName);
                     }
                     break;
                 }

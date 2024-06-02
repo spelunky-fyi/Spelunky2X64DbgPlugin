@@ -113,6 +113,7 @@ namespace S2Plugin
         {MemoryFieldType::StdString, "StdString", "std::string", "StdString", 32, false},
         {MemoryFieldType::StdWstring, "StdWstring", "std::wstring", "StdWstring", 32, false},
         {MemoryFieldType::OldStdList, "OldStdList", "std::pair<uintptr_t, uintptr_t>", "OldStdList", 16, false}, // can't use std::list representation since the standard was changed
+        {MemoryFieldType::StdList, "StdList", "std::list<T>", "StdList", 16, false},
         // Game Main structs
         {MemoryFieldType::GameManager, "GameManager", "", "GameManager", 0, false},
         {MemoryFieldType::State, "State", "", "State", 0, false},
@@ -344,6 +345,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             break;
         }
         case MemoryFieldType::OldStdList:
+        case MemoryFieldType::StdList:
         {
             if (field.contains("valuetype"))
             {
@@ -352,7 +354,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             else
             {
                 memField.firstParameterType = "UnsignedQword";
-                dprintf("no valuetype specified for OldStdList (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+                dprintf("no valuetype specified for StdList (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
             }
             break;
         }
@@ -825,6 +827,7 @@ int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
             case MemoryFieldType::UnsignedQword:
             case MemoryFieldType::Double:
             case MemoryFieldType::OldStdList:
+            case MemoryFieldType::StdList:
             case MemoryFieldType::EntityList:
                 return sizeof(uintptr_t);
         }

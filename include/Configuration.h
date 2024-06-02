@@ -131,6 +131,7 @@ namespace S2Plugin
         Matrix,
         EntityList,
         OldStdList,
+        StdList,
     };
 
     struct VirtualFunction

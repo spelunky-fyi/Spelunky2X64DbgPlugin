@@ -98,4 +98,55 @@ namespace S2Plugin
       private:
         Node _end;
     };
+
+    // the current standard
+    class StdList
+    {
+      public:
+        using Node = OldStdList::Node;
+
+        StdList(uintptr_t address)
+        {
+            uintptr_t data[2];
+            Script::Memory::Read(address, &data, 2 * sizeof(uintptr_t), nullptr);
+            mHead = data[0];
+            mSize = data[1];
+        }
+        Node begin() const
+        {
+            return mHead.next();
+        }
+        Node end() const
+        {
+            return mHead;
+        }
+        size_t size() const
+        {
+            return mSize;
+        }
+        bool empty() const
+        {
+            return mSize == 0;
+        }
+        Node cbegin() const
+        {
+            return begin();
+        }
+        Node cend() const
+        {
+            return end();
+        }
+        Node back() const
+        {
+            return mHead.prev();
+        }
+        Node front() const
+        {
+            return mHead.next();
+        }
+
+      private:
+        Node mHead{0};
+        size_t mSize;
+    };
 }; // namespace S2Plugin
