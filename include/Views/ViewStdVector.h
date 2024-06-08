@@ -11,7 +11,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewStdVector(const std::string& vectorType, uintptr_t vectoraddr, QWidget* parent = nullptr);
+        ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent = nullptr);
 
       protected:
         void reloadContainer() override;

@@ -786,7 +786,7 @@
       { "field": "sound_killed_by_other", "type": "Dword" },
       { "field": "field_a8", "type": "Float" },
       { "field": "field_AC", "type": "Dword" },
-      { "field": "animations", "type": "UnorderedMap" },
+      { "field": "animations", "type": "StdUnorderedMap", "keytype": "UnsignedByte", "valuetype": "Animation" },
       { "field": "attachOffsetX", "type": "Float" },
       { "field": "attachOffsetY", "type": "Float" },
       { "field": "init", "type": "UnsignedByte" },
@@ -794,6 +794,13 @@
       { "field": "field_1a", "type": "UnsignedByte" },
       { "field": "field_1b", "type": "UnsignedByte" },
       { "field": "field_1c", "type": "Dword" }
+    ],
+    "Animation": [
+      { "field": "texture", "type": "Dword" },
+      { "field": "count", "type": "Dword" },
+      { "field": "interval", "type": "Dword" },
+      { "field": "key", "type": "UnsignedByte" },
+      { "field": "repeat", "type": "State8", "states": {  "0": "NoRepeat", "1": "Linear", "2": "BackAndForth" } }
     ],
     "EmittedParticlesInfo": [
       { "field": "particle_count", "type": "UnsignedDword" },
@@ -2851,7 +2858,7 @@
       { "field": "item_equipped_badge", "type": "TextureRenderingInfo" },
       { "field": "item_off_gray_overlay", "type": "TextureRenderingInfo" },
       { "field": "esc_woodpanel", "type": "TextureRenderingInfo" },
-      { "field": "items_to_gray_out", "type": "UnorderedMap" },
+      { "field": "items_to_gray_out", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "Float" },
       { "field": "unknown33", "type": "UnsignedDword" },
       { "field": "center_panels_horizontal_slide_position", "type": "Float" },
       { "field": "esc_panel_slide_timer", "type": "Float" },
@@ -5175,7 +5182,7 @@
       { "field": "players_turn_scroll_handle", "type": "TextureRenderingInfo" },
       { "field": "grid_player_icon", "type": "TextureRenderingInfo" },
       { "field": "unknown30", "type": "Float" },
-      { "field": "stages_to_gray_out", "type": "UnorderedMap" },
+      { "field": "stages_to_gray_out", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "Float" },
       { "field": "unknown47", "type": "UnsignedDword" },
       { "field": "unknown48", "type": "UnsignedDword" },
       { "field": "unknown49", "type": "UnsignedByte" },
@@ -6395,27 +6402,95 @@
       { "field": "machine_rewardroom_chance", "type": "UnsignedDword" },
       { "field": "max_liquid_particles", "type": "UnsignedDword" },
       { "field": "flagged_liquid_rooms", "type": "UnsignedDword" },
-      { "field": "unknown_config", "type": "UnsignedDword" },
+      { "field": "unknown_config", "type": "UnsignedDword", "comment": "probably padding" },
       {
         "field": "short_tile_codes",
-        "type": "UnorderedMap",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedByte",
+        "valuetype": "ShortTileCodeDef",
         "comment": "unordered_map<uint8_t, ShortTileCodeDef>"
       },
       {
         "field": "tile_codes",
-        "type": "UnorderedMap",
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "UnsignedDword",
         "comment": "unordered_map<string, TileCodeDef>"
       },
       {
         "field": "room_templates",
-        "type": "UnorderedMap",
-        "comment": "unordered_map<string, TemplateDef>"
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "UnsignedWord",
+        "comment": "unordered_map<string, RoomTemplateDef>"
       },
       {
         "field": "room_template_datas",
-        "type": "UnorderedMap",
-        "comment": "unordered_map<uint16_t, RoomTemplateData"
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedWord",
+        "valuetype": "RoomTemplateData",
+        "comment": "unordered_map<uint16_t, RoomTemplateData>"
+      },
+      { "field": "unknown1", "type": "Array", "length": 429, "arraytype": "UnsignedDword" },
+      { "field": "padding", "type": "UnsignedDword" },
+      { "field": "set_room_datas", "type": "Array", "length": 120, "arraytype": "RoomTemplateData" },
+      {
+        "field": "monster_chances",
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "UnsignedDword",
+        "comment": "unordered_map<uint16_t, RoomTemplateData>"
+      },
+      {
+        "field": "level_monster_chances",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "LevelChanceDef",
+        "comment": "unordered_map<uint16_t, RoomTemplateData>"
+      },
+      {
+        "field": "trap_chances",
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "UnsignedDword",
+        "comment": "unordered_map<uint16_t, RoomTemplateData>"
+      },
+      {
+        "field": "level_trap_chances",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "LevelChanceDef",
+        "comment": "unordered_map<uint16_t, RoomTemplateData>"
       }
+    ],
+    "ShortTileCodeDef": [
+      { "field": "tilecode", "type": "UnsignedDword" },
+      { "field": "chance", "type": "UnsignedByte" },
+      { "field": "padding1", "type": "UnsignedByte" },
+      { "field": "padding2", "type": "UnsignedByte" },
+      { "field": "padding3", "type": "UnsignedByte" },
+      { "field": "alt_tilecode", "type": "UnsignedDword" }
+    ],
+    "RoomTemplateData": [
+      { "field": "datas", "type": "StdVector", "valuetype": "RoomData" }
+    ],
+    "LevelChanceDef": [
+      { "field": "datas", "type": "StdVector", "valuetype": "UnsignedDword" }
+    ],
+    "RoomData": [
+      { "field": "flags", "type": "Flags8", 
+        "flags": 
+        {
+          "4": "flipped",
+          "5": "dual"
+        }
+      },
+      { "field": "room_width", "type": "UnsignedByte" },
+      { "field": "room_height", "type": "UnsignedByte" },
+      { "field": "padding1", "type": "UnsignedByte" },
+      { "field": "padding2", "type": "UnsignedDword" },
+      { "field": "room_data", "type": "DataPointer" }
+      
     ],
     "SpecialLevelGeneration": [
       {
@@ -6803,7 +6878,7 @@
         "comment": "type obviously may vary"
       }
     ],
-    "UnorderedMap": [
+    "StdUnorderedMap": [
       { "field": "max_load_factor", "type": "Float" },
       { "field": "-", "type": "Skip", "offset": 4 },
       {
@@ -8210,7 +8285,15 @@
         "field": "unknown27",
         "type": "StdMap",
         "comment": "added map for now, the size seam to always be 0"
-      }
+      },
+      { "field": "unknown28", "type": "UnsignedQword" },
+      { "field": "unknown29", "type": "UnsignedQword" },
+      { "field": "unknown30", "type": "UnsignedQword" },
+      { "field": "unknown31", "type": "StdVector", "valuetype": "UnsignedQword" },
+      { "field": "unknown34", "type": "StdMap", "keytype": "UnsignedDword", "valuetype": "UnsignedByte" },
+      { "field": "unknown35", "type": "UnsignedQword" },
+      { "field": "unknown36", "type": "DataPointer" },
+      { "field": "unknown37", "type": "StdMap" }
     ],
     "MovableBehavior": [
       {

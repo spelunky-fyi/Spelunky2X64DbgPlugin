@@ -8,6 +8,7 @@
 #include "Data/State.h"
 #include "Data/StdList.h"
 #include "Data/StdString.h"
+#include "Data/StdUnorderedMap.h"
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
@@ -156,6 +157,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             typeName += QString::fromStdString(field.jsonName);
         else if (field.type == MemoryFieldType::StdMap && field.secondParameterType.empty()) // exception
             typeName += "StdSet";
+        else if (field.type == MemoryFieldType::StdUnorderedMap && field.secondParameterType.empty()) // exception
+            typeName += "StdUnorderedSet";
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
             typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
         else
@@ -293,6 +296,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
             break;
         }
+        case MemoryFieldType::StdUnorderedMap:
         case MemoryFieldType::StdMap:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
@@ -1961,6 +1965,80 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             break;
         }
+        case MemoryFieldType::StdUnorderedMap:
+        {
+            std::optional<QByteArray> value;
+            if (valueMemoryOffset == 0)
+            {
+                itemValue->setData({}, Qt::DisplayRole);
+                if (!isPointer)
+                    itemValueHex->setData({}, Qt::DisplayRole);
+
+                itemValue->setData({}, gsRoleRawValue);
+                itemField->setBackground(Qt::transparent);
+            }
+            else
+            {
+                value = {0};
+                value->resize(gsStdUnorderedMapSize);
+                Script::Memory::Read(valueMemoryOffset, value->data(), gsStdUnorderedMapSize, nullptr);
+                auto dataOld = itemValue->data(gsRoleRawValue);
+                auto valueOld = dataOld.value<QByteArray>();
+                if (!dataOld.isValid() || value.value() != valueOld)
+                {
+                    itemField->setBackground(highlightColor);
+                    itemValue->setData(QVariant::fromValue(value.value()), gsRoleRawValue);
+
+                    if (StdUnorderedMap{valueMemoryOffset, 0, 0}.empty())
+                        itemValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                    else
+                        itemValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                }
+                else if (!isPointer)
+                    itemField->setBackground(Qt::transparent);
+            }
+
+            if (comparisonActive)
+            {
+                std::optional<QByteArray> comparisonValue;
+                if (valueComparisonMemoryOffset == 0)
+                {
+                    itemComparisonValue->setData({}, Qt::DisplayRole);
+                    if (!isPointer)
+                        itemComparisonValueHex->setData({}, Qt::DisplayRole);
+
+                    itemComparisonValue->setData({}, gsRoleRawValue);
+                }
+                else
+                {
+                    comparisonValue = {0};
+                    comparisonValue->resize(gsStdUnorderedMapSize);
+                    Script::Memory::Read(valueComparisonMemoryOffset, comparisonValue->data(), gsStdUnorderedMapSize, nullptr);
+                    auto dataOld = itemComparisonValue->data(gsRoleRawValue);
+                    auto valueOld = dataOld.value<QByteArray>();
+                    if (!dataOld.isValid() || comparisonValue.value() != valueOld)
+                    {
+                        itemComparisonValue->setData(QVariant::fromValue(comparisonValue.value()), gsRoleRawValue);
+
+                        if (StdUnorderedMap{valueComparisonMemoryOffset, 0, 0}.empty())
+                            itemComparisonValue->setData("<font color='#aaa'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
+                        else
+                            itemComparisonValue->setData("<font color='blue'><u>Show contents</u></font>", Qt::DisplayRole);
+                    }
+                }
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                if (isPointer == false)
+                    itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            if (shouldUpdateChildren)
+            {
+                std::optional<uintptr_t> addr = pointerUpdate ? valueMemoryOffset : (isPointer ? std::nullopt : newAddr);
+                std::optional<uintptr_t> comparisonAddr = comparisonPointerUpdate ? valueComparisonMemoryOffset : (isPointer ? std::nullopt : newAddrComparison);
+                for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                    updateRow(x, addr, comparisonAddr, itemField);
+            }
+            break;
+        }
         case MemoryFieldType::StdList:
         case MemoryFieldType::OldStdList:
         {
@@ -1971,19 +2049,19 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 if (!isPointer)
                     itemValueHex->setData({}, Qt::DisplayRole);
 
-                itemValue->setData({}, S2Plugin::gsRoleRawValue);
+                itemValue->setData({}, gsRoleRawValue);
                 itemField->setBackground(Qt::transparent);
             }
             else
             {
                 value = {0, 0};
                 Script::Memory::Read(valueMemoryOffset, &value.value(), 2 * sizeof(uintptr_t), nullptr);
-                auto dataOld = itemValue->data(S2Plugin::gsRoleRawValue);
+                auto dataOld = itemValue->data(gsRoleRawValue);
                 auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
                 if (!dataOld.isValid() || value.value() != valueOld)
                 {
                     itemField->setBackground(highlightColor);
-                    itemValue->setData(QVariant::fromValue(value.value()), S2Plugin::gsRoleRawValue);
+                    itemValue->setData(QVariant::fromValue(value.value()), gsRoleRawValue);
 
                     bool empty = (fieldType == MemoryFieldType::OldStdList && OldStdList{valueMemoryOffset}.empty()) || (fieldType == MemoryFieldType::StdList && StdList{valueMemoryOffset}.empty());
 
@@ -2005,17 +2083,17 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     if (!isPointer)
                         itemComparisonValueHex->setData({}, Qt::DisplayRole);
 
-                    itemComparisonValue->setData({}, S2Plugin::gsRoleRawValue);
+                    itemComparisonValue->setData({}, gsRoleRawValue);
                 }
                 else
                 {
                     comparisonValue = {0, 0};
                     Script::Memory::Read(valueComparisonMemoryOffset, &comparisonValue.value(), 2 * sizeof(uintptr_t), nullptr);
-                    auto dataOld = itemComparisonValue->data(S2Plugin::gsRoleRawValue);
+                    auto dataOld = itemComparisonValue->data(gsRoleRawValue);
                     auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
                     if (!dataOld.isValid() || comparisonValue.value() != valueOld)
                     {
-                        itemComparisonValue->setData(QVariant::fromValue(comparisonValue.value()), S2Plugin::gsRoleRawValue);
+                        itemComparisonValue->setData(QVariant::fromValue(comparisonValue.value()), gsRoleRawValue);
 
                         bool empty = (fieldType == MemoryFieldType::OldStdList && OldStdList{valueComparisonMemoryOffset}.empty()) ||
                                      (fieldType == MemoryFieldType::StdList && StdList{valueComparisonMemoryOffset}.empty());
@@ -2591,6 +2669,17 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
                         getToolbar()->showStdList(address, typeName);
+                    }
+                    break;
+                }
+                case MemoryFieldType::StdUnorderedMap:
+                {
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
+                    {
+                        auto keyTypeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
+                        auto ValueTypeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerSecondParameterType));
+                        getToolbar()->showStdUnorderedMap(address, keyTypeName, ValueTypeName);
                     }
                     break;
                 }

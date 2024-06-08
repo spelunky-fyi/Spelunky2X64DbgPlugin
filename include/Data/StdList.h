@@ -23,11 +23,11 @@ namespace S2Plugin
             {
                 return Script::Memory::ReadQword(nodeAddress + sizeof(uintptr_t));
             }
-            uintptr_t value_ptr() const
+            uintptr_t value_ptr() const noexcept
             {
                 return nodeAddress + 2 * sizeof(uintptr_t);
             }
-            uintptr_t operator*() const
+            uintptr_t operator*() const noexcept
             {
                 return value_ptr();
             }
@@ -53,16 +53,20 @@ namespace S2Plugin
                 nodeAddress = prev().nodeAddress;
                 return *this;
             }
-            bool operator==(const Node& other) const
+            bool operator==(const Node& other) const noexcept
             {
                 return nodeAddress == other.nodeAddress;
             }
-            bool operator!=(const Node& other) const
+            bool operator!=(const Node& other) const noexcept
             {
                 return nodeAddress != other.nodeAddress;
             }
+            uintptr_t address() const noexcept
+            {
+                return nodeAddress;
+            }
 
-          private:
+          protected:
             uintptr_t nodeAddress;
         };
 
@@ -70,7 +74,7 @@ namespace S2Plugin
         {
             return _end.next();
         }
-        Node end() const
+        Node end() const noexcept
         {
             return _end;
         }
@@ -82,7 +86,7 @@ namespace S2Plugin
         {
             return begin();
         }
-        Node cend() const
+        Node cend() const noexcept
         {
             return end();
         }
@@ -116,15 +120,15 @@ namespace S2Plugin
         {
             return mHead.next();
         }
-        Node end() const
+        Node end() const noexcept
         {
             return mHead;
         }
-        size_t size() const
+        size_t size() const noexcept
         {
             return mSize;
         }
-        bool empty() const
+        bool empty() const noexcept
         {
             return mSize == 0;
         }
@@ -132,7 +136,7 @@ namespace S2Plugin
         {
             return begin();
         }
-        Node cend() const
+        Node cend() const noexcept
         {
             return end();
         }

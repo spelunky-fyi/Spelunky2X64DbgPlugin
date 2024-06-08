@@ -5,7 +5,7 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorAddr, QWidget* parent) : mVectorType(vectorType), mVectorAddress(vectorAddr), AbstractContainerView(parent)
+S2Plugin::ViewStdVector::ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent) : mVectorType(vectorType), mVectorAddress(vectoraddr), AbstractContainerView(parent)
 {
     mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
 

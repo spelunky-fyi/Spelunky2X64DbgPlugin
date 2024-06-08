@@ -13,6 +13,7 @@
 #include "Views/ViewParticleDB.h"
 #include "Views/ViewStdList.h"
 #include "Views/ViewStdMap.h"
+#include "Views/ViewStdUnorderedMap.h"
 #include "Views/ViewStdVector.h"
 #include "Views/ViewStringsTable.h"
 #include "Views/ViewStruct.h"
@@ -132,7 +133,7 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
 
 void S2Plugin::ViewToolbar::showVirtualFunctions(uintptr_t address, const std::string& typeName)
 {
-    auto w = new ViewVirtualFunctions(typeName, address);
+    auto w = new ViewVirtualFunctions(address, typeName);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -140,7 +141,7 @@ void S2Plugin::ViewToolbar::showVirtualFunctions(uintptr_t address, const std::s
 
 void S2Plugin::ViewToolbar::showStdVector(uintptr_t address, const std::string& typeName)
 {
-    auto w = new ViewStdVector(typeName, address);
+    auto w = new ViewStdVector(address, typeName);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -148,7 +149,15 @@ void S2Plugin::ViewToolbar::showStdVector(uintptr_t address, const std::string& 
 
 void S2Plugin::ViewToolbar::showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName)
 {
-    auto w = new ViewStdMap(keytypeName, valuetypeName, address);
+    auto w = new ViewStdMap(address, keytypeName, valuetypeName);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void S2Plugin::ViewToolbar::showStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName)
+{
+    auto w = new ViewStdUnorderedMap(address, keytypeName, valuetypeName);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);

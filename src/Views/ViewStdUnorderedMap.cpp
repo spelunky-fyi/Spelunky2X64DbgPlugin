@@ -1,36 +1,32 @@
-#include "Views/ViewStdMap.h"
+#include "Views/ViewStdUnorderedMap.h"
 
 #include "Configuration.h"
-#include "Data/StdMap.h"
+#include "Data/StdUnorderedMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent)
+S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent)
     : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mMapAddress(address), AbstractContainerView(parent)
 {
     auto config = Configuration::get();
     mMapKeyTypeSize = config->getTypeSize(keytypeName);
-    mMapValueTypeSize = config->getTypeSize(valuetypeName);
+    mMapKeyAlignment = std::max(config->getAlingment(keytypeName), config->getAlingment(valuetypeName));
 
-    mMapKeyAlignment = config->getAlingment(keytypeName);
-    mMapValueAlignment = config->getAlingment(valuetypeName);
-
-    if (mMapValueTypeSize == 0)
-        setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
+    if (mMapValueType.empty())
+        setWindowTitle(QString("std::unordered_set<%1>").arg(QString::fromStdString(keytypeName)));
     else
-        setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
+        setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     reloadContainer();
 }
 
-void S2Plugin::ViewStdMap::reloadContainer()
+void S2Plugin::ViewStdUnorderedMap::reloadContainer()
 {
-    if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mMapAddress)))
+    if (!Script::Memory::IsValidPtr(Script::Memory::ReadQword(mMapAddress + sizeof(uintptr_t))))
         return;
 
-    StdMap the_map{mMapAddress, mMapKeyAlignment, mMapValueAlignment, mMapKeyTypeSize};
     auto config = Configuration::get();
     mMainTreeView->clear();
 
@@ -60,7 +56,7 @@ void S2Plugin::ViewStdMap::reloadContainer()
     }
 
     MemoryField value_field;
-    if (mMapValueTypeSize != 0) // if not StdSet
+    if (!mMapValueType.empty()) // if not StdSet
     {
         value_field.name = "value";
         if (config->isPermanentPointer(mMapValueType))
@@ -87,13 +83,14 @@ void S2Plugin::ViewStdMap::reloadContainer()
         }
     }
 
+    StdUnorderedMap the_map{mMapAddress, mMapKeyTypeSize, mMapKeyAlignment};
     auto _end = the_map.end();
     auto _cur = the_map.begin();
     MemoryField parent_field;
     parent_field.type = MemoryFieldType::Dummy;
     for (int x = 0; _cur != _end && x < 300; ++x, ++_cur)
     {
-        if (mMapValueTypeSize == 0) // StdSet
+        if (mMapValueType.empty()) // StdSet
         {
             key_field.name = "key_" + std::to_string(x);
             mMainTreeView->addMemoryField(key_field, key_field.name, _cur.key_ptr(), 0);

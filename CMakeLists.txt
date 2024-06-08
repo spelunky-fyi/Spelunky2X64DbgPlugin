@@ -62,6 +62,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/StdMap.h
 	include/Data/EntityList.h
 	include/Data/StdList.h
+    include/Data/StdUnorderedMap.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h
@@ -79,6 +80,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
 	include/Views/ViewStdMap.h
+    include/Views/ViewStdUnorderedMap.h
 	include/Views/ViewStdList.h
     include/Views/ViewEntityList.h
 	include/QtHelpers/StyledItemDelegateHTML.h
@@ -134,6 +136,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewVirtualFunctions.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
+    src/Views/ViewStdUnorderedMap.cpp
 	src/Views/ViewStdList.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp

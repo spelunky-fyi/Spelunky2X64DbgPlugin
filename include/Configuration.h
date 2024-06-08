@@ -132,6 +132,7 @@ namespace S2Plugin
         EntityList,
         OldStdList,
         StdList,
+        StdUnorderedMap,
     };
 
     struct VirtualFunction
@@ -227,13 +228,15 @@ namespace S2Plugin
         static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
         // unknown name will be created as DefaultStructType
-        MemoryField nameToMemoryField(const std::string& name) const;
+        MemoryField nameToMemoryField(const std::string& typeName) const;
 
         uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t base_addr = 0) const;
         uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t base_addr = 0) const;
 
         // equivalent to alignof operator
-        int getAlingment(const std::string& type) const;
+        uint8_t getAlingment(const std::string& type) const;
+        uint8_t getAlingment(MemoryFieldType type) const;
+        uint8_t getAlingment(const MemoryField& type) const;
         bool isPermanentPointer(const std::string& type) const
         {
             return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();

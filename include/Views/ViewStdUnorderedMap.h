@@ -8,11 +8,11 @@
 namespace S2Plugin
 {
 
-    class ViewStdMap : public AbstractContainerView
+    class ViewStdUnorderedMap : public AbstractContainerView
     {
         Q_OBJECT
       public:
-        ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent = nullptr);
+        ViewStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent = nullptr);
 
       protected:
         void reloadContainer() override;
@@ -22,8 +22,6 @@ namespace S2Plugin
         std::string mMapValueType;
         uintptr_t mMapAddress;
         size_t mMapKeyTypeSize;
-        size_t mMapValueTypeSize;
         uint8_t mMapKeyAlignment;
-        uint8_t mMapValueAlignment;
     };
 } // namespace S2Plugin

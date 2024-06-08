@@ -114,6 +114,7 @@ namespace S2Plugin
         {MemoryFieldType::StdWstring, "StdWstring", "std::wstring", "StdWstring", 32, false},
         {MemoryFieldType::OldStdList, "OldStdList", "std::pair<uintptr_t, uintptr_t>", "OldStdList", 16, false}, // can't use std::list representation since the standard was changed
         {MemoryFieldType::StdList, "StdList", "std::list<T>", "StdList", 16, false},
+        {MemoryFieldType::StdUnorderedMap, "StdUnorderedMap", "std::unordered_map<K, V>", "StdUnorderedMap", 64, false},
         // Game Main structs
         {MemoryFieldType::GameManager, "GameManager", "", "GameManager", 0, false},
         {MemoryFieldType::State, "State", "", "State", 0, false},
@@ -321,6 +322,43 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             memField.firstParameterType = "UnsignedQword";
             memField.secondParameterType = "";
             dprintf("no keytype specified for StdSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+    }
+    else if (fieldTypeStr == "StdUnorderedMap")
+    {
+        memField.type = MemoryFieldType::StdUnorderedMap;
+        if (field.contains("keytype"))
+        {
+            memField.firstParameterType = field["keytype"].get<std::string>();
+        }
+        else
+        {
+            memField.firstParameterType = "UnsignedQword";
+            dprintf("no keytype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+        if (field.contains("valuetype"))
+        {
+            memField.secondParameterType = field["valuetype"].get<std::string>();
+        }
+        else
+        {
+            memField.secondParameterType = "UnsignedQword";
+            dprintf("no valuetype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+    }
+    else if (fieldTypeStr == "StdUnorderedSet")
+    {
+        memField.type = MemoryFieldType::StdUnorderedMap;
+        if (field.contains("keytype"))
+        {
+            memField.firstParameterType = field["keytype"].get<std::string>();
+            memField.secondParameterType = "";
+        }
+        else
+        {
+            memField.firstParameterType = "UnsignedQword";
+            memField.secondParameterType = "";
+            dprintf("no keytype specified for StdUnorderedSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
         }
     }
     switch (memField.type)
@@ -766,7 +804,7 @@ std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctions
     }
 }
 
-int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
+uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
 {
     if (isPermanentPointer(typeName))
     {
@@ -777,67 +815,98 @@ int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
         if (isPointerType(type))
             return sizeof(uintptr_t);
 
-        switch (type)
-        {
-            case MemoryFieldType::Skip:
-            {
-                dprintf("cannot determinate alignment of (Skip) type!\n");
-                return sizeof(uintptr_t);
-            }
-            case MemoryFieldType::Byte:
-            case MemoryFieldType::UnsignedByte:
-            case MemoryFieldType::Bool:
-            case MemoryFieldType::Flags8:
-            case MemoryFieldType::State8:
-            case MemoryFieldType::CharacterDBID:
-            case MemoryFieldType::UTF8StringFixedSize:
-                return sizeof(char);
-            case MemoryFieldType::Word:
-            case MemoryFieldType::UnsignedWord:
-            case MemoryFieldType::State16:
-            case MemoryFieldType::Flags16:
-            case MemoryFieldType::UTF16StringFixedSize:
-            case MemoryFieldType::UTF16Char:
-                return sizeof(int16_t);
-            case MemoryFieldType::Dword:
-            case MemoryFieldType::UnsignedDword:
-            case MemoryFieldType::Float:
-            case MemoryFieldType::Flags32:
-            case MemoryFieldType::State32:
-            case MemoryFieldType::EntityDBID:
-            case MemoryFieldType::ParticleDBID:
-            case MemoryFieldType::EntityUID:
-            case MemoryFieldType::TextureDBID:
-            case MemoryFieldType::StringsTableID:
-            case MemoryFieldType::IPv4Address:
-            case MemoryFieldType::CharacterDB: // biggest type is 4
-                return sizeof(int32_t);
-
-            case MemoryFieldType::Online:
-            case MemoryFieldType::TextureDB:
-            case MemoryFieldType::ParticleDB:
-            case MemoryFieldType::EntityDB:
-            case MemoryFieldType::LevelGen:
-            case MemoryFieldType::GameManager:
-            case MemoryFieldType::State:
-            case MemoryFieldType::SaveGame:
-            case MemoryFieldType::StdVector:
-            case MemoryFieldType::StdMap:
-            case MemoryFieldType::Qword:
-            case MemoryFieldType::UnsignedQword:
-            case MemoryFieldType::Double:
-            case MemoryFieldType::OldStdList:
-            case MemoryFieldType::StdList:
-            case MemoryFieldType::EntityList:
-                return sizeof(uintptr_t);
-        }
+        return getAlingment(type);
     }
     auto itr = mAlignments.find(typeName);
     if (itr != mAlignments.end())
         return itr->second;
 
+    uint8_t alignment = 0;
+    for (auto& field : typeFieldsOfDefaultStruct(typeName))
+    {
+        alignment = std::max(alignment, getAlingment(field));
+        if (alignment == 8)
+            break;
+    }
+    if (alignment != 0)
+        return alignment;
+
     dprintf("alignment not found for (%s)\n", typeName.c_str());
     return sizeof(uintptr_t);
+}
+uint8_t S2Plugin::Configuration::getAlingment(const MemoryField& field) const
+{
+    if (field.isPointer)
+        return sizeof(uintptr_t);
+
+    switch (field.type)
+    {
+        case MemoryFieldType::Array:
+        case MemoryFieldType::Matrix:
+            return getAlingment(field.firstParameterType);
+        case MemoryFieldType::DefaultStructType:
+            return getAlingment(field.jsonName);
+        default:
+            return getAlingment(field.type);
+    }
+}
+uint8_t S2Plugin::Configuration::getAlingment(MemoryFieldType type) const
+{
+    switch (type)
+    {
+        case MemoryFieldType::Skip:
+        {
+            dprintf("cannot determinate alignment of (Skip) type!\n");
+            return sizeof(uintptr_t);
+        }
+        case MemoryFieldType::Byte:
+        case MemoryFieldType::UnsignedByte:
+        case MemoryFieldType::Bool:
+        case MemoryFieldType::Flags8:
+        case MemoryFieldType::State8:
+        case MemoryFieldType::CharacterDBID:
+        case MemoryFieldType::UTF8StringFixedSize:
+            return sizeof(char);
+        case MemoryFieldType::Word:
+        case MemoryFieldType::UnsignedWord:
+        case MemoryFieldType::State16:
+        case MemoryFieldType::Flags16:
+        case MemoryFieldType::UTF16StringFixedSize:
+        case MemoryFieldType::UTF16Char:
+            return sizeof(int16_t);
+        case MemoryFieldType::Dword:
+        case MemoryFieldType::UnsignedDword:
+        case MemoryFieldType::Float:
+        case MemoryFieldType::Flags32:
+        case MemoryFieldType::State32:
+        case MemoryFieldType::EntityDBID:
+        case MemoryFieldType::ParticleDBID:
+        case MemoryFieldType::EntityUID:
+        case MemoryFieldType::TextureDBID:
+        case MemoryFieldType::StringsTableID:
+        case MemoryFieldType::IPv4Address:
+        case MemoryFieldType::CharacterDB: // biggest type is 4
+            return sizeof(int32_t);
+
+        case MemoryFieldType::Online:
+        case MemoryFieldType::TextureDB:
+        case MemoryFieldType::ParticleDB:
+        case MemoryFieldType::EntityDB:
+        case MemoryFieldType::LevelGen:
+        case MemoryFieldType::GameManager:
+        case MemoryFieldType::State:
+        case MemoryFieldType::SaveGame:
+        case MemoryFieldType::StdVector:
+        case MemoryFieldType::StdMap:
+        case MemoryFieldType::Qword:
+        case MemoryFieldType::UnsignedQword:
+        case MemoryFieldType::Double:
+        case MemoryFieldType::OldStdList:
+        case MemoryFieldType::StdList:
+        case MemoryFieldType::EntityList:
+        case MemoryFieldType::StdUnorderedMap:
+            return sizeof(uintptr_t);
+    }
 }
 
 size_t S2Plugin::Configuration::getTypeSize(const std::string& typeName, bool entitySubclass)

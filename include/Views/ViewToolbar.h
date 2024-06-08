@@ -23,6 +23,7 @@ namespace S2Plugin
         void showState(uintptr_t statePtr);
         void showStdVector(uintptr_t address, const std::string& typeName);
         void showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
+        void showStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
