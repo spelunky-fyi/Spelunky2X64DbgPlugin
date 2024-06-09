@@ -14,7 +14,7 @@ S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeNa
     mMapValueTypeSize = config->getTypeSize(valuetypeName);
 
     mMapKeyAlignment = config->getAlingment(keytypeName);
-    mMapValueAlignment = config->getAlingment(valuetypeName);
+    mMapValueAlignment = mMapValueTypeSize == 0 ? 0 : config->getAlingment(valuetypeName);
 
     if (mMapValueTypeSize == 0)
         setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
@@ -34,57 +34,18 @@ void S2Plugin::ViewStdMap::reloadContainer()
     auto config = Configuration::get();
     mMainTreeView->clear();
 
-    MemoryField key_field;
+    MemoryField key_field = config->nameToMemoryField(mMapKeyType);
     key_field.name = "key";
-    if (config->isPermanentPointer(mMapKeyType))
-    {
-        key_field.type = MemoryFieldType::DefaultStructType;
-        key_field.jsonName = mMapKeyType;
-        key_field.isPointer = true;
-    }
-    else if (config->isJsonStruct(mMapKeyType))
-    {
-        key_field.type = MemoryFieldType::DefaultStructType;
-        key_field.jsonName = mMapKeyType;
-    }
-    else if (auto type = config->getBuiltInType(mMapKeyType); type != MemoryFieldType::None)
-    {
-        key_field.type = type;
-        if (Configuration::isPointerType(type))
-            key_field.isPointer = true;
-    }
-    else
-    {
-        dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapKeyType.c_str());
+    if (key_field.type == MemoryFieldType::None)
         return;
-    }
 
     MemoryField value_field;
     if (mMapValueTypeSize != 0) // if not StdSet
     {
+        value_field = config->nameToMemoryField(mMapValueType);
         value_field.name = "value";
-        if (config->isPermanentPointer(mMapValueType))
-        {
-            value_field.type = MemoryFieldType::DefaultStructType;
-            value_field.jsonName = mMapValueType;
-            value_field.isPointer = true;
-        }
-        else if (config->isJsonStruct(mMapValueType))
-        {
-            value_field.type = MemoryFieldType::DefaultStructType;
-            value_field.jsonName = mMapValueType;
-        }
-        else if (auto type = config->getBuiltInType(mMapValueType); type != MemoryFieldType::None)
-        {
-            value_field.type = type;
-            if (Configuration::isPointerType(type))
-                value_field.isPointer = true;
-        }
-        else
-        {
-            dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapValueType.c_str());
+        if (value_field.type == MemoryFieldType::None)
             return;
-        }
     }
 
     auto _end = the_map.end();

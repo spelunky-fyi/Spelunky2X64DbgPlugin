@@ -22,6 +22,6 @@ namespace S2Plugin
         std::string mMapValueType;
         uintptr_t mMapAddress;
         size_t mMapKeyTypeSize;
-        uint8_t mMapKeyAlignment;
+        uint8_t mMapAlignment;
     };
 } // namespace S2Plugin

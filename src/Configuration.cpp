@@ -905,6 +905,7 @@ uint8_t S2Plugin::Configuration::getAlingment(MemoryFieldType type) const
         case MemoryFieldType::StdList:
         case MemoryFieldType::EntityList:
         case MemoryFieldType::StdUnorderedMap:
+        default:
             return sizeof(uintptr_t);
     }
 }
@@ -1118,9 +1119,17 @@ bool S2Plugin::Configuration::isPointerType(MemoryFieldType type)
 S2Plugin::MemoryField S2Plugin::Configuration::nameToMemoryField(const std::string& name) const
 {
     MemoryField field;
+    if (name.empty())
+        return field;
+
     auto type = getBuiltInType(name);
     if (type == MemoryFieldType::None)
     {
+        if (!isJsonStruct(name))
+        {
+            dprintf("unknown type name requested in nameToMemoryField(%s)", name.c_str());
+            return field;
+        }
         field.type = MemoryFieldType::DefaultStructType;
         field.jsonName = name;
         field.isPointer = isPermanentPointer(name);

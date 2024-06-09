@@ -7,93 +7,84 @@
 namespace S2Plugin
 {
     // For the proper use you need to use template to define the types
-    // otherwise the functions ::find ::at ::contains ::node::key ::node::value, won't work properly
-    // when not using template, you need to define the size of key and value with the correct constructor
-    // this can also be used as std::set, just set the value size to 0
+    // otherwise the functions ::find ::at ::contains ::node::key ::node::value, auto for loop, won't work properly
+    // when not using template, you need to define the size of key and alignments with the correct constructor
+    // this can also be used as std::set, just set the value alignment to 0
     // it's not the safes implementation but the one that was needed
+    namespace
+    {
+        struct _EmptyType
+        {
+        };
+    } // namespace
 
-    template <class Key = size_t, class Value = size_t>
+    template <class Key = _EmptyType, class Value = _EmptyType>
     struct StdMap
     {
         // only for the template
-        StdMap(uintptr_t addr) : address(addr)
+        template <typename K = Key, typename V = Value>
+        StdMap(uintptr_t addr, std::enable_if_t<!std::is_same_v<K, _EmptyType> || !std::is_same_v<V, _EmptyType>, int> = 0)
         {
-            keytype_size = sizeof(Key);
-            valuetype_size = sizeof(Value);
-            set_offsets();
+            uintptr_t data[2];
+            Script::Memory::Read(addr, &data, sizeof(data), nullptr);
+            head = Node{data[0]};
+            mSize = data[1];
+            head.set_offsets();
         };
 
         // value size only needed for value() function
-        StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize) : address(addr)
+        StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize)
         {
-            keytype_size = keySize;
-            valuetype_size = sizeof(Value);
-            set_offsets(keyAlignment, valueAlignment);
-        };
-        StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize, size_t valueSize) : address(addr)
-        {
-            keytype_size = keySize;
-            valuetype_size = valueSize;
-            set_offsets(keyAlignment, valueAlignment);
+            uintptr_t data[2];
+            Script::Memory::Read(addr, &data, sizeof(data), nullptr);
+            head = Node{data[0]};
+            mSize = data[1];
+            head.set_offsets(keySize, keyAlignment, valueAlignment);
         };
 
         struct Node
         {
-            Node(size_t addr, const StdMap<Key, Value>* _map) : node_ptr(addr), parent_map(_map){};
-            Node(Node& t) : node_ptr(t.node_ptr), parent_map(t.parent_map){};
+            Node(const Node& t) : node_ptr(t.node_ptr), key_offset(t.key_offset), value_offset(t.value_offset){};
             Key key() const
             {
-                auto key_address = key_ptr();
-                // would probably be better with Read function but
-                // probably doesn't matter as for large structures you will just grab the address most of the time
-                switch (parent_map->keytype_size)
-                {
-                    case size_byte:
-                        return (Key)Script::Memory::ReadByte(key_address);
-                    case size_word:
-                        return (Key)Script::Memory::ReadWord(key_address);
-                    case size_dword:
-                        return (Key)Script::Memory::ReadDword(key_address);
-                }
-                return (Key)Script::Memory::ReadQword(key_address);
+                Key tmp{};
+                Script::Memory::Read(key_ptr(), &tmp, sizeof(Key), nullptr);
+                return tmp;
             }
             Value value() const
             {
-                auto value_address = value_ptr();
-                // same as key()
-                switch (parent_map->valuetype_size)
-                {
-                    case size_byte:
-                        return (Value)Script::Memory::ReadByte(value_address);
-                    case size_word:
-                        return (Value)Script::Memory::ReadWord(value_address);
-                    case size_dword:
-                        return (Value)Script::Memory::ReadDword(value_address);
-                }
-                return (Value)Script::Memory::ReadQword(value_address);
+                Value tmp{};
+                Script::Memory::Read(value_ptr(), &tmp, sizeof(Value), nullptr);
+                return tmp;
             }
             uintptr_t key_ptr() const
             {
-                return node_ptr + parent_map->key_offset;
+                return node_ptr + key_offset;
             }
             uintptr_t value_ptr() const
             {
-                return node_ptr + parent_map->value_offset;
+                return node_ptr + value_offset;
             }
             Node left() const
             {
                 auto left_addr = Script::Memory::ReadQword(node_ptr);
-                return Node{left_addr, parent_map};
+                Node copy = *this;
+                copy.node_ptr = left_addr;
+                return copy;
             }
             Node parent() const
             {
                 auto parent_addr = Script::Memory::ReadQword(node_ptr + 0x8);
-                return Node{parent_addr, parent_map};
+                Node copy = *this;
+                copy.node_ptr = parent_addr;
+                return copy;
             }
             Node right() const
             {
                 auto right_addr = Script::Memory::ReadQword(node_ptr + 0x10);
-                return Node{right_addr, parent_map};
+                Node copy = *this;
+                copy.node_ptr = right_addr;
+                return copy;
             }
             bool color() const
             {
@@ -156,24 +147,79 @@ namespace S2Plugin
             }
             // not doing the -- operator for now as it's not really needed
 
-            bool operator==(Node other) const
+            bool operator==(Node other) const noexcept
             {
                 return other.node_ptr == node_ptr;
             }
-            bool operator!=(Node other) const
+            bool operator!=(Node other) const noexcept
             {
                 return other.node_ptr != node_ptr;
             }
 
           private:
-            uintptr_t node_ptr;
-            // need reference to the map object so we can get offsets and alignments
-            const StdMap<Key, Value>* parent_map;
+            Node() = default;
+            Node(size_t addr) : node_ptr(addr){};
+            void set_offsets(size_t keytype_size = sizeof(Key), uint8_t key_alignment = alignof(Key), uint8_t value_alignment = alignof(Value)) noexcept
+            {
+                // key and value in map are treated as std::pair
+                // we need to figure out if it's placed right after the bucket flags
+                // or if there is a padding added for alignment
+                // the issue is, if key or value are a structs, we need to know their alignments, not just their size
+
+                uint8_t alignment = std::max(key_alignment, value_alignment);
+
+                switch (alignment)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                        key_offset = 0x1A; // 3 pointers and 2 bool field
+                        break;
+                    case 3:
+                    case 4:
+                        key_offset = 0x1C;
+                        break;
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    default:
+                        key_offset = 0x20;
+                        break;
+                }
+                size_t offset = key_offset + keytype_size;
+                // dealing with the padding between key and value
+                switch (value_alignment)
+                {
+                    case 0:
+                    case 1:
+                        value_offset = offset;
+                        break;
+                    case 2:
+                        value_offset = (offset + 1) & ~1;
+                        break;
+                    case 3:
+                    case 4:
+                        value_offset = (offset + 3) & ~3;
+                        break;
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                    default:
+                        value_offset = (offset + 7) & ~7;
+                        break;
+                }
+            }
+            uintptr_t node_ptr{0};
+            size_t key_offset{0};
+            size_t value_offset{0};
+            friend struct StdMap;
         };
 
-        size_t size() const
+        size_t size() const noexcept
         {
-            return Script::Memory::ReadQword(address + 0x8);
+            return mSize;
         }
         size_t at(Key v) const
         {
@@ -186,12 +232,11 @@ namespace S2Plugin
         }
         Node begin() const
         {
-            return end().left();
+            return head.left();
         }
-        Node end() const
+        Node end() const noexcept
         {
-            Node a{Script::Memory::ReadQword(address), this};
-            return a;
+            return head;
         }
         Node find(Key k) const
         {
@@ -231,61 +276,12 @@ namespace S2Plugin
         {
             return end().right();
         }
-        void set_offsets(uint8_t key_alignment = alignof(Key), uint8_t value_alignment = alignof(Value))
+        Node first() const
         {
-            // key and value in map are treated as std::pair
-            // we need to figure out if it's placed right after the bucket flags
-            // or if there is a padding added for aliment
-            // the issue is, if key or value are a structs, we need to know their alignments, not just their size
-
-            uint8_t alignment = std::max(key_alignment, value_alignment);
-
-            switch (alignment)
-            {
-                case 0:
-                case 1:
-                case 2:
-                    key_offset = 0x1A;
-                    break;
-                case 3:
-                case 4:
-                    key_offset = 0x1C;
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    key_offset = 0x20;
-                    break;
-            }
-            size_t offset = key_offset + keytype_size;
-            // dealing with the padding between key and value
-            switch (value_alignment)
-            {
-                case 0:
-                case 1:
-                    value_offset = offset;
-                    break;
-                case 2:
-                    value_offset = (offset + 1) & ~1;
-                    break;
-                case 3:
-                case 4:
-                    value_offset = (offset + 3) & ~3;
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    value_offset = (offset + 7) & ~7;
-                    break;
-            }
+            return end().left();
         }
 
-        uintptr_t address;
-        size_t keytype_size;
-        size_t valuetype_size;
-        uint8_t key_offset;
-        size_t value_offset;
+        Node head;
+        size_t mSize;
     };
 } // namespace S2Plugin

@@ -227,7 +227,6 @@ namespace S2Plugin
         static std::string_view getTypeDisplayName(MemoryFieldType type);
         static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
-        // unknown name will be created as DefaultStructType
         MemoryField nameToMemoryField(const std::string& typeName) const;
 
         uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t base_addr = 0) const;

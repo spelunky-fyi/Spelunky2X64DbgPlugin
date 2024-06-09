@@ -10,13 +10,17 @@ S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std:
     : mMapKeyType(keytypeName), mMapValueType(valuetypeName), mMapAddress(address), AbstractContainerView(parent)
 {
     auto config = Configuration::get();
-    mMapKeyTypeSize = config->getTypeSize(keytypeName);
-    mMapKeyAlignment = std::max(config->getAlingment(keytypeName), config->getAlingment(valuetypeName));
+    mMapKeyTypeSize = config->getTypeSize(mMapKeyType);
 
     if (mMapValueType.empty())
-        setWindowTitle(QString("std::unordered_set<%1>").arg(QString::fromStdString(keytypeName)));
+        mMapAlignment = config->getAlingment(mMapKeyType);
     else
-        setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
+        mMapAlignment = std::max(config->getAlingment(mMapKeyType), config->getAlingment(mMapValueType));
+
+    if (mMapValueType.empty())
+        setWindowTitle(QString("std::unordered_set<%1>").arg(QString::fromStdString(mMapKeyType)));
+    else
+        setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(mMapKeyType), QString::fromStdString(mMapValueType)));
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     reloadContainer();
@@ -30,60 +34,21 @@ void S2Plugin::ViewStdUnorderedMap::reloadContainer()
     auto config = Configuration::get();
     mMainTreeView->clear();
 
-    MemoryField key_field;
+    MemoryField key_field = config->nameToMemoryField(mMapKeyType);
     key_field.name = "key";
-    if (config->isPermanentPointer(mMapKeyType))
-    {
-        key_field.type = MemoryFieldType::DefaultStructType;
-        key_field.jsonName = mMapKeyType;
-        key_field.isPointer = true;
-    }
-    else if (config->isJsonStruct(mMapKeyType))
-    {
-        key_field.type = MemoryFieldType::DefaultStructType;
-        key_field.jsonName = mMapKeyType;
-    }
-    else if (auto type = config->getBuiltInType(mMapKeyType); type != MemoryFieldType::None)
-    {
-        key_field.type = type;
-        if (Configuration::isPointerType(type))
-            key_field.isPointer = true;
-    }
-    else
-    {
-        dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapKeyType.c_str());
+    if (key_field.type == MemoryFieldType::None)
         return;
-    }
 
     MemoryField value_field;
     if (!mMapValueType.empty()) // if not StdSet
     {
+        value_field = config->nameToMemoryField(mMapValueType);
         value_field.name = "value";
-        if (config->isPermanentPointer(mMapValueType))
-        {
-            value_field.type = MemoryFieldType::DefaultStructType;
-            value_field.jsonName = mMapValueType;
-            value_field.isPointer = true;
-        }
-        else if (config->isJsonStruct(mMapValueType))
-        {
-            value_field.type = MemoryFieldType::DefaultStructType;
-            value_field.jsonName = mMapValueType;
-        }
-        else if (auto type = config->getBuiltInType(mMapValueType); type != MemoryFieldType::None)
-        {
-            value_field.type = type;
-            if (Configuration::isPointerType(type))
-                value_field.isPointer = true;
-        }
-        else
-        {
-            dprintf("unknown type in ViewStdMap::refreshMapContents() (%s)\n", mMapValueType.c_str());
+        if (value_field.type == MemoryFieldType::None)
             return;
-        }
     }
 
-    StdUnorderedMap the_map{mMapAddress, mMapKeyTypeSize, mMapKeyAlignment};
+    StdUnorderedMap the_map{mMapAddress, mMapKeyTypeSize, mMapAlignment};
     auto _end = the_map.end();
     auto _cur = the_map.begin();
     MemoryField parent_field;
