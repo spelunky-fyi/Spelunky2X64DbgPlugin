@@ -13,7 +13,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        AbstractContainerView(QWidget* parent = nullptr);
+        explicit AbstractContainerView(QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;

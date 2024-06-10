@@ -9,7 +9,7 @@ namespace S2Plugin
     template <typename T>
     struct StdBasicString
     {
-        StdBasicString(size_t addr) : addr(addr){};
+        explicit StdBasicString(size_t addr) : addr(addr){};
         size_t size() const
         {
             return Script::Memory::ReadQword(addr + 0x10);

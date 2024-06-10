@@ -9,19 +9,19 @@ namespace S2Plugin
     class OldStdList
     {
       public:
-        OldStdList(uintptr_t address) : _end(address){};
+        explicit OldStdList(uintptr_t address) : _end(address){};
 
         struct Node
         {
-            Node(uintptr_t address) : nodeAddress(address){};
+            explicit Node(uintptr_t address) : nodeAddress(address){};
 
             Node prev() const
             {
-                return Script::Memory::ReadQword(nodeAddress);
+                return Node{Script::Memory::ReadQword(nodeAddress)};
             }
             Node next() const
             {
-                return Script::Memory::ReadQword(nodeAddress + sizeof(uintptr_t));
+                return Node{Script::Memory::ReadQword(nodeAddress + sizeof(uintptr_t))};
             }
             uintptr_t value_ptr() const noexcept
             {
@@ -113,7 +113,7 @@ namespace S2Plugin
         {
             uintptr_t data[2];
             Script::Memory::Read(address, &data, 2 * sizeof(uintptr_t), nullptr);
-            mHead = data[0];
+            mHead = Node{data[0]};
             mSize = data[1];
         }
         Node begin() const

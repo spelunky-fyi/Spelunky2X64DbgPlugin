@@ -50,7 +50,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        TreeViewMemoryFields(QWidget* parent = nullptr);
+        explicit TreeViewMemoryFields(QWidget* parent = nullptr);
 
         void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, uint8_t deltaPrefixCount = 0,
                              QStandardItem* parent = nullptr);

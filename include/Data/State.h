@@ -6,7 +6,7 @@ namespace S2Plugin
 {
     struct State
     {
-        State(uintptr_t addr) : mStatePtr(addr){};
+        explicit State(uintptr_t addr) : mStatePtr(addr){};
 
         uintptr_t ptr() const
         {

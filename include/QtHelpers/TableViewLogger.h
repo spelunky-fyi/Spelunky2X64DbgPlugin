@@ -23,7 +23,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        TableViewLogger(Logger* logger, QWidget* parent = nullptr);
+        explicit TableViewLogger(Logger* logger, QWidget* parent = nullptr);
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;

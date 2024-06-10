@@ -13,7 +13,7 @@ namespace S2Plugin
     class EntityList
     {
       public:
-        EntityList(uintptr_t address)
+        explicit EntityList(uintptr_t address)
         {
             Script::Memory::Read(address, this, sizeof(EntityList), nullptr);
         };
@@ -36,7 +36,7 @@ namespace S2Plugin
         struct Iterator
         {
             // Iterator(){};
-            Iterator(const EntityList entityList, uint32_t index) noexcept : Iterator(entityList.begin())
+            explicit Iterator(const EntityList entityList, uint32_t index) noexcept : Iterator(entityList.begin())
             {
                 advance(index);
             }
@@ -84,7 +84,7 @@ namespace S2Plugin
             }
             Entity entity() const
             {
-                return Script::Memory::ReadQword(addr.first);
+                return Entity{Script::Memory::ReadQword(addr.first)};
             }
             uint32_t uid() const
             {
@@ -92,20 +92,20 @@ namespace S2Plugin
             }
 
           private:
-            Iterator(uintptr_t entitiesAddress, uintptr_t uidsAddress) : addr(entitiesAddress, uidsAddress){};
+            explicit Iterator(uintptr_t entitiesAddress, uintptr_t uidsAddress) : addr(entitiesAddress, uidsAddress){};
             std::pair<uintptr_t, uintptr_t> addr;
             friend class EntityList;
         };
 
         Iterator begin() const
         {
-            return {entities(), uids()};
+            return Iterator{entities(), uids()};
         }
         Iterator end() const
         {
             uintptr_t entitiesEnd = entities() + size() * sizeof(uintptr_t);
             uintptr_t uidsEnd = uids() + size() * sizeof(uint32_t);
-            return {entitiesEnd, uidsEnd};
+            return Iterator{entitiesEnd, uidsEnd};
         }
         const Iterator cbegin() const
         {

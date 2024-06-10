@@ -12,7 +12,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ItemModelLoggerFields(Logger* logger, QObject* parent = nullptr) : QAbstractItemModel(parent), mLogger(logger){};
+        explicit ItemModelLoggerFields(Logger* logger, QObject* parent = nullptr) : QAbstractItemModel(parent), mLogger(logger){};
 
         void removeRow(int index)
         {

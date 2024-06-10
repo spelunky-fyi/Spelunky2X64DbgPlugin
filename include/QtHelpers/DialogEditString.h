@@ -17,7 +17,7 @@ namespace S2Plugin
 
       public:
         // size without the last char (null termination)
-        DialogEditString(const QString& fieldName, QString initialValue, uintptr_t memoryAddress, int size, MemoryFieldType type, QWidget* parent = nullptr);
+        explicit DialogEditString(const QString& fieldName, QString initialValue, uintptr_t memoryAddress, int size, MemoryFieldType type, QWidget* parent = nullptr);
 
       protected:
         QSize minimumSizeHint() const override;

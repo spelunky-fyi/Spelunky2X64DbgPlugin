@@ -79,7 +79,7 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
         for (auto x = 0; x < maximum; ++x)
         {
             auto entityPtr = layerEntities + (x * sizeof(size_t));
-            Entity entity = Script::Memory::ReadQword(entityPtr);
+            Entity entity{Script::Memory::ReadQword(entityPtr)};
             auto entityVTableOffset = Script::Memory::ReadQword(entity.ptr());
 
             auto entityName = entity.entityTypeName();

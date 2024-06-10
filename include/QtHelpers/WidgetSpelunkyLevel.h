@@ -17,7 +17,7 @@ namespace S2Plugin
     {
       public:
         EntityToPaint() = default;
-        EntityToPaint(uintptr_t addr, QBrush col) : ent(addr), color(col){};
+        explicit EntityToPaint(uintptr_t addr, QBrush col) : ent(addr), color(col){};
 
       protected:
         Entity ent;

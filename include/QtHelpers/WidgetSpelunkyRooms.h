@@ -20,7 +20,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent = nullptr);
+        explicit WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent = nullptr);
 
         QSize minimumSizeHint() const override;
         QSize sizeHint() const override;

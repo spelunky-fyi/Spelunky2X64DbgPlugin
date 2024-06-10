@@ -23,7 +23,7 @@ namespace S2Plugin
     {
         // only for the template
         template <typename K = Key, typename V = Value>
-        StdMap(uintptr_t addr, std::enable_if_t<!std::is_same_v<K, _EmptyType> || !std::is_same_v<V, _EmptyType>, int> = 0)
+        explicit StdMap(uintptr_t addr, std::enable_if_t<!std::is_same_v<K, _EmptyType> || !std::is_same_v<V, _EmptyType>, int> = 0)
         {
             uintptr_t data[2];
             Script::Memory::Read(addr, &data, sizeof(data), nullptr);
@@ -158,7 +158,7 @@ namespace S2Plugin
 
           private:
             Node() = default;
-            Node(size_t addr) : node_ptr(addr){};
+            explicit Node(size_t addr) : node_ptr(addr){};
             void set_offsets(size_t keytype_size = sizeof(Key), uint8_t key_alignment = alignof(Key), uint8_t value_alignment = alignof(Value)) noexcept
             {
                 // key and value in map are treated as std::pair

@@ -37,7 +37,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        AbstractDatabaseView(MemoryFieldType type, QWidget* parent = nullptr);
+        explicit AbstractDatabaseView(MemoryFieldType type, QWidget* parent = nullptr);
         virtual void showID(ID_type id) = 0;
 
       protected:
