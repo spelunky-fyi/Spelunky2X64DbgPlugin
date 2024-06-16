@@ -180,7 +180,6 @@ namespace S2Plugin
       private:
         size_t size{0};
         friend class Configuration;
-        friend class ViewMatrix;
     };
 
     struct RoomCode

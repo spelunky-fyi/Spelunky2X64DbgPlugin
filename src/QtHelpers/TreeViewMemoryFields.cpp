@@ -71,8 +71,6 @@ QTreeView::branch:open:has-children:has-siblings  {
 })");
 
     QObject::connect(this, &QTreeView::clicked, this, &TreeViewMemoryFields::cellClicked);
-    // QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    // setFont(font);
 }
 
 void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta, uint8_t deltaPrefixCount,
@@ -162,8 +160,6 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             typeName += "StdSet";
         else if (field.type == MemoryFieldType::StdUnorderedMap && field.secondParameterType.empty()) // exception
             typeName += "StdUnorderedSet";
-        // else if (field.type == MemoryFieldType::Dummy)
-        //     typeName = "";
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
             typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
         else
@@ -2155,7 +2151,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 std::optional<uint32_t> comparisonValue;
                 auto addr = valueComparisonMemoryOffset == 0 ? 0 : valueComparisonMemoryOffset + 0x14;
-                comparisonValue = updateField<uint32_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, true, false, highlightColor);
+                comparisonValue = updateField<uint32_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
                     if (comparisonValue.value() == 0)

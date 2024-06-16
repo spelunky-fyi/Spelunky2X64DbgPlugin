@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QStringList>
 #include <QWidget>
+#include <cstdint>
 #include <vector>
 
 namespace S2Plugin

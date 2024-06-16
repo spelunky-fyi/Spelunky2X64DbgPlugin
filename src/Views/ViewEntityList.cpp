@@ -11,7 +11,7 @@ S2Plugin::ViewEntityList::ViewEntityList(uintptr_t address, QWidget* parent) : m
     mEntityField.isPointer = true;
     mEntityField.type = MemoryFieldType::EntityPointer;
 
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment); //.disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress);
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 120);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
