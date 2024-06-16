@@ -73,6 +73,11 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setEnableChangeHighlighting(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
+    mMainTreeView->updateTableHeader(false);
+    mMainTreeView->setColumnWidth(gsColField, 145);
+    mMainTreeView->setColumnWidth(gsColValueHex, 125);
+    mMainTreeView->setColumnWidth(gsColType, 100);
+    mMainTreeView->setColumnWidth(gsColValue, 250);
 
     mainLayout->addWidget(mMainTreeView);
 
@@ -92,6 +97,9 @@ void S2Plugin::ViewEntities::refreshEntities()
     }
 
     size_t entitiesShown = 0;
+    MemoryField field;
+    field.type = MemoryFieldType::EntityPointer;
+    field.isPointer = true;
     auto AddEntity = [&](size_t entity_ptr)
     {
         auto entity = Entity{Script::Memory::ReadQword(entity_ptr)};
@@ -103,10 +111,7 @@ void S2Plugin::ViewEntities::refreshEntities()
                 return;
         }
 
-        MemoryField field;
         field.name = "entity_uid_" + std::to_string(entity.uid());
-        field.type = MemoryFieldType::EntityPointer;
-        field.isPointer = true;
         mMainTreeView->addMemoryField(field, {}, entity_ptr, 0);
         ++entitiesShown;
     };
@@ -191,10 +196,6 @@ void S2Plugin::ViewEntities::refreshEntities()
     }
     setWindowTitle(QString("%1 Entities").arg(entitiesShown));
     mMainTreeView->updateTableHeader();
-    mMainTreeView->setColumnWidth(gsColField, 145);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-    mMainTreeView->setColumnWidth(gsColValue, 300);
     mMainTreeView->updateTree();
 }
 

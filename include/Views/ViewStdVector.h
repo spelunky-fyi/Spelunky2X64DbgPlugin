@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
@@ -17,8 +18,7 @@ namespace S2Plugin
         void reloadContainer() override;
 
       private:
-        std::string mVectorType;
+        MemoryField mValueField;
         uintptr_t mVectorAddress;
-        size_t mVectorTypeSize;
     };
 } // namespace S2Plugin

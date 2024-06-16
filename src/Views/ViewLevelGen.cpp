@@ -46,16 +46,15 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
 
     // TAB DATA
     {
-        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", mLevelGenPtr);
-
-        mMainTreeView->setColumnWidth(gsColValue, 250);
-        mMainTreeView->setColumnWidth(gsColField, 125);
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->updateTableHeader(false);
+        mMainTreeView->setColumnWidth(gsColValue, 160);
+        mMainTreeView->setColumnWidth(gsColField, 200);
         mMainTreeView->setColumnWidth(gsColValueHex, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
         mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-        mMainTreeView->updateTableHeader();
+        mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", mLevelGenPtr);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::levelGenRoomsPointerClicked, this, &ViewLevelGen::levelGenRoomsPointerClicked);
     }
 

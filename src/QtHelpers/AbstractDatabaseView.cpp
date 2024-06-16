@@ -77,19 +77,20 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
         qobject_cast<QVBoxLayout*>(tabLookup->layout())->addLayout(topLayout);
 
         mMainTreeView = new TreeViewMemoryFields(this);
-        mMainTreeView->setEnableChangeHighlighting(false);
-        mMainTreeView->addMemoryFields(config->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
-        QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &AbstractDatabaseView::fieldUpdated);
-        QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &AbstractDatabaseView::fieldExpanded);
         tabLookup->layout()->addWidget(mMainTreeView);
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->updateTableHeader(false);
+        mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->setColumnWidth(gsColField, 125);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColValueHex, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
         mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-        mMainTreeView->updateTableHeader();
+
+        mMainTreeView->addMemoryFields(config->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &AbstractDatabaseView::fieldUpdated);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &AbstractDatabaseView::fieldExpanded);
     }
 
     // COMPARE

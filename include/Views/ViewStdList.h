@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
@@ -17,7 +18,7 @@ namespace S2Plugin
         void reloadContainer() override;
 
       private:
-        std::string mListType;
+        MemoryField mValueField;
         uintptr_t mListAddress;
         bool mOldType;
     };

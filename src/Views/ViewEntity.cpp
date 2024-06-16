@@ -104,14 +104,14 @@ void S2Plugin::ViewEntity::initializeUI()
 
     // TAB FIELDS
     {
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->updateTableHeader(false);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColField, 175);
         mMainTreeView->setColumnWidth(gsColValueHex, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
         mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-        mMainTreeView->updateTableHeader();
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::offsetDropped, this, &ViewEntity::entityOffsetDropped);
     }
     // TAB MEMORY
@@ -239,14 +239,14 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             }
         };
 
+        MemoryField headerField; // potentially not safe if used get_size() since it won't update
+        headerField.type = MemoryFieldType::EntitySubclass;
         for (auto it = hierarchy.rbegin(); it != hierarchy.rend(); ++it, ++colorIndex)
         {
             if (colorIndex > colors.size())
                 colorIndex = 0;
 
-            MemoryField headerField;
             headerField.name = "<b>" + *it + "</b>";
-            headerField.type = MemoryFieldType::EntitySubclass;
             headerField.jsonName = *it;
             mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
             // highlights fields in memory view, also updates delta

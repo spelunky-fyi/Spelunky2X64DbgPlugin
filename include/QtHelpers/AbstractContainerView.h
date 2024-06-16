@@ -8,6 +8,7 @@
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
+    class WidgetPagination;
 
     class AbstractContainerView : public QWidget
     {
@@ -21,5 +22,6 @@ namespace S2Plugin
         virtual void reloadContainer() = 0;
 
         TreeViewMemoryFields* mMainTreeView;
+        WidgetPagination* mPagination;
     };
 } // namespace S2Plugin

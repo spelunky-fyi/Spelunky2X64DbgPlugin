@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
@@ -17,6 +18,7 @@ namespace S2Plugin
         void reloadContainer() override;
 
       private:
+        MemoryField mEntityField;
         uintptr_t mEntityListAddress;
     };
 } // namespace S2Plugin

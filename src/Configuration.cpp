@@ -153,6 +153,7 @@ namespace S2Plugin
         //{MemoryFieldType::EntitySubclass, "", "", "", 0},
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},
         {MemoryFieldType::Flag, "Flag", "", "", 0, false},
+        {MemoryFieldType::Dummy, " ", "", "", 0, false},
     };
 } // namespace S2Plugin
 

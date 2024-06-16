@@ -98,6 +98,10 @@ namespace S2Plugin
         {
             return _end.next();
         }
+        bool isValid() const
+        {
+            return Script::Memory::IsValidPtr(_end.next().address()) && Script::Memory::IsValidPtr(_end.prev().address());
+        }
 
       private:
         Node _end;

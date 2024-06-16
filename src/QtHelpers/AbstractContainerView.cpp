@@ -4,6 +4,7 @@
 #include "Data/EntityList.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
+#include "QtHelpers/WidgetPagination.h"
 #include "QtPlugin.h"
 #include <QPushButton>
 #include <QString>
@@ -28,6 +29,11 @@ S2Plugin::AbstractContainerView::AbstractContainerView(QWidget* parent) : QWidge
     mMainTreeView = new TreeViewMemoryFields(this);
     QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, mMainTreeView, static_cast<void (TreeViewMemoryFields::*)()>(&TreeViewMemoryFields::updateTree));
     mainLayout->addWidget(mMainTreeView);
+
+    mPagination = new WidgetPagination(this);
+    mainLayout->addWidget(mPagination);
+    QObject::connect(mPagination, &WidgetPagination::pageUpdate, this, &AbstractContainerView::reloadContainer);
+
     autoRefresh->toggleAutoRefresh(true);
 }
 

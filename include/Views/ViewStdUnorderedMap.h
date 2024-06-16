@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
 #include <QWidget>
 #include <cstdint>
@@ -16,12 +17,13 @@ namespace S2Plugin
 
       protected:
         void reloadContainer() override;
+      protected slots:
+        void onItemCollapsed(const QModelIndex& index);
 
       private:
-        std::string mMapKeyType;
-        std::string mMapValueType;
+        MemoryField mKeyField;
+        MemoryField mValueField;
         uintptr_t mMapAddress;
-        size_t mMapKeyTypeSize;
         uint8_t mMapAlignment;
     };
 } // namespace S2Plugin

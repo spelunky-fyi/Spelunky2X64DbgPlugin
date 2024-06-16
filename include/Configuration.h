@@ -146,7 +146,7 @@ namespace S2Plugin
         VirtualFunction(size_t i, std::string n, std::string p, std::string r, std::string t) : index(i), name(n), params(p), returnValue(r), type(t){};
     };
 
-    struct MemoryField
+    struct MemoryField // TODO this got big over time, consider size optimaizations
     {
         std::string name;
         MemoryFieldType type{MemoryFieldType::None};
@@ -204,7 +204,7 @@ namespace S2Plugin
         {
             return get() != nullptr;
         }
-
+        // Accessors
         const std::unordered_map<std::string, std::string>& entityClassHierarchy() const noexcept
         {
             return mEntityClassHierarchy;
@@ -213,6 +213,19 @@ namespace S2Plugin
         {
             return mDefaultEntityClassTypes;
         }
+        const EntityNamesList& entityList() const noexcept
+        {
+            return entityNames;
+        }
+        const ParticleEmittersList& particleEmittersList() const noexcept
+        {
+            return particleEmitters;
+        }
+        const std::vector<std::string>& getJournalPageNames() const noexcept
+        {
+            return mJournalPages;
+        }
+        //
         std::vector<std::string> classHierarchyOfEntity(const std::string& entityName) const;
 
         const std::vector<MemoryField>& typeFields(const MemoryFieldType& type) const;
@@ -236,6 +249,16 @@ namespace S2Plugin
         uint8_t getAlingment(const std::string& type) const;
         uint8_t getAlingment(MemoryFieldType type) const;
         uint8_t getAlingment(const MemoryField& type) const;
+
+        std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
+        std::string stateTitle(const std::string& fieldName, int64_t state) const;
+        const std::vector<std::pair<int64_t, std::string>>& refTitlesOfField(const std::string& fieldName) const;
+
+        size_t getTypeSize(const std::string& typeName, bool entitySubclass = false);
+
+        RoomCode roomCodeForID(uint16_t code) const;
+        std::string getEntityName(uint32_t type) const;
+
         bool isPermanentPointer(const std::string& type) const
         {
             return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
@@ -247,29 +270,6 @@ namespace S2Plugin
         bool isJsonStruct(const std::string& type) const
         {
             return mTypeFieldsStructs.find(type) != mTypeFieldsStructs.end();
-        }
-
-        std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
-        std::string stateTitle(const std::string& fieldName, int64_t state) const;
-        const std::vector<std::pair<int64_t, std::string>>& refTitlesOfField(const std::string& fieldName) const;
-
-        size_t getTypeSize(const std::string& typeName, bool entitySubclass = false);
-        const EntityNamesList& entityList() const
-        {
-            return entityNames;
-        };
-
-        const ParticleEmittersList& particleEmittersList() const
-        {
-            return particleEmitters;
-        }
-
-        RoomCode roomCodeForID(uint16_t code) const;
-        std::string getEntityName(uint32_t type) const;
-
-        const std::vector<std::string>& getJournalPageNames()
-        {
-            return mJournalPages;
         }
 
       private:

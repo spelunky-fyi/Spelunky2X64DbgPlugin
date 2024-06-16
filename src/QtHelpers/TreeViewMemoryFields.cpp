@@ -49,27 +49,30 @@ S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(QWidget* parent) : QTreeVie
     setDragEnabled(true);
     setAcceptDrops(true);
 
-    setStyleSheet("QTreeView::branch:has-siblings:!adjoins-item {\
-    border-image: url(:/images/vline.png) 0;\
-}\
-QTreeView::branch:has-siblings:adjoins-item {\
-    border-image: url(:/images/branch-more.png) 0;\
-}\
-QTreeView::branch:!has-children:!has-siblings:adjoins-item {\
-    border-image: url(:/images/branch-end.png) 0;\
-}\
-QTreeView::branch:has-children:!has-siblings:closed,\
-QTreeView::branch:closed:has-children:has-siblings {\
-        border-image: none;\
-        image: url(:/images/branch-closed.png);\
-}\
-QTreeView::branch:open:has-children:!has-siblings,\
-QTreeView::branch:open:has-children:has-siblings  {\
-        border-image: none;\
-        image: url(:/images/branch-open.png);\
-}");
+    setStyleSheet(R"(
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(:/images/vline.png) 0;
+}
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(:/images/branch-more.png) 0;
+}
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(:/images/branch-end.png) 0;
+}
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(:/images/branch-closed.png);
+}
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(:/images/branch-open.png);
+})");
 
     QObject::connect(this, &QTreeView::clicked, this, &TreeViewMemoryFields::cellClicked);
+    // QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    // setFont(font);
 }
 
 void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta, uint8_t deltaPrefixCount,
@@ -159,6 +162,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             typeName += "StdSet";
         else if (field.type == MemoryFieldType::StdUnorderedMap && field.secondParameterType.empty()) // exception
             typeName += "StdUnorderedSet";
+        // else if (field.type == MemoryFieldType::Dummy)
+        //     typeName = "";
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
             typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
         else
@@ -256,11 +261,11 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 flags = 8;
 
             auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+            MemoryField flagField;
+            flagField.type = MemoryFieldType::Flag;
             for (uint8_t x = 1; x <= flags; ++x)
             {
-                MemoryField flagField;
                 flagField.name = "flag_" + std::to_string(x);
-                flagField.type = MemoryFieldType::Flag;
                 bool showDelta = false;
                 if ((x - 1) % 8 == 0)
                 {
@@ -335,8 +340,15 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
                 if (field.isPointer)
                     delta = 0;
+                size_t idx = 0;
+                if (field.secondParameterType == "#")
+                {
+                    delta += field.columns * index.get_size();
+                    memoryAddress += field.columns * index.get_size();
+                    idx = field.columns;
+                }
 
-                for (size_t idx = 0; idx < field.numberOfElements; ++idx)
+                for (; idx < field.numberOfElements; ++idx)
                 {
                     index.name.erase(initialNameSize);
                     index.name += std::to_string(idx) + ']';
@@ -351,7 +363,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         }
         case MemoryFieldType::Matrix:
         {
-            if (field.secondParameterType == "$")
+            if (!field.secondParameterType.empty())
                 returnField = parent;
             else
             {
@@ -361,21 +373,30 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 returnField->setData(field.columns, gsRoleColumns);
             }
 
-            if (field.rows <= 30 || field.secondParameterType == "$") // TODO: get the number from settings when done
-                                                                      // columns limit dealt by the array
+            if (field.rows <= 30 || !field.secondParameterType.empty()) // TODO: get the number from settings when done
+                                                                        // columns limit dealt by the array
             {
-                if (field.isPointer)
-                    delta = 0;
-
                 MemoryField row;
                 row.numberOfElements = field.columns;
                 row.firstParameterType = field.firstParameterType;
-                row.secondParameterType = field.secondParameterType;
+                row.secondParameterType = "$"; // just to let it know it should put all the elements in, no matrix element
+                                               // it can't be # since we still want the array to be placed normally, just no size limit
                 row.type = MemoryFieldType::Array;
                 row.name = field.name + '[';
                 auto initialNameSize = row.name.size();
 
-                for (size_t idx = 0; idx < field.rows; ++idx)
+                if (field.isPointer)
+                    delta = 0;
+                size_t idx = 0;
+                if (!field.secondParameterType.empty())
+                {
+                    auto rowStart = std::stoll(field.secondParameterType);
+                    delta += rowStart * row.get_size();
+                    memoryAddress += rowStart * row.get_size();
+                    idx = rowStart;
+                }
+
+                for (; idx < field.rows; ++idx)
                 {
                     row.name.erase(initialNameSize);
                     row.name += std::to_string(idx) + ']';
@@ -413,7 +434,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
 void S2Plugin::TreeViewMemoryFields::updateTableHeader(bool restoreColumnWidths)
 {
-    mModel->setHorizontalHeaderLabels({"Field", "Value", "Value (hex)", "Comparison value", "Comparison value (hex)", "Memory offset", "Δ", "Type", "Comment"});
+    mModel->setHorizontalHeaderLabels({"Field", "Value", "Value (hex)", "Comparison value", "Comparison value (hex)", "Memory Address", "Δ", "Type", "Comment"});
 
     setColumnHidden(gsColField, !activeColumns.test(gsColField));
     setColumnHidden(gsColValue, !activeColumns.test(gsColValue));
@@ -2213,14 +2234,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Dummy:
         {
-            if (isExpanded(itemField->index()))
-                itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
-            else
-                itemValue->setData("<font color='#aaa'><u>[Expand]</u></font>", Qt::DisplayRole);
-
-            // if (comparisonActive)
-            //     itemComparisonValue->setData(itemValue->data(Qt::DisplayRole), Qt::DisplayRole);
-            //  probably won't be involved in comparisons
             if (shouldUpdateChildren)
             {
                 for (int x = 0; x < itemField->rowCount(); ++x)
@@ -2578,7 +2591,6 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 }
                 case MemoryFieldType::DefaultStructType:
                 case MemoryFieldType::EntitySubclass:
-                case MemoryFieldType::Dummy:
                 {
                     auto fieldIndex = index.sibling(index.row(), gsColField);
                     if (isExpanded(fieldIndex))
@@ -2694,6 +2706,8 @@ void S2Plugin::TreeViewMemoryFields::clear()
     mSavedColumnWidths[gsColField] = columnWidth(gsColField);
     mSavedColumnWidths[gsColValue] = columnWidth(gsColValue);
     mSavedColumnWidths[gsColValueHex] = columnWidth(gsColValueHex);
+    mSavedColumnWidths[gsColComparisonValue] = columnWidth(gsColComparisonValue);
+    mSavedColumnWidths[gsColComparisonValueHex] = columnWidth(gsColComparisonValueHex);
     mSavedColumnWidths[gsColMemoryAddress] = columnWidth(gsColMemoryAddress);
     mSavedColumnWidths[gsColMemoryAddressDelta] = columnWidth(gsColMemoryAddressDelta);
     mSavedColumnWidths[gsColType] = columnWidth(gsColType);
@@ -3108,4 +3122,26 @@ void S2Plugin::TreeViewMemoryFields::expandLast()
     auto rows = mod->rowCount();
     if (rows != 0)
         expand(mod->index(mod->rowCount() - 1, 0));
+}
+
+void S2Plugin::TreeViewMemoryFields::drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const
+{
+    static auto branchMore = QPixmap(":/images/branch-more.png");
+    static auto branchEnd = []()
+    {
+        auto pixmap = QPixmap(":/images/branch-end.png");
+        return pixmap.scaled(24, 17, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
+    }();
+
+    if (!drawTopBranch && index.parent() == QModelIndex())
+    {
+        bool isLastChild = (index.row() == mModel->rowCount(index.parent()) - 1);
+        if (isLastChild)
+            painter->drawPixmap(rect.left() - 2, rect.top(), branchEnd);
+        else
+            painter->drawPixmap(rect.left() - 2, rect.top(), branchMore);
+        return;
+    }
+
+    QTreeView::drawBranches(painter, rect, index);
 }
