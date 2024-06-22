@@ -205,7 +205,7 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
             if (obj) // probably not needed but just in case
                 v = obj->value();
 
-            Script::Memory::WriteByte(mMemoryAddress, static_cast<uint16_t>(v));
+            Script::Memory::WriteWord(mMemoryAddress, static_cast<uint16_t>(v));
             break;
         }
         case MemoryFieldType::Dword:
@@ -215,7 +215,7 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
             if (obj) // probably not needed but just in case
                 v = obj->value();
 
-            Script::Memory::WriteByte(mMemoryAddress, static_cast<uint32_t>(v));
+            Script::Memory::WriteDword(mMemoryAddress, static_cast<uint32_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedDword:

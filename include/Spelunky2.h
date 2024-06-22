@@ -27,6 +27,8 @@ namespace S2Plugin
         uintptr_t get_GameManagerPtr();
         uintptr_t get_SaveDataPtr();
         uintptr_t get_OnlinePtr();
+        uintptr_t get_GameAPIPtr();
+        uintptr_t get_HudPtr();
         uintptr_t get_StatePtr() const
         {
             return heapBaseAddr + GAME_OFFSET::STATE;
@@ -67,6 +69,8 @@ namespace S2Plugin
 
         uintptr_t mGameManagerPtr{0};
         uintptr_t mOnlinePtr{0};
+        uintptr_t mGameAPIPtr{0};
+        uintptr_t mHudPtr{0};
 
         EntityDB mEntityDB;
         ParticleDB mParticleDB;

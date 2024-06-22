@@ -48,6 +48,8 @@ namespace S2Plugin
         void showLogger();
         void showOnline();
         void showThreads();
+        void showGameAPI();
+        void showHud();
 
       private slots:
         void clearLabels();

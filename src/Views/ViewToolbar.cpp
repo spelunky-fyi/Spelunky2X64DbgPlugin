@@ -36,97 +36,87 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     container->setLayout(mainLayout);
     setWidget(container);
 
+    auto addDivider = [&mainLayout]()
+    {
+        auto line = new QFrame();
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        mainLayout->addWidget(line);
+    };
+
     setTitleBarWidget(new QWidget(this));
 
-    auto btnEntityDB = new QPushButton(this);
-    btnEntityDB->setText("Entity DB");
+    mainLayout->addWidget(new QLabel("Databases:"), 0, Qt::AlignHCenter);
+
+    auto btnEntityDB = new QPushButton("Entity DB", this);
     mainLayout->addWidget(btnEntityDB);
     QObject::connect(btnEntityDB, &QPushButton::clicked, this, &ViewToolbar::showEntityDB);
-
-    auto btnTextureDB = new QPushButton(this);
-    btnTextureDB->setText("Texture DB");
+    auto btnTextureDB = new QPushButton("Texture DB", this);
     mainLayout->addWidget(btnTextureDB);
     QObject::connect(btnTextureDB, &QPushButton::clicked, this, &ViewToolbar::showTextureDB);
-
-    auto btnParticleDB = new QPushButton(this);
-    btnParticleDB->setText("Particle DB");
+    auto btnParticleDB = new QPushButton("Particle DB", this);
     mainLayout->addWidget(btnParticleDB);
     QObject::connect(btnParticleDB, &QPushButton::clicked, this, &ViewToolbar::showParticleDB);
-
-    auto btnStringsTable = new QPushButton(this);
-    btnStringsTable->setText("Strings DB");
+    auto btnStringsTable = new QPushButton("Strings DB", this);
     mainLayout->addWidget(btnStringsTable);
     QObject::connect(btnStringsTable, &QPushButton::clicked, this, &ViewToolbar::showStringsTable);
-
-    auto btnCharacterDB = new QPushButton(this);
-    btnCharacterDB->setText("Character DB");
+    auto btnCharacterDB = new QPushButton("Character DB", this);
     mainLayout->addWidget(btnCharacterDB);
     QObject::connect(btnCharacterDB, &QPushButton::clicked, this, &ViewToolbar::showCharacterDB);
 
-    auto divider = new QFrame(this);
-    divider->setFrameShape(QFrame::HLine);
-    divider->setFrameShadow(QFrame::Sunken);
-    mainLayout->addWidget(divider);
+    addDivider();
+    mainLayout->addWidget(new QLabel("Game structs:"), 0, Qt::AlignHCenter);
 
-    auto btnState = new QPushButton(this);
-    btnState->setText("State");
-    mainLayout->addWidget(btnState);
-    QObject::connect(btnState, &QPushButton::clicked, this, &ViewToolbar::showMainThreadState);
-
-    auto btnEntities = new QPushButton(this);
-    btnEntities->setText("Entities");
-    mainLayout->addWidget(btnEntities);
-    QObject::connect(btnEntities, &QPushButton::clicked, this, &ViewToolbar::showEntities);
-
-    auto btnLevelGen = new QPushButton(this);
-    btnLevelGen->setText("LevelGen");
-    mainLayout->addWidget(btnLevelGen);
-    QObject::connect(btnLevelGen, &QPushButton::clicked, this, &ViewToolbar::showMainThreadLevelGen);
-
-    auto btnGameManager = new QPushButton(this);
-    btnGameManager->setText("GameManager");
+    auto btnGameManager = new QPushButton("GameManager", this);
     mainLayout->addWidget(btnGameManager);
     QObject::connect(btnGameManager, &QPushButton::clicked, this, &ViewToolbar::showGameManager);
-
-    auto btnSaveGame = new QPushButton(this);
-    btnSaveGame->setText("SaveGame");
-    mainLayout->addWidget(btnSaveGame);
-    QObject::connect(btnSaveGame, &QPushButton::clicked, this, &ViewToolbar::showSaveGame);
-
-    auto btnOnline = new QPushButton(this);
-    btnOnline->setText("Online");
+    auto btnOnline = new QPushButton("Online", this);
     mainLayout->addWidget(btnOnline);
     QObject::connect(btnOnline, &QPushButton::clicked, this, &ViewToolbar::showOnline);
-
-    auto btnVirtualTable = new QPushButton(this);
-    btnVirtualTable->setText("Virtual Table");
+    auto btnVirtualTable = new QPushButton("Virtual Table", this);
     mainLayout->addWidget(btnVirtualTable);
     QObject::connect(btnVirtualTable, &QPushButton::clicked, this, &ViewToolbar::showVirtualTableLookup);
-
-    auto divider2 = new QFrame(this);
-    divider2->setFrameShape(QFrame::HLine);
-    divider2->setFrameShadow(QFrame::Sunken);
-    mainLayout->addWidget(divider2);
-
-    auto btnLogger = new QPushButton(this);
-    btnLogger->setText("Logger");
-    mainLayout->addWidget(btnLogger);
-    QObject::connect(btnLogger, &QPushButton::clicked, this, &ViewToolbar::showLogger);
-
-    auto btnThreads = new QPushButton(this);
-    btnThreads->setText("Threads");
+    auto btnGameAPI = new QPushButton("Game API", this);
+    mainLayout->addWidget(btnGameAPI);
+    QObject::connect(btnGameAPI, &QPushButton::clicked, this, &ViewToolbar::showGameAPI);
+    auto btnHud = new QPushButton("Hud", this);
+    mainLayout->addWidget(btnHud);
+    QObject::connect(btnHud, &QPushButton::clicked, this, &ViewToolbar::showHud);
+    auto btnThreads = new QPushButton("Threads", this);
     mainLayout->addWidget(btnThreads);
     QObject::connect(btnThreads, &QPushButton::clicked, this, &ViewToolbar::showThreads);
 
-    mainLayout->addStretch();
+    addDivider();
+    mainLayout->addWidget(new QLabel("Main Thread heap:", this), 0, Qt::AlignHCenter);
 
-    auto btnClearLabels = new QPushButton(this);
-    btnClearLabels->setText("Clear labels");
+    auto btnState = new QPushButton("State", this);
+    mainLayout->addWidget(btnState);
+    QObject::connect(btnState, &QPushButton::clicked, this, &ViewToolbar::showMainThreadState);
+    auto btnEntities = new QPushButton("Entities", this);
+    btnEntities->setToolTip("Lookup entities in current level");
+    mainLayout->addWidget(btnEntities);
+    QObject::connect(btnEntities, &QPushButton::clicked, this, &ViewToolbar::showEntities);
+    auto btnLevelGen = new QPushButton("LevelGen", this);
+    mainLayout->addWidget(btnLevelGen);
+    QObject::connect(btnLevelGen, &QPushButton::clicked, this, &ViewToolbar::showMainThreadLevelGen);
+    auto btnSaveGame = new QPushButton("SaveGame", this);
+    mainLayout->addWidget(btnSaveGame);
+    QObject::connect(btnSaveGame, &QPushButton::clicked, this, &ViewToolbar::showSaveGame);
+
+    mainLayout->addStretch();
+    addDivider();
+    mainLayout->addWidget(new QLabel("Tools:"), 0, Qt::AlignHCenter);
+
+    auto btnLogger = new QPushButton("Logger", this);
+    btnLogger->setToolTip("Log data over time");
+    mainLayout->addWidget(btnLogger);
+    QObject::connect(btnLogger, &QPushButton::clicked, this, &ViewToolbar::showLogger);
+    auto btnClearLabels = new QPushButton("Clear labels", this);
+    btnClearLabels->setToolTip("Clear all labels crated by the plugin (auto labels)");
     mainLayout->addWidget(btnClearLabels);
     QObject::connect(btnClearLabels, &QPushButton::clicked, this, &ViewToolbar::clearLabels);
-
-    auto btnReloadConfig = new QPushButton(this);
-    btnReloadConfig->setText("Reload JSON");
+    auto btnReloadConfig = new QPushButton("Reload JSON", this);
+    btnReloadConfig->setToolTip("Reload config from Spelunky2.json and Spelunky2Entities.json");
     mainLayout->addWidget(btnReloadConfig);
     QObject::connect(btnReloadConfig, &QPushButton::clicked, this, &ViewToolbar::reloadConfig);
 }
@@ -365,6 +355,28 @@ void S2Plugin::ViewToolbar::showSaveGame()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_SaveDataPtr() != 0)
     {
         auto w = new ViewStruct(Spelunky2::get()->get_SaveDataPtr(), Configuration::get()->typeFields(MemoryFieldType::SaveGame), "SaveGame");
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
+    }
+}
+
+void S2Plugin::ViewToolbar::showGameAPI()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameAPIPtr() != 0)
+    {
+        auto w = new ViewStruct(Spelunky2::get()->get_GameAPIPtr(), Configuration::get()->typeFields(MemoryFieldType::GameAPI), "GameAPI");
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
+    }
+}
+
+void S2Plugin::ViewToolbar::showHud()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HudPtr() != 0)
+    {
+        auto w = new ViewStruct(Spelunky2::get()->get_HudPtr(), Configuration::get()->typeFields(MemoryFieldType::Hud), "Hud");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);

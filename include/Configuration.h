@@ -89,6 +89,8 @@ namespace S2Plugin
         State32, // this is signed, can be negative!
         Skip,
         GameManager,
+        GameAPI,
+        Hud,
         State,
         SaveGame,
         LevelGen,

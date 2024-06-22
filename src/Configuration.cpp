@@ -125,6 +125,8 @@ namespace S2Plugin
         {MemoryFieldType::TextureDB, "TextureDB", "", "TextureDB", 0, false},
         {MemoryFieldType::CharacterDB, "CharacterDB", "", "CharacterDB", 0, false},
         {MemoryFieldType::Online, "Online", "", "Online", 0, false},
+        {MemoryFieldType::GameAPI, "GameAPI", "", "GameAPI", 0, false},
+        {MemoryFieldType::Hud, "Hud", "", "Hud", 0, false},
         // Special Types
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},
         {MemoryFieldType::EntityDBPointer, "EntityDB pointer", "EntityDB*", "EntityDBPointer", 8, true},
