@@ -6,6 +6,7 @@
 #include "Views/ViewEntities.h"
 #include "Views/ViewEntity.h"
 #include "Views/ViewEntityDB.h"
+#include "Views/ViewEntityFactory.h"
 #include "Views/ViewEntityList.h"
 #include "Views/ViewJournalPage.h"
 #include "Views/ViewLevelGen.h"
@@ -67,6 +68,9 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     addDivider();
     mainLayout->addWidget(new QLabel("Game structs:"), 0, Qt::AlignHCenter);
 
+    auto btnEntityFactory = new QPushButton("Entity Factory", this);
+    mainLayout->addWidget(btnEntityFactory);
+    QObject::connect(btnEntityFactory, &QPushButton::clicked, this, &ViewToolbar::showEntityFactory);
     auto btnGameManager = new QPushButton("GameManager", this);
     mainLayout->addWidget(btnGameManager);
     QObject::connect(btnGameManager, &QPushButton::clicked, this, &ViewToolbar::showGameManager);
@@ -99,6 +103,9 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     auto btnLevelGen = new QPushButton("LevelGen", this);
     mainLayout->addWidget(btnLevelGen);
     QObject::connect(btnLevelGen, &QPushButton::clicked, this, &ViewToolbar::showMainThreadLevelGen);
+    auto btnLiquid = new QPushButton("Liquid Physics", this);
+    mainLayout->addWidget(btnLiquid);
+    QObject::connect(btnLiquid, &QPushButton::clicked, this, &ViewToolbar::showMainThreadLiquidPhysics);
     auto btnSaveGame = new QPushButton("SaveGame", this);
     mainLayout->addWidget(btnSaveGame);
     QObject::connect(btnSaveGame, &QPushButton::clicked, this, &ViewToolbar::showSaveGame);
@@ -172,6 +179,14 @@ void S2Plugin::ViewToolbar::showState(uintptr_t address)
 void S2Plugin::ViewToolbar::showLevelGen(uintptr_t address)
 {
     auto w = new ViewLevelGen(address);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void S2Plugin::ViewToolbar::showLiquidPhysics(uintptr_t address)
+{
+    auto w = new ViewStruct(address, Configuration::get()->typeFields(MemoryFieldType::LiquidPhysics), "LiquidPhysics");
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -293,6 +308,16 @@ void S2Plugin::ViewToolbar::showMainThreadLevelGen()
     }
 }
 
+void S2Plugin::ViewToolbar::showMainThreadLiquidPhysics()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
+    {
+        auto ptr = Spelunky2::get()->get_LiquidEnginePtr();
+        if (ptr != 0)
+            showLiquidPhysics(ptr);
+    }
+}
+
 void S2Plugin::ViewToolbar::showGameManager()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameManagerPtr() != 0)
@@ -377,6 +402,17 @@ void S2Plugin::ViewToolbar::showHud()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HudPtr() != 0)
     {
         auto w = new ViewStruct(Spelunky2::get()->get_HudPtr(), Configuration::get()->typeFields(MemoryFieldType::Hud), "Hud");
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
+    }
+}
+
+void S2Plugin::ViewToolbar::showEntityFactory()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
+    {
+        auto w = new ViewEntityFactory();
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);

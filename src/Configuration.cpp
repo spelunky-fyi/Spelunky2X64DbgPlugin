@@ -127,7 +127,10 @@ namespace S2Plugin
         {MemoryFieldType::Online, "Online", "", "Online", 0, false},
         {MemoryFieldType::GameAPI, "GameAPI", "", "GameAPI", 0, false},
         {MemoryFieldType::Hud, "Hud", "", "Hud", 0, false},
+        {MemoryFieldType::EntityFactory, "EntityFactory", "", "EntityFactory", 0, false},
+        {MemoryFieldType::LiquidPhysics, "LiquidPhysics", "", "LiquidPhysics", 0, false},
         // Special Types
+        {MemoryFieldType::OnHeapPointer, "OnHeap Pointer", "OnHeapPointer<T>", "OnHeapPointer", 8, false}, // not pointer since it's more of a offset
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},
         {MemoryFieldType::EntityDBPointer, "EntityDB pointer", "EntityDB*", "EntityDBPointer", 8, true},
         {MemoryFieldType::EntityDBID, "EntityDB ID", "uint32_t", "EntityDBID", 4, false},
@@ -142,6 +145,7 @@ namespace S2Plugin
         {MemoryFieldType::COThemeInfoPointer, "COThemeInfoPointer", "ThemeInfo*", "COThemeInfoPointer", 8, true},                               // just theme name
         {MemoryFieldType::LevelGenRoomsPointer, "LevelGenRoomsPointer", "LevelGenRooms*", "LevelGenRoomsPointer", 8, true},
         {MemoryFieldType::LevelGenRoomsMetaPointer, "LevelGenRoomsMetaPointer", "LevelGenRoomsMeta*", "LevelGenRoomsMetaPointer", 8, true},
+        {MemoryFieldType::LiquidPhysicsPointer, "LiquidPhysicsPointer", "LiquidPhysicsPointer*", "LiquidPhysicsPointer", 8, true},
         {MemoryFieldType::JournalPagePointer, "JournalPagePointer", "JournalPage*", "JournalPagePointer", 8, true},
         {MemoryFieldType::LevelGenPointer, "LevelGenPointer", "LevelGen*", "LevelGenPointer", 8, true},
         {MemoryFieldType::StringsTableID, "StringsTable ID", "uint32_t", "StringsTableID", 4, false},
@@ -540,6 +544,14 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 throw std::runtime_error("Missing `col` parameter for Matrix (" + struct_name + "." + memField.name + ")");
             break;
         }
+        case MemoryFieldType::OnHeapPointer:
+        {
+            if (field.contains("pointertype"))
+            {
+                memField.jsonName = field["pointertype"].get<std::string_view>();
+            }
+            break;
+        }
         case MemoryFieldType::DefaultStructType:
             memField.jsonName = fieldTypeStr;
             break;
@@ -908,6 +920,7 @@ uint8_t S2Plugin::Configuration::getAlingment(MemoryFieldType type) const
         case MemoryFieldType::StdList:
         case MemoryFieldType::EntityList:
         case MemoryFieldType::StdUnorderedMap:
+        case MemoryFieldType::OnHeapPointer:
         default:
             return sizeof(uintptr_t);
     }

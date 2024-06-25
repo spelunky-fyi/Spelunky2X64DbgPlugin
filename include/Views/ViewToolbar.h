@@ -27,6 +27,7 @@ namespace S2Plugin
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
+        void showLiquidPhysics(uintptr_t address);
         void showArray(uintptr_t address, std::string name, std::string arrayTypeName, size_t length);
         void showMatrix(uintptr_t address, std::string name, std::string arrayTypeName, size_t rows, size_t columns);
         void showEntityList(uintptr_t address);
@@ -38,10 +39,10 @@ namespace S2Plugin
         ViewTextureDB* showTextureDB();
         void showStringsTable();
         ViewCharacterDB* showCharacterDB();
-
         void showMainThreadState();
         void showGameManager();
         void showMainThreadLevelGen();
+        void showMainThreadLiquidPhysics();
         void showEntities();
         ViewVirtualTable* showVirtualTableLookup();
         void showSaveGame();
@@ -50,6 +51,7 @@ namespace S2Plugin
         void showThreads();
         void showGameAPI();
         void showHud();
+        void showEntityFactory();
 
       private slots:
         void clearLabels();

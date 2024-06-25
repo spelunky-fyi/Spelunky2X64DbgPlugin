@@ -404,6 +404,26 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             }
             break;
         }
+        case MemoryFieldType::OnHeapPointer:
+        {
+            returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+            if (field.jsonName.empty())
+                break;
+
+            // no isPointer check, for now
+            auto addr = Spelunky2::get()->get_HeapBase();
+            addr += Script::Memory::ReadQword(memoryAddress);
+            if (auto fields = config->typeFieldsOfDefaultStruct(field.jsonName); !fields.empty())
+            {
+                addMemoryFields(fields, fieldNameOverride, addr, 0, deltaPrefixCount + 1, returnField);
+            }
+            else
+            {
+                auto newField = config->nameToMemoryField(field.jsonName);
+                addMemoryField(newField, fieldNameOverride, addr, 0, deltaPrefixCount + 1, returnField);
+            }
+            break;
+        }
         case MemoryFieldType::DefaultStructType:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
@@ -849,6 +869,30 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
                     itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            break;
+        }
+        case MemoryFieldType::OnHeapPointer:
+        {
+            std::optional<uint64_t> value;
+            value = updateField<uint64_t>(itemField, valueMemoryOffset, itemValue, "<font color='blue'><u>0x%016llX</u></font>", itemValueHex, isPointer, "0x%016llX", true, !pointerUpdate,
+                                          highlightColor);
+
+            if (comparisonActive)
+            {
+                std::optional<uint64_t> comparisonValue;
+                comparisonValue = updateField<uint64_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, "<b>0x%016llX</b>", itemComparisonValueHex, isPointer, "0x%016llX", false, false,
+                                                        highlightColor);
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                if (isPointer == false)
+                    itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            if (shouldUpdateChildren)
+            {
+                for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                {
+                    updateRow(x, std::nullopt, std::nullopt, itemField, disableChangeHighlighting);
+                }
             }
             break;
         }
@@ -1561,6 +1605,24 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 else
                     itemComparisonValue->setData("<font color='blue'><u>Show level gen</u></font>", Qt::DisplayRole);
 
+                itemComparisonValue->setBackground(itemComparisonValueHex->background());
+            }
+            break;
+        }
+        case MemoryFieldType::LiquidPhysicsPointer:
+        {
+            if (valueMemoryOffset == 0) // nullptr or bad ptr
+                itemValue->setData(itemValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
+            else
+                itemValue->setData("<font color='blue'><u>Show liquid physics</u></font>", Qt::DisplayRole);
+
+            if (comparisonActive)
+            {
+                if (valueComparisonMemoryOffset == 0)
+                    itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole));
+                else
+                    itemComparisonValue->setData("<font color='blue'><u>Show liquid physics</u></font>", Qt::DisplayRole);
+                
                 itemComparisonValue->setBackground(itemComparisonValueHex->background());
             }
             break;
@@ -2310,6 +2372,16 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     }
                     break;
                 }
+                case MemoryFieldType::OnHeapPointer:
+                {
+                    auto offset = clickedItem->data(gsRoleRawValue).toULongLong();
+                    if (offset != 0)
+                    {
+                        GuiDumpAt(Spelunky2::get()->get_HeapBase() + offset);
+                        GuiShowCpu();
+                    }
+                    break;
+                }
                 case MemoryFieldType::EntityPointer:
                 {
                     auto rawValue = clickedItem->data(gsRoleRawValue).toULongLong();
@@ -2426,6 +2498,15 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (rawValue != 0)
                     {
                         getToolbar()->showLevelGen(rawValue);
+                    }
+                    break;
+                }
+                case MemoryFieldType::LiquidPhysicsPointer:
+                {
+                    auto rawValue = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (rawValue != 0)
+                    {
+                        getToolbar()->showLiquidPhysics(rawValue);
                     }
                     break;
                 }

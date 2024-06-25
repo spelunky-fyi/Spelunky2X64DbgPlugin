@@ -83,6 +83,7 @@ x64dbg_plugin(${PROJECT_NAME}
     include/Views/ViewStdUnorderedMap.h
 	include/Views/ViewStdList.h
     include/Views/ViewEntityList.h
+    include/Views/ViewEntityFactory.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
 	include/QtHelpers/TreeViewMemoryFields.h

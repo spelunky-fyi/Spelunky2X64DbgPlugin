@@ -1807,7 +1807,7 @@
       { "field": "stickers", "type": "Array", "length":20, "arraytype": "TextureRenderingInfo" }
     ],
     "SaveGameDataPointer": [
-      { "field": "heap_offset", "type": "UnsignedQword" },
+      { "field": "heap_offset", "type": "OnHeapPointer" },
       { "field": "journal_popup_ui", "type": "JournalPopupUI" }
     ],
     "ScreenBase": [
@@ -4084,8 +4084,10 @@
         "type": "EntityUID",
         "comment": "if set to -1, you have free control over camera focus through focus_x, focus_y"
       },
-      { "field": "unknown3", "type": "UnsignedDword" },
-      { "field": "unknown4", "type": "UnsignedDword" },
+      { "field": "peek_layer_timer", "type": "UnsignedDword" },
+      { "field": "peek_layer", "type": "UnsignedByte" },
+      { "field": "unknown4b", "type": "UnsignedByte" },
+      { "field": "unknown4c", "type": "UnsignedWord" },
       {
         "field": "inertia",
         "type": "Float",
@@ -4101,7 +4103,7 @@
       { "field": "bottom", "type": "Float" },
       { "field": "top", "type": "Float" }
     ],
-    "LiquidPhysicsPointer": [
+    "LiquidPhysics": [
       { "field": "unknown1", "type": "MysteryLiquidPointer1" },
       { "field": "water_physics_defaults", "type": "LiquidPhysicsParams" },
       { "field": "water_physics_engine", "type": "LiquidPhysicsEngine" },
@@ -7439,11 +7441,7 @@
       { "field": "unknown44", "type": "ConstCharPointerPointer" },
       { "field": "texture_num", "type": "UnsignedDword" },
       { "field": "padding_probably1", "type": "UnsignedDword" },
-      {
-        "field": "entity_offset",
-        "type": "UnsignedQword",
-        "comment": "the offset of the associated entity in memory, starting from the memory segment that State resides in"
-      },
+      { "field": "entity_offset", "type": "OnHeapPointer" },
       { "field": "flip_horizontal", "type": "Bool", "comment": "facing left" },
       { "field": "padding_probably2", "type": "UnsignedByte" },
       { "field": "padding_probably3", "type": "UnsignedByte" },
@@ -8343,6 +8341,46 @@
         }
       }
     ],
+    "UnknownSteamStuff": [
+      { "field": "unknown1", "type": "ConstCharPointer" },
+      { "field": "unknown2", "type": "Dword" },
+      { "field": "unknown3", "type": "Dword" },
+      { "field": "unknown4", "type": "CodePointer" }
+    ],
+    "SteamCallback": [
+      {
+        "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": {
+            "name": "unknown",
+            "params": "",
+            "return": ""
+          },
+          "1": {
+            "name": "unknown",
+            "params": "",
+            "return": ""
+          },
+          "2": {
+            "name": "unknown",
+            "params": "",
+            "return": ""
+          },
+          "3": {
+            "name": "~SteamCallback",
+            "params": "",
+            "return": ""
+          }
+      }},
+      { "field": "unknown1", "type": "UnsignedByte", "comment": "bool?" },
+      { "field": "padding2", "type": "Skip", "offset": 7, "comment": "probably padding, if it's subclass below" },
+      { "field": "steam_overlay_open", "type": "Bool" },
+      { "field": "unknown4", "type": "Skip", "offset": 3, "comment": "probably padding" },
+      { "field": "unknown_timer", "type": "UnsignedDword", "comment": "can run only when game is out of focus" },
+      { "field": "unknown6", "type": "Float" },
+      { "field": "unknown7", "type": "UnsignedDword", "comment": "probably padding" }
+    ],
     "GameAPI": [
       { "field": "unknown1", "type": "Bool" },
       { "field": "padding1", "type": "Skip", "offset": 7 },
@@ -8350,16 +8388,12 @@
       { "field": "renderer", "type": "Renderer", "pointer": true },
       { "field": "window_width", "type": "UnsignedDword" },
       { "field": "window_height", "type": "UnsignedDword" },
-      { "field": "unknown5", "type": "UnsignedQword", "comment": "always garbage?" },
+      { "field": "unknown5", "type": "UnknownSteamStuff", "pointer": true },
       { "field": "exe_begin", "type": "DataPointer" },
-      { "field": "unknown7", "type": "UnsignedQword", "comment": "some offset" },
-      { "field": "unknown8", "type": "UnsignedQword", "comment": "always garbage?" },
-      { "field": "SteamAPI_Callback", "type": "DataPointer" },
-      { "field": "unknown10a", "type": "UnsignedByte", "comment": "bool?" },
-      { "field": "padding2", "type": "Skip", "offset": 3 },
-      { "field": "unknown10b", "type": "UnsignedDword" },
-      { "field": "unknown11", "type": "UnsignedQword", "comment": "always garbage?" },
-      { "field": "unknown12", "type": "UnsignedQword", "comment": "always garbage?" }
+      { "field": "unknown7", "type": "OnHeapPointer", "comment": "some offset, OnHeapPointer for now" },
+      { "field": "unknown8", "type": "CodePointer", "comment": "steam related" },
+      { "field": "SteamAPI_Callback", "type": "SteamCallback", "comment": "OnGameOverlayActivated" },
+      { "field": "unknown14", "type": "UnsignedQword" }
     ],
     "Renderer": [
       {
@@ -8479,8 +8513,8 @@
       { "field": "elixir", "type": "Bool" },
       { "field": "unknown5", "type": "UnsignedByte" },
       { "field": "crown", "type": "EntityDBID" },
-      { "field": "powerups_sprite_position", "type": "Array", "length": 18, "arraytype": "SpritePosition" },
-      { "field": "powerups_count", "type": "UnsignedDword" }
+      { "field": "powerup_sprites", "type": "Array", "length": 18, "arraytype": "SpritePosition" },
+      { "field": "powerup_count", "type": "UnsignedDword" }
     ],
      "HudElement": [
       { "field": "name_state", "type": "State32", "states": { "0": "highlight", "1": "normal" } },
@@ -8519,7 +8553,7 @@
       { "field": "seed", "type": "UnsignedDword" },
       { "field": "opacity", "type": "Float" },
       { "field": "player_highlight", "type": "TextureRenderingInfo" },
-      { "field": "player_hearth", "type": "TextureRenderingInfo" },
+      { "field": "player_heart", "type": "TextureRenderingInfo" },
       { "field": "player_ankh", "type": "TextureRenderingInfo" },
       { "field": "kapala_icon", "type": "TextureRenderingInfo" },
       { "field": "player_crown", "type": "TextureRenderingInfo" },
@@ -8580,7 +8614,7 @@
       { "field": "loading_dragon", "type": "TextureRenderingInfo" },
       { "field": "loading_visibility", "type": "Float" },
       { "field": "unknown42", "type": "Float" },
-      { "field": "unknown42b", "type": "Float" },
+      { "field": "unknown43", "type": "Float" },
       { "field": "loading_cog", "type": "TextureRenderingInfo" },
       { "field": "unknown45", "type": "Float" },
       { "field": "loading_cog_timer", "type": "UnsignedDword" },
@@ -8592,6 +8626,27 @@
       { "field": "unknown52", "type": "UnsignedDword", "comment": "probably padding" },
       { "field": "player_cursed_paricles", "type": "Array", "length": 4, "arraytype": "ParticleEmitterInfoPointer" },
       { "field": "player_poisoned_paricles", "type": "Array", "length": 4, "arraytype": "ParticleEmitterInfoPointer" }
+    ],
+    "EntityPool": [
+      { "field": "slot_size", "type": "UnsignedDword" },
+      { "field": "initial_slots", "type": "UnsignedDword" },
+      { "field": "slots_growth", "type": "UnsignedDword" },
+      { "field": "current_slots", "type": "UnsignedDword" },
+      { "field": "unknwon1", "type": "UnsignedQword" },
+      { "field": "unknwon2", "type": "StdVector", "valuetype": "EntityPointer", "pointer": true },
+      { "field": "empty_buckets", "type": "StdVector", "valuetype": "DataPointer", "pointer": true }
+    ],
+    "EntityPoolOnHeapPointer": [
+      { "field": "pointer", "type": "OnHeapPointer", "pointertype": "EntityPool" }
+    ],
+    "EntityFactory": [
+      // EntityDB will be inserted here automatically
+      { "field": "active_types", "type": "Array", "length": 917, "arraytype": "Bool" },
+      { "field": "skip1", "type": "Skip", "offset": 3 },
+      { "field": "entity_buckets", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "EntityPoolOnHeapPointer", "comment": "key is the bucket size" },
+      { "field": "entity_names_map", "type": "StdUnorderedMap", "keytype": "StdString", "valuetype": "UnsignedWord" },
+      { "field": "unknwon2", "type": "UnsignedQword" },
+      { "field": "unknwon3", "type": "UnsignedQword" }
     ]
   }
 }

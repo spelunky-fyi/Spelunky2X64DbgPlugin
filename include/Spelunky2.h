@@ -31,12 +31,25 @@ namespace S2Plugin
         uintptr_t get_HudPtr();
         uintptr_t get_StatePtr() const
         {
+            if (heapBaseAddr == 0)
+                return 0;
+
             return heapBaseAddr + GAME_OFFSET::STATE;
         };
         uintptr_t get_LevelGenPtr() const
         {
+            if (heapBaseAddr == 0)
+                return 0;
+
             return heapBaseAddr + GAME_OFFSET::LEVEL_GEN;
         };
+        uintptr_t get_LiquidEnginePtr() const
+        {
+            if (heapBaseAddr == 0)
+                return 0;
+
+            return heapBaseAddr + GAME_OFFSET::LIQUID_ENGINE;
+        }
         uintptr_t get_HeapBase() const
         {
             return heapBaseAddr;
