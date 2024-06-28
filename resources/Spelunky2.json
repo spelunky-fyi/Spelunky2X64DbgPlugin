@@ -4093,9 +4093,7 @@
         "type": "Float",
         "comment": "0 = still; 1 = follow immediately"
       },
-      { "field": "unknown5", "type": "UnsignedDword" },
-      { "field": "unknown6", "type": "UnsignedDword" },
-      { "field": "unknown7", "type": "UnsignedDword" }
+      { "field": "unknown5", "type": "UnsignedDword" }
     ],
     "CameraBounds": [
       { "field": "left", "type": "Float" },
@@ -8632,8 +8630,8 @@
       { "field": "initial_slots", "type": "UnsignedDword" },
       { "field": "slots_growth", "type": "UnsignedDword" },
       { "field": "current_slots", "type": "UnsignedDword" },
-      { "field": "unknwon1", "type": "UnsignedQword" },
-      { "field": "unknwon2", "type": "StdVector", "valuetype": "EntityPointer", "pointer": true },
+      { "field": "unknown1", "type": "UnsignedQword" },
+      { "field": "pools_begin", "type": "StdVector", "valuetype": "DataPointer", "pointer": true, "comment": "saved the first entity address that causes the slot size to increase (including the initial)" },
       { "field": "empty_buckets", "type": "StdVector", "valuetype": "DataPointer", "pointer": true }
     ],
     "EntityPoolOnHeapPointer": [
@@ -8645,8 +8643,8 @@
       { "field": "skip1", "type": "Skip", "offset": 3 },
       { "field": "entity_buckets", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "EntityPoolOnHeapPointer", "comment": "key is the bucket size" },
       { "field": "entity_names_map", "type": "StdUnorderedMap", "keytype": "StdString", "valuetype": "UnsignedWord" },
-      { "field": "unknwon2", "type": "UnsignedQword" },
-      { "field": "unknwon3", "type": "UnsignedQword" }
+      { "field": "unknown2", "type": "UnsignedQword" },
+      { "field": "unknown3", "type": "UnsignedQword" }
     ]
   }
 }
