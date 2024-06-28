@@ -1622,7 +1622,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole));
                 else
                     itemComparisonValue->setData("<font color='blue'><u>Show liquid physics</u></font>", Qt::DisplayRole);
-                
+
                 itemComparisonValue->setBackground(itemComparisonValueHex->background());
             }
             break;
