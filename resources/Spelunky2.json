@@ -786,7 +786,12 @@
       { "field": "sound_killed_by_other", "type": "Dword" },
       { "field": "field_a8", "type": "Float" },
       { "field": "field_AC", "type": "Dword" },
-      { "field": "animations", "type": "StdUnorderedMap", "keytype": "UnsignedByte", "valuetype": "Animation" },
+      {
+        "field": "animations",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedByte",
+        "valuetype": "Animation"
+      },
       { "field": "attachOffsetX", "type": "Float" },
       { "field": "attachOffsetY", "type": "Float" },
       { "field": "init", "type": "UnsignedByte" },
@@ -800,7 +805,11 @@
       { "field": "count", "type": "Dword" },
       { "field": "interval", "type": "Dword" },
       { "field": "key", "type": "UnsignedByte" },
-      { "field": "repeat", "type": "State8", "states": {  "0": "NoRepeat", "1": "Linear", "2": "BackAndForth" } }
+      {
+        "field": "repeat",
+        "type": "State8",
+        "states": { "0": "NoRepeat", "1": "Linear", "2": "BackAndForth" }
+      }
     ],
     "EmittedParticlesInfo": [
       { "field": "particle_count", "type": "UnsignedDword" },
@@ -1183,21 +1192,96 @@
       { "field": "unknown18", "type": "UnsignedByte" },
       { "field": "unknown19", "type": "UnsignedByte" },
       { "field": "unknown20", "type": "UnsignedByte" },
-      { "field": "unknown21", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown22", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown23", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown24", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown25", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown26", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown27", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown28", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown29", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown30", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown31", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown32", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown33", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown34", "type": "Array", "length":40, "arraytype": "Float" },
-      { "field": "unknown35", "type": "Array", "length":40, "arraytype": "Float" },
+      {
+        "field": "unknown21",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown22",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown23",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown24",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown25",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown26",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown27",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown28",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown29",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown30",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown31",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown32",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown33",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown34",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
+      {
+        "field": "unknown35",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "Float"
+      },
       { "field": "idle_counter", "type": "Float" },
       { "field": "unknown22a", "type": "UnsignedDword" }
     ],
@@ -1338,9 +1422,24 @@
       { "field": "game_has_focus", "type": "Bool" },
       { "field": "unknown9", "type": "Bool" },
       { "field": "unknown10", "type": "Bool" },
-      { "field": "keyboard", "type": "Array", "length": 4, "arraytype":"InputsByControllerPointer" },
-      { "field": "x_input", "type": "Array", "length": 4, "arraytype":"InputsByControllerPointer" },
-      { "field": "other_controller", "type": "Array", "length": 4, "arraytype":"InputsByControllerPointer" },
+      {
+        "field": "keyboard",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "InputsByControllerPointer"
+      },
+      {
+        "field": "x_input",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "InputsByControllerPointer"
+      },
+      {
+        "field": "other_controller",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "InputsByControllerPointer"
+      },
       { "field": "input_index_p1", "type": "Byte" },
       { "field": "input_index_p2", "type": "Byte" },
       { "field": "input_index_p3", "type": "Byte" },
@@ -1804,7 +1903,12 @@
       { "field": "time_text_info", "type": "TextRenderingInfoPointer" },
       { "field": "time_value_text_info", "type": "TextRenderingInfoPointer" },
       { "field": "sticker_count", "type": "UnsignedDword" },
-      { "field": "stickers", "type": "Array", "length":20, "arraytype": "TextureRenderingInfo" }
+      {
+        "field": "stickers",
+        "type": "Array",
+        "length": 20,
+        "arraytype": "TextureRenderingInfo"
+      }
     ],
     "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "OnHeapPointer" },
@@ -2026,15 +2130,30 @@
       { "field": "menu_id", "type": "UnsignedDword" },
       { "field": "transfer_to_menu_id", "type": "UnsignedDword" },
       { "field": "menu_text_opacity", "type": "Float" },
-      { "field": "spear_position", "type": "Array", "length": 6, "arraytype": "Float" },
+      {
+        "field": "spear_position",
+        "type": "Array",
+        "length": 6,
+        "arraytype": "Float"
+      },
       {
         "field": "spear_dangler_sprite",
         "type": "Array",
         "length": 6,
         "arraytype": "SpritePosition"
       },
-      { "field": "spear_dangle_momentum", "type": "Array", "length": 6, "arraytype": "Float" },
-      { "field": "spear_dangle_angle", "type": "Array", "length": 6, "arraytype": "Float" },
+      {
+        "field": "spear_dangle_momentum",
+        "type": "Array",
+        "length": 6,
+        "arraytype": "Float"
+      },
+      {
+        "field": "spear_dangle_angle",
+        "type": "Array",
+        "length": 6,
+        "arraytype": "Float"
+      },
       { "field": "play_scroll_descend", "type": "Float" },
       { "field": "scroll_text", "type": "StringsTableID" },
       { "field": "shake_offset_x", "type": "Float" },
@@ -2521,9 +2640,24 @@
       },
       { "field": "quick_select_panel_related", "type": "TextureRenderingInfo" },
       { "field": "unknown_texture_rendering", "type": "TextureRenderingInfo" },
-      { "field": "player_shutter_timer", "type": "Array", "length": 4, "arraytype": "Float" },
-      { "field": "player_x_position", "type": "Array", "length": 4, "arraytype": "Float" },
-      { "field": "player_y_position", "type": "Array", "length": 4, "arraytype": "Float" },
+      {
+        "field": "player_shutter_timer",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
+      {
+        "field": "player_x_position",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
+      {
+        "field": "player_y_position",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
       { "field": "unknown52", "type": "Float" },
       { "field": "unknown53", "type": "Float" },
       { "field": "unknown54", "type": "Float" },
@@ -2533,12 +2667,42 @@
         "type": "Float",
         "comment": "faster timer to make them walk fast when selecting a different character?"
       },
-      { "field": "player_arrow_slidein_timer", "type": "Array", "length": 4, "arraytype": "LeftRight" },
-      { "field": "player_facing_left", "type": "Array", "length": 4, "arraytype": "Bool" },
-      { "field": "player_quickselect_shown", "type": "Array", "length": 4, "arraytype": "Bool" },
-      { "field": "player_quickselect_fadein_timer", "type": "Array", "length": 4, "arraytype": "Float" },
-      { "field": "player_quickselect_sprite", "type": "Array", "length": 4, "arraytype": "SpritePosition" },
-      { "field": "player_quickselect_wiggle_angle", "type": "Array", "length": 4, "arraytype": "Float" },
+      {
+        "field": "player_arrow_slidein_timer",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "LeftRight"
+      },
+      {
+        "field": "player_facing_left",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Bool"
+      },
+      {
+        "field": "player_quickselect_shown",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Bool"
+      },
+      {
+        "field": "player_quickselect_fadein_timer",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
+      {
+        "field": "player_quickselect_sprite",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "SpritePosition"
+      },
+      {
+        "field": "player_quickselect_wiggle_angle",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
       { "field": "another_timer", "type": "Float" },
       { "field": "topleft_woodpanel_esc_slidein", "type": "Float" },
       { "field": "bottom_woodpanel_slideout", "type": "Float" },
@@ -2602,7 +2766,12 @@
       { "field": "disable_buttons?", "type": "Bool" },
       { "field": "disable_controls", "type": "Bool" },
       { "field": "unknown72", "type": "UnsignedDword" },
-      { "field": "flying_thing", "type": "Array", "length": 6, "arraytype": "FlyingThing" },
+      {
+        "field": "flying_thing",
+        "type": "Array",
+        "length": 6,
+        "arraytype": "FlyingThing"
+      },
       {
         "field": "flying_thing_countdown",
         "type": "UnsignedWord",
@@ -2651,7 +2820,12 @@
         "field": "particle_torchflame_flames4",
         "type": "ParticleEmitterInfoPointer"
       },
-      { "field": "torch_sound_entrence", "type": "Array", "length":4, "arraytype": "SoundMeta" },
+      {
+        "field": "torch_sound_entrence",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "SoundMeta"
+      },
       { "field": "buttons_device_id0", "type": "UnsignedWord" },
       { "field": "buttons_previous_device_id0", "type": "UnsignedWord" },
       { "field": "buttons_device_id1", "type": "UnsignedWord" },
@@ -2858,7 +3032,12 @@
       { "field": "item_equipped_badge", "type": "TextureRenderingInfo" },
       { "field": "item_off_gray_overlay", "type": "TextureRenderingInfo" },
       { "field": "esc_woodpanel", "type": "TextureRenderingInfo" },
-      { "field": "items_to_gray_out", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "Float" },
+      {
+        "field": "items_to_gray_out",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "Float"
+      },
       { "field": "unknown33", "type": "UnsignedDword" },
       { "field": "center_panels_horizontal_slide_position", "type": "Float" },
       { "field": "esc_panel_slide_timer", "type": "Float" },
@@ -3084,8 +3263,18 @@
       { "field": "unknown2b", "type": "UnsignedByte" },
       { "field": "unknown2c", "type": "UnsignedByte" },
       { "field": "unknown2d", "type": "UnsignedByte" },
-      { "field": "waddler_storage", "type": "Array", "length": 99, "arraytype": "EntityDBID" },
-      { "field": "waddler_storage_meta", "type": "Array", "length": 99, "arraytype": "UnsignedWord" },
+      {
+        "field": "waddler_storage",
+        "type": "Array",
+        "length": 99,
+        "arraytype": "EntityDBID"
+      },
+      {
+        "field": "waddler_storage_meta",
+        "type": "Array",
+        "length": 99,
+        "arraytype": "UnsignedWord"
+      },
       {
         "field": "journal_progress_sticker_slots",
         "type": "JournalProgressStickerSlots",
@@ -3438,9 +3627,23 @@
       { "field": "unknown9", "type": "UnsignedByte" }
     ],
     "UnknownPointer1": [
-      { "field": "ai_targets", "type": "Array", "length": 128, "arraytype": "AITarget" },
-      { "field": "unknown1", "type": "Array", "length": 19200, "arraytype": "UnknownStruct" },
-      { "field": "unknown2", "type": "UnsignedQword", "comment": "end? hopefully" }
+      {
+        "field": "ai_targets",
+        "type": "Array",
+        "length": 128,
+        "arraytype": "AITarget"
+      },
+      {
+        "field": "unknown1",
+        "type": "Array",
+        "length": 19200,
+        "arraytype": "UnknownStruct"
+      },
+      {
+        "field": "unknown2",
+        "type": "UnsignedQword",
+        "comment": "end? hopefully"
+      }
     ],
     "BackLayerRelated": [
       { "field": "entity", "type": "EntityPointer" },
@@ -3668,7 +3871,12 @@
     "JournalProgressStickerSlots": [
       { "field": "count", "type": "UnsignedByte" },
       { "field": "padding", "type": "Skip", "offset": 1 },
-      { "field": "slot", "type": "Array", "length": 40, "arraytype": "JournalProgressStickerSlot" }
+      {
+        "field": "slot",
+        "type": "Array",
+        "length": 40,
+        "arraytype": "JournalProgressStickerSlot"
+      }
     ],
     "JournalProgressStainSlot": [
       { "field": "x", "type": "Float" },
@@ -3687,7 +3895,12 @@
     "JournalProgressStainSlots": [
       { "field": "count", "type": "UnsignedByte" },
       { "field": "padding", "type": "Skip", "offset": 3 },
-      { "field": "slot", "type": "Array", "length": 30, "arraytype": "JournalProgressStainSlot" }
+      {
+        "field": "slot",
+        "type": "Array",
+        "length": 30,
+        "arraytype": "JournalProgressStainSlot"
+      }
     ],
     "JournalProgressThemeSlots": [
       { "field": "count", "type": "UnsignedByte" },
@@ -5089,8 +5302,18 @@
       { "field": "unknown50", "type": "ParticleEmitterInfoPointer" },
       { "field": "unknown51", "type": "ParticleEmitterInfoPointer" },
       { "field": "unknown52", "type": "ParticleEmitterInfoPointer" },
-      { "field": "lava_bubble_pos", "type": "Array", "length": 15, "arraytype": "ScreenArenaScoreLavaBubble" },
-      { "field": "unknown68", "type": "Array", "length": 80, "arraytype": "ScreenArenaScoreUnknown" },
+      {
+        "field": "lava_bubble_pos",
+        "type": "Array",
+        "length": 15,
+        "arraytype": "ScreenArenaScoreLavaBubble"
+      },
+      {
+        "field": "unknown68",
+        "type": "Array",
+        "length": 80,
+        "arraytype": "ScreenArenaScoreUnknown"
+      },
       { "field": "padding?", "type": "UnsignedDword" },
       {
         "field": "end?",
@@ -5163,7 +5386,12 @@
       },
       { "field": "theme_indicator", "type": "TextureRenderingInfo" },
       { "field": "bricks_bottom_left", "type": "TextureRenderingInfo" },
-      { "field": "grid_background_row", "type": "Array", "length": 8, "arraytype": "TextureRenderingInfo" },
+      {
+        "field": "grid_background_row",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "TextureRenderingInfo"
+      },
       {
         "field": "grid_background_disabled_cross",
         "type": "TextureRenderingInfo"
@@ -5182,7 +5410,12 @@
       { "field": "players_turn_scroll_handle", "type": "TextureRenderingInfo" },
       { "field": "grid_player_icon", "type": "TextureRenderingInfo" },
       { "field": "unknown30", "type": "Float" },
-      { "field": "stages_to_gray_out", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "Float" },
+      {
+        "field": "stages_to_gray_out",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "Float"
+      },
       { "field": "unknown47", "type": "UnsignedDword" },
       { "field": "unknown48", "type": "UnsignedDword" },
       { "field": "unknown49", "type": "UnsignedByte" },
@@ -5687,20 +5920,54 @@
       { "field": "padding4", "type": "UnsignedByte" },
       { "field": "padding5", "type": "UnsignedByte" },
       { "field": "skip4", "type": "Skip", "offset": 1020 },
-      { "field": "deathcount_dwelling", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
+      {
+        "field": "deathcount_dwelling",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
       {
         "field": "deathcount_jungle_volcana",
-        "type": "Array", "length": 255, "arraytype": "UnsignedDword"
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
       },
-      { "field": "deathcount_olmec", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
+      {
+        "field": "deathcount_olmec",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
       {
         "field": "deathcount_tidepool_temple",
-        "type": "Array", "length": 255, "arraytype": "UnsignedDword"
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
       },
-      { "field": "deathcount_icecaves", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
-      { "field": "deathcount_neobabylon", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
-      { "field": "deathcount_sunkencity", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
-      { "field": "deathcount_cosmicocean", "type": "Array", "length": 255, "arraytype": "UnsignedDword" },
+      {
+        "field": "deathcount_icecaves",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
+      {
+        "field": "deathcount_neobabylon",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
+      {
+        "field": "deathcount_sunkencity",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
+      {
+        "field": "deathcount_cosmicocean",
+        "type": "Array",
+        "length": 255,
+        "arraytype": "UnsignedDword"
+      },
       { "field": "time_total", "type": "Qword" },
       { "field": "time_best", "type": "Dword" },
       { "field": "character_deaths", "type": "SaveGameCharacterDeaths" },
@@ -5717,14 +5984,24 @@
       { "field": "padding6", "type": "UnsignedByte" },
       { "field": "score_last", "type": "UnsignedDword" },
       { "field": "time_last", "type": "UnsignedDword" },
-      { "field": "stickers", "type": "Array", "length": 20, "arraytype": "EntityDBID" },
+      {
+        "field": "stickers",
+        "type": "Array",
+        "length": 20,
+        "arraytype": "EntityDBID"
+      },
       {
         "field": "skip8",
         "type": "Skip",
         "offset": 40,
         "comment": "first dword is a mask(?) that determines horizontal spacing between stickers"
       },
-      { "field": "sticker_angles", "type": "Array", "length": 20, "arraytype": "Float" },
+      {
+        "field": "sticker_angles",
+        "type": "Array",
+        "length": 20,
+        "arraytype": "Float"
+      },
       { "field": "skip9", "type": "Skip", "offset": 40 },
       {
         "field": "sticker_vert_offsets",
@@ -5742,7 +6019,12 @@
       { "field": "unknown1", "type": "UnsignedByte" },
       { "field": "unknown2", "type": "UnsignedByte" },
       { "field": "unknown3", "type": "UnsignedByte" },
-      { "field": "stars", "type": "Array", "length": 45, "arraytype": "ConstellationStar" },
+      {
+        "field": "stars",
+        "type": "Array",
+        "length": 45,
+        "arraytype": "ConstellationStar"
+      },
       { "field": "scale", "type": "Float" },
       { "field": "line_count", "type": "UnsignedByte" },
       {
@@ -6402,7 +6684,11 @@
       { "field": "machine_rewardroom_chance", "type": "UnsignedDword" },
       { "field": "max_liquid_particles", "type": "UnsignedDword" },
       { "field": "flagged_liquid_rooms", "type": "UnsignedDword" },
-      { "field": "unknown_config", "type": "UnsignedDword", "comment": "probably padding" },
+      {
+        "field": "unknown_config",
+        "type": "UnsignedDword",
+        "comment": "probably padding"
+      },
       {
         "field": "short_tile_codes",
         "type": "StdUnorderedMap",
@@ -6431,9 +6717,19 @@
         "valuetype": "RoomTemplateData",
         "comment": "unordered_map<uint16_t, RoomTemplateData>"
       },
-      { "field": "unknown1", "type": "Array", "length": 429, "arraytype": "UnsignedDword" },
+      {
+        "field": "unknown1",
+        "type": "Array",
+        "length": 429,
+        "arraytype": "UnsignedDword"
+      },
       { "field": "padding", "type": "UnsignedDword" },
-      { "field": "set_room_datas", "type": "Array", "length": 120, "arraytype": "RoomTemplateData" },
+      {
+        "field": "set_room_datas",
+        "type": "Array",
+        "length": 120,
+        "arraytype": "RoomTemplateData"
+      },
       {
         "field": "monster_chances",
         "type": "StdUnorderedMap",
@@ -6478,9 +6774,10 @@
       { "field": "datas", "type": "StdVector", "valuetype": "UnsignedDword" }
     ],
     "RoomData": [
-      { "field": "flags", "type": "Flags8", 
-        "flags": 
-        {
+      {
+        "field": "flags",
+        "type": "Flags8",
+        "flags": {
           "4": "flipped",
           "5": "dual"
         }
@@ -6490,7 +6787,6 @@
       { "field": "padding1", "type": "UnsignedByte" },
       { "field": "padding2", "type": "UnsignedDword" },
       { "field": "room_data", "type": "DataPointer" }
-      
     ],
     "SpecialLevelGeneration": [
       {
@@ -6625,7 +6921,12 @@
       { "field": "local_player", "type": "OnlinePlayer" },
       { "field": "lobby", "type": "OnlineLobby" },
       { "field": "lobby_dupe", "type": "OnlineLobby" },
-      { "field": "servers", "type": "Array", "length": 32, "arraytype": "OnlineServer" },
+      {
+        "field": "servers",
+        "type": "Array",
+        "length": 32,
+        "arraytype": "OnlineServer"
+      },
       { "field": "unknown40", "type": "UnsignedDword" },
       { "field": "unknown41", "type": "UnsignedDword" },
       { "field": "unknown42", "type": "DataPointer" },
@@ -6794,14 +7095,49 @@
       },
       { "field": "kills_level", "type": "UnsignedDword" },
       { "field": "kills_total", "type": "UnsignedDword" },
-      { "field": "companion_held_item_metadata", "type": "Array", "length": 8, "arraytype": "UnsignedWord" },
-      { "field": "companion_poison_tick_timer", "type": "Array", "length": 8, "arraytype": "UnsignedWord" },
-      { "field": "companion", "type": "Array", "length": 8, "arraytype": "EntityDBID" },
-      { "field": "companion_held_item", "type": "Array", "length": 8, "arraytype": "EntityDBID" },
-      { "field": "companion_trust", "type": "Array", "length": 8, "arraytype": "UnsignedByte" },
+      {
+        "field": "companion_held_item_metadata",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "UnsignedWord"
+      },
+      {
+        "field": "companion_poison_tick_timer",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "UnsignedWord"
+      },
+      {
+        "field": "companion",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "EntityDBID"
+      },
+      {
+        "field": "companion_held_item",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "EntityDBID"
+      },
+      {
+        "field": "companion_trust",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "UnsignedByte"
+      },
       { "field": "companion_count", "type": "UnsignedByte" },
-      { "field": "companion_health", "type": "Array", "length": 8, "arraytype": "UnsignedByte" },
-      { "field": "companion_cursed", "type": "Array", "length": 8, "arraytype": "Bool" },
+      {
+        "field": "companion_health",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "UnsignedByte"
+      },
+      {
+        "field": "companion_cursed",
+        "type": "Array",
+        "length": 8,
+        "arraytype": "Bool"
+      },
       { "field": "padding1", "type": "Byte" },
       { "field": "padding2", "type": "Byte" },
       { "field": "padding3", "type": "Byte" },
@@ -7095,7 +7431,12 @@
         "comment": "126*86*EntityList (minus the Qword above)"
       },
       { "field": "unknown_entities2", "type": "EntityList" },
-      { "field": "entities_by_draw_depth", "type": "Array", "length": 53, "arraytype": "EntityList" },
+      {
+        "field": "entities_by_draw_depth",
+        "type": "Array",
+        "length": 53,
+        "arraytype": "EntityList"
+      },
       { "field": "unknown_entities2a", "type": "EntityList" },
       {
         "field": "unknown_entities3",
@@ -7929,7 +8270,11 @@
         "type": "UnsignedDword",
         "comment": "padding probably"
       },
-      { "field": "liquid_ids", "type": "OldStdList", "valuetype": "UnsignedDword" },
+      {
+        "field": "liquid_ids",
+        "type": "OldStdList",
+        "valuetype": "UnsignedDword"
+      },
       {
         "field": "unknown44",
         "type": "OldStdList",
@@ -8167,7 +8512,12 @@
       { "field": "unknown10", "type": "DataPointer", "comment": "map?" },
       { "field": "unknown11", "type": "Qword" },
       { "field": "skip", "type": "Skip", "offset": 102472 },
-      { "field": "unknown12", "type": "Array", "length": 46, "arraytype": "UnsignedQword" },
+      {
+        "field": "unknown12",
+        "type": "Array",
+        "length": 46,
+        "arraytype": "UnsignedQword"
+      },
       { "field": "unknown13", "type": "Qword", "comment": "the end?" }
     ],
     "MysteryLiquidPointer2": [
@@ -8285,8 +8635,17 @@
       { "field": "unknown28", "type": "UnsignedQword" },
       { "field": "unknown29", "type": "UnsignedQword" },
       { "field": "unknown30", "type": "UnsignedQword" },
-      { "field": "unknown31", "type": "StdVector", "valuetype": "UnsignedQword" },
-      { "field": "unknown34", "type": "StdMap", "keytype": "UnsignedDword", "valuetype": "UnsignedByte" },
+      {
+        "field": "unknown31",
+        "type": "StdVector",
+        "valuetype": "UnsignedQword"
+      },
+      {
+        "field": "unknown34",
+        "type": "StdMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "UnsignedByte"
+      },
       { "field": "unknown35", "type": "UnsignedQword" },
       { "field": "unknown36", "type": "DataPointer" },
       { "field": "unknown37", "type": "StdMap" }
@@ -8370,27 +8729,62 @@
             "params": "",
             "return": ""
           }
-      }},
+        }
+      },
       { "field": "unknown1", "type": "UnsignedByte", "comment": "bool?" },
-      { "field": "padding2", "type": "Skip", "offset": 7, "comment": "probably padding, if it's subclass below" },
+      {
+        "field": "padding2",
+        "type": "Skip",
+        "offset": 7,
+        "comment": "probably padding, if it's subclass below"
+      },
       { "field": "steam_overlay_open", "type": "Bool" },
-      { "field": "unknown4", "type": "Skip", "offset": 3, "comment": "probably padding" },
-      { "field": "unknown_timer", "type": "UnsignedDword", "comment": "can run only when game is out of focus" },
+      {
+        "field": "unknown4",
+        "type": "Skip",
+        "offset": 3,
+        "comment": "probably padding"
+      },
+      {
+        "field": "unknown_timer",
+        "type": "UnsignedDword",
+        "comment": "can run only when game is out of focus"
+      },
       { "field": "unknown6", "type": "Float" },
-      { "field": "unknown7", "type": "UnsignedDword", "comment": "probably padding" }
+      {
+        "field": "unknown7",
+        "type": "UnsignedDword",
+        "comment": "probably padding"
+      }
     ],
     "GameAPI": [
       { "field": "unknown1", "type": "Bool" },
       { "field": "padding1", "type": "Skip", "offset": 7 },
-      { "field": "unknown3", "type": "DataPointer", "comment": "input related" },
+      {
+        "field": "unknown3",
+        "type": "DataPointer",
+        "comment": "input related"
+      },
       { "field": "renderer", "type": "Renderer", "pointer": true },
       { "field": "window_width", "type": "UnsignedDword" },
       { "field": "window_height", "type": "UnsignedDword" },
       { "field": "unknown5", "type": "UnknownSteamStuff", "pointer": true },
       { "field": "exe_begin", "type": "DataPointer" },
-      { "field": "unknown7", "type": "OnHeapPointer", "comment": "some offset, OnHeapPointer for now" },
-      { "field": "unknown8", "type": "CodePointer", "comment": "steam related" },
-      { "field": "SteamAPI_Callback", "type": "SteamCallback", "comment": "OnGameOverlayActivated" },
+      {
+        "field": "unknown7",
+        "type": "OnHeapPointer",
+        "comment": "some offset, OnHeapPointer for now"
+      },
+      {
+        "field": "unknown8",
+        "type": "CodePointer",
+        "comment": "steam related"
+      },
+      {
+        "field": "SteamAPI_Callback",
+        "type": "SteamCallback",
+        "comment": "OnGameOverlayActivated"
+      },
       { "field": "unknown14", "type": "UnsignedQword" }
     ],
     "Renderer": [
@@ -8410,24 +8804,59 @@
           }
         }
       },
-      { "field": "render_width", "type": "UnsignedDword", "comment": "same as window size unless resolution scale is set" },
-      { "field": "render_height", "type": "UnsignedDword", "comment": "same as window size unless resolution scale is set" },
-      { "field": "fps", "type": "UnsignedDword", "comment": "changing it doesn't seam to do anything" },
+      {
+        "field": "render_width",
+        "type": "UnsignedDword",
+        "comment": "same as window size unless resolution scale is set"
+      },
+      {
+        "field": "render_height",
+        "type": "UnsignedDword",
+        "comment": "same as window size unless resolution scale is set"
+      },
+      {
+        "field": "fps",
+        "type": "UnsignedDword",
+        "comment": "changing it doesn't seam to do anything"
+      },
       { "field": "fps_denominator", "type": "UnsignedDword" },
-      { "field": "render_width2", "type": "UnsignedDword", "comment": "repeat?" },
+      {
+        "field": "render_width2",
+        "type": "UnsignedDword",
+        "comment": "repeat?"
+      },
       { "field": "render_height2", "type": "UnsignedDword" },
       { "field": "flags1", "type": "Flags8" },
       { "field": "flags2", "type": "Flags8" },
       { "field": "padding1", "type": "Skip", "offset": 6 },
-      { "field": "unknown1", "type": "Array", "length": 67, "arraytype": "DataPointer" },
+      {
+        "field": "unknown1",
+        "type": "Array",
+        "length": 67,
+        "arraytype": "DataPointer"
+      },
       { "field": "unknown2", "type": "UnsignedDword" },
       { "field": "unknown3", "type": "UnsignedDword" },
       { "field": "unknown4", "type": "UnsignedDword" },
       { "field": "unknown5", "type": "UnsignedDword" },
-      { "field": "unknown6", "type": "Array", "length": 512, "arraytype": "DataPointer" },
-      { "field": "skip1", "type": "Skip", "offset": 520264, "comment": "a lot of nothing" },
+      {
+        "field": "unknown6",
+        "type": "Array",
+        "length": 512,
+        "arraytype": "DataPointer"
+      },
+      {
+        "field": "skip1",
+        "type": "Skip",
+        "offset": 520264,
+        "comment": "a lot of nothing"
+      },
       { "field": "unknown38", "type": "UnsignedQword", "comment": "bool?" },
-      { "field": "unknown39", "type": "Float", "comment": "not sure if actually float" },
+      {
+        "field": "unknown39",
+        "type": "Float",
+        "comment": "not sure if actually float"
+      },
       { "field": "unknown40", "type": "Float" },
       { "field": "unknown41", "type": "Float" },
       { "field": "unknown42", "type": "UnsignedDword" },
@@ -8439,15 +8868,27 @@
       { "field": "unknown44c", "type": "UnsignedQword" },
       { "field": "unknown44d", "type": "UnsignedQword" },
       { "field": "unknown45", "type": "UnsignedQword", "comment": "bool?" },
-      { "field": "unknown46", "type": "DataPointer", "comment": "feels like two standard containers or something?" },
+      {
+        "field": "unknown46",
+        "type": "DataPointer",
+        "comment": "feels like two standard containers or something?"
+      },
       { "field": "unknown47", "type": "DataPointer" },
       { "field": "unknown48", "type": "UnsignedQword" },
       { "field": "unknown49", "type": "DataPointer" },
       { "field": "unknown50", "type": "DataPointer" },
       { "field": "unknown51", "type": "UnsignedQword" },
       { "field": "unknown52", "type": "UnsignedDword" },
-      { "field": "unknown53", "type": "UnsignedDword", "comment": "padding probably" },
-      { "field": "unknown54", "type": "DataPointer", "comment": "sometimes -1 sometimes pointer?" },
+      {
+        "field": "unknown53",
+        "type": "UnsignedDword",
+        "comment": "padding probably"
+      },
+      {
+        "field": "unknown54",
+        "type": "DataPointer",
+        "comment": "sometimes -1 sometimes pointer?"
+      },
       { "field": "unknown55", "type": "Dword" },
       { "field": "unknown56", "type": "UnsignedDword" },
       { "field": "unknown57", "type": "UnsignedQword" },
@@ -8460,35 +8901,103 @@
       { "field": "unknown61c", "type": "DataPointer" },
       { "field": "unknown61d", "type": "DataPointer" },
       { "field": "unknown62", "type": "UnsignedQword", "comment": "bool?" },
-      { "field": "unknown63", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "DataPointer" },
-      { "field": "unknown64a", "type": "StdVector", "valuetype": "ConstCharPointerPointer" },
-      { "field": "unknown64b", "type": "StdVector", "valuetype": "ConstCharPointerPointer" },
-      { "field": "unknown65", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "splash 0,1,2" },
-      { "field": "unknown66", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "fonts, basecamp, pet" },
-      { "field": "unknown67", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "fonts and menu textures + characters (character select screen textures?)" },
-      { "field": "unknown68", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "main menu background textures?" },
-      { "field": "unknown69", "type": "StdVector", "valuetype": "ConstCharPointerPointer" },
-      { "field": "unknown70", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "menu textures?" },
-      { "field": "unknown71", "type": "StdVector", "valuetype": "ConstCharPointerPointer", "comment": "only the ai.dds?" },
-      { "field": "unknown72", "type": "StdVector", "valuetype": "ConstCharPointerPointer" },
-      { "field": "unknown73", "type": "StdVector", "valuetype": "ConstCharPointerPointer" },
+      {
+        "field": "unknown63",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "DataPointer"
+      },
+      {
+        "field": "unknown64a",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer"
+      },
+      {
+        "field": "unknown64b",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer"
+      },
+      {
+        "field": "unknown65",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "splash 0,1,2"
+      },
+      {
+        "field": "unknown66",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "fonts, basecamp, pet"
+      },
+      {
+        "field": "unknown67",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "fonts and menu textures + characters (character select screen textures?)"
+      },
+      {
+        "field": "unknown68",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "main menu background textures?"
+      },
+      {
+        "field": "unknown69",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer"
+      },
+      {
+        "field": "unknown70",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "menu textures?"
+      },
+      {
+        "field": "unknown71",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer",
+        "comment": "only the ai.dds?"
+      },
+      {
+        "field": "unknown72",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer"
+      },
+      {
+        "field": "unknown73",
+        "type": "StdVector",
+        "valuetype": "ConstCharPointerPointer"
+      },
       { "field": "unknown74", "type": "UnsignedQword" },
       { "field": "unknown75", "type": "UnsignedQword" },
       { "field": "unknown80", "type": "UnsignedByte" },
       { "field": "unknown81", "type": "UnsignedByte" },
       { "field": "unknown82", "type": "UnsignedByte" },
-      { "field": "unknown83", "type": "UnsignedByte", "comment": "padding probably" },
+      {
+        "field": "unknown83",
+        "type": "UnsignedByte",
+        "comment": "padding probably"
+      },
       { "field": "current_zoom", "type": "Float" },
       { "field": "target_zoom", "type": "Float" },
       { "field": "target_zoom_offset", "type": "Float" },
       { "field": "current_zoom_offset", "type": "Float" },
-      { "field": "backlayer_light_level", "type": "Float", "comment": "constantly overwritten by theme virtual get_backlayer_light_level" },
+      {
+        "field": "backlayer_light_level",
+        "type": "Float",
+        "comment": "constantly overwritten by theme virtual get_backlayer_light_level"
+      },
       { "field": "unknown84", "type": "UnsignedByte" },
       { "field": "unknown85", "type": "UnsignedByte" },
       { "field": "padding_probably1", "type": "UnsignedWord" },
       { "field": "padding_probably2", "type": "UnsignedDword" },
       { "field": "unknown87", "type": "DataPointer" },
-      { "field": "skip2", "type": "Skip", "offset": 2768, "comment": "probably some static arrays of ... stuff" },
+      {
+        "field": "skip2",
+        "type": "Skip",
+        "offset": 2768,
+        "comment": "probably some static arrays of ... stuff"
+      },
       { "field": "swap_chain?", "type": "DataPointer" },
       { "field": "unknown88", "type": "DataPointer" },
       { "field": "unknown89", "type": "DataPointer" },
@@ -8511,13 +9020,26 @@
       { "field": "elixir", "type": "Bool" },
       { "field": "unknown5", "type": "UnsignedByte" },
       { "field": "crown", "type": "EntityDBID" },
-      { "field": "powerup_sprites", "type": "Array", "length": 18, "arraytype": "SpritePosition" },
+      {
+        "field": "powerup_sprites",
+        "type": "Array",
+        "length": 18,
+        "arraytype": "SpritePosition"
+      },
       { "field": "powerup_count", "type": "UnsignedDword" }
     ],
-     "HudElement": [
-      { "field": "name_state", "type": "State32", "states": { "0": "highlight", "1": "normal" } },
+    "HudElement": [
+      {
+        "field": "name_state",
+        "type": "State32",
+        "states": { "0": "highlight", "1": "normal" }
+      },
       { "field": "opacity", "type": "Float" },
-      { "field": "highlight_time", "type": "Dword", "comment": "when the player is highlighted it gets set to state.time_level + 0xB4, when this hits the time, it sets the name_state to normal" }
+      {
+        "field": "highlight_time",
+        "type": "Dword",
+        "comment": "when the player is highlighted it gets set to state.time_level + 0xB4, when this hits the time, it sets the name_state to normal"
+      }
     ],
     "HudPlayer": [
       { "field": "hud_element", "type": "HudElement" },
@@ -8525,7 +9047,11 @@
       { "field": "bombs", "type": "Word" },
       { "field": "ropes", "type": "Word" },
       { "field": "unknown1", "type": "Word", "comment": "padding probably" },
-      { "field": "unknown2", "type": "Dword", "comment": "some weird padding? since all fields are 32bit max feels wierd to be here" }
+      {
+        "field": "unknown2",
+        "type": "Dword",
+        "comment": "some weird padding? since all fields are 32bit max feels wierd to be here"
+      }
     ],
     "HudMoney": [
       { "field": "hud_element", "type": "HudElement" },
@@ -8536,7 +9062,12 @@
       { "field": "padding2", "type": "UnsignedWord" }
     ],
     "Hud": [
-      { "field": "player_inventory", "type": "Array", "length": 4, "arraytype": "HudInventory" },
+      {
+        "field": "player_inventory",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "HudInventory"
+      },
       { "field": "udjat", "type": "Bool" },
       { "field": "unknown1", "type": "UnsignedByte" },
       { "field": "unknown2", "type": "UnsignedWord" },
@@ -8570,7 +9101,11 @@
       { "field": "hourglass_icon", "type": "TextureRenderingInfo" },
       { "field": "clover_icon", "type": "TextureRenderingInfo" },
       { "field": "level_highlight", "type": "TextureRenderingInfo" },
-      { "field": "level_icon", "type": "TextureRenderingInfo", "comment": "inco, seeded incon, angry shopkeeper etc." },
+      {
+        "field": "level_icon",
+        "type": "TextureRenderingInfo",
+        "comment": "inco, seeded incon, angry shopkeeper etc."
+      },
       { "field": "seed_background", "type": "TextureRenderingInfo" },
       { "field": "roll_in", "type": "Float" },
       { "field": "unknown6", "type": "Float" },
@@ -8578,17 +9113,35 @@
       { "field": "unknown8", "type": "Float" },
       { "field": "unknown9", "type": "Float" },
       { "field": "unknown10", "type": "Float" },
-      { "field": "player_zoom", "type": "Array", "length": 4, "arraytype": "Float" },
+      {
+        "field": "player_zoom",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "Float"
+      },
       { "field": "unknown15", "type": "Float" },
       { "field": "unknown16", "type": "Float" },
       { "field": "unknown17", "type": "Float" },
       { "field": "unknown18", "type": "Float" },
-      { "field": "players", "type": "Array", "length": 4, "arraytype": "HudPlayer" },
+      {
+        "field": "players",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "HudPlayer"
+      },
       { "field": "money", "type": "HudMoney" },
-      { "field": "money_increase_sparkle", "type": "ParticleEmitterInfoPointer" },
+      {
+        "field": "money_increase_sparkle",
+        "type": "ParticleEmitterInfoPointer"
+      },
       { "field": "timer", "type": "HudElement" },
       { "field": "level", "type": "HudElement" },
-      { "field": "hud_elements?", "type": "StdVector", "valuetype": "DataPointer", "comment": "Just pointers to the hud elements" },
+      {
+        "field": "hud_elements?",
+        "type": "StdVector",
+        "valuetype": "DataPointer",
+        "comment": "Just pointers to the hud elements"
+      },
       { "field": "unknown20", "type": "UnsignedDword" },
       { "field": "unknown21", "type": "UnsignedByte" },
       { "field": "unknown22", "type": "UnsignedByte" },
@@ -8601,7 +9154,12 @@
       { "field": "unknown29", "type": "TextureRenderingInfo" },
       { "field": "unknown30", "type": "Float" },
       { "field": "unknown31", "type": "UnsignedDword", "comment": "padding?" },
-      { "field": "unknown32", "type": "StdUnorderedMap",  "keytype": "UnsignedDword", "valuetype": "UnsignedDword" },
+      {
+        "field": "unknown32",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "UnsignedDword"
+      },
       { "field": "unknown33", "type": "Float" },
       { "field": "unknown34", "type": "Float" },
       { "field": "unknown35", "type": "Float" },
@@ -8618,12 +9176,34 @@
       { "field": "loading_cog_timer", "type": "UnsignedDword" },
       { "field": "unknown47", "type": "UnsignedDword" },
       { "field": "unknown48", "type": "Bool" },
-      { "field": "unknown49", "type": "UnsignedByte", "comment": "probably padding" },
-      { "field": "unknown50", "type": "UnsignedWord", "comment": "probably padding" },
+      {
+        "field": "unknown49",
+        "type": "UnsignedByte",
+        "comment": "probably padding"
+      },
+      {
+        "field": "unknown50",
+        "type": "UnsignedWord",
+        "comment": "probably padding"
+      },
       { "field": "unknown51", "type": "Float" },
-      { "field": "unknown52", "type": "UnsignedDword", "comment": "probably padding" },
-      { "field": "player_cursed_paricles", "type": "Array", "length": 4, "arraytype": "ParticleEmitterInfoPointer" },
-      { "field": "player_poisoned_paricles", "type": "Array", "length": 4, "arraytype": "ParticleEmitterInfoPointer" }
+      {
+        "field": "unknown52",
+        "type": "UnsignedDword",
+        "comment": "probably padding"
+      },
+      {
+        "field": "player_cursed_paricles",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "ParticleEmitterInfoPointer"
+      },
+      {
+        "field": "player_poisoned_paricles",
+        "type": "Array",
+        "length": 4,
+        "arraytype": "ParticleEmitterInfoPointer"
+      }
     ],
     "EntityPool": [
       { "field": "slot_size", "type": "UnsignedDword" },
@@ -8631,18 +9211,49 @@
       { "field": "slots_growth", "type": "UnsignedDword" },
       { "field": "current_slots", "type": "UnsignedDword" },
       { "field": "unknown1", "type": "UnsignedQword" },
-      { "field": "pools_begin", "type": "StdVector", "valuetype": "DataPointer", "pointer": true, "comment": "saved the first entity address that causes the slot size to increase (including the initial)" },
-      { "field": "empty_buckets", "type": "StdVector", "valuetype": "DataPointer", "pointer": true }
+      {
+        "field": "pools_begin",
+        "type": "StdVector",
+        "valuetype": "DataPointer",
+        "pointer": true,
+        "comment": "saved the first entity address that causes the slot size to increase (including the initial)"
+      },
+      {
+        "field": "empty_buckets",
+        "type": "StdVector",
+        "valuetype": "DataPointer",
+        "pointer": true
+      }
     ],
     "EntityPoolOnHeapPointer": [
-      { "field": "pointer", "type": "OnHeapPointer", "pointertype": "EntityPool" }
+      {
+        "field": "pointer",
+        "type": "OnHeapPointer",
+        "pointertype": "EntityPool"
+      }
     ],
     "EntityFactory": [
       // EntityDB will be inserted here automatically
-      { "field": "active_types", "type": "Array", "length": 917, "arraytype": "Bool" },
+      {
+        "field": "active_types",
+        "type": "Array",
+        "length": 917,
+        "arraytype": "Bool"
+      },
       { "field": "skip1", "type": "Skip", "offset": 3 },
-      { "field": "entity_buckets", "type": "StdUnorderedMap", "keytype": "UnsignedDword", "valuetype": "EntityPoolOnHeapPointer", "comment": "key is the bucket size" },
-      { "field": "entity_names_map", "type": "StdUnorderedMap", "keytype": "StdString", "valuetype": "UnsignedWord" },
+      {
+        "field": "entity_buckets",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedDword",
+        "valuetype": "EntityPoolOnHeapPointer",
+        "comment": "key is the bucket size"
+      },
+      {
+        "field": "entity_names_map",
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "UnsignedWord"
+      },
       { "field": "unknown2", "type": "UnsignedQword" },
       { "field": "unknown3", "type": "UnsignedQword" }
     ]
