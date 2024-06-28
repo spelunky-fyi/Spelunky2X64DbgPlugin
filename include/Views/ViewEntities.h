@@ -74,8 +74,8 @@ namespace S2Plugin
 
         QLineEdit* mFilterLineEdit;
 
-        uintptr_t mLayer0Offset = 0;
-        uintptr_t mLayer1Offset = 0;
+        uintptr_t mLayer0Address = 0;
+        uintptr_t mLayer1Address = 0;
         uintptr_t mLayerMapOffset = 0;
     };
 } // namespace S2Plugin

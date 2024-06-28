@@ -27,14 +27,29 @@ namespace S2Plugin
         uintptr_t get_GameManagerPtr();
         uintptr_t get_SaveDataPtr();
         uintptr_t get_OnlinePtr();
+        uintptr_t get_GameAPIPtr();
+        uintptr_t get_HudPtr();
         uintptr_t get_StatePtr() const
         {
+            if (heapBaseAddr == 0)
+                return 0;
+
             return heapBaseAddr + GAME_OFFSET::STATE;
         };
         uintptr_t get_LevelGenPtr() const
         {
+            if (heapBaseAddr == 0)
+                return 0;
+
             return heapBaseAddr + GAME_OFFSET::LEVEL_GEN;
         };
+        uintptr_t get_LiquidEnginePtr() const
+        {
+            if (heapBaseAddr == 0)
+                return 0;
+
+            return heapBaseAddr + GAME_OFFSET::LIQUID_ENGINE;
+        }
         uintptr_t get_HeapBase() const
         {
             return heapBaseAddr;
@@ -67,6 +82,8 @@ namespace S2Plugin
 
         uintptr_t mGameManagerPtr{0};
         uintptr_t mOnlinePtr{0};
+        uintptr_t mGameAPIPtr{0};
+        uintptr_t mHudPtr{0};
 
         EntityDB mEntityDB;
         ParticleDB mParticleDB;

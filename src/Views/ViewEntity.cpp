@@ -104,14 +104,14 @@ void S2Plugin::ViewEntity::initializeUI()
 
     // TAB FIELDS
     {
+        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->updateTableHeader(false);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColField, 175);
         mMainTreeView->setColumnWidth(gsColValueHex, 125);
-        mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+        mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
         mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
-        mMainTreeView->updateTableHeader();
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::offsetDropped, this, &ViewEntity::entityOffsetDropped);
     }
     // TAB MEMORY
@@ -217,6 +217,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             {
                 if (!field.isPointer)
                 {
+                    // note: this will not work with arrays and probably other sutff, in the future prefer to use mMainTreeView
                     if (field.type == MemoryFieldType::DefaultStructType)
                     {
                         self(prefix + field.name + ".", config->typeFieldsOfDefaultStruct(field.jsonName), self);
@@ -238,14 +239,14 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             }
         };
 
+        MemoryField headerField; // potentially not safe if used get_size() since it won't update
+        headerField.type = MemoryFieldType::EntitySubclass;
         for (auto it = hierarchy.rbegin(); it != hierarchy.rend(); ++it, ++colorIndex)
         {
             if (colorIndex > colors.size())
                 colorIndex = 0;
 
-            MemoryField headerField;
             headerField.name = "<b>" + *it + "</b>";
-            headerField.type = MemoryFieldType::EntitySubclass;
             headerField.jsonName = *it;
             mMainTreeView->addMemoryField(headerField, *it, mEntityPtr + delta, delta);
             // highlights fields in memory view, also updates delta
@@ -275,7 +276,6 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
     // TODO: don't clear tooltip if the interpretAs was not changed, maybe consider adding updateHighlightedField
     mMemoryComparisonView->clearHighlights();
     auto root = qobject_cast<QStandardItemModel*>(mMainTreeView->model())->invisibleRootItem();
-    auto config = Configuration::get();
     size_t offset = 0;
     std::string fieldName;
     QColor color;
@@ -288,7 +288,8 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
             auto field = parrent->child(idx, gsColField);
             type = field->data(gsRoleType).value<MemoryFieldType>();
             bool isPointer = field->data(gsRoleIsPointer).toBool();
-            if (!isPointer && (type == MemoryFieldType::DefaultStructType || !config->typeFields(type).empty()))
+            // [Known Issue]: This may need update if we ever add field types that have children with not actual memory representation
+            if (!isPointer && field->hasChildren() && type != MemoryFieldType::Flags8 && type != MemoryFieldType::Flags16 && type != MemoryFieldType::Flags32)
             {
                 self(field, self);
                 continue;
@@ -296,7 +297,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
             auto deltaField = parrent->child(idx, gsColMemoryAddressDelta);
             size_t delta = deltaField->data(gsRoleRawValue).toULongLong();
             // get the size by the difference in offset delta
-            // [Known Issue]: this will fail in getting the correct size if there is a skip element between fields
+            // TODO: this will fail in getting the correct size if there is a skip element between fields
             int size = static_cast<int>(delta - offset);
             if (size != 0)
             {

@@ -32,7 +32,7 @@ find_package(Qt5Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 if(QT_NAMESPACE)
-    add_definitions(-DQT_NAMESPACE=${QT_NAMESPACE})
+	add_definitions(-DQT_NAMESPACE=${QT_NAMESPACE})
 endif()
 
 
@@ -60,6 +60,9 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/Logger.h
 	include/Data/StdString.h
 	include/Data/StdMap.h
+	include/Data/EntityList.h
+	include/Data/StdList.h
+	include/Data/StdUnorderedMap.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h
@@ -77,6 +80,10 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
 	include/Views/ViewStdMap.h
+	include/Views/ViewStdUnorderedMap.h
+	include/Views/ViewStdList.h
+	include/Views/ViewEntityList.h
+	include/Views/ViewEntityFactory.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
 	include/QtHelpers/TreeViewMemoryFields.h
@@ -99,9 +106,11 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetSampling.h
 	include/QtHelpers/WidgetSamplesPlot.h
 	include/QtHelpers/ItemModelLoggerSamples.h
-	include/QtHelpers/WidgetDatabaseView.h
+	include/QtHelpers/AbstractDatabaseView.h
+	include/QtHelpers/AbstractContainerView.h
 	include/QtHelpers/WidgetAutorefresh.h
 	include/QtHelpers/LongLongSpinBox.h
+	include/QtHelpers/WidgetPagination.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
@@ -129,8 +138,11 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewVirtualFunctions.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
+	src/Views/ViewStdUnorderedMap.cpp
+	src/Views/ViewStdList.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
+	src/Views/ViewEntityList.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp
 	src/QtHelpers/WidgetMemoryView.cpp
@@ -148,7 +160,8 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/QtHelpers/ItemModelLoggerFields.cpp
 	src/QtHelpers/WidgetSamplesPlot.cpp
 	src/QtHelpers/ItemModelLoggerSamples.cpp
-	src/QtHelpers/WidgetDatabaseView.cpp
+	src/QtHelpers/AbstractDatabaseView.cpp
+	src/QtHelpers/AbstractContainerView.cpp
 	src/QtHelpers/WidgetAutorefresh.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/include/pluginconfig.h
 	resources/spelunky2.qrc

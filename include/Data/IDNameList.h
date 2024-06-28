@@ -11,7 +11,7 @@ namespace S2Plugin
     class IDNameList
     {
       protected:
-        IDNameList(const std::string& relFilePath, const std::regex& regex);
+        explicit IDNameList(const std::string& relFilePath, const std::regex& regex);
 
       public:
         uint32_t idForName(const std::string& name) const;
@@ -54,12 +54,12 @@ namespace S2Plugin
         ParticleEmittersList(const ParticleEmittersList&) = delete;
         ParticleEmittersList& operator=(const ParticleEmittersList&) = delete;
     };
-    class EntityList : public IDNameList
+    class EntityNamesList : public IDNameList
     {
       public:
-        explicit EntityList();
+        explicit EntityNamesList();
 
-        EntityList(const EntityList&) = delete;
-        EntityList& operator=(const EntityList&) = delete;
+        EntityNamesList(const EntityNamesList&) = delete;
+        EntityNamesList& operator=(const EntityNamesList&) = delete;
     };
 } // namespace S2Plugin

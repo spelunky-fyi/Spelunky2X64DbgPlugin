@@ -12,7 +12,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ItemModelLoggerSamples(Logger* logger, QObject* parent = nullptr) : QAbstractItemModel(parent), mLogger(logger){};
+        explicit ItemModelLoggerSamples(Logger* logger, QObject* parent = nullptr) : QAbstractItemModel(parent), mLogger(logger){};
 
         void reset()
         {

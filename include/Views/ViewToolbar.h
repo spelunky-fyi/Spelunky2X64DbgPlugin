@@ -23,9 +23,15 @@ namespace S2Plugin
         void showState(uintptr_t statePtr);
         void showStdVector(uintptr_t address, const std::string& typeName);
         void showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
+        void showStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
+        void showLiquidPhysics(uintptr_t address);
+        void showArray(uintptr_t address, std::string name, std::string arrayTypeName, size_t length);
+        void showMatrix(uintptr_t address, std::string name, std::string arrayTypeName, size_t rows, size_t columns);
+        void showEntityList(uintptr_t address);
+        void showStdList(uintptr_t address, std::string typeName, bool oldType = false);
 
       public slots:
         ViewEntityDB* showEntityDB();
@@ -33,16 +39,19 @@ namespace S2Plugin
         ViewTextureDB* showTextureDB();
         void showStringsTable();
         ViewCharacterDB* showCharacterDB();
-
         void showMainThreadState();
         void showGameManager();
         void showMainThreadLevelGen();
+        void showMainThreadLiquidPhysics();
         void showEntities();
         ViewVirtualTable* showVirtualTableLookup();
         void showSaveGame();
         void showLogger();
         void showOnline();
         void showThreads();
+        void showGameAPI();
+        void showHud();
+        void showEntityFactory();
 
       private slots:
         void clearLabels();

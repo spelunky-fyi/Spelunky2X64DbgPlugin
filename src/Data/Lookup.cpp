@@ -207,3 +207,60 @@ const S2Plugin::VirtualTableLookup& S2Plugin::Spelunky2::get_VirtualTableLookup(
     }
     return mVirtualTableLookup;
 }
+
+uintptr_t S2Plugin::Spelunky2::get_GameAPIPtr()
+{
+    if (mGameAPIPtr != 0)
+        return mGameAPIPtr;
+
+    auto instructionAddress = Script::Pattern::FindMem(afterBundle, afterBundleSize, "C6 00 00 48 C7 40 18 00 00 00 00");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find GameAPI (1)");
+        return mGameAPIPtr;
+    }
+    instructionAddress = Script::Pattern::FindMem(instructionAddress - 0x30, 0x30, "48 8B 05");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find GameAPI (2)");
+        return mGameAPIPtr;
+    }
+
+    auto relativeOffset = Script::Memory::ReadDword(instructionAddress + 3);
+    auto gameAPIPointer = instructionAddress + 7 + relativeOffset;
+    mGameAPIPtr = Script::Memory::ReadQword(gameAPIPointer);
+    if (!Script::Memory::IsValidPtr(mGameAPIPtr))
+    {
+        displayError("Lookup error: GameAPI not yet initialized");
+        mGameAPIPtr = 0;
+    }
+    return mGameAPIPtr;
+}
+
+uintptr_t S2Plugin::Spelunky2::get_HudPtr()
+{
+    if (mHudPtr != 0)
+        return mHudPtr;
+
+    auto instructionAddress = Script::Pattern::FindMem(afterBundle, afterBundleSize, "41 C6 47 6B 01");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find Hud (1)");
+        return mHudPtr;
+    }
+    instructionAddress = Script::Pattern::FindMem(instructionAddress + 5, 0x24, "48 8D 0D");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find Hud (2)");
+        return mHudPtr;
+    }
+
+    auto relativeOffset = Script::Memory::ReadDword(instructionAddress + 3);
+    mHudPtr = instructionAddress + 7 + relativeOffset;
+    if (!Script::Memory::IsValidPtr(mHudPtr))
+    {
+        displayError("Lookup error: unable to find Hud (3)");
+        mHudPtr = 0;
+    }
+    return mHudPtr;
+}

@@ -112,6 +112,9 @@ namespace S2Plugin
         {MemoryFieldType::StdMap, "StdMap", "std::map<K, V>", "StdMap", 16, false},
         {MemoryFieldType::StdString, "StdString", "std::string", "StdString", 32, false},
         {MemoryFieldType::StdWstring, "StdWstring", "std::wstring", "StdWstring", 32, false},
+        {MemoryFieldType::OldStdList, "OldStdList", "std::pair<uintptr_t, uintptr_t>", "OldStdList", 16, false}, // can't use std::list representation since the standard was changed
+        {MemoryFieldType::StdList, "StdList", "std::list<T>", "StdList", 16, false},
+        {MemoryFieldType::StdUnorderedMap, "StdUnorderedMap", "std::unordered_map<K, V>", "StdUnorderedMap", 64, false},
         // Game Main structs
         {MemoryFieldType::GameManager, "GameManager", "", "GameManager", 0, false},
         {MemoryFieldType::State, "State", "", "State", 0, false},
@@ -122,7 +125,12 @@ namespace S2Plugin
         {MemoryFieldType::TextureDB, "TextureDB", "", "TextureDB", 0, false},
         {MemoryFieldType::CharacterDB, "CharacterDB", "", "CharacterDB", 0, false},
         {MemoryFieldType::Online, "Online", "", "Online", 0, false},
+        {MemoryFieldType::GameAPI, "GameAPI", "", "GameAPI", 0, false},
+        {MemoryFieldType::Hud, "Hud", "", "Hud", 0, false},
+        {MemoryFieldType::EntityFactory, "EntityFactory", "", "EntityFactory", 0, false},
+        {MemoryFieldType::LiquidPhysics, "LiquidPhysics", "", "LiquidPhysics", 0, false},
         // Special Types
+        {MemoryFieldType::OnHeapPointer, "OnHeap Pointer", "OnHeapPointer<T>", "OnHeapPointer", 8, false}, // not pointer since it's more of a offset
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},
         {MemoryFieldType::EntityDBPointer, "EntityDB pointer", "EntityDB*", "EntityDBPointer", 8, true},
         {MemoryFieldType::EntityDBID, "EntityDB ID", "uint32_t", "EntityDBID", 4, false},
@@ -137,16 +145,21 @@ namespace S2Plugin
         {MemoryFieldType::COThemeInfoPointer, "COThemeInfoPointer", "ThemeInfo*", "COThemeInfoPointer", 8, true},                               // just theme name
         {MemoryFieldType::LevelGenRoomsPointer, "LevelGenRoomsPointer", "LevelGenRooms*", "LevelGenRoomsPointer", 8, true},
         {MemoryFieldType::LevelGenRoomsMetaPointer, "LevelGenRoomsMetaPointer", "LevelGenRoomsMeta*", "LevelGenRoomsMetaPointer", 8, true},
+        {MemoryFieldType::LiquidPhysicsPointer, "LiquidPhysicsPointer", "LiquidPhysicsPointer*", "LiquidPhysicsPointer", 8, true},
         {MemoryFieldType::JournalPagePointer, "JournalPagePointer", "JournalPage*", "JournalPagePointer", 8, true},
         {MemoryFieldType::LevelGenPointer, "LevelGenPointer", "LevelGen*", "LevelGenPointer", 8, true},
         {MemoryFieldType::StringsTableID, "StringsTable ID", "uint32_t", "StringsTableID", 4, false},
         {MemoryFieldType::CharacterDBID, "CharacterDBID", "uint8_t", "CharacterDBID", 1, false},
         {MemoryFieldType::VirtualFunctionTable, "VirtualFunctionTable", "size_t*", "VirtualFunctionTable", 8, true},
         {MemoryFieldType::IPv4Address, "IPv4Address", "uint32_t", "IPv4Address", 4, false},
+        {MemoryFieldType::Array, "Array", "", "Array", 0, false},
+        {MemoryFieldType::Matrix, "Matrix", "", "Matrix", 0, false},
+        {MemoryFieldType::EntityList, "EntityList", "EntityList*", "EntityList", 24, false},
         // Other
         //{MemoryFieldType::EntitySubclass, "", "", "", 0},
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},
         {MemoryFieldType::Flag, "Flag", "", "", 0, false},
+        {MemoryFieldType::Dummy, " ", "", "", 0, false},
     };
 } // namespace S2Plugin
 
@@ -262,7 +275,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     memField.name = field["field"].get<std::string>();
     memField.comment = value_or(field, "comment", ""s);
     memField.type = MemoryFieldType::DefaultStructType; // just initial
-    std::string fieldTypeStr = field["type"].get<std::string>();
+    std::string_view fieldTypeStr = field["type"].get<std::string_view>();
 
     if (isPermanentPointer(fieldTypeStr) || value_or(field, "pointer", false))
     {
@@ -318,6 +331,43 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             dprintf("no keytype specified for StdSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
         }
     }
+    else if (fieldTypeStr == "StdUnorderedMap")
+    {
+        memField.type = MemoryFieldType::StdUnorderedMap;
+        if (field.contains("keytype"))
+        {
+            memField.firstParameterType = field["keytype"].get<std::string>();
+        }
+        else
+        {
+            memField.firstParameterType = "UnsignedQword";
+            dprintf("no keytype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+        if (field.contains("valuetype"))
+        {
+            memField.secondParameterType = field["valuetype"].get<std::string>();
+        }
+        else
+        {
+            memField.secondParameterType = "UnsignedQword";
+            dprintf("no valuetype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+    }
+    else if (fieldTypeStr == "StdUnorderedSet")
+    {
+        memField.type = MemoryFieldType::StdUnorderedMap;
+        if (field.contains("keytype"))
+        {
+            memField.firstParameterType = field["keytype"].get<std::string>();
+            memField.secondParameterType = "";
+        }
+        else
+        {
+            memField.firstParameterType = "UnsignedQword";
+            memField.secondParameterType = "";
+            dprintf("no keytype specified for StdUnorderedSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+        }
+    }
     switch (memField.type)
     {
         case MemoryFieldType::Skip:
@@ -328,14 +378,28 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         }
         case MemoryFieldType::StdVector:
         {
-            if (field.contains("vectortype"))
+            if (field.contains("valuetype"))
             {
-                memField.firstParameterType = field["vectortype"].get<std::string>();
+                memField.firstParameterType = field["valuetype"].get<std::string>();
             }
             else
             {
                 memField.firstParameterType = "UnsignedQword";
-                dprintf("no vectortype specified for StdVector (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+                dprintf("no valuetype specified for StdVector (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            }
+            break;
+        }
+        case MemoryFieldType::OldStdList:
+        case MemoryFieldType::StdList:
+        {
+            if (field.contains("valuetype"))
+            {
+                memField.firstParameterType = field["valuetype"].get<std::string>();
+            }
+            else
+            {
+                memField.firstParameterType = "UnsignedQword";
+                dprintf("no valuetype specified for StdList (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
             }
             break;
         }
@@ -409,6 +473,85 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             }
             break;
         }
+        case MemoryFieldType::UTF16StringFixedSize:
+        {
+            if (field.contains("length"))
+            {
+                memField.numberOfElements = field["length"].get<size_t>();
+                memField.size = memField.numberOfElements * 2;
+                break;
+            }
+            else if (memField.size == 0)
+                throw std::runtime_error("Missing `lenght` or `offset` parameter for UTF16StringFixedSize (" + struct_name + "." + memField.name + ")");
+
+            memField.numberOfElements = memField.size / 2;
+            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
+        case MemoryFieldType::UTF8StringFixedSize:
+        {
+            if (field.contains("length"))
+                memField.size = field["length"].get<size_t>();
+
+            if (memField.size == 0)
+                throw std::runtime_error("Missing valid `lenght` or `offset` parameter for UTF8StringFixedSize (" + struct_name + "." + memField.name + ")");
+
+            memField.numberOfElements = memField.size;
+            memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
+            break;
+        }
+        case MemoryFieldType::Array:
+        {
+            if (field.contains("length"))
+            {
+                memField.numberOfElements = field["length"].get<size_t>();
+                if (memField.numberOfElements == 0)
+                    throw std::runtime_error("Length 0 not allowed for Array type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `length` parameter for Array (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("arraytype"))
+                memField.firstParameterType = field["arraytype"].get<std::string>();
+            else
+                throw std::runtime_error("Missing `arraytype` parameter for Array (" + struct_name + "." + memField.name + ")");
+
+            break;
+        }
+        case MemoryFieldType::Matrix:
+        {
+            if (field.contains("matrixtype"))
+                memField.firstParameterType = field["matrixtype"].get<std::string>();
+            else
+                throw std::runtime_error("Missing `matrixtype` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("row"))
+            {
+                memField.rows = field["row"].get<size_t>();
+                if (memField.rows == 0)
+                    throw std::runtime_error("Size 0 not allowed for Matrix type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `row` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+
+            if (field.contains("col"))
+            {
+                memField.columns = field["col"].get<size_t>();
+                if (memField.columns == 0)
+                    throw std::runtime_error("Size 0 not allowed for Matrix type (" + struct_name + "." + memField.name + ")");
+            }
+            else
+                throw std::runtime_error("Missing `col` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+            break;
+        }
+        case MemoryFieldType::OnHeapPointer:
+        {
+            if (field.contains("pointertype"))
+            {
+                memField.jsonName = field["pointertype"].get<std::string_view>();
+            }
+            break;
+        }
         case MemoryFieldType::DefaultStructType:
             memField.jsonName = fieldTypeStr;
             break;
@@ -430,10 +573,10 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 
     for (const auto& [key, jsonValue] : j["entity_class_hierarchy"].items())
     {
-        auto value = jsonValue.get<std::string>();
+        auto value = jsonValue.get<std::string_view>();
         if (key != value)
         {
-            mEntityClassHierarchy[key] = std::move(value);
+            mEntityClassHierarchy[key] = value;
         }
     }
     for (const auto& [key, jsonValue] : j["default_entity_types"].items())
@@ -566,7 +709,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFields(co
     auto it = mTypeFieldsMain.find(type);
     if (it == mTypeFieldsMain.end())
     {
-        // no error since we can use this to check if type is a struct
+        // no error since we can use this to check if type is a struct (have fields)
         // dprintf("unknown key requested in Configuration::typeFields() (t=%s id=%d)\n", gsMemoryFieldType.at(type).display_name.data(), type);
         static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
@@ -676,7 +819,7 @@ std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctions
     }
 }
 
-int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
+uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
 {
     if (isPermanentPointer(typeName))
     {
@@ -687,64 +830,100 @@ int S2Plugin::Configuration::getAlingment(const std::string& typeName) const
         if (isPointerType(type))
             return sizeof(uintptr_t);
 
-        switch (type)
-        {
-            case MemoryFieldType::Skip:
-            {
-                dprintf("cannot determinate alignment of (Skip) type!\n");
-                return sizeof(uintptr_t);
-            }
-            case MemoryFieldType::Byte:
-            case MemoryFieldType::UnsignedByte:
-            case MemoryFieldType::Bool:
-            case MemoryFieldType::Flags8:
-            case MemoryFieldType::State8:
-            case MemoryFieldType::CharacterDBID:
-            case MemoryFieldType::UTF8StringFixedSize:
-                return sizeof(char);
-            case MemoryFieldType::Word:
-            case MemoryFieldType::UnsignedWord:
-            case MemoryFieldType::State16:
-            case MemoryFieldType::Flags16:
-            case MemoryFieldType::UTF16StringFixedSize:
-            case MemoryFieldType::UTF16Char:
-                return sizeof(int16_t);
-            case MemoryFieldType::Dword:
-            case MemoryFieldType::UnsignedDword:
-            case MemoryFieldType::Float:
-            case MemoryFieldType::Flags32:
-            case MemoryFieldType::State32:
-            case MemoryFieldType::EntityDBID:
-            case MemoryFieldType::ParticleDBID:
-            case MemoryFieldType::EntityUID:
-            case MemoryFieldType::TextureDBID:
-            case MemoryFieldType::StringsTableID:
-            case MemoryFieldType::IPv4Address:
-            case MemoryFieldType::CharacterDB: // biggest type is 4
-                return sizeof(int32_t);
-
-            case MemoryFieldType::Online:
-            case MemoryFieldType::TextureDB:
-            case MemoryFieldType::ParticleDB:
-            case MemoryFieldType::EntityDB:
-            case MemoryFieldType::LevelGen:
-            case MemoryFieldType::GameManager:
-            case MemoryFieldType::State:
-            case MemoryFieldType::SaveGame:
-            case MemoryFieldType::StdVector:
-            case MemoryFieldType::StdMap:
-            case MemoryFieldType::Qword:
-            case MemoryFieldType::UnsignedQword:
-            case MemoryFieldType::Double:
-                return sizeof(uintptr_t);
-        }
+        return getAlingment(type);
     }
     auto itr = mAlignments.find(typeName);
     if (itr != mAlignments.end())
         return itr->second;
 
+    uint8_t alignment = 0;
+    for (auto& field : typeFieldsOfDefaultStruct(typeName))
+    {
+        alignment = std::max(alignment, getAlingment(field));
+        if (alignment == 8)
+            break;
+    }
+    if (alignment != 0)
+        return alignment;
+
     dprintf("alignment not found for (%s)\n", typeName.c_str());
     return sizeof(uintptr_t);
+}
+uint8_t S2Plugin::Configuration::getAlingment(const MemoryField& field) const
+{
+    if (field.isPointer)
+        return sizeof(uintptr_t);
+
+    switch (field.type)
+    {
+        case MemoryFieldType::Array:
+        case MemoryFieldType::Matrix:
+            return getAlingment(field.firstParameterType);
+        case MemoryFieldType::DefaultStructType:
+            return getAlingment(field.jsonName);
+        default:
+            return getAlingment(field.type);
+    }
+}
+uint8_t S2Plugin::Configuration::getAlingment(MemoryFieldType type) const
+{
+    switch (type)
+    {
+        case MemoryFieldType::Skip:
+        {
+            dprintf("cannot determinate alignment of (Skip) type!\n");
+            return sizeof(uintptr_t);
+        }
+        case MemoryFieldType::Byte:
+        case MemoryFieldType::UnsignedByte:
+        case MemoryFieldType::Bool:
+        case MemoryFieldType::Flags8:
+        case MemoryFieldType::State8:
+        case MemoryFieldType::CharacterDBID:
+        case MemoryFieldType::UTF8StringFixedSize:
+            return sizeof(char);
+        case MemoryFieldType::Word:
+        case MemoryFieldType::UnsignedWord:
+        case MemoryFieldType::State16:
+        case MemoryFieldType::Flags16:
+        case MemoryFieldType::UTF16StringFixedSize:
+        case MemoryFieldType::UTF16Char:
+            return sizeof(int16_t);
+        case MemoryFieldType::Dword:
+        case MemoryFieldType::UnsignedDword:
+        case MemoryFieldType::Float:
+        case MemoryFieldType::Flags32:
+        case MemoryFieldType::State32:
+        case MemoryFieldType::EntityDBID:
+        case MemoryFieldType::ParticleDBID:
+        case MemoryFieldType::EntityUID:
+        case MemoryFieldType::TextureDBID:
+        case MemoryFieldType::StringsTableID:
+        case MemoryFieldType::IPv4Address:
+        case MemoryFieldType::CharacterDB: // biggest type is 4
+            return sizeof(int32_t);
+
+        case MemoryFieldType::Online:
+        case MemoryFieldType::TextureDB:
+        case MemoryFieldType::ParticleDB:
+        case MemoryFieldType::EntityDB:
+        case MemoryFieldType::LevelGen:
+        case MemoryFieldType::GameManager:
+        case MemoryFieldType::State:
+        case MemoryFieldType::SaveGame:
+        case MemoryFieldType::StdVector:
+        case MemoryFieldType::StdMap:
+        case MemoryFieldType::Qword:
+        case MemoryFieldType::UnsignedQword:
+        case MemoryFieldType::Double:
+        case MemoryFieldType::OldStdList:
+        case MemoryFieldType::StdList:
+        case MemoryFieldType::EntityList:
+        case MemoryFieldType::StdUnorderedMap:
+        case MemoryFieldType::OnHeapPointer:
+        default:
+            return sizeof(uintptr_t);
+    }
 }
 
 size_t S2Plugin::Configuration::getTypeSize(const std::string& typeName, bool entitySubclass)
@@ -794,8 +973,16 @@ size_t S2Plugin::MemoryField::get_size() const
 
     if (size == 0)
     {
-        // no entity sub class, shouldn't be needed
-
+        if (type == MemoryFieldType::Array)
+        {
+            const_cast<MemoryField*>(this)->size = numberOfElements * Configuration::get()->getTypeSize(firstParameterType);
+            return size;
+        }
+        if (type == MemoryFieldType::Matrix)
+        {
+            const_cast<MemoryField*>(this)->size = rows * columns * Configuration::get()->getTypeSize(firstParameterType);
+            return size;
+        }
         if (jsonName.empty())
         {
             size_t new_size = 0;
@@ -806,7 +993,6 @@ size_t S2Plugin::MemoryField::get_size() const
             const_cast<MemoryField*>(this)->size = new_size;
             return size;
         }
-
         const_cast<MemoryField*>(this)->size = Configuration::get()->getTypeSize(jsonName, type == MemoryFieldType::EntitySubclass);
     }
     return size;
@@ -898,6 +1084,7 @@ uintptr_t S2Plugin::Configuration::offsetForField(MemoryFieldType type, std::str
 
 uintptr_t S2Plugin::Configuration::offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t addr) const
 {
+    // [Known Issue]: can't get element from an Array or Matrix
     bool last = false;
     size_t currentDelimiter = fieldUID.find('.');
 
@@ -943,4 +1130,31 @@ bool S2Plugin::Configuration::isPointerType(MemoryFieldType type)
         return false;
 
     return it->second.isPointer;
+}
+
+S2Plugin::MemoryField S2Plugin::Configuration::nameToMemoryField(const std::string& name) const
+{
+    MemoryField field;
+    if (name.empty())
+        return field;
+
+    auto type = getBuiltInType(name);
+    if (type == MemoryFieldType::None)
+    {
+        if (!isJsonStruct(name))
+        {
+            dprintf("unknown type name requested in nameToMemoryField(%s)", name.c_str());
+            return field;
+        }
+        field.type = MemoryFieldType::DefaultStructType;
+        field.jsonName = name;
+        field.isPointer = isPermanentPointer(name);
+    }
+    else
+    {
+        field.type = type;
+        field.isPointer = isPointerType(type);
+        field.size = getBuiltInTypeSize(type);
+    }
+    return field;
 }

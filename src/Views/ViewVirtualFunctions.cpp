@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
-S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
+S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, const std::string& typeName, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
 {
     setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("Virtual Functions of %1").arg(QString::fromStdString(typeName)));

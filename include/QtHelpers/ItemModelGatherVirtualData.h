@@ -40,7 +40,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        ItemModelGatherVirtualData(QObject* parent = nullptr) : QAbstractItemModel(parent)
+        explicit ItemModelGatherVirtualData(QObject* parent = nullptr) : QAbstractItemModel(parent)
         {
             parseJSON();
         };
@@ -91,7 +91,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
+        explicit SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex&) const override
         {

@@ -50,7 +50,8 @@ namespace S2Plugin
     constexpr uint16_t gsRoleStdContainerFirstParameterType = Qt::UserRole + 8;
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
-    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 11; // for entity uid to not look for the uid twice
+    constexpr uint16_t gsRoleColumns = Qt::UserRole + 11;       // for Matrix
+    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 12; // for entity uid to not look for the uid twice
 
     // new types need to be added to
     // - the MemoryFieldType enum
@@ -69,6 +70,7 @@ namespace S2Plugin
         Dummy,    // dummy type for uses like fake parent type in StdMap
         CodePointer,
         DataPointer,
+        OnHeapPointer,
         Byte,
         UnsignedByte,
         Word,
@@ -88,9 +90,14 @@ namespace S2Plugin
         State32, // this is signed, can be negative!
         Skip,
         GameManager,
+        GameAPI,
+        Hud,
+        EntityFactory,
         State,
         SaveGame,
         LevelGen,
+        LiquidPhysics,
+        LiquidPhysicsPointer,
         EntityDB,
         EntityPointer,
         EntityDBPointer,
@@ -126,6 +133,12 @@ namespace S2Plugin
         Online,
         IPv4Address,
         Double,
+        Array,
+        Matrix,
+        EntityList,
+        OldStdList,
+        StdList,
+        StdUnorderedMap,
     };
 
     struct VirtualFunction
@@ -139,7 +152,7 @@ namespace S2Plugin
         VirtualFunction(size_t i, std::string n, std::string p, std::string r, std::string t) : index(i), name(n), params(p), returnValue(r), type(t){};
     };
 
-    struct MemoryField
+    struct MemoryField // TODO this got big over time, consider size optimaizations
     {
         std::string name;
         MemoryFieldType type{MemoryFieldType::None};
@@ -148,11 +161,21 @@ namespace S2Plugin
         // jsonName only if applicable: if a type is not a MemoryFieldType, but fully defined in the json file
         // then save its name so we can compare later
         std::string jsonName;
+        // parameter types for stuff like vectors, maps etc.
         std::string firstParameterType;
         std::string secondParameterType;
         std::string comment;
         // size in bytes
         size_t get_size() const;
+        union
+        {
+            // length, size of array etc.
+            size_t numberOfElements{0};
+            // row count for matrix
+            size_t rows;
+        };
+        // column count for matrix
+        size_t columns{0};
 
         // For checking duplicate names
         bool operator==(const MemoryField& other) const
@@ -186,7 +209,7 @@ namespace S2Plugin
         {
             return get() != nullptr;
         }
-
+        // Accessors
         const std::unordered_map<std::string, std::string>& entityClassHierarchy() const noexcept
         {
             return mEntityClassHierarchy;
@@ -195,6 +218,19 @@ namespace S2Plugin
         {
             return mDefaultEntityClassTypes;
         }
+        const EntityNamesList& entityList() const noexcept
+        {
+            return entityNames;
+        }
+        const ParticleEmittersList& particleEmittersList() const noexcept
+        {
+            return particleEmitters;
+        }
+        const std::vector<std::string>& getJournalPageNames() const noexcept
+        {
+            return mJournalPages;
+        }
+        //
         std::vector<std::string> classHierarchyOfEntity(const std::string& entityName) const;
 
         const std::vector<MemoryField>& typeFields(const MemoryFieldType& type) const;
@@ -209,42 +245,36 @@ namespace S2Plugin
         static std::string_view getTypeDisplayName(MemoryFieldType type);
         static size_t getBuiltInTypeSize(MemoryFieldType type);
         static bool isPointerType(MemoryFieldType type);
+        MemoryField nameToMemoryField(const std::string& typeName) const;
 
         uintptr_t offsetForField(const std::vector<MemoryField>& fields, std::string_view fieldUID, uintptr_t base_addr = 0) const;
         uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t base_addr = 0) const;
 
         // equivalent to alignof operator
-        int getAlingment(const std::string& type) const;
-        bool isPermanentPointer(const std::string& type) const
-        {
-            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
-        }
-        bool isJsonStruct(const std::string type) const
-        {
-            return mTypeFieldsStructs.find(type) != mTypeFieldsStructs.end();
-        }
+        uint8_t getAlingment(const std::string& type) const;
+        uint8_t getAlingment(MemoryFieldType type) const;
+        uint8_t getAlingment(const MemoryField& type) const;
 
         std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
         std::string stateTitle(const std::string& fieldName, int64_t state) const;
         const std::vector<std::pair<int64_t, std::string>>& refTitlesOfField(const std::string& fieldName) const;
 
         size_t getTypeSize(const std::string& typeName, bool entitySubclass = false);
-        const EntityList& entityList() const
-        {
-            return entityNames;
-        };
-
-        const ParticleEmittersList& particleEmittersList() const
-        {
-            return particleEmitters;
-        }
 
         RoomCode roomCodeForID(uint16_t code) const;
         std::string getEntityName(uint32_t type) const;
 
-        const std::vector<std::string>& getJournalPageNames()
+        bool isPermanentPointer(const std::string& type) const
         {
-            return mJournalPages;
+            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
+        }
+        bool isPermanentPointer(const std::string_view type) const
+        {
+            return std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end();
+        }
+        bool isJsonStruct(const std::string& type) const
+        {
+            return mTypeFieldsStructs.find(type) != mTypeFieldsStructs.end();
         }
 
       private:
@@ -275,7 +305,7 @@ namespace S2Plugin
         void processRoomCodesJSON(nlohmann::ordered_json& json);
         MemoryField populateMemoryField(const nlohmann::ordered_json& field, const std::string& struct_name);
 
-        EntityList entityNames;
+        EntityNamesList entityNames;
         ParticleEmittersList particleEmitters;
 
         Configuration();

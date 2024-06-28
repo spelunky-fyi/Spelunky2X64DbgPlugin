@@ -5,7 +5,7 @@
 #include "Spelunky2.h"
 #include <QCompleter>
 
-S2Plugin::ViewParticleDB::ViewParticleDB(QWidget* parent) : WidgetDatabaseView(MemoryFieldType::ParticleDB, parent)
+S2Plugin::ViewParticleDB::ViewParticleDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::ParticleDB, parent)
 {
     auto& particleEmitters = Configuration::get()->particleEmittersList();
     setWindowTitle(QString("Particle DB (%1 particles)").arg(particleEmitters.count()));

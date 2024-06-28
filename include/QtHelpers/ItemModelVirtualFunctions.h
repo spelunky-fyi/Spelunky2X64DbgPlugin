@@ -22,7 +22,8 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, QObject* parent = nullptr) : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress){};
+        explicit ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, QObject* parent = nullptr)
+            : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress){};
 
         Qt::ItemFlags flags(const QModelIndex&) const override
         {
@@ -54,7 +55,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelVirtualFunctions(QObject* parent = nullptr) : QSortFilterProxyModel(parent)
+        explicit SortFilterProxyModelVirtualFunctions(QObject* parent = nullptr) : QSortFilterProxyModel(parent)
         {
             setSortRole(gsRoleFunctionIndex);
         }

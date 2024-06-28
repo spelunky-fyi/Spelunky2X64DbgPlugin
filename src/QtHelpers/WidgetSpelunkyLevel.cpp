@@ -1,6 +1,7 @@
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 
 #include "Configuration.h"
+#include "Data/EntityList.h"
 #include "Data/StdMap.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
@@ -11,8 +12,8 @@ S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidge
     auto stateptr = Spelunky2::get()->get_StatePtr();
     mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.entities_by_mask", stateptr);
     mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.entities_by_mask", stateptr);
-    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities_begin", stateptr);
-    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities_begin", stateptr);
+    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities", stateptr);
+    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities", stateptr);
 
     // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", stateptr);
     // mLevelWidth = Script::Memory::ReadDword(offset) * 10;
@@ -63,7 +64,6 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
     }
     if (mEntityMasksToPaint != 0)
     {
-        StdMap<uint32_t, size_t> maskMap{layerToDraw == 0 ? mMaskMapAddr.first : mMaskMapAddr.second};
         for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
         {
             if ((mEntityMasksToPaint >> bit_number) & 1)
@@ -155,6 +155,7 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
         constexpr auto dataSize = (msLevelMaxHeight + 1) * ((msLevelMaxWidth + 1) * sizeof(uintptr_t));
         Script::Memory::Read(gridAddr, &mLevelFloors, dataSize, nullptr);
     }
+
     for (auto& entity : mEntitiesToPaint)
         entity.pos = entity.ent.abs_position();
 
@@ -167,14 +168,9 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
             mEntitiesMaskCoordinates[bit_number].clear();
             if ((mEntityMasksToPaint & key) != 0)
             {
-                // TODO: change to proper struct when done
-                auto pointers = Script::Memory::ReadQword(value_ptr);
-                auto list_count = Script::Memory::ReadDword(value_ptr + 20);
-
-                mEntitiesMaskCoordinates[bit_number].reserve(list_count);
-                std::vector<uintptr_t> entities;
-                entities.resize(list_count);
-                Script::Memory::Read(pointers, entities.data(), list_count * sizeof(uintptr_t), nullptr);
+                EntityList entityList{value_ptr};
+                mEntitiesMaskCoordinates[bit_number].reserve(entityList.size());
+                std::vector<uintptr_t> entities = entityList.getAllEntities();
 
                 for (auto entityAddr : entities)
                 {

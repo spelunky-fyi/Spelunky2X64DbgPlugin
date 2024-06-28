@@ -7,7 +7,7 @@
 #include "Spelunky2.h"
 #include <QCompleter>
 
-S2Plugin::ViewEntityDB::ViewEntityDB(QWidget* parent) : WidgetDatabaseView(MemoryFieldType::EntityDB, parent)
+S2Plugin::ViewEntityDB::ViewEntityDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::EntityDB, parent)
 {
     auto config = Configuration::get();
     setWindowTitle(QString("Entity DB (%1 entities)").arg(config->entityList().count()));
@@ -38,7 +38,7 @@ void S2Plugin::ViewEntityDB::showRAW(uintptr_t address)
 
 void S2Plugin::ViewEntityDB::showID(ID_type id)
 {
-    if (id > Configuration::get()->entityList().highestID())
+    if (id > Configuration::get()->entityList().highestID() + 1)
         return;
 
     switchToLookupTab();
@@ -59,7 +59,7 @@ void S2Plugin::ViewEntityDB::label() const
 
 S2Plugin::ID_type S2Plugin::ViewEntityDB::highestRecordID() const
 {
-    return Configuration::get()->entityList().highestID();
+    return Configuration::get()->entityList().highestID() + 1; // allow one more, since there is unused type
 }
 
 bool S2Plugin::ViewEntityDB::isValidRecordID(ID_type id) const

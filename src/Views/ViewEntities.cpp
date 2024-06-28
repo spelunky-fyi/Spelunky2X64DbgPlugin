@@ -2,6 +2,7 @@
 
 #include "Configuration.h"
 #include "Data/Entity.h"
+#include "Data/Entitylist.h"
 #include "Data/StdMap.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtPlugin.h"
@@ -20,8 +21,8 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
     auto config = Configuration::get();
-    mLayer0Offset = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
-    mLayer1Offset = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
+    mLayer0Address = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
+    mLayer1Address = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
     mLayerMapOffset = config->offsetForField(config->typeFieldsOfDefaultStruct("LayerPointer"), "entities_by_mask");
 
     // initializeRefreshAndFilter
@@ -72,6 +73,11 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
     mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->setEnableChangeHighlighting(false);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColMemoryAddress).disable(gsColComment);
+    mMainTreeView->updateTableHeader(false);
+    mMainTreeView->setColumnWidth(gsColField, 145);
+    mMainTreeView->setColumnWidth(gsColValueHex, 125);
+    mMainTreeView->setColumnWidth(gsColType, 100);
+    mMainTreeView->setColumnWidth(gsColValue, 250);
 
     mainLayout->addWidget(mMainTreeView);
 
@@ -90,6 +96,10 @@ void S2Plugin::ViewEntities::refreshEntities()
         enteredUID = mFilterLineEdit->text().toUInt(&isUIDlookupSuccess, 0);
     }
 
+    size_t entitiesShown = 0;
+    MemoryField field;
+    field.type = MemoryFieldType::EntityPointer;
+    field.isPointer = true;
     auto AddEntity = [&](size_t entity_ptr)
     {
         auto entity = Entity{Script::Memory::ReadQword(entity_ptr)};
@@ -101,20 +111,17 @@ void S2Plugin::ViewEntities::refreshEntities()
                 return;
         }
 
-        MemoryField field;
         field.name = "entity_uid_" + std::to_string(entity.uid());
-        field.type = MemoryFieldType::EntityPointer;
-        field.isPointer = true;
-        mMainTreeView->addMemoryField(field, "", entity_ptr, 0);
+        mMainTreeView->addMemoryField(field, {}, entity_ptr, 0);
+        ++entitiesShown;
     };
 
-    size_t totalEntities = 0;
-    auto layer0 = Script::Memory::ReadQword(mLayer0Offset);
-    auto layer0Count = Script::Memory::ReadDword(layer0 + 0x1C);
-    auto layer1 = Script::Memory::ReadQword(mLayer1Offset);
-    auto layer1Count = Script::Memory::ReadDword(layer1 + 0x1C);
-    mCheckboxLayer0->setText(QString("Front layer (%1)").arg(layer0Count));
-    mCheckboxLayer1->setText(QString("Back layer (%1)").arg(layer1Count));
+    auto layer0 = Script::Memory::ReadQword(mLayer0Address);
+    EntityList entListLayer0{layer0 + 0x8};
+    auto layer1 = Script::Memory::ReadQword(mLayer1Address);
+    EntityList entListLayer1{layer1 + 0x8};
+    mCheckboxLayer0->setText(QString("Front layer (%1)").arg(entListLayer0.size()));
+    mCheckboxLayer1->setText(QString("Back layer (%1)").arg(entListLayer1.size()));
 
     auto check_layer0 = mCheckboxLayer0->checkState() == Qt::Checked;
     auto check_layer1 = mCheckboxLayer1->checkState() == Qt::Checked;
@@ -122,30 +129,26 @@ void S2Plugin::ViewEntities::refreshEntities()
     if (isUIDlookupSuccess)
     {
         // loop thru all entities to find the uid
-        // TODO: change to proper struct when done
-        auto ent_list = Script::Memory::ReadQword(layer0 + 0x8);
-        auto uid_list = Script::Memory::ReadQword(layer0 + 0x10);
+        auto uidList0 = entListLayer0.getAllUids();
         bool found_uid = false;
-        for (uint idx = 0; idx < layer0Count; ++idx)
+        for (uint idx = 0; idx < entListLayer0.size(); ++idx)
         {
-            auto uid = Script::Memory::ReadDword(uid_list + idx * sizeof(uint32_t));
-            if (enteredUID == uid)
+            if (enteredUID == uidList0[idx])
             {
-                AddEntity(ent_list + idx * sizeof(size_t));
+                AddEntity(entListLayer0.entities() + idx * sizeof(size_t));
                 found_uid = true;
                 break;
             }
         }
-        ent_list = Script::Memory::ReadQword(layer1 + 0x8);
-        uid_list = Script::Memory::ReadQword(layer1 + 0x10);
+
         if (found_uid == false)
         {
-            for (uint idx = 0; idx < layer1Count; ++idx)
+            auto uidList1 = entListLayer1.getAllUids();
+            for (uint idx = 0; idx < entListLayer1.size(); ++idx)
             {
-                auto uid = Script::Memory::ReadDword(uid_list + idx * sizeof(uint32_t));
-                if (enteredUID == uid)
+                if (enteredUID == uidList1[idx])
                 {
-                    AddEntity(ent_list + idx * sizeof(size_t));
+                    AddEntity(entListLayer1.entities() + idx * sizeof(size_t));
                     break;
                 }
             }
@@ -164,19 +167,14 @@ void S2Plugin::ViewEntities::refreshEntities()
             auto itr = map0.find(checkbox.mask);
             if (itr != map0.end())
             {
-                // TODO: change to proper struct when done
-                auto ent_list = itr.value_ptr();
-                auto pointers = Script::Memory::ReadQword(ent_list);
-                auto list_count = Script::Memory::ReadDword(ent_list + 20);
-                field_count += list_count;
+                EntityList maskEntList{itr.value_ptr()};
+
+                field_count += maskEntList.size();
                 // loop only if uid was not entered and the mask was choosen
-                if (!isUIDlookupSuccess && totalEntities < 10000u && checkbox.mCheckbox->checkState() == Qt::Checked)
+                if (!isUIDlookupSuccess && checkbox.mCheckbox->checkState() == Qt::Checked)
                 {
-                    for (size_t i = 0; i < list_count; ++i)
-                    {
-                        AddEntity(pointers + (i * sizeof(uintptr_t)));
-                        ++totalEntities;
-                    }
+                    for (size_t i = 0; i < maskEntList.size(); ++i)
+                        AddEntity(maskEntList.entities() + i * sizeof(uintptr_t));
                 }
             }
         }
@@ -185,28 +183,19 @@ void S2Plugin::ViewEntities::refreshEntities()
             auto itr = map1.find(checkbox.mask);
             if (itr != map1.end())
             {
-                auto ent_list = itr.value_ptr();
-                auto pointers = Script::Memory::ReadQword(ent_list);
-                auto list_count = Script::Memory::ReadDword(ent_list + 20);
-                field_count += list_count;
-                if (!isUIDlookupSuccess && totalEntities < 10000u && checkbox.mCheckbox->checkState() == Qt::Checked)
+                EntityList maskEntList{itr.value_ptr()};
+                field_count += maskEntList.size();
+                if (!isUIDlookupSuccess && checkbox.mCheckbox->checkState() == Qt::Checked)
                 {
-                    for (size_t i = 0; i < list_count; ++i)
-                    {
-                        AddEntity(pointers + (i * sizeof(size_t)));
-                        ++totalEntities;
-                    }
+                    for (size_t i = 0; i < maskEntList.size(); ++i)
+                        AddEntity(maskEntList.entities() + i * sizeof(uintptr_t));
                 }
             }
         }
         checkbox.mCheckbox->setText(QString(checkbox.name + " (%1)").arg(field_count));
     }
-    setWindowTitle(QString("%1 Entities").arg(totalEntities));
+    setWindowTitle(QString("%1 Entities").arg(entitiesShown));
     mMainTreeView->updateTableHeader();
-    mMainTreeView->setColumnWidth(gsColField, 145);
-    mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColType, 100);
-    mMainTreeView->setColumnWidth(gsColValue, 300);
     mMainTreeView->updateTree();
 }
 

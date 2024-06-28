@@ -58,7 +58,7 @@ std::string S2Plugin::IDNameList::nameForID(uint32_t id) const
 
 static const std::regex regexEntityLine("^([0-9]+): ENT_TYPE_(.*?)$", std::regex_constants::ECMAScript);
 
-S2Plugin::EntityList::EntityList() : IDNameList("plugins/Spelunky2Entities.txt", regexEntityLine) {}
+S2Plugin::EntityNamesList::EntityNamesList() : IDNameList("plugins/Spelunky2Entities.txt", regexEntityLine) {}
 
 static const std::regex regexParticleLine("^([0-9]+): PARTICLEEMITTER_(.*?)$", std::regex_constants::ECMAScript);
 

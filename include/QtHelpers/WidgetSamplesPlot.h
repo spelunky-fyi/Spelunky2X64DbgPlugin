@@ -15,7 +15,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        WidgetSamplesPlot(Logger* logger, QWidget* parent = nullptr) : QWidget(parent), mLogger(logger)
+        explicit WidgetSamplesPlot(Logger* logger, QWidget* parent = nullptr) : QWidget(parent), mLogger(logger)
         {
             setMouseTracking(true);
             setCursor(Qt::CrossCursor);

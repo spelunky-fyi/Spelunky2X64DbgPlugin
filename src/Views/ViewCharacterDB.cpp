@@ -5,7 +5,7 @@
 #include "Spelunky2.h"
 #include <QCompleter>
 
-S2Plugin::ViewCharacterDB::ViewCharacterDB(QWidget* parent) : WidgetDatabaseView(MemoryFieldType::CharacterDB, parent)
+S2Plugin::ViewCharacterDB::ViewCharacterDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::CharacterDB, parent)
 {
     setWindowTitle("Character DB");
     auto& charDB = Spelunky2::get()->get_CharacterDB();

@@ -50,7 +50,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        TreeViewMemoryFields(QWidget* parent = nullptr);
+        explicit TreeViewMemoryFields(QWidget* parent = nullptr);
 
         void addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta = 0, uint8_t deltaPrefixCount = 0,
                              QStandardItem* parent = nullptr);
@@ -62,12 +62,13 @@ namespace S2Plugin
         {
             mEnableChangeHighlighting = b;
         }
-
+        void setEnableTopBranchDrawing(bool b) noexcept
+        {
+            drawTopBranch = b;
+        }
         void updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
                        bool disableChangeHighlightingForField = false);
-
-        ColumnFilter activeColumns;
         void labelAll(std::string_view prefix);
         void expandLast();
 
@@ -80,24 +81,27 @@ namespace S2Plugin
         {
             updateTree(0, 0, false);
         }
+      private slots:
+        void cellClicked(const QModelIndex& index);
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
         void dragMoveEvent(QDragMoveEvent* event) override;
         void dropEvent(QDropEvent* event) override;
         void startDrag(Qt::DropActions supportedActions) override;
-
+        void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
       signals:
         void memoryFieldValueUpdated(int row, QStandardItem* parrent);
         void levelGenRoomsPointerClicked();
         void offsetDropped(uintptr_t offset);
 
-      private slots:
-        void cellClicked(const QModelIndex& index);
+      public:
+        ColumnFilter activeColumns;
 
       private:
-        QStandardItemModel* mModel;
-        std::array<uint32_t, 9> mSavedColumnWidths = {0};
         bool mEnableChangeHighlighting = true;
+        bool drawTopBranch = true;
+        std::array<uint32_t, 9> mSavedColumnWidths = {0};
+        QStandardItemModel* mModel;
     };
 } // namespace S2Plugin

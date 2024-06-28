@@ -40,17 +40,17 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     refreshLayout->addWidget(interpretAsComboBox);
 
     mMainTreeView = new TreeViewMemoryFields(this);
-    mMainTreeView->addMemoryFields(config->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mainLayout->addWidget(mMainTreeView);
-
+    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+    mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColField, 125);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
     mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
-    mMainTreeView->updateTableHeader();
+
+    mMainTreeView->addMemoryFields(config->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
     mMainTreeView->updateTree(0, 0, true);
     autoRefresh->toggleAutoRefresh(true);
 }
@@ -101,7 +101,6 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
             mMainTreeView->addMemoryFields(structs, pageType, mPageAddress);
         }
         mMainTreeView->expandLast();
-        mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
     }

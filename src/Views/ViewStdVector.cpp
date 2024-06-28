@@ -1,110 +1,64 @@
 #include "Views/ViewStdVector.h"
 
-#include "Configuration.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
-#include "QtHelpers/WidgetAutorefresh.h"
-#include "QtPlugin.h"
-#include "Spelunky2.h"
+#include "QtHelpers/WidgetPagination.h"
 #include "pluginmain.h"
-#include <QPushButton>
 #include <QString>
-#include <QVBoxLayout>
 
-S2Plugin::ViewStdVector::ViewStdVector(const std::string& vectorType, uintptr_t vectorOffset, QWidget* parent) : mVectorType(vectorType), mVectorOffset(vectorOffset), QWidget(parent)
+S2Plugin::ViewStdVector::ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent) : mVectorAddress(vectoraddr), AbstractContainerView(parent)
 {
-    mVectorTypeSize = Configuration::get()->getTypeSize(mVectorType);
+    mValueField = Configuration::get()->nameToMemoryField(vectorType);
 
-    setWindowIcon(getCavemanIcon());
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
-
-    auto mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(5);
-    auto refreshLayout = new QHBoxLayout();
-    mainLayout->addLayout(refreshLayout);
-
-    auto refreshVectorButton = new QPushButton("Refresh vector", this);
-    QObject::connect(refreshVectorButton, &QPushButton::clicked, this, &ViewStdVector::refreshVectorContents);
-    refreshLayout->addWidget(refreshVectorButton);
-
-    auto autoRefresh = new WidgetAutorefresh(100, this);
-    refreshLayout->addWidget(autoRefresh);
-    QObject::connect(autoRefresh, &WidgetAutorefresh::refresh, this, &ViewStdVector::refreshData);
-
-    mMainTreeView = new TreeViewMemoryFields(this);
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
-    mainLayout->addWidget(mMainTreeView);
-    autoRefresh->toggleAutoRefresh(true);
-    refreshVectorContents();
-}
-
-void S2Plugin::ViewStdVector::refreshVectorContents()
-{
-    auto config = Configuration::get();
-    mMainTreeView->clear();
-
-    uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorOffset);
-    uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorOffset + sizeof(uintptr_t));
-    if (vectorBegin == vectorEnd)
-        return;
-
-    if (vectorBegin >= vectorEnd || !Script::Memory::IsValidPtr(vectorBegin) || !Script::Memory::IsValidPtr(vectorEnd))
-        return; // TODO display error
-
-    auto vectorItemCount = (vectorEnd - vectorBegin) / mVectorTypeSize;
-    if ((vectorEnd - vectorBegin) % mVectorTypeSize != 0)
-        return; // TODO display error
-
-    // limit big vectors
-    vectorItemCount = std::min(300ull, vectorItemCount);
-
-    MemoryField field;
-    if (config->isPermanentPointer(mVectorType))
-    {
-        field.type = MemoryFieldType::DefaultStructType;
-        field.jsonName = mVectorType;
-        field.isPointer = true;
-    }
-    else if (config->isJsonStruct(mVectorType))
-    {
-        field.type = MemoryFieldType::DefaultStructType;
-        field.jsonName = mVectorType;
-    }
-    else if (auto type = config->getBuiltInType(mVectorType); type != MemoryFieldType::None)
-    {
-        field.type = type;
-        if (Configuration::isPointerType(type))
-            field.isPointer = true;
-    }
-    else
-    {
-        dprintf("unknown type in ViewStdVector::refreshVectorContents() (%s)\n", mVectorType.c_str());
-        return;
-    }
-    for (auto x = 0; x < vectorItemCount; ++x)
-    {
-        field.name = "obj_" + std::to_string(x);
-        mMainTreeView->addMemoryField(field, field.name, vectorBegin + x * mVectorTypeSize, x * mVectorTypeSize);
-    }
-    mMainTreeView->updateTableHeader();
+    mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);
-    mMainTreeView->setColumnWidth(gsColMemoryAddress, 125);
+    mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->setColumnWidth(gsColValue, 300);
+    reloadContainer();
+}
+
+void S2Plugin::ViewStdVector::reloadContainer()
+{
+    mMainTreeView->clear();
+    if (mValueField.type == MemoryFieldType::None)
+    {
+        mPagination->setSize(0);
+        return; // TODO display error
+    }
+
+    uintptr_t vectorBegin = Script::Memory::ReadQword(mVectorAddress);
+    uintptr_t vectorEnd = Script::Memory::ReadQword(mVectorAddress + sizeof(uintptr_t));
+    if (vectorBegin == vectorEnd)
+    {
+        mPagination->setSize(0);
+        return;
+    }
+
+    if (vectorBegin >= vectorEnd || !Script::Memory::IsValidPtr(vectorBegin) || !Script::Memory::IsValidPtr(vectorEnd))
+    {
+        mPagination->setSize(0);
+        return; // TODO display error
+    }
+    auto vectorItemCount = (vectorEnd - vectorBegin) / mValueField.get_size();
+    if ((vectorEnd - vectorBegin) % mValueField.get_size() != 0)
+    {
+        mPagination->setSize(0);
+        return; // TODO display error
+    }
+    mPagination->setSize(vectorItemCount);
+    if (vectorItemCount == 0)
+        return;
+
+    auto range = mPagination->getRange();
+
+    for (auto x = range.first; x < range.second; ++x)
+    {
+        mValueField.name = "obj_" + std::to_string(x);
+        mMainTreeView->addMemoryField(mValueField, mValueField.name, vectorBegin + x * mValueField.get_size(), x * mValueField.get_size());
+    }
+    mMainTreeView->updateTableHeader();
     mMainTreeView->updateTree(0, 0, true);
-}
-
-void S2Plugin::ViewStdVector::refreshData()
-{
-    mMainTreeView->updateTree();
-}
-
-QSize S2Plugin::ViewStdVector::sizeHint() const
-{
-    return QSize(750, 550);
-}
-
-QSize S2Plugin::ViewStdVector::minimumSizeHint() const
-{
-    return QSize(150, 150);
 }

@@ -36,7 +36,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        WidgetMemoryView(QWidget* parent = nullptr);
+        explicit WidgetMemoryView(QWidget* parent = nullptr);
 
         QSize minimumSizeHint() const override;
         QSize sizeHint() const override;

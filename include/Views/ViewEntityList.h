@@ -8,17 +8,17 @@
 
 namespace S2Plugin
 {
-    class ViewStdVector : public AbstractContainerView
+    class ViewEntityList : public AbstractContainerView
     {
         Q_OBJECT
       public:
-        ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent = nullptr);
+        ViewEntityList(uintptr_t address, QWidget* parent = nullptr);
 
       protected:
         void reloadContainer() override;
 
       private:
-        MemoryField mValueField;
-        uintptr_t mVectorAddress;
+        MemoryField mEntityField;
+        uintptr_t mEntityListAddress;
     };
 } // namespace S2Plugin

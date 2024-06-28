@@ -19,7 +19,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        ItemModelVirtualTable(QObject* parent = nullptr);
+        explicit ItemModelVirtualTable(QObject* parent = nullptr);
 
         Qt::ItemFlags flags(const QModelIndex&) const override
         {
@@ -53,7 +53,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelVirtualTable(QObject* parent = nullptr);
+        explicit SortFilterProxyModelVirtualTable(QObject* parent = nullptr);
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const override;
         void setShowImportedSymbols(bool b)

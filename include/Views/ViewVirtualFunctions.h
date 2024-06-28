@@ -13,7 +13,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewVirtualFunctions(const std::string& typeName, uintptr_t address, QWidget* parent = nullptr);
+        ViewVirtualFunctions(uintptr_t address, const std::string& typeName, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;

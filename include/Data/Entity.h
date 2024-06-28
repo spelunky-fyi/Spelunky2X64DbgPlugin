@@ -12,7 +12,7 @@ namespace S2Plugin
     class Entity
     {
       public:
-        Entity(uintptr_t addr) : mEntityPtr(addr){};
+        explicit Entity(uintptr_t addr) : mEntityPtr(addr){};
         Entity() = delete;
 
         std::string entityClassName() const;

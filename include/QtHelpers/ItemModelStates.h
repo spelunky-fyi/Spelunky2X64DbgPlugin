@@ -14,7 +14,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ItemModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QAbstractItemModel(parent), mStates(states){};
+        explicit ItemModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QAbstractItemModel(parent), mStates(states){};
 
         Qt::ItemFlags flags(const QModelIndex&) const override
         {
@@ -59,7 +59,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        SortFilterProxyModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QSortFilterProxyModel(parent), mStates(states)
+        explicit SortFilterProxyModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QSortFilterProxyModel(parent), mStates(states)
         {
             setSortRole(Qt::UserRole);
         }

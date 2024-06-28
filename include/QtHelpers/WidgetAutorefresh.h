@@ -14,7 +14,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        WidgetAutorefresh(int initialInterval, QWidget* parrent = nullptr);
+        explicit WidgetAutorefresh(int initialInterval, QWidget* parrent = nullptr);
       signals:
         void refresh();
 
