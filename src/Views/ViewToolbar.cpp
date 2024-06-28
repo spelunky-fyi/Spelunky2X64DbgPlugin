@@ -93,6 +93,10 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     addDivider();
     mainLayout->addWidget(new QLabel("Main Thread heap:", this), 0, Qt::AlignHCenter);
 
+    auto btnHeapBase = new QPushButton("Heap Base", this);
+    btnHeapBase->setToolTip("Beginning of the main thread heap that contains data relevant to the game state, multiple structs");
+    mainLayout->addWidget(btnHeapBase);
+    QObject::connect(btnHeapBase, &QPushButton::clicked, this, &ViewToolbar::showMainThreadHeapBase);
     auto btnState = new QPushButton("State", this);
     mainLayout->addWidget(btnState);
     QObject::connect(btnState, &QPushButton::clicked, this, &ViewToolbar::showMainThreadState);
@@ -413,6 +417,17 @@ void S2Plugin::ViewToolbar::showEntityFactory()
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
     {
         auto w = new ViewEntityFactory();
+        auto win = mMDIArea->addSubWindow(w);
+        win->setVisible(true);
+        win->setAttribute(Qt::WA_DeleteOnClose);
+    }
+}
+
+void S2Plugin::ViewToolbar::showMainThreadHeapBase()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HudPtr() != 0)
+    {
+        auto w = new ViewStruct(Spelunky2::get()->get_HeapBase(), Configuration::get()->typeFields(MemoryFieldType::HeapBase), "Heap Base");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);

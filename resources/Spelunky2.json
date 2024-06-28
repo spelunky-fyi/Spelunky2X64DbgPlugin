@@ -9256,6 +9256,76 @@
       },
       { "field": "unknown2", "type": "UnsignedQword" },
       { "field": "unknown3", "type": "UnsignedQword" }
+    ],
+    "UnknownBase": [
+      { "field": "unknown1", "type": "UnsignedQword" },
+      { "field": "unknown2", "type": "UnsignedQword" },
+      { "field": "unknown3", "type": "UnsignedQword" }
+    ],
+    "MallocBase": [
+      { "field": "unknown2", "type": "UnsignedDword" },
+      { "field": "unknown3", "type": "UnsignedDword" },
+      { "field": "unknown6", "type": "UnsignedQword" },
+      { "field": "unknown7", "type": "UnsignedQword" },
+      { "field": "unknown8", "type": "DataPointer" },
+      { "field": "unknown9", "type": "DataPointer" },
+      { "field": "unknown10", "type": "DataPointer" },
+      { "field": "unknown11", "type": "UnsignedQword" },
+      { "field": "unknown12", "type": "UnsignedQword" },
+      { "field": "unknown13", "type": "UnsignedQword" },
+      { "field": "unknown14", "type": "UnsignedQword" },
+      { "field": "unknown15", "type": "UnsignedQword" },
+      { "field": "unknown16", "type": "Array", "length": 64, "arraytype": "DataPointer", "comment": "pairs of pointers" },
+      { "field": "unknown80", "type": "Array", "length": 32, "arraytype": "DataPointer" },
+      { "field": "unknown81", "type": "UnsignedQword" },
+      { "field": "unknown82", "type": "UnsignedQword" },
+      { "field": "unknown83", "type": "UnsignedQword" },
+      { "field": "unknown84", "type": "UnsignedQword" },
+      { "field": "unknown85", "type": "UnsignedQword" },
+      { "field": "unknown86", "type": "UnsignedQword" },
+      { "field": "unknown87", "type": "UnsignedQword" },
+      { "field": "unknown88", "type": "UnsignedQword" },
+      { "field": "unknown89", "type": "UnsignedQword" },
+      { "field": "unknown90", "type": "UnsignedQword" }
+    ],
+    "FrameSync": [
+      { "field": "frame", "type": "UnsignedDword" },
+      { "field": "unknown1", "type": "UnsignedDword", "comment": "padding?" },
+      { "field": "unknown2", "type": "UnsignedQword" },
+      { "field": "unknown3", "type": "UnsignedQword" }
+    ],
+    "PRNG": [
+      { "field": "pair00_a", "type": "UnsignedQword" },
+      { "field": "pair00_b", "type": "UnsignedQword" },
+      { "field": "pair01_a", "type": "UnsignedQword" },
+      { "field": "pair01_b", "type": "UnsignedQword" },
+      { "field": "pair02_a", "type": "UnsignedQword" },
+      { "field": "pair02_b", "type": "UnsignedQword" },
+      { "field": "pair03_a", "type": "UnsignedQword" },
+      { "field": "pair03_b", "type": "UnsignedQword" },
+      { "field": "pair04_a", "type": "UnsignedQword" },
+      { "field": "pair04_b", "type": "UnsignedQword" },
+      { "field": "pair05_a", "type": "UnsignedQword" },
+      { "field": "pair05_b", "type": "UnsignedQword" },
+      { "field": "pair06_a", "type": "UnsignedQword" },
+      { "field": "pair06_b", "type": "UnsignedQword" },
+      { "field": "pair07_a", "type": "UnsignedQword" },
+      { "field": "pair07_b", "type": "UnsignedQword" },
+      { "field": "pair08_a", "type": "UnsignedQword" },
+      { "field": "pair08_b", "type": "UnsignedQword" },
+      { "field": "pair09_a", "type": "UnsignedQword" },
+      { "field": "pair09_b", "type": "UnsignedQword" },
+      { "field": "unknown", "type": "UnsignedQword" }
+    ],
+    "HeapBase": [
+      { "field": "unknown1", "type": "UnknownBase" },
+      { "field": "allocator_stuff1", "type": "UnsignedQword" },
+      { "field": "malloc_base", "type": "MallocBase" },
+      { "field": "allocator_stuff2", "type": "UnsignedQword" },
+      { "field": "frame_sync", "type": "FrameSync" },
+      { "field": "allocator_stuff3", "type": "UnsignedQword" },
+      { "field": "prng", "type": "PRNG" },
+      { "field": "allocator_stuff4", "type": "UnsignedQword" }
     ]
   }
 }

@@ -129,6 +129,7 @@ namespace S2Plugin
         {MemoryFieldType::Hud, "Hud", "", "Hud", 0, false},
         {MemoryFieldType::EntityFactory, "EntityFactory", "", "EntityFactory", 0, false},
         {MemoryFieldType::LiquidPhysics, "LiquidPhysics", "", "LiquidPhysics", 0, false},
+        {MemoryFieldType::HeapBase, "Heap", "", "HeapBase", 0, false},
         // Special Types
         {MemoryFieldType::OnHeapPointer, "OnHeap Pointer", "OnHeapPointer<T>", "OnHeapPointer", 8, false}, // not pointer since it's more of a offset
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},

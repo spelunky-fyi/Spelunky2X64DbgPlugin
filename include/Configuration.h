@@ -139,6 +139,7 @@ namespace S2Plugin
         OldStdList,
         StdList,
         StdUnorderedMap,
+        HeapBase,
     };
 
     struct VirtualFunction
