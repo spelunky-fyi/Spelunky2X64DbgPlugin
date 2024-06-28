@@ -32,7 +32,7 @@ find_package(Qt5Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 if(QT_NAMESPACE)
-    add_definitions(-DQT_NAMESPACE=${QT_NAMESPACE})
+	add_definitions(-DQT_NAMESPACE=${QT_NAMESPACE})
 endif()
 
 
@@ -62,7 +62,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Data/StdMap.h
 	include/Data/EntityList.h
 	include/Data/StdList.h
-    include/Data/StdUnorderedMap.h
+	include/Data/StdUnorderedMap.h
 	include/Views/ViewToolbar.h
 	include/Views/ViewEntityDB.h
 	include/Views/ViewParticleDB.h
@@ -80,10 +80,10 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewJournalPage.h
 	include/Views/ViewThreads.h
 	include/Views/ViewStdMap.h
-    include/Views/ViewStdUnorderedMap.h
+	include/Views/ViewStdUnorderedMap.h
 	include/Views/ViewStdList.h
-    include/Views/ViewEntityList.h
-    include/Views/ViewEntityFactory.h
+	include/Views/ViewEntityList.h
+	include/Views/ViewEntityFactory.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
 	include/QtHelpers/TreeViewMemoryFields.h
@@ -138,7 +138,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewVirtualFunctions.cpp
 	src/Views/ViewStdVector.cpp
 	src/Views/ViewStdMap.cpp
-    src/Views/ViewStdUnorderedMap.cpp
+	src/Views/ViewStdUnorderedMap.cpp
 	src/Views/ViewStdList.cpp
 	src/Views/ViewJournalPage.cpp
 	src/Views/ViewThreads.cpp
