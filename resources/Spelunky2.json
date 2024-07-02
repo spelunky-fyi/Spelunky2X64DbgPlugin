@@ -8787,6 +8787,19 @@
       },
       { "field": "unknown14", "type": "UnsignedQword" }
     ],
+    "UnknownTextureStuff": [
+      { "field": "unknown1", "type": "UnsignedByte" },
+      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "unknown3", "type": "UnsignedByte" },
+      { "field": "unknown4", "type": "UnsignedByte" },
+      { "field": "unknown5", "type": "UnsignedByte" },
+      { "field": "unknown6", "type": "UnsignedByte" },
+      { "field": "unknown7", "type": "UnsignedByte" },
+      { "field": "unknown8", "type": "UnsignedByte" },
+      { "field": "unknown9", "type": "UnsignedQword" },
+      { "field": "unknown10", "type": "UnsignedQword" },
+      { "field": "unknown11", "type": "ConstCharPointerPointer" }
+    ],
     "Renderer": [
       {
         "field": "__vftable",
@@ -8823,7 +8836,7 @@
       {
         "field": "render_width2",
         "type": "UnsignedDword",
-        "comment": "repeat?"
+        "comment": "used by the liquids to know what part(?) of screen to draw on top of the liquid (for all the transformation effects)"
       },
       { "field": "render_height2", "type": "UnsignedDword" },
       { "field": "flags1", "type": "Flags8" },
@@ -8904,8 +8917,8 @@
       {
         "field": "unknown63",
         "type": "StdUnorderedMap",
-        "keytype": "UnsignedDword",
-        "valuetype": "DataPointer"
+        "keytype": "ConstCharPointer",
+        "valuetype": "UnknownTextureStuff"
       },
       {
         "field": "unknown64a",
@@ -9002,7 +9015,22 @@
       { "field": "unknown88", "type": "DataPointer" },
       { "field": "unknown89", "type": "DataPointer" },
       { "field": "unknown90", "type": "DataPointer" },
-      { "field": "unknown91", "type": "UnsignedQword" }
+      { "field": "unknown91", "type": "UnsignedQword" },
+      { "field": "unknown92", "type": "DataPointer" },
+      { "field": "unknown93", "type": "DataPointer" },
+      { "field": "unknown94", "type": "DataPointer" },
+      { "field": "unknown95", "type": "DataPointer" },
+      { "field": "unknown96", "type": "DataPointer" },
+      { "field": "unknown97", "type": "UnsignedDword" },
+      { "field": "unknown98", "type": "UnsignedDword" },
+      { "field": "unknown99", "type": "UnsignedDword" },
+      { "field": "unknown100", "type": "UnsignedDword" },
+      { "field": "unknown101", "type": "UnsignedDword" },
+      { "field": "unknown102", "type": "UnsignedDword" },
+      { "field": "unknown103", "type": "UnsignedDword" },
+      { "field": "game_width", "type": "UnsignedDword" },
+      { "field": "game_height", "type": "UnsignedDword" },
+      { "field": "unknown106", "type": "UnsignedDword" }
     ],
     "HudInventory": [
       { "field": "enabled", "type": "Bool" },
