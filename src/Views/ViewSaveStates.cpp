@@ -68,7 +68,7 @@ constexpr uint32_t gsRoleMemoryAddress = Qt::UserRole + 1;
 
 void S2Plugin::ViewSaveStates::refreshSlots()
 {
-    auto addItem = [&](int row, int column, uintptr_t address)
+    auto updateItem = [&](int row, int column, uintptr_t address)
     {
         QString text;
         if (address != 0)
@@ -102,11 +102,11 @@ void S2Plugin::ViewSaveStates::refreshSlots()
         else
             mMainTable->setItem(i, Columns::InUse, new QTableWidgetItem("<font color='#aaa'>No</font>"));
 
-        addItem(i, Columns::HeapBase, statePtr);
-        addItem(i, Columns::State, statePtr + Spelunky2::GAME_OFFSET::STATE);
-        addItem(i, Columns::LevelGen, statePtr + Spelunky2::GAME_OFFSET::LEVEL_GEN);
-        addItem(i, Columns::LiquidPhysics, statePtr + Spelunky2::GAME_OFFSET::LIQUID_ENGINE);
-        addItem(i, Columns::SaveGame, heapOffsetSaveGame == 0 ? 0 : statePtr + heapOffsetSaveGame);
+        updateItem(i, Columns::HeapBase, statePtr);
+        updateItem(i, Columns::State, statePtr + Spelunky2::GAME_OFFSET::STATE);
+        updateItem(i, Columns::LevelGen, statePtr + Spelunky2::GAME_OFFSET::LEVEL_GEN);
+        updateItem(i, Columns::LiquidPhysics, statePtr + Spelunky2::GAME_OFFSET::LIQUID_ENGINE);
+        updateItem(i, Columns::SaveGame, heapOffsetSaveGame == 0 ? 0 : statePtr + heapOffsetSaveGame);
     }
 }
 
