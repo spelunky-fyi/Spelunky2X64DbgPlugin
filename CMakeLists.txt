@@ -78,7 +78,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewVirtualFunctions.h
 	include/Views/ViewStdVector.h
 	include/Views/ViewJournalPage.h
-	include/Views/ViewThreads.h
+	include/Views/ViewSaveStates.h
 	include/Views/ViewStdMap.h
 	include/Views/ViewStdUnorderedMap.h
 	include/Views/ViewStdList.h
@@ -141,7 +141,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewStdUnorderedMap.cpp
 	src/Views/ViewStdList.cpp
 	src/Views/ViewJournalPage.cpp
-	src/Views/ViewThreads.cpp
+	src/Views/ViewSaveStates.cpp
 	src/Views/ViewEntityList.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp

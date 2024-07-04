@@ -12,6 +12,7 @@
 #include "Views/ViewLevelGen.h"
 #include "Views/ViewLogger.h"
 #include "Views/ViewParticleDB.h"
+#include "Views/ViewSaveStates.h"
 #include "Views/ViewStdList.h"
 #include "Views/ViewStdMap.h"
 #include "Views/ViewStdUnorderedMap.h"
@@ -19,7 +20,6 @@
 #include "Views/ViewStringsTable.h"
 #include "Views/ViewStruct.h"
 #include "Views/ViewTextureDB.h"
-#include "Views/ViewThreads.h"
 #include "Views/ViewVirtualFunctions.h"
 #include "Views/ViewVirtualTable.h"
 #include "pluginmain.h"
@@ -86,9 +86,10 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     auto btnHud = new QPushButton("Hud", this);
     mainLayout->addWidget(btnHud);
     QObject::connect(btnHud, &QPushButton::clicked, this, &ViewToolbar::showHud);
-    auto btnThreads = new QPushButton("Threads", this);
-    mainLayout->addWidget(btnThreads);
-    QObject::connect(btnThreads, &QPushButton::clicked, this, &ViewToolbar::showThreads);
+    auto btnSaveStates = new QPushButton("Save States", this);
+    btnSaveStates->setToolTip("In online, game saves the game state for potential rollback");
+    mainLayout->addWidget(btnSaveStates);
+    QObject::connect(btnSaveStates, &QPushButton::clicked, this, &ViewToolbar::showSaveStates);
 
     addDivider();
     mainLayout->addWidget(new QLabel("Main Thread heap:", this), 0, Qt::AlignHCenter);
@@ -108,7 +109,7 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     QObject::connect(btnLiquid, &QPushButton::clicked, this, &ViewToolbar::showMainThreadLiquidPhysics);
     auto btnSaveGame = new QPushButton("SaveGame", this);
     mainLayout->addWidget(btnSaveGame);
-    QObject::connect(btnSaveGame, &QPushButton::clicked, this, &ViewToolbar::showSaveGame);
+    QObject::connect(btnSaveGame, &QPushButton::clicked, this, &ViewToolbar::showMainThreadSaveGame);
 
     mainLayout->addStretch();
     addDivider();
@@ -227,6 +228,14 @@ void S2Plugin::ViewToolbar::showEntityList(uintptr_t address)
 void S2Plugin::ViewToolbar::showStdList(uintptr_t address, std::string valueType, bool isOldType)
 {
     auto w = new ViewStdList(address, std::move(valueType), isOldType);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void S2Plugin::ViewToolbar::showSaveGame(uintptr_t address)
+{
+    auto w = new ViewStruct(address, Configuration::get()->typeFields(MemoryFieldType::SaveGame), "SaveGame");
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
@@ -375,14 +384,13 @@ void S2Plugin::ViewToolbar::showEntities()
     }
 }
 
-void S2Plugin::ViewToolbar::showSaveGame()
+void S2Plugin::ViewToolbar::showMainThreadSaveGame()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_SaveDataPtr() != 0)
     {
-        auto w = new ViewStruct(Spelunky2::get()->get_SaveDataPtr(), Configuration::get()->typeFields(MemoryFieldType::SaveGame), "SaveGame");
-        auto win = mMDIArea->addSubWindow(w);
-        win->setVisible(true);
-        win->setAttribute(Qt::WA_DeleteOnClose);
+        auto ptr = Spelunky2::get()->get_SaveDataPtr();
+        if (ptr != 0)
+            showSaveGame(Spelunky2::get()->get_SaveDataPtr());
     }
 }
 
@@ -427,11 +435,11 @@ void S2Plugin::ViewToolbar::showLogger()
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void S2Plugin::ViewToolbar::showThreads()
+void S2Plugin::ViewToolbar::showSaveStates()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto w = new ViewThreads();
+        auto w = new ViewSaveStates();
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);

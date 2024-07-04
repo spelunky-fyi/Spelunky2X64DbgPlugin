@@ -264,3 +264,24 @@ uintptr_t S2Plugin::Spelunky2::get_HudPtr()
     }
     return mHudPtr;
 }
+
+uintptr_t S2Plugin::Spelunky2::get_SaveStatesPtr()
+{
+    if (mSaveStatesPtr != 0)
+        return mSaveStatesPtr;
+
+    auto instructionAddress = Script::Pattern::FindMem(afterBundle, afterBundleSize, "90 83 C1 FF");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find SaveStates (1)");
+        return mSaveStatesPtr;
+    }
+    auto relativeOffset = Script::Memory::ReadDword(instructionAddress + 6);
+    mSaveStatesPtr = instructionAddress + 10 + relativeOffset;
+    if (!Script::Memory::IsValidPtr(mSaveStatesPtr))
+    {
+        displayError("Lookup error: unable to find SaveStates (2)");
+        mSaveStatesPtr = 0;
+    }
+    return mSaveStatesPtr;
+}

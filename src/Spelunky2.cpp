@@ -61,7 +61,13 @@ S2Plugin::Spelunky2* S2Plugin::Spelunky2::get()
 
         THREADLIST threadList;
         uintptr_t heapBase{0};
+        uintptr_t heapBasePtr{0};
         DbgGetThreadList(&threadList);
+        if (threadList.count == 0)
+        {
+            displayError("Could not retrieve thread list\nYou might be too fast, wait for the info in bottom left corner to change to \"Running\"");
+            return false;
+        }
         for (auto x = 0; x < threadList.count; ++x)
         {
             auto threadAllInfo = threadList.list[x];
@@ -70,13 +76,14 @@ S2Plugin::Spelunky2* S2Plugin::Spelunky2::get()
                 auto tebAddress = DbgGetTebAddress(threadAllInfo.BasicInfo.ThreadId);
                 auto tebAddress11Ptr = Script::Memory::ReadQword(tebAddress + (11 * sizeof(uintptr_t)));
                 auto tebAddress11Value = Script::Memory::ReadQword(tebAddress11Ptr);
-                heapBase = Script::Memory::ReadQword(tebAddress11Value + TEB_offset);
+                heapBasePtr = tebAddress11Value + TEB_offset;
+                heapBase = Script::Memory::ReadQword(heapBasePtr);
                 break;
             }
         }
-        if (heapBase == 0)
+        if (!Script::Memory::IsValidPtr(heapBasePtr) || !Script::Memory::IsValidPtr(heapBase))
         {
-            displayError("Could not retrieve heap base of the main thread!");
+            displayError("Could not retrieve heap base of the main thread!\nYou might be too fast, wait for the info in bottom left corner to change to \"Running\"");
             return false;
         }
 
@@ -85,7 +92,7 @@ S2Plugin::Spelunky2* S2Plugin::Spelunky2::get()
         addr->codeSectionSize = Spelunky2CodeSectionSize;
         addr->afterBundle = Spelunky2AfterBundle;
         addr->afterBundleSize = Spelunky2CodeSectionStart + Spelunky2CodeSectionSize - Spelunky2AfterBundle;
-        addr->heapBaseAddr = heapBase;
+        addr->heapBasePtr = heapBasePtr;
         ptr = addr;
     }
     return ptr;
@@ -135,7 +142,7 @@ uintptr_t S2Plugin::Spelunky2::get_SaveDataPtr()
     if (heapOffsetSaveGame == 0)
         return 0;
 
-    return heapBaseAddr + heapOffsetSaveGame;
+    return get_HeapBase() + heapOffsetSaveGame;
 }
 
 const QString& S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const
@@ -156,3 +163,8 @@ const QString& S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset) const
     static const QString unknown{"UNKNOWN THEME"};
     return unknown;
 }
+
+uintptr_t S2Plugin::Spelunky2::get_HeapBase() const
+{
+    return Script::Memory::ReadQword(heapBasePtr);
+};

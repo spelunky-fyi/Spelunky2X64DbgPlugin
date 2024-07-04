@@ -6,11 +6,11 @@
 
 namespace S2Plugin
 {
-    class ViewThreads : public QWidget
+    class ViewSaveStates : public QWidget
     {
         Q_OBJECT
       public:
-        ViewThreads(QWidget* parent = nullptr);
+        ViewSaveStates(QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;
@@ -18,7 +18,7 @@ namespace S2Plugin
 
       private slots:
         void cellClicked(int row, int column);
-        void refreshThreads();
+        void refreshSlots();
 
       private:
         QTableWidget* mMainTable;

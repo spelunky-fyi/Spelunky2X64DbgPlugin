@@ -29,31 +29,31 @@ namespace S2Plugin
         uintptr_t get_OnlinePtr();
         uintptr_t get_GameAPIPtr();
         uintptr_t get_HudPtr();
+        uintptr_t get_SaveStatesPtr();
         uintptr_t get_StatePtr() const
         {
-            if (heapBaseAddr == 0)
-                return 0;
+            if (auto base = get_HeapBase(); base != 0)
+                return base + GAME_OFFSET::STATE;
 
-            return heapBaseAddr + GAME_OFFSET::STATE;
+            return 0;
         };
         uintptr_t get_LevelGenPtr() const
         {
-            if (heapBaseAddr == 0)
-                return 0;
 
-            return heapBaseAddr + GAME_OFFSET::LEVEL_GEN;
+            if (auto base = get_HeapBase(); base != 0)
+                return base + GAME_OFFSET::LEVEL_GEN;
+
+            return 0;
         };
         uintptr_t get_LiquidEnginePtr() const
         {
-            if (heapBaseAddr == 0)
-                return 0;
+            if (auto base = get_HeapBase(); base == 0)
+                return base + GAME_OFFSET::LIQUID_ENGINE;
 
-            return heapBaseAddr + GAME_OFFSET::LIQUID_ENGINE;
+            return 0;
         }
-        uintptr_t get_HeapBase() const
-        {
-            return heapBaseAddr;
-        };
+        uintptr_t get_HeapBase() const;
+
         const TextureDB& get_TextureDB();
         const CharacterDB& get_CharacterDB();
         const ParticleDB& get_ParticleDB();
@@ -78,12 +78,13 @@ namespace S2Plugin
         size_t codeSectionSize{0};
         uintptr_t afterBundle{0};
         size_t afterBundleSize{0};
-        uintptr_t heapBaseAddr{0};
+        uintptr_t heapBasePtr{0};
 
         uintptr_t mGameManagerPtr{0};
         uintptr_t mOnlinePtr{0};
         uintptr_t mGameAPIPtr{0};
         uintptr_t mHudPtr{0};
+        uintptr_t mSaveStatesPtr{0};
 
         EntityDB mEntityDB;
         ParticleDB mParticleDB;
@@ -103,7 +104,6 @@ namespace S2Plugin
         {
             UNKNOWN1 = 0x8,            // - ?
             MALLOC = 0x20,             // - malloc base
-            UNKNOWN2 = 0x3B4,          // - ?
             ILLUMINATION_SYNC = 0x3D0, // - illumination sync timer
             PRNG = 0x3F0,              // - PRNG
             STATE = 0x4A0,             // - State Memory
@@ -111,5 +111,6 @@ namespace S2Plugin
             LIQUID_ENGINE = 0xD8650,   // - liquid physics
             UNKNOWN3 = 0x108420,       // - some vector?
         };
+        friend class ViewSaveStates;
     };
 } // namespace S2Plugin
