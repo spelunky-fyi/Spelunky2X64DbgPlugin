@@ -7786,7 +7786,12 @@
       { "field": "animation_frame", "type": "UnsignedDword" },
       { "field": "unknown38", "type": "UnsignedDword" },
       { "field": "texture", "type": "TextureDBPointer" },
-      { "field": "texture_names", "type": "Array", "arraytype": "ConstCharPointerPointer", "length": 7 },
+      {
+        "field": "texture_names",
+        "type": "Array",
+        "arraytype": "ConstCharPointerPointer",
+        "length": 7
+      },
       { "field": "texture_num", "type": "UnsignedDword" },
       { "field": "padding_probably1", "type": "UnsignedDword" },
       { "field": "entity_offset", "type": "OnHeapPointer" },
@@ -8905,7 +8910,12 @@
       { "field": "unknown42b", "type": "UnsignedByte" },
       { "field": "unknown42c", "type": "UnsignedByte" },
       { "field": "unknown42d", "type": "UnsignedByte" },
-      { "field": "texture_names", "type": "Array", "arraytype": "ConstCharPointerPointer", "length": 7 },
+      {
+        "field": "texture_names",
+        "type": "Array",
+        "arraytype": "ConstCharPointerPointer",
+        "length": 7
+      },
       { "field": "texture_numbers", "type": "UnsignedDword" },
       { "field": "unknown45", "type": "UnsignedDword" },
       {
@@ -9033,20 +9043,42 @@
       { "field": "padding_probably1", "type": "UnsignedWord" },
       { "field": "padding_probably2", "type": "UnsignedDword" },
       { "field": "unknown87", "type": "DataPointer" },
-      { "field": "unknown87a", "type": "Array", "arraytype": "Bool", "length": 112 },
-      { "field": "unknown87b", "type": "Array", "arraytype": "UnknownRenderStuff", "length": 110 },
+      {
+        "field": "unknown87a",
+        "type": "Array",
+        "arraytype": "Bool",
+        "length": 112
+      },
+      {
+        "field": "unknown87b",
+        "type": "Array",
+        "arraytype": "UnknownRenderStuff",
+        "length": 110
+      },
       { "field": "unknown87c", "type": "UnsignedQword" },
       { "field": "unknown87d", "type": "UnsignedQword" },
       { "field": "swap_chain?", "type": "DataPointer" },
-      { "field": "unknown88", "type": "DataPointer", "comment": "pointer to vector of functions? dxgi?" },
+      {
+        "field": "unknown88",
+        "type": "DataPointer",
+        "comment": "pointer to vector of functions? dxgi?"
+      },
       { "field": "unknown89", "type": "DataPointer" },
-      { "field": "unknown90", "type": "DataPointer", "comment": "pointer to pointer to vtable" },
+      {
+        "field": "unknown90",
+        "type": "DataPointer",
+        "comment": "pointer to pointer to vtable"
+      },
       { "field": "unknown91", "type": "UnsignedQword" },
       { "field": "unknown92", "type": "DataPointer" },
       { "field": "unknown93", "type": "DataPointer" },
       { "field": "unknown94", "type": "DataPointer" },
       { "field": "unknown95", "type": "DataPointer" },
-      { "field": "unknown96", "type": "DataPointer", "comment": "resolutions list, with some extra stuff" },
+      {
+        "field": "unknown96",
+        "type": "DataPointer",
+        "comment": "resolutions list, with some extra stuff"
+      },
       { "field": "unknown97", "type": "UnsignedDword" },
       { "field": "unknown98", "type": "UnsignedDword" },
       { "field": "unknown99", "type": "UnsignedDword" },
