@@ -7065,7 +7065,7 @@
       },
       { "field": "held_item", "type": "EntityDBID" },
       { "field": "held_item_metadata", "type": "Word" },
-      { "field": "unknown5c", "type": "UnsignedByte", "comment": "padding?" },
+      { "field": "saved_pets", "type": "UnsignedByte" },
       { "field": "player_slot", "type": "Byte" },
       { "field": "mount_type", "type": "EntityDBID" },
       { "field": "mount_metadata", "type": "Word" },
@@ -7676,21 +7676,36 @@
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
-            "name": "~RenderInfoPointer",
-            "params": "",
-            "return": ""
+            "name": "~RenderInfoPointer"
+          },
+          "1": {
+            "name": "draw",
+            "comment": "called when entity enters view of the camera, updates all the positions"
+          },
+          "2": {
+            "name": "update",
+            "params": "math, basically always runs before render"
+          },
+          "3": {
+            "name": "render",
+            "params": "Vec2* offset"
+          },
+          "4": {
+            "name": "set_entity",
+            "params": "Texture* texture, Entity* entity",
+            "return": "bool"
           }
         }
       },
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
       { "field": "unknown3", "type": "UnsignedDword" },
-      { "field": "unknown4", "type": "Float" },
-      { "field": "unknown5", "type": "UnsignedDword" },
+      { "field": "offset_x", "type": "Float" },
+      { "field": "offste_y", "type": "Float" },
       { "field": "unknown6", "type": "UnsignedDword" },
       { "field": "unknown7", "type": "UnsignedDword" },
-      { "field": "unknown8", "type": "UnsignedDword" },
-      { "field": "unknown9", "type": "UnsignedDword" },
+      { "field": "unknown8", "type": "Float" },
+      { "field": "unknown9", "type": "Float" },
       { "field": "x_dupe_1", "type": "Float" },
       { "field": "y_dupe_1", "type": "Float" },
       { "field": "unknown10", "type": "UnsignedDword" },
@@ -7771,13 +7786,7 @@
       { "field": "animation_frame", "type": "UnsignedDword" },
       { "field": "unknown38", "type": "UnsignedDword" },
       { "field": "texture", "type": "TextureDBPointer" },
-      { "field": "texture_name", "type": "ConstCharPointerPointer" },
-      { "field": "second_texture_name", "type": "ConstCharPointerPointer" },
-      { "field": "third_texture_name", "type": "ConstCharPointerPointer" },
-      { "field": "unknown41", "type": "ConstCharPointerPointer" },
-      { "field": "unknown42", "type": "ConstCharPointerPointer" },
-      { "field": "unknown43", "type": "ConstCharPointerPointer" },
-      { "field": "unknown44", "type": "ConstCharPointerPointer" },
+      { "field": "texture_names", "type": "Array", "arraytype": "ConstCharPointerPointer", "length": 7 },
       { "field": "texture_num", "type": "UnsignedDword" },
       { "field": "padding_probably1", "type": "UnsignedDword" },
       { "field": "entity_offset", "type": "OnHeapPointer" },
@@ -7787,12 +7796,10 @@
       { "field": "padding_probably4", "type": "UnsignedByte" },
       { "field": "unknown55", "type": "UnsignedDword" },
       {
-        "field": "darkness",
+        "field": "brightness",
         "type": "Float",
         "comment": "0.0 = completely black ; 1.0 = normal (dark effect like when on fire)"
-      },
-      { "field": "padding_probably5", "type": "UnsignedDword" },
-      { "field": "garbage?", "type": "UnsignedQword" }
+      }
     ],
     "ThemeInfoPointer": [
       {
@@ -8784,8 +8791,7 @@
         "field": "SteamAPI_Callback",
         "type": "SteamCallback",
         "comment": "OnGameOverlayActivated"
-      },
-      { "field": "unknown14", "type": "UnsignedQword" }
+      }
     ],
     "UnknownTextureStuff": [
       { "field": "unknown1", "type": "UnsignedByte" },
@@ -8845,7 +8851,30 @@
       {
         "field": "unknown1",
         "type": "Array",
-        "length": 67,
+        "length": 25,
+        "arraytype": "DataPointer"
+      },
+      { "field": "unknown1a", "type": "UnsignedDword" },
+      { "field": "unknown1b", "type": "UnsignedDword", "comment": "padding?" },
+      {
+        "field": "unknown1c",
+        "type": "Array",
+        "length": 15,
+        "arraytype": "DataPointer"
+      },
+      { "field": "unknown1d", "type": "Bool" },
+      { "field": "padding2", "type": "Skip", "offset": 7 },
+      {
+        "field": "unknown1f",
+        "type": "Array",
+        "length": 10,
+        "arraytype": "DataPointer",
+        "comment": "some directX vtables"
+      },
+      {
+        "field": "unknown1g",
+        "type": "Array",
+        "length": 15,
         "arraytype": "DataPointer"
       },
       { "field": "unknown2", "type": "UnsignedDword" },
@@ -8871,16 +8900,14 @@
         "comment": "not sure if actually float"
       },
       { "field": "unknown40", "type": "Float" },
-      { "field": "unknown41", "type": "Float" },
-      { "field": "unknown42", "type": "UnsignedDword" },
-      { "field": "unknown43a", "type": "ConstCharPointerPointer" },
-      { "field": "unknown43b", "type": "ConstCharPointerPointer" },
-      { "field": "unknown43c", "type": "ConstCharPointerPointer" },
-      { "field": "unknown44a", "type": "UnsignedQword" },
-      { "field": "unknown44b", "type": "UnsignedQword" },
-      { "field": "unknown44c", "type": "UnsignedQword" },
-      { "field": "unknown44d", "type": "UnsignedQword" },
-      { "field": "unknown45", "type": "UnsignedQword", "comment": "bool?" },
+      { "field": "brightness", "type": "Float" },
+      { "field": "unknown42a", "type": "UnsignedByte" },
+      { "field": "unknown42b", "type": "UnsignedByte" },
+      { "field": "unknown42c", "type": "UnsignedByte" },
+      { "field": "unknown42d", "type": "UnsignedByte" },
+      { "field": "texture_names", "type": "Array", "arraytype": "ConstCharPointerPointer", "length": 7 },
+      { "field": "texture_numbers", "type": "UnsignedDword" },
+      { "field": "unknown45", "type": "UnsignedDword" },
       {
         "field": "unknown46",
         "type": "DataPointer",
@@ -8890,7 +8917,8 @@
       { "field": "unknown48", "type": "UnsignedQword" },
       { "field": "unknown49", "type": "DataPointer" },
       { "field": "unknown50", "type": "DataPointer" },
-      { "field": "unknown51", "type": "UnsignedQword" },
+      { "field": "unknown51a", "type": "UnsignedDword" },
+      { "field": "unknown51b", "type": "UnsignedDword" },
       { "field": "unknown52", "type": "UnsignedDword" },
       {
         "field": "unknown53",
@@ -9005,22 +9033,20 @@
       { "field": "padding_probably1", "type": "UnsignedWord" },
       { "field": "padding_probably2", "type": "UnsignedDword" },
       { "field": "unknown87", "type": "DataPointer" },
-      {
-        "field": "skip2",
-        "type": "Skip",
-        "offset": 2768,
-        "comment": "probably some static arrays of ... stuff"
-      },
+      { "field": "unknown87a", "type": "Array", "arraytype": "Bool", "length": 112 },
+      { "field": "unknown87b", "type": "Array", "arraytype": "UnknownRenderStuff", "length": 110 },
+      { "field": "unknown87c", "type": "UnsignedQword" },
+      { "field": "unknown87d", "type": "UnsignedQword" },
       { "field": "swap_chain?", "type": "DataPointer" },
-      { "field": "unknown88", "type": "DataPointer" },
+      { "field": "unknown88", "type": "DataPointer", "comment": "pointer to vector of functions? dxgi?" },
       { "field": "unknown89", "type": "DataPointer" },
-      { "field": "unknown90", "type": "DataPointer" },
+      { "field": "unknown90", "type": "DataPointer", "comment": "pointer to pointer to vtable" },
       { "field": "unknown91", "type": "UnsignedQword" },
       { "field": "unknown92", "type": "DataPointer" },
       { "field": "unknown93", "type": "DataPointer" },
       { "field": "unknown94", "type": "DataPointer" },
       { "field": "unknown95", "type": "DataPointer" },
-      { "field": "unknown96", "type": "DataPointer" },
+      { "field": "unknown96", "type": "DataPointer", "comment": "resolutions list, with some extra stuff" },
       { "field": "unknown97", "type": "UnsignedDword" },
       { "field": "unknown98", "type": "UnsignedDword" },
       { "field": "unknown99", "type": "UnsignedDword" },
@@ -9030,7 +9056,46 @@
       { "field": "unknown103", "type": "UnsignedDword" },
       { "field": "game_width", "type": "UnsignedDword" },
       { "field": "game_height", "type": "UnsignedDword" },
-      { "field": "unknown106", "type": "UnsignedDword" }
+      { "field": "unknown106a", "type": "UnsignedByte" },
+      { "field": "unknown106b", "type": "UnsignedByte" },
+      { "field": "unknown106c", "type": "UnsignedByte" },
+      { "field": "unknown106d", "type": "UnsignedByte" },
+      { "field": "unknown107", "type": "UnsignedQword" },
+      { "field": "unknown108", "type": "UnsignedQword" },
+      { "field": "unknown109", "type": "UnsignedQword" },
+      { "field": "unknown110", "type": "UnsignedQword" },
+      { "field": "unknown111", "type": "UnsignedQword" },
+      { "field": "unknown112", "type": "UnsignedQword" },
+      { "field": "unknown113", "type": "UnsignedQword" },
+      { "field": "unknown114", "type": "UnsignedQword" },
+      { "field": "unknown115", "type": "UnsignedQword" },
+      { "field": "unknown116", "type": "UnsignedQword" },
+      { "field": "unknown117", "type": "UnsignedQword" },
+      { "field": "unknown118", "type": "UnsignedQword" },
+      { "field": "unknown119", "type": "UnsignedQword" },
+      { "field": "unknown120", "type": "UnsignedQword" },
+      { "field": "unknown121", "type": "UnsignedQword" },
+      { "field": "unknown122", "type": "UnsignedQword" },
+      { "field": "unknown123", "type": "UnsignedQword" },
+      { "field": "unknown124", "type": "UnsignedQword" },
+      { "field": "unknown125", "type": "UnsignedQword" },
+      { "field": "unknown126", "type": "UnsignedQword" },
+      { "field": "unknown127", "type": "UnsignedQword" },
+      { "field": "unknown128", "type": "UnsignedQword" },
+      { "field": "unknown129", "type": "UnsignedQword" },
+      { "field": "unknown130", "type": "UnsignedQword" },
+      { "field": "unknown131", "type": "UnsignedQword" },
+      { "field": "unknown132", "type": "UnsignedQword" },
+      { "field": "unknown133", "type": "UnsignedQword" },
+      { "field": "unknown134", "type": "UnsignedQword" },
+      { "field": "unknown135", "type": "UnsignedQword" },
+      { "field": "unknown136", "type": "UnsignedQword" },
+      { "field": "unknown137", "type": "UnsignedQword" }
+    ],
+    "UnknownRenderStuff": [
+      { "field": "unknown1", "type": "DataPointer" },
+      { "field": "unknown2", "type": "DataPointer" },
+      { "field": "unknown3", "type": "UnsignedQword" }
     ],
     "HudInventory": [
       { "field": "enabled", "type": "Bool" },
@@ -9221,13 +9286,13 @@
         "comment": "probably padding"
       },
       {
-        "field": "player_cursed_paricles",
+        "field": "player_cursed_particles",
         "type": "Array",
         "length": 4,
         "arraytype": "ParticleEmitterInfoPointer"
       },
       {
-        "field": "player_poisoned_paricles",
+        "field": "player_poisoned_particles",
         "type": "Array",
         "length": 4,
         "arraytype": "ParticleEmitterInfoPointer"
