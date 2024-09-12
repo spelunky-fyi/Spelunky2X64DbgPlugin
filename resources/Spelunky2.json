@@ -801,10 +801,10 @@
       { "field": "field_1c", "type": "Dword" }
     ],
     "Animation": [
-      { "field": "texture", "type": "Dword" },
+      { "field": "first_tile", "type": "Dword" },
       { "field": "count", "type": "Dword" },
       { "field": "interval", "type": "Dword" },
-      { "field": "key", "type": "UnsignedByte" },
+      { "field": "id", "type": "UnsignedByte" },
       {
         "field": "repeat",
         "type": "State8",

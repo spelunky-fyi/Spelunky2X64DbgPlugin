@@ -122,7 +122,7 @@
     "SpikeballTrap": "Floor",
     "SlidingWallCeiling": "Floor",
     "Projectile": "Movable",
-    "Backpack": "Movable",
+    "Backpack": "Powerup",
     "Jetpack": "Backpack",
     "TeleporterBackpack": "Backpack",
     "Hoverpack": "Backpack",
@@ -338,12 +338,13 @@
     "PrizeDispenser": "Movable",
     "JungleSpearTrap": "Floor",
     "MegaJellyfishEye": "Movable",
-    "Bow": "Movable",
+    "Bow": "Purchasable",
     "Purchasable": "Movable",
     "DummyPurchasableEntity": "Purchasable",
     "Present": "Purchasable",
     "Web": "Movable",
-    "CrushingElevator": "Movable"
+    "CrushingElevator": "Movable",
+    "Scepter": "Movable"
   },
   // a mapping of a regular expression or full name of an entity to its type
   "default_entity_types": {
@@ -629,11 +630,11 @@
     "ITEM_BOOMERANG": "Boomerang",
     "ITEM_EXCALIBUR": "Excalibur",
     "ITEM_PLASMACANNON": "Gun",
-    "ITEM_SCEPTER": "Gun",
+    "ITEM_SCEPTER": "Scepter",
     "ITEM_CLONEGUN": "Gun",
     "ITEM_WOODEN_SHIELD": "Shield",
     "ITEM_METAL_SHIELD": "Shield",
-    "ITEM_PURCHASABLE_CAPE": "DummyPurchasableEntity",
+    "ITEM_PURCHASABLE_CAPE": "Purchasable",
     "ITEM_PURCHASABLE_JETPACK": "DummyPurchasableEntity",
     "ITEM_PURCHASABLE_TELEPORTER_BACKPACK": "DummyPurchasableEntity",
     "ITEM_PURCHASABLE_HOVERPACK": "DummyPurchasableEntity",
@@ -1271,7 +1272,8 @@
           "77": {
             "name": "handle_stun_transition_animation",
             "params": "",
-            "return": "e.g. the wiggle the dog does when waking up from being stunned"
+            "return": "",
+            "comment": "e.g. the wiggle the dog does when waking up from being stunned"
           },
           "78": {
             "name": "process_input",
@@ -1620,36 +1622,6 @@
     "Backpack": [
       {
         "vftablefunctions": {
-          "93": {
-            "name": "93",
-            "params": "",
-            "return": ""
-          },
-          "94": {
-            "name": "94",
-            "params": "",
-            "return": ""
-          },
-          "95": {
-            "name": "95",
-            "params": "",
-            "return": ""
-          },
-          "96": {
-            "name": "on_putting_on",
-            "params": "Entity* who",
-            "return": ""
-          },
-          "97": {
-            "name": "on_putting_off",
-            "params": "Entity* who",
-            "return": ""
-          },
-          "98": {
-            "name": "is_active",
-            "params": "",
-            "return": "bool"
-          },
           "99": {
             "name": "trigger_explosion",
             "params": "",
@@ -2361,7 +2333,9 @@
         "comment": "ammoung of gold he picked up, will be droped on death"
       },
       { "field": "timer_after_humping", "type": "UnsignedByte" },
-      { "field": "unknown", "type": "UnsignedByte" }
+      { "field": "unknown", "type": "UnsignedByte" },
+      { "field": "padding", "type": "UnsignedWord" },
+      { "field": "collected_treasure", "type": "StdVector", "valuetype": "EntityDBID" }
     ],
     "Crocman": [{ "field": "teleport_cooldown", "type": "UnsignedByte" }],
     "Mummy": [
@@ -4426,6 +4400,15 @@
     ],
     "Fly": [{ "field": "timer", "type": "UnsignedByte" }],
     "OlmecCannon": [
+      {
+        "vftablefunctions": {
+          "93": {
+            "name": "spawn_projectile",
+            "params": "",
+            "return": ""
+          }
+        }
+      },
       { "field": "timer", "type": "UnsignedWord" },
       { "field": "bombs_left", "type": "UnsignedByte" }
     ],
@@ -5390,7 +5373,7 @@
         "vftablefunctions": {
           "93": {
             "name": "buy",
-            "params": "",
+            "params": "Entity* who",
             "return": ""
           }
         }
@@ -5406,7 +5389,9 @@
             "comment": "switches the purchasable cape with normal one, parameter is particle?? maybe?"
           }
         }
-      }
+      },
+      { "field": "replace_entity", "type": "EntityPointer" },
+      { "field": "exploding", "type": "Bool" }
     ],
     "Present": [{ "field": "inside", "type": "EntityDBID" }],
     "Web": [
@@ -5427,6 +5412,9 @@
         "type": "Float",
         "comment": "does don't actually exist, added for compatibility with OL API"
       }
+    ],
+    "Scepter": [
+      { "field": "cooldown", "type": "UnsignedByte" }
     ]
   }
 }
