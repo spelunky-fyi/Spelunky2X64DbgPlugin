@@ -1052,7 +1052,7 @@
       },
       {
         "field": "screen_seed_input",
-        "type": "ScreenSeedInput",
+        "type": "ScreenCodeInput",
         "pointer": true
       },
       {
@@ -1910,9 +1910,94 @@
         "arraytype": "TextureRenderingInfo"
       }
     ],
+    "UnknownSaveDataStuff": [
+      { "field": "unknown1", "type": "UnsignedByte" },
+      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "unknown3", "type": "UnsignedByte" },
+      { "field": "unknown4", "type": "UnsignedByte" },
+      { "field": "unknown5", "type": "UnsignedByte" },
+      { "field": "unknown6", "type": "UnsignedByte" },
+      { "field": "unknown7", "type": "UnsignedByte" }
+    ],
+    "BestiaryInfo": [
+      { "field": "page_nr", "type": "UnsignedDword" },
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "name", "type": "StringsTableID" },
+      { "field": "description", "type": "StringsTableID" },
+      { "field": "scale", "type": "Float" },
+      { "field": "offsetx", "type": "Float" },
+      { "field": "offsety", "type": "Float" },
+      { "field": "texture", "type": "TextureDBID" },
+      { "field": "background_sprite_id", "type": "UnsignedDword" },
+      { "field": "killed_by_NA", "type": "Bool" },
+      { "field": "defeated_NA", "type": "Bool" }
+    ],
+    "PeopleInfo": [
+      { "field": "page_nr", "type": "UnsignedDword" },
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "name", "type": "StringsTableID" },
+      { "field": "description", "type": "StringsTableID" },
+      { "field": "scale", "type": "Float" },
+      { "field": "offsetx", "type": "Float" },
+      { "field": "offsety", "type": "Float" },
+      { "field": "texture", "type": "TextureDBID" },
+      { "field": "background_sprite_id", "type": "UnsignedDword" },
+      { "field": "killed_by_NA", "type": "Bool" },
+      { "field": "defeated_NA", "type": "Bool" },
+      { "field": "padding", "type": "Word" },
+      { "field": "portret_texture", "type": "TextureDBID" }
+    ],
+    "ItemInfo": [
+      { "field": "page_nr", "type": "UnsignedDword" },
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "name", "type": "StringsTableID" },
+      { "field": "description", "type": "StringsTableID" },
+      { "field": "scale", "type": "Float" },
+      { "field": "offsetx", "type": "Float" },
+      { "field": "offsety", "type": "Float" }
+    ],
+    "TrapInfo": [
+      { "field": "page_nr", "type": "UnsignedDword" },
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "name", "type": "StringsTableID" },
+      { "field": "description", "type": "StringsTableID" },
+      { "field": "scale", "type": "Float" },
+      { "field": "offsetx", "type": "Float" },
+      { "field": "offsety", "type": "Float" },
+      { "field": "texture", "type": "TextureDBID" },
+      { "field": "background_sprite_id", "type": "UnsignedDword" }
+    ],
+    "PlacesInfo": [
+      { "field": "page_nr", "type": "UnsignedDword" },
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "name", "type": "StringsTableID" },
+      { "field": "description", "type": "StringsTableID" },
+      { "field": "unknown1", "type": "UnsignedDword" },
+      { "field": "unknown2", "type": "Float" },
+      { "field": "unknown3", "type": "Float" }
+    ],
+    "StickersData": [
+      { "field": "sprite_id", "type": "UnsignedDword" },
+      { "field": "texture", "type": "TextureDBID" }
+    ],
     "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "OnHeapPointer" },
-      { "field": "journal_popup_ui", "type": "JournalPopupUI" }
+      { "field": "journal_popup_ui", "type": "JournalPopupUI" },
+      { "field": "unknown1", "type": "Array", "arraytype": "UnknownSaveDataStuff", "length": 17 },
+      { "field": "unknown2a", "type": "UnsignedByte" },
+      { "field": "unknown2b", "type": "UnsignedByte" },
+      { "field": "unknown2c", "type": "UnsignedByte" },
+      { "field": "unknown2d", "type": "UnsignedByte" },
+      { "field": "unknown3", "type": "UnsignedByte" },
+      { "field": "places_data", "type": "StdUnorderedMap", "keytype": "UnsignedByte", "valuetype": "ThemeInfo" },
+      { "field": "bestiary_data", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "BestiaryInfo" },
+      { "field": "monster_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
+      { "field": "people_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "PeopleInfo" },
+      { "field": "people_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
+      { "field": "item_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "ItemInfo" },
+      { "field": "trap_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "TrapInfo" },
+      { "field": "trap_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
+      { "field": "stickers_data", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "StickersData" }
     ],
     "ScreenBase": [
       {
@@ -1921,26 +2006,16 @@
         "functions": {
           "0": {
             "name": "init",
-            "params": "",
-            "return": "",
             "comment": "start the screen"
           },
           "1": {
             "name": "update",
-            "params": "",
-            "return": "",
             "comment": "runs every frame, for level screens: handle zoom, camera bounds, death, even some save data"
           },
-          "2": {
-            "name": "~Screen",
-            "params": "",
-            "return": ""
-          },
+          "2": { "name": "~Screen" },
           "3": {
             "name": "render",
-            "params": "",
-            "return": "",
-            "comment": "mostly the menu screens"
+            "comment": "mostly used by the non gameplay screens to draw textures, text, UI"
           }
         }
       },
@@ -2503,7 +2578,7 @@
       { "field": "unknown50", "type": "UnsignedByte" },
       { "field": "unknown51", "type": "UnsignedByte" },
       { "field": "unknown53", "type": "UnsignedDword" },
-      { "field": "screen_code_input", "type": "ScreenSeedInput" },
+      { "field": "screen_code_input", "type": "ScreenCodeInput" },
       { "field": "unknown87", "type": "Dword" },
       {
         "field": "enter_code_your_code_scroll",
@@ -2546,8 +2621,8 @@
       { "field": "ouroboros", "type": "TextureRenderingInfo" },
       { "field": "ouroboros_angle", "type": "Float" }
     ],
-    "ScreenSeedInput": [
-      { "field": "base_screen", "type": "ScreenBase" },
+    "ScreenCodeInput": [
+      { "field": "base_screen", "type": "ScreenBase", "comment": "one extra virtual" },
       { "field": "standard", "type": "ScreenStandardLayout" },
       {
         "field": "allow_random",
@@ -2707,10 +2782,10 @@
       { "field": "topleft_woodpanel_esc_slidein", "type": "Float" },
       { "field": "bottom_woodpanel_slideout", "type": "Float" },
       { "field": "action_buttons_keycap_size", "type": "Float" },
-      { "field": "unknown64a", "type": "Bool" },
-      { "field": "unknown64b", "type": "Bool" },
-      { "field": "unknown64c", "type": "Bool" },
-      { "field": "unknown64d", "type": "Bool" },
+      { "field": "screen_loading", "type": "Bool", "comment": "locks the inputs" },
+      { "field": "unknown64b", "type": "Bool", "comment": "sets the state.ingame" },
+      { "field": "seeded_run", "type": "Bool" },
+      { "field": "daily_challenge", "type": "Bool" },
       { "field": "next_screen_to_load", "type": "UnsignedDword" },
       { "field": "not_ready_to_start_yet", "type": "Bool" },
       {
@@ -4611,16 +4686,8 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": {
-            "name": "~Logic",
-            "params": "",
-            "return": ""
-          },
-          "1": {
-            "name": "perform",
-            "params": "",
-            "return": "bool"
-          }
+          "0": { "name": "~Logic" },
+          "1": { "name": "perform", "return": "bool" }
         }
       },
       {
@@ -6793,25 +6860,18 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": {
-            "name": "~SpecialLevelGeneration",
-            "params": "",
-            "return": ""
-          },
+          "0": { "name": "~SpecialLevelGeneration" },
           "1": {
             "name": "set_rooms",
-            "params": "",
-            "return": ""
+            "comment": "For bees, sets rooms to be beehive rooms."
           },
           "2": {
             "name": "spawn_backgrounds",
-            "params": "",
-            "return": ""
+            "comment": "For bees, spawns the hive background and midbgs."
           },
           "3": {
             "name": "procedural_spawns",
-            "params": "",
-            "return": ""
+            "comment": "For bees, spawns bees and honey, For leprechauns, spawns leprechaun, pot of gold, and rainbow"
           }
         }
       },
@@ -6871,7 +6931,33 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": { "name": "~Online", "params": "", "return": "" }
+          "0": { "name": "v0", "return": "bool" },
+          "1": { "name": "v1", "return": "bool?" },
+          "2": { "name": "v2", "return": "bool" },
+          "3": { "name": "v3", "return": "uint8_t" },
+          "4": { "name": "v4", "return": "bool?" },
+          "5": { "name": "v5", "comment": "return" },
+          "6": { "name": "v6" },
+          "7": { "name": "~Online" },
+          "8": { "name": "v8", "params": "uint8_t, void*", "return": "bool" },
+          "9": { "name": "v9", "params": "uint8_t", "return": "bool" },
+          "10": { "name": "v10", "params": "uint32_t", "comment": "code verification? starts new thread" },
+          "11": { "name": "v11", "comment": "similar to the above one, but only starts new thread" },
+          "12": { "name": "v12", "comment": "identical function to the above" },
+          "13": { "name": "v13", "params": "void*, void*, void*", "comment": "sockets related, starts new thread (all function do it towards the end, so can be some networking related)" },
+          "14": { "name": "v14", "params": "void*, void*" },
+          "15": { "name": "v15", "params": "void*, void*, uint32_t", "comment": "http related" },
+          "16": { "name": "v16", "comment": "return" },
+          "17": { "name": "v17", "params": "uint32_t" },
+          "18": { "name": "v18", "comment": "<SteamInternal_ContextInit>" },
+          "19": { "name": "v19", "comment": "more socket stuff" },
+          "20": { "name": "v20", "comment": "return" },
+          "21": { "name": "v21", "comment": "return" },
+          "22": { "name": "v22", "comment": "return" },
+          "23": { "name": "v23", "comment": "return" },
+          "24": { "name": "v24", "params": "void*, uint32_t, uint32_t", "comment": "SteamAPI callback related" },
+          "25": { "name": "v25", "comment": "jumps to virtual 26" },
+          "26": { "name": "v26", "comment": "<SteamInternal_ContextInit> plus jumps to the same function as v19" }
         }
       },
       { "field": "unknown1", "type": "UnsignedDword" },
@@ -7455,7 +7541,7 @@
         "valuetype": "EntityPointer"
       },
       { "field": "unknown6", "type": "PointerToFloatSet" },
-      { "field": "expired_entities", "type": "EntityList" },
+      { "field": "unknown_entities5", "type": "EntityList" },
       { "field": "is_layer_loading", "type": "Bool" },
       { "field": "unknown14", "type": "Bool" },
       { "field": "unknown15", "type": "UnsignedByte" },
@@ -7614,31 +7700,24 @@
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
-            "name": "play",
-            "params": "",
-            "return": "",
+            "name": "start",
             "comment": "sets music_on to true"
           },
           "1": {
-            "name": "fade_out",
-            "params": "uint8_t",
-            "return": "",
-            "comment": "unsure, parameter sets the unknown49"
+            "name": "kill",
+            "params": "uint8_t fade_out",
+            "comment": "fade_out - set's the play_ending_sequence"
           },
           "2": {
             "name": "get_name?",
-            "params": "void* buttor, uint32_t size",
-            "return": "",
-            "comment": ""
+            "params": "void* buttor, uint32_t size"
           },
-          "3": { "name": "~SoundMeta", "params": "", "return": "" },
+          "3": { "name": "~SoundMeta" },
           "4": {
             "name": "update",
-            "params": "",
-            "return": "",
             "comment": "disabling this function does not progresses the track, does not stop it at the end level etc."
           },
-          "5": { "name": "v4", "params": "", "return": "bool" }
+          "5": { "name": "unknown", "return": "bool" }
         }
       },
       { "field": "x", "type": "Float" },
@@ -7811,12 +7890,10 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": { "name": "~ThemeInfoPointer", "params": "", "return": "" },
-          "1": { "name": "reset_theme_flags", "params": "", "return": "bool" },
+          "0": { "name": "~ThemeInfoPointer" },
+          "1": { "name": "reset_theme_flags" },
           "2": {
-            "name": "initialize_flags",
-            "params": "",
-            "return": "",
+            "name": "init_flags",
             "comment": [
               "dwelling,tidepool: unset levelgen.flags.flag12",
               "jungle,volcana.olmec,icecaves,neobab,cog,duat,abzu,tiamat,eggplant,hundun,basecamp,arena: nop",
@@ -7826,22 +7903,16 @@
             ]
           },
           "3": {
-            "name": "initialize_levelgen",
-            "params": "",
-            "return": "",
-            "comment": "does random calculations and calls function to determine the start room in most themes"
+            "name": "init_level",
+            "comment": "Adds the entrance room and sets spawn_room_x/y. Sets the level size and toast for echoes feeling. Sets some other level_flags, shop related flags and shop_type."
           },
           "4": {
             "name": "init_rooms",
-            "params": "",
-            "return": "",
             "comment": "most themes call the same function, some check whether they are in CO"
           },
-          "5": { "name": "generate_path", "params": "", "return": "" },
+          "5": { "name": "generate_path", "params": "bool reset" },
           "6": {
-            "name": "handle_level_specialities",
-            "params": "",
-            "return": "",
+            "name": "add_special_rooms",
             "comment": [
               "dwelling: does stuff when level == 4 or udjat present",
               "jungle: when black market present",
@@ -7850,41 +7921,29 @@
             ]
           },
           "7": {
-            "name": "insert_player_coffin_rooms",
-            "params": "",
-            "return": "",
+            "name": "add_player_coffin",
             "comment": "can't trigger, dwelling (quillback) and abzu do something special (arena just returns)"
           },
           "8": {
-            "name": "insert_7_3_dirk_coffin",
-            "params": "",
-            "return": "",
-            "comment": "does something depending on levelgen.data.unknown7"
+            "name": "add_dirk_coffin"
           },
           "9": {
-            "name": "insert_idol_room",
-            "params": "",
-            "return": ""
+            "name": "add_idol",
+            "comment": "Adds an idol room"
           },
-          "10": { "name": "insert_vault", "params": "", "return": "" },
-          "11": { "name": "insert_coffin", "params": "", "return": "" },
+          "10": { "name": "add_vault" },
+          "11": { "name": "add_coffin", "comment": "Adds a character unlock coffin room" },
           "12": {
-            "name": "set_theme_specific_level_feeling",
-            "params": "",
-            "return": "",
+            "name": "add_special_feeling",
             "comment": "metal clanking and air of oppression"
           },
           "13": {
-            "name": "populate_level",
-            "params": "",
-            "return": "",
-            "comment": "disable this and only the player is spawned in the level"
+            "name": "spawn_level",
+            "comment": "Calls many other theme functions to spawn the floor, enemies, items etc, but not background and players. (Disable this to only spawn background and players.)"
           },
-          "14": { "name": "add_level_bordertiles", "params": "", "return": "" },
+          "14": { "name": "spawn_border" },
           "15": {
             "name": "post_process_level",
-            "params": "",
-            "return": "",
             "comment": [
               "volcana: checks if state.coffin_contents = cocovondiamonds -> chooses one of the four coffins in vlad's castle at random to put her in",
               "tidepool: spawns impostor lake, some door and a litwalltorch, ...",
@@ -7894,9 +7953,7 @@
             ]
           },
           "16": {
-            "name": "post_process_exitdoors_and_spawn_traps",
-            "params": "",
-            "return": "",
+            "name": "spawn_traps",
             "comment": [
               "quillback: adds butterflies and snails + configures the door to go to the correct theme/level",
               "olmec: same thing but crabs and grasshoppers",
@@ -7907,8 +7964,6 @@
           },
           "17": {
             "name": "post_process_entities",
-            "params": "",
-            "return": "",
             "comment": [
               "pleasure palace: applies correct texture to ladders and ladder platforms",
               "sunken city: randomly adds ENT_TYPE_DECORATION_SUNKEN_BRIDGE between entities (the slimy bridges)",
@@ -7916,32 +7971,22 @@
             ]
           },
           "18": {
-            "name": "populate_background",
-            "params": "",
-            "return": "",
+            "name": "spawn_procedural",
             "comment": "adds the background, but also the compass indicator at the door"
           },
           "19": {
-            "name": "populate_background_beautification",
-            "params": "",
-            "return": "",
+            "name": "spawn_background",
             "comment": "adds random beautification to the background, e.g. the chalk drawings of the three people in dwelling"
           },
           "20": {
-            "name": "populate_extra_lighting",
-            "params": "",
-            "return": "",
+            "name": "spawn_lights",
             "comment": "adds extra light where needed, e.g. in the udjat chest room, or the top layer of the black market: spawns ENT_TYPE_LOGICAL_ROOM_LIGHT"
           },
           "21": {
-            "name": "populate_level_transition",
-            "params": "",
-            "return": ""
+            "name": "spawn_transition"
           },
           "22": {
-            "name": "on_level_transition",
-            "params": "",
-            "return": "",
+            "name": "post_transition",
             "comment": [
               "unsets flag 1 (Reset) of state.quest_flags",
               "sets the correct state.screen (0xC)",
@@ -7949,32 +7994,25 @@
             ]
           },
           "23": {
-            "name": "populate_players",
-            "params": "",
-            "return": "",
+            "name": "spawn_players",
             "comment": "spawns the player(s?) in the world, along with what they were holding"
           },
           "24": {
-            "name": "handle_multiplayer",
-            "params": "",
-            "return": "",
-            "comment": "when disabled, during multiplayer the camera is not focused; also responsible for spawning the leader flag; not looked at in detail"
+            "name": "spawn_effects",
+            "comment": "Sets the camera bounds and position. Spawns jelly and orbs and the flag in coop. Sets timers/conditions for more jellies and ghosts. Enables the special fog/ember/ice etc particle effects."
           },
           "25": {
-            "name": "level_file_to_load",
-            "params": "",
+            "name": "get_level_file",
             "return": "const char*",
             "comment": "the .lvl file to load (e.g. dwelling = dwellingarea.lvl except when level == 4 (cavebossarea.lvl))"
           },
           "26": {
-            "name": "theme_id",
-            "params": "",
+            "name": "get_theme_id",
             "return": "uint8_t",
             "comment": "for co: returns sub_theme->theme_id()"
           },
           "27": {
-            "name": "theme_base_id",
-            "params": "",
+            "name": "get_base_id",
             "return": "uint8_t",
             "comment": [
               "whereas theme_id() returns a unique id for all ThemeInfo's, this function returns the id of the theme it logically belongs to",
@@ -7982,9 +8020,8 @@
             ]
           },
           "28": {
-            "name": "random_block_floorstyle",
-            "params": "",
-            "return": "uint32_t",
+            "name": "get_floor_spreading_type",
+            "return": "ENT_TYPE",
             "comment": [
               "all themes return 4 (ENT_TYPE_FLOOR_GENERIC), except:",
               "temple: 104 (ENT_TYPE_FLOORSTYLED_TEMPLE)",
@@ -7997,22 +8034,19 @@
             ]
           },
           "29": {
-            "name": "random_block_floorstyle_2",
-            "params": "",
-            "return": "uint32_t",
+            "name": "get_floor_spreading_type2",
+            "return": "ENT_TYPE",
             "comment": [
               "similar to random_block_floorstyle(), except now the default = 103 (ENT_TYPE_FLOORSTYLED_STONE)"
             ]
           },
           "30": {
-            "name": "transition_styled_floor",
-            "params": "",
+            "name": "get_transition_styled_floor",
             "return": "bool",
             "comment": "Whether transition tiles should be styled floor."
           },
           "31": {
-            "name": "transition_tunnel_block_modifier",
-            "params": "",
+            "name": "get_transition_floor_modifier",
             "return": "uint32_t",
             "comment": [
               "determines the types of FLOOR_TUNNEL_NEXT/CURRENT (depending on where you are transitioning from/to) for this theme",
@@ -8020,21 +8054,17 @@
             ]
           },
           "32": {
-            "name": "transition_styled_floor_ent_type",
-            "params": "",
-            "return": "uint32_t",
-            "comment": ""
+            "name": "get_transition_styled_floor_type",
+            "return": "ENT_TYPE"
           },
           "33": {
-            "name": "backwall_entity_id",
-            "params": "",
-            "return": "uint32_t",
+            "name": "get_backwall_type",
+            "return": "ENT_TYPE",
             "comment": "always returns 778 ENT_TYPE_BG_LEVEL_BACKWALL"
           },
           "34": {
-            "name": "bordertile_entity_id",
-            "params": "",
-            "return": "uint32_t",
+            "name": "get_border_type",
+            "return": "ENT_TYPE",
             "comment": [
               "returns ENT_TYPE_FLOOR_BORDERTILE by default, except:",
               "neobab ENT_TYPE_FLOOR_BORDERTILE_METAL",
@@ -8045,20 +8075,16 @@
             ]
           },
           "35": {
-            "name": "transition_tunnel_critter_entity_id",
-            "params": "",
-            "return": "uint32_t",
-            "comment": ""
+            "name": "get_critter_type",
+            "return": "ENT_TYPE"
           },
           "36": {
-            "name": "liquid_gravity_direction",
-            "params": "",
+            "name": "get_liquid_gravity",
             "return": "float",
             "comment": "returns -1.0 (downwards) by default, except for sunken/hundun; applies both to lava and water"
           },
           "37": {
-            "name": "are_players_vulnerable",
-            "params": "",
+            "name": "get_player_damage",
             "return": "bool",
             "comment": [
               "used to make the player invincible in basecamp (but does an OOB check)",
@@ -8066,20 +8092,17 @@
             ]
           },
           "38": {
-            "name": "should_spawn_soot",
-            "params": "",
+            "name": "get_explosion_soot",
             "return": "bool",
-            "comment": ""
+            "comment": "Returns: true if explosions should spawn background soot"
           },
           "39": {
-            "name": "backlayer_lut",
-            "params": "",
+            "name": "get_backlayer_lut",
             "return": "uint32_t",
             "comment": "returns the texture ID for the LUT to be applied to the special back layer, e.g. vlad's castle for the volcana theme"
           },
           "40": {
-            "name": "backlayer_global_illumination_level",
-            "params": "",
+            "name": "get_backlayer_light_level",
             "return": "float",
             "comment": [
               "a value between 0.0 (default) and 1.0 used to illuminate (backlayer) locations",
@@ -8089,8 +8112,7 @@
             ]
           },
           "41": {
-            "name": "enable_camera_loop",
-            "params": "",
+            "name": "get_loop",
             "return": "bool",
             "comment": [
               "this is used for CO (checks that player is in the level, not in the transition)",
@@ -8098,24 +8120,20 @@
             ]
           },
           "42": {
-            "name": "max_level_for_vault",
-            "params": "",
+            "name": "get_vault_level",
             "return": "uint8_t",
-            "comment": [
-              "not 100% sure, this is used in a random calculation that determines whether a vault spawns",
-              "looks to be the highest level a vault can spawn; it's mostly 3 or 4, but for neobab it's 1, which makes sense"
-            ]
+            "comment": "Returns: highest y-level a vault can spawn"
           },
           "43": {
-            "name": "get_theme_flag_at",
-            "params": "uint index",
+            "name": "get_theme_flag",
+            "params": "uint8_t index",
             "return": "bool",
-            "comment": "index == 0 ? return unknown1 : return unknown2"
+            "comment": "Returns: allow_beehive or allow_leprechaun flag, index: 0 or 1"
           },
           "44": {
-            "name": "get_dynamic_floor_texture_id",
-            "params": "int8_t texture_id",
-            "return": "uint32_t",
+            "name": "get_dynamic_texture",
+            "params": "DYNAMIC_TEXTURE dynamic_texture",
+            "return": "TEXTURE",
             "comment": [
               "e.g. for dwelling:",
               "texture_id == -4 -> returns 122 BG_CAVE_0",
@@ -8129,9 +8147,7 @@
             ]
           },
           "45": {
-            "name": "set_next_world_level_theme",
-            "params": "",
-            "return": "",
+            "name": "pre_transition",
             "comment": [
               "manipulates state.level_next, world_next and theme_next; triggers when exiting a level",
               "for dwelling, it just increments level_next because the world/theme choice is made by which door you pick",
@@ -8141,7 +8157,6 @@
           },
           "46": {
             "name": "get_exit_room_y_level",
-            "params": "",
             "return": "uint32_t",
             "comment": [
               "default = return state.h - 1",
@@ -8150,14 +8165,11 @@
           },
           "47": {
             "name": "get_shop_chance",
-            "params": "",
             "return": "uint32_t",
             "comment": "returns a value that appears to affect room generation and is based on current world,level"
           },
           "48": {
-            "name": "post_process_decoration1",
-            "params": "",
-            "return": "",
+            "name": "spawn_decoration",
             "comment": [
               "used e.g. in Vlad's castle to insert the big banner in the center with the two demon statues",
               "also implemented for neobab (i think in the zoos)",
@@ -8165,9 +8177,7 @@
             ]
           },
           "49": {
-            "name": "post_process_decoration2",
-            "params": "",
-            "return": "",
+            "name": "spawn_decoration2",
             "comment": [
               "dwelling: adds the decal above the udjat chest",
               "jungle: adds the colorful jungle flowers on top of the blocks",
@@ -8175,9 +8185,8 @@
             ]
           },
           "50": {
-            "name": "populate_extra_random_entities",
-            "params": "",
-            "return": "",
+            "name": "spawn_extra",
+            "params": "int32_t, int32_t, int32_t, int32_t, uint8_t",
             "comment": [
               "dwelling udjat level: adds the key in random place",
               "vlad's castle: adds decorative banners",
@@ -8187,9 +8196,8 @@
             ]
           },
           "51": {
-            "name": "do_procedural_enemy_spawn",
-            "params": "",
-            "return": "",
+            "name": "do_procedural_spawn",
+            "params": "SpawnInfo* info",
             "comment": "called at each position that can spawn a procedural enemy"
           }
         }
@@ -8550,11 +8558,7 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": {
-            "name": "~CutsceneBehavior",
-            "params": "",
-            "return": ""
-          },
+          "0": { "name": "~CutsceneBehavior" },
           "1": {
             "name": "update",
             "params": "Movable* entity"
@@ -8669,12 +8673,10 @@
         "functions": {
           "0": {
             "name": "get_state_id",
-            "params": "",
             "return": "uint8_t"
           },
           "1": {
             "name": "secondary_sort_id",
-            "params": "",
             "return": "uint8_t"
           },
           "2": {
@@ -8684,28 +8686,24 @@
           },
           "3": {
             "name": "on_enter",
-            "params": "Movable* movable",
-            "return": ""
+            "params": "Movable* movable"
           },
           "4": {
             "name": "on_exit",
-            "params": "Movable* movable",
-            "return": ""
+            "params": "Movable* movable"
           },
           "5": {
             "name": "update_logic",
-            "params": "Movable* movable",
-            "return": ""
+            "params": "Movable* movable"
           },
           "6": {
             "name": "update_world",
-            "params": "Movable* movable",
-            "return": ""
+            "params": "Movable* movable"
           },
           "7": {
             "name": "get_next_state_id",
             "params": "Movable* movable",
-            "return": ""
+            "return": "uint8_t"
           }
         }
       }

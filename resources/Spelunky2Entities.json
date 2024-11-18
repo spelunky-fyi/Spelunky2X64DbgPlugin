@@ -343,7 +343,7 @@
     "DummyPurchasableEntity": "Purchasable",
     "Present": "Purchasable",
     "Web": "Movable",
-    "CrushingElevator": "Movable",
+    "CrushElevator": "Movable",
     "Scepter": "Movable"
   },
   // a mapping of a regular expression or full name of an entity to its type
@@ -657,7 +657,7 @@
     "ACTIVEFLOOR_THINICE": "ThinIce",
     "ACTIVEFLOOR_ELEVATOR": "Elevator",
     "ACTIVEFLOOR_GIANTCLAM_BASE": "ClamBase",
-    "ACTIVEFLOOR_CRUSHING_ELEVATOR": "CrushingElevator",
+    "ACTIVEFLOOR_CRUSHING_ELEVATOR": "CrushElevator",
     "ACTIVEFLOOR_REGENERATINGBLOCK": "RegenBlock",
     "FX_EGGSHIP_CENTERJETFLAME": "EggshipCenterJetFlame",
     "FX_TORNJOURNALPAGE": "FxTornJournalPage",
@@ -814,192 +814,155 @@
         "functions": {
           "0": { "name": "~Entity", "params": "", "return": "" },
           "1": {
-            "name": "create_rendering_info",
-            "params": "",
-            "return": ""
+            "name": "create_rendering_info"
           },
           "2": {
-            "name": "handle_state_machine",
-            "params": "",
-            "return": ""
+            "name": "handle_state_machine"
           },
           "3": {
             "name": "kill",
-            "params": "bool destroy_corpse, Entity* responsible",
-            "return": ""
+            "params": "bool destroy_corpse, Entity* responsible"
           },
           "4": {
             "name": "on_collision1",
             "params": "Entity* other_entity",
-            "return": "",
-            "comment": "triggers on collision between whip and hit object"
+            "comment": "Collisions with stuff that blocks you, like walls, floors, etc. Triggers for entities in it's EntityDB.collision_mask"
           },
           "5": {
-            "name": "destroy",
-            "params": "",
-            "return": "",
-            "comment": ""
+            "name": "destroy"
           },
           "6": {
             "name": "apply_texture",
-            "params": "Texture*",
-            "return": ""
+            "params": "Texture*"
           },
           "7": {
             "name": "format_shopitem_name",
-            "params": "char16_t*",
-            "return": ""
+            "params": "char16_t* output"
           },
           "8": {
-            "name": "generate_stomp_damage_particles",
-            "params": "Entity* victim",
-            "return": "",
-            "comment": "particles when jumping on top of enemy"
+            "name": "generate_damage_particles",
+            "params": "Entity* victim, DAMAGE_TYPE damage, bool killing"
           },
           "9": {
             "name": "get_type_field_a8",
-            "params": "",
             "return": "float"
           },
           "10": {
             "name": "can_be_pushed",
-            "params": "",
             "return": "bool",
             "comment": "(runs only for activefloors?) checks if entity type is pushblock, for chained push block checks ChainedPushBlock.is_chained, is only a check that allows for the pushing animation"
           },
           "11": {
             "name": "v11",
-            "params": "",
             "return": "bool",
             "comment": "for arrows: returns true if it's moving (for y possibily checks for some speed as well?)"
           },
           "12": {
             "name": "is_in_liquid",
-            "params": "",
-            "return": "bool"
+            "return": "bool",
+            "comment": "drill always returns false"
           },
           "13": {
             "name": "check_type_properties_flags_19",
-            "params": "",
             "return": "bool",
             "comment": "checks (properties_flags >> 0x12) & 1; for hermitcrab checks if he's invisible; can't get it to trigger"
           },
           "14": {
             "name": "get_type_field_60",
-            "params": "",
-            "return": "uint32_t"
+            "return": "uint8_t",
+            "comment": "the value is compared to entity state and used in some behavior function"
           },
-          "15": { "name": "set_invisible", "params": "bool", "return": "" },
+          "15": { "name": "set_invisible", "params": "bool value" },
           "16": {
-            "name": "handle_turning_left",
-            "params": "bool apply",
-            "return": "",
-            "comment": "if disabled, monsters don't turn left and keep walking in the wall (and other right-left issues)"
+            "name": "flip",
+            "params": "bool left"
           },
           "17": {
             "name": "set_draw_depth",
-            "params": "uint8_t draw_depth",
-            "return": ""
+            "params": "uint8_t draw_depth, uint8_t b3f"
           },
           "18": {
-            "name": "resume_ai",
-            "params": "",
-            "return": "",
-            "comment": "works on entities with ai_func != 0; runs when companions are let go from being held"
+            "name": "reset_draw_depth",
+            "comment": "resets to default from EntityDB"
           },
-          "19": { "name": "friction", "params": "", "return": "float" },
+          "19": { "name": "friction", "return": "float", "comment": "Friction of this entity, affects it's contact with other entities (how fast it slows down on the floor, how fast it can move but also the other way around for floors/activefloors: how other entities can move on it)" },
           "20": {
             "name": "set_as_sound_source",
-            "params": "SoundMeta*",
-            "return": ""
+            "params": "SoundMeta*"
           },
           "21": {
-            "name": "remove_item_ptr",
-            "params": "Entity*",
-            "return": ""
+            "name": "remove_item",
+            "params": "Entity* entity, bool autokill_check",
+            "comment": "if autokill_check is true, it will check if the entity has the 'kill if overlay lost' flag and kill it if it's set"
           },
           "22": {
             "name": "get_held_entity",
-            "params": "Entity*",
-            "return": ""
+            "return": "Entity*"
           },
           "23": {
             "name": "v23",
             "params": "Entity* logical_trigger, Entity* who_triggered_it",
-            "return": "void",
-            "comment": "spawns LASERTRAP_SHOT from LASERTRAP, also some trigger entities use this, seam to be called right after on_collision2, tiggers use self as the first parameter"
+            "comment": "spawns LASERTRAP_SHOT from LASERTRAP, also some trigger entities use this, seam to be called right after on_collision2, tiggers use self as the first parameter. Called when there is entity overlapping trigger entity, even if they don't move"
           },
           "24": {
             "name": "trigger_action",
             "params": "Entity* user",
-            "return": "bool"
+            "return": "bool",
+            "comment": "also used for throwables, disabling this for bomb make it always spawn an the ground, but you can still pick it up and throw it"
           },
           "25": {
             "name": "activate",
             "params": "Entity* activator",
-            "return": "",
             "comment": "Activates a button prompt (with the Use door/Buy button), e.g. buy shop item, activate drill, read sign, interact in camp ..."
           },
           "26": {
             "name": "on_collision2",
             "params": "Entity* other_entity",
-            "return": "",
-            "comment": "needs investigating, difference between this and on_collision1"
+            "comment": "More like on_overlap, triggers when entities touch/overlap each other. Triggers for entities in it's EntityDB.collision2_mask"
           },
           "27": {
             "name": "get_metadata",
-            "params": "",
             "return": "uint16_t",
             "comment": "e.g. for turkey: stores health, poison/curse state, for mattock: remaining swings (returned value is transferred)"
           },
           "28": {
             "name": "apply_metadata",
-            "params": "uint16_t metadata",
-            "return": ""
+            "params": "uint16_t metadata"
           },
           "29": {
             "name": "on_walked_on_by",
             "params": "Entity* walker",
-            "return": "",
             "comment": "hits when monster/player walks on a floor, does something when walker.velocityy<-0.21 (falling onto) and walker.hitboxy * hitboxx > 0.09"
           },
           "30": {
             "name": "on_walked_off_by",
             "params": "Entity* walker",
-            "return": "",
-            "comment": "hits when monster/player walks off a floor, it checks whether the walker has floor as overlay, and if so, removes walker from floor's items by calling virtual 20 (remove_item_ptr)"
+            "comment": "hits when monster/player walks off a floor, it checks whether the walker has floor as overlay, and if so, removes walker from floor's items by calling remove_item"
           },
           "31": {
             "name": "on_ledge_grab",
             "params": "Entity* who",
-            "return": "",
             "comment": "only ACTIVEFLOOR_FALLING_PLATFORM, does something with game menager"
           },
           "32": {
             "name": "on_stood_on_by",
-            "params": "Entity* entity",
-            "return": "",
-            "comment": "e.g. pots, skulls, pushblocks, ... standing on floors"
+            "params": "Entity* entity, Vec2*",
+            "comment": "e.g. pots, skulls, pushblocks, ... standing on floors. The Vec2 is just a guess, it only compares Y with 0.1f"
           },
           "33": {
             "name": "toggle_backlayer_illumination",
-            "params": "",
-            "return": "",
             "comment": "only for CHAR_*, when going to the backlayer, turns on player emitted light"
           },
           "34": {
             "name": "v34",
-            "params": "",
-            "return": "",
             "comment": "only ITEM_TORCH, calls Torch.light_up(false), can't get it to trigger"
           },
           "35": {
             "name": "liberate_from_shop",
-            "params": "",
-            "return": "",
-            "comment": "can also be seen as event: when you anger the shopkeeper, this function gets called for each item; can be called on shopitems individually as well and they become 'purchased'"
+            "params": "bool clear_parrent",
+            "comment": "can also be seen as event: when you anger the shopkeeper, this function gets called for each item; `clear_parent` used only for CHAR_* entities, sets the `linked_companion_parent` to -1. It's not called when item is bought"
           },
-          "36": { "name": "apply_db", "params": "", "return": "" }
+          "36": { "name": "apply_db", "comment": "This is actually just an initialize call that is happening once after  the entity is created" }
         }
       },
       { "field": "type", "type": "EntityDBPointer" },
@@ -1057,135 +1020,118 @@
         "vftablefunctions": {
           "37": {
             "name": "can_jump",
-            "params": "bool",
-            "return": "",
-            "comment": "disable to allow unlimited multijump; checks jump flags"
+            "params": "bool"
           },
           "38": {
             "name": "get_collision_info",
             "params": "CollisionInfo* dest",
-            "return": ""
+            "comment": "from entityDB"
           },
-          "39": { "name": "sprint_factor", "params": "", "return": "float" },
+          "39": { "name": "sprint_factor", "return": "float", "comment": "from entityDB" },
           "40": {
             "name": "calculate_jump_height",
-            "params": "",
-            "return": "",
-            "comment": "when disabled, jump height is very high"
+            "params": "bool dont_ignore_liquid",
+            "return": "float"
           },
           "41": {
             "name": "get_animation_map",
-            "params": "",
-            "return": "std::unordered_map<uint8_t, Animation>&"
+            "return": "std::unordered_map<uint8_t, Animation>&",
+            "comment": "for Ear animation map RVA 0x22E08AD0"
           },
           "42": {
             "name": "apply_velocity",
-            "params": "float* velocities, bool",
-            "return": "",
-            "comment": "param is pointer to an array of two floats: velocity x and y"
+            "params": "Vec2& velocities, bool ignore_weight",
+            "comment": "Mostly used for ragdoll by the game"
           },
           "43": {
-            "name": "stomp_damage",
-            "params": "",
+            "name": "get_damage",
             "return": "int8_t",
-            "comment": "calculates the amount of stomp damage applied (checks spike shoes, movable.state and stand_counter resulting in different damage values)"
+            "comment": "for player it calculates stomp damages as that's the only damage that the player entity can deal, the 'normal' damage is done by the whip"
           },
           "44": {
-            "name": "stomp_damage_trampoline",
-            "params": "",
+            "name": "get_stomp_damage?",
             "return": "int8_t",
-            "comment": "simply jumps to the 43rd virtual function, aka stomp_damage..."
+            "comment": "calls get_damage except for mech which always returns 3, dunno what's the difference between this and get_damage"
           },
-          "45": {
-            "name": "is_on_fire",
-            "params": "",
-            "return": "bool"
-          },
+          "45": { "name": "is_on_fire", "return": "bool" },
           "46": {
-            "name": "v46",
-            "params": "",
-            "return": ""
+            "name": "attack",
+            "params": "Entity* victim",
+            "return": "bool",
+            "comment": "Runs on contact damage, returns false if there wasn't any interaction (called from on_collision2, will be called as long as the hitboxes overlap)"
           },
           "47": {
-            "name": "v47",
-            "params": "",
-            "return": ""
+            "name": "thrown_into",
+            "params": "Entity* victim",
+            "return": "bool",
+            "comment": "Same as above, but for being thrown into something and potentially dealing damage that way"
           },
           "48": {
-            "name": "on_damage",
+            "name": "damage",
             "params": "Entity* damage_dealer, int8_t damage_amount, DAMAGE_TYPE damage_flags, Vec2* velocity, uint8_t unknown_damage_phase, uint16_t stun_amount, uint8_t iframes, bool unknown_is_final",
-            "return": "bool"
+            "return": "bool",
+            "comment": "Returns: true if entity was affected (for stuff like pot that should break after hit etc.), false if the event should be ignored by damage_dealer"
           },
           "49": {
             "name": "on_hit",
             "params": "Entity* damage_dealer",
-            "return": "",
-            "comment": "triggers for broken arrow hit, calls handle_regular_damage with 0 damage; unsure about functionality and name"
+            "comment": "triggers for broken arrow hit, calls handle_regular_damage with 0 damage"
           },
           "50": {
-            "name": "v50",
-            "params": "",
-            "return": ""
+            "name": "get_damage_sound",
+            "params": "uint16_t damage_type",
+            "return": "int32_t",
+            "comment": "returns sound id for the damage taken, return 0 to make it silence"
           },
           "51": {
             "name": "stun",
-            "params": "uint16_t framecount",
-            "return": "void"
+            "params": "uint16_t framecount"
           },
           "52": {
             "name": "freeze",
-            "params": "uint8_t framecount",
-            "return": "void"
+            "params": "uint8_t framecount, bool ignore_lava",
+            "comment": "Sets the `frozen_timer`, the param `ignore_lava` doesn't do much, just skips the liquid check, if in lava the game will set `frozen_timer` to 0 immediately most of the time"
           },
           "53": {
             "name": "light_on_fire",
             "params": "uint8_t time",
-            "return": "void",
             "comment": "Does not damage entity"
           },
           "54": {
             "name": "set_cursed",
-            "params": "bool b",
-            "return": "void"
+            "params": "bool b, bool effect"
           },
           "55": {
             "name": "on_spiderweb_collision",
-            "params": "",
-            "return": ""
+            "params": "bool unknown",
+            "comment": "the bool sets pause statemachine flag? needs testing"
           },
           "56": {
-            "name": "set_last_owner_uid_b127",
+            "name": "set_last_owner_uid",
             "params": "Entity* owner",
-            "return": "",
             "comment": "assigns player as last_owner_uid and also manipulates movable.b127"
           },
           "57": {
             "name": "get_last_owner_uid",
-            "params": "",
             "return": "uint32_t",
             "comment": "for players, it checks !stunned && !frozen && !cursed && !has_overlay; for others: just returns last_owner_uid"
           },
           "58": {
             "name": "check_out_of_bounds",
-            "params": "",
-            "return": "",
-            "comment": "kills with the 'still falling' death cause"
+            "comment": "kills with the 'still falling' death cause, is called for any item/fx/mount/monster/player"
           },
           "59": {
-            "name": "v59",
-            "params": "",
-            "return": ""
+            "name": "set_standing_on",
+            "params": "int32_t entity_uid"
           },
           "60": {
             "name": "standing_on",
-            "params": "",
-            "return": "Entity*",
-            "comment": "looks up movable.standing_on_uid in state.instance_id_to_pointer"
+            "return": "Entity*"
           },
           "61": {
             "name": "on_stomped_on_by",
             "params": "Entity* stomper",
-            "return": ""
+            "return": "bool"
           },
           "62": {
             "name": "on_thrown_by",
@@ -1194,168 +1140,143 @@
             "comment": "implemented for special cases like hired hand (player with ai_func), horned lizard..."
           },
           "63": {
-            "name": "on_clonegunshot_hit",
-            "params": "Entity* clone",
-            "return": "",
-            "comment": "implemented for player/hired hand: copies health to clone etc"
+            "name": "copy_extra_info",
+            "params": "Entity* clone, int32_t some_entity_uid",
+            "comment": "some_entity_uid - only used for CHAR_ entities, related to hired hand chain"
           },
           "64": {
             "name": "get_type_id",
-            "params": "",
-            "return": "uint32_t"
+            "return": "uint32_t",
+            "comment": "dunno what for, implemented solely that ITEM_EXCALIBUR can return ITEM_BROKENEXCALIBUR instead"
           },
           "65": {
             "name": "doesnt_have_spikeshoes",
-            "params": "",
-            "return": "bool"
+            "return": "bool",
+            "comment": "potentially wrong name. For most entities checks if they are dead, frozen or stun (and apparently returns false if they are), for Yeti queen checks something in the animation_func, returns true for all the items etc. only for CHAR_ entities checks the spike shoes"
           },
           "66": {
             "name": "is_player_mount_or_monster",
-            "params": "",
-            "return": "bool"
+            "return": "bool",
+            "comment": "returns false for MONS_ALIENQUEEN, MONS_FIREFROG and MOUNT_MECH, for the rest checks EntityDB mask with value 7"
           },
           "67": {
             "name": "pick_up",
-            "params": "Entity* entity_to_pick_up",
-            "return": ""
+            "params": "Entity* entity_to_pick_up"
           },
           "68": {
-            "name": "picked_up_by",
-            "params": "Entity* entity_picking_up",
-            "return": ""
+            "name": "can_be_picked_up_by",
+            "params": "Entity* entity_picking_up, bool",
+            "return": "bool",
+            "comment": "the bool has something to do with the entity being attached to some entity already"
           },
           "69": {
             "name": "drop",
-            "params": "Entity* entity",
-            "return": "",
-            "comment": "also used when throwing"
+            "comment": "Called when dropping or throwing"
           },
           "70": {
             "name": "collect_treasure",
             "params": "int32_t value, ENT_TYPE treasure",
-            "return": ""
+            "return": "bool",
+            "comment": "Adds or subtracts the specified amount of money to the movable's (player's) inventory. Shows the calculation animation in the HUD. Adds treasure to the inventory list shown on transition"
           },
           "71": {
             "name": "apply_movement",
-            "params": "",
-            "return": "",
+            "params": "uint8_t, uint8_t, uint8_t",
+            "return": "bool",
             "comment": "disable this function and things can't move, some spin in place"
           },
           "72": {
             "name": "damage_entity",
             "params": "Entity* victim",
-            "return": "",
-            "comment": "can't trigger, maybe extra params are needed"
+            "comment": "implemented for responsibility and journal update"
           },
           "73": {
             "name": "v73",
-            "params": "",
-            "return": ""
+            "return": "bool",
+            "comment": "checks some flags, held entity, is in liquid, floor entities around?, standing_on, does the current theme has the loop"
           },
           "74": {
-            "name": "is_monster_or_player",
-            "params": "",
+            "name": "is_powerup_capable",
             "return": "bool"
           },
           "75": {
             "name": "initialize",
-            "params": "",
-            "return": "",
             "comment": "e.g. cobra: set random spit_timer; bat: set random stand_counter; emerald: set price"
           },
           "76": {
             "name": "check_is_falling",
-            "params": "",
-            "return": "",
-            "comment": "sets more_flags.falling by comparing velocityy to 0"
+            "comment": "sets more_flags.falling by comparing velocityy to 0, sets i120a to FF, clears owner_uid, can call remove_rider on mounts, for player updates the extra y_pos, for bosses clears lock input timer"
           },
           "77": {
-            "name": "handle_stun_transition_animation",
-            "params": "",
-            "return": "",
-            "comment": "e.g. the wiggle the dog does when waking up from being stunned"
+            "name": "v77"
           },
           "78": {
             "name": "process_input",
-            "params": "",
-            "return": ""
+            "comment": "more like: handle_movement"
           },
           "79": {
             "name": "post_collision_damage_related",
-            "params": "",
-            "return": "",
-            "comment": "seems to start processing invincibility timer in victim, not *this"
+            "comment": "used for enemies attacks as well? 3 versions for: eggplant minister, players and the rest"
           },
           "80": {
-            "name": "picked_up",
-            "params": "",
-            "return": "",
-            "comment": "gets called after picked_up_by"
+            "name": "on_picked_up",
+            "comment": "plays pickup sound depending on the entity mask/type etc. set stun for pets and mounts etc."
           },
           "81": {
-            "name": "hired_hand_related",
-            "params": "",
-            "return": "",
-            "comment": "checks ai_func, gets triggered just after throwing hired hand"
+            "name": "on_release",
+            "comment": "only for hired hands and lava pots"
           },
           "82": {
             "name": "generate_fall_poof_particles",
-            "params": "",
-            "return": "",
             "comment": "entity.velocityy must be < -0.12 to generate a poof, might to other stuff regarding falling/landing"
           },
           "83": {
             "name": "handle_fall_logic",
-            "params": "",
-            "return": "",
+            "params": "float",
             "comment": "adjusts entity.velocityy when falling"
           },
           "84": {
             "name": "apply_friction",
-            "params": "",
-            "return": "",
-            "comment": "applies entity.type.friction to entity.velocityx"
+            "params": "float, bool vertical, float",
+            "comment": "applies entity.type.friction to entity.velocityx, the two floats for characters just multiply the friction, could also be returning the value"
           },
           "85": {
-            "name": "boss_related",
-            "params": "",
-            "return": "",
-            "comment": "when disabled, quillback keeps stomping through the level, including border tiles"
+            "name": "can_break_block",
+            "params": "bool horizontal, Entity* block",
+            "return": "bool",
+            "comment": "check on collision if the entity should break the block, used for stuff like drill, hundun etc. surprisingly no mattoc"
           },
           "86": {
-            "name": "tusk_last_owner_uid_related",
-            "params": "",
-            "return": "",
-            "comment": "triggers when tusk is angered, calls get_last_owner_uid"
+            "name": "break_block",
+            "params": "bool camera_shake, Entity* block",
+            "comment": "triggers when tusk is angered"
           },
           "87": {
-            "name": "gravity_related",
-            "params": "",
-            "return": ""
+            "name": "v87",
+            "params": "Entity* entity, float, Entity* floor, float, bool",
+            "comment": "on_contact_with_ground ? calls on_stood_on_by, on_fall_onto"
           },
-          "88": { "name": "v88", "params": "", "return": "" },
+          "88": { "name": "v88", "params": "Entity* entity, float vecloty", "comment": "on_ragdoll? - for player, triggers only when you throw him into wall/ground/celling" },
           "89": {
-            "name": "stack_plus_28_is_0",
-            "params": "",
-            "return": "",
-            "comment": "triggers on item_rubble"
+            "name": "v89",
+            "params": "void*, void*, bool, bool default_return_flipped",
+            "return": "bool",
+            "comment": "triggers on item_rubble?, first parameter only tested if it's 0 for punishball, ignored in the rest, second parameter never used (leftover?)"
           },
           "90": {
             "name": "on_crushed_by",
             "params": "Entity*",
-            "return": "",
             "comment": "e.g. crushed by elevator, punishball, pushblock, crushtrap (not quillback or boulder)"
           },
           "91": {
             "name": "on_fall_onto",
-            "params": "uint32_t unknown, Entity* fell_on_entity",
-            "return": ""
+            "params": "uint32_t play_sound_id, Entity* fell_on_entity",
+            "return": "SoundMeta*",
+            "comment": "plays the sfx at the entity and sets sound parameters"
           },
           "92": {
-            "name": "on_instakill_death",
-            "params": "",
-            "return": "",
-            "comment": "seems to only trigger for enemies that die in one hit"
+            "name": "on_body_destruction",
+            "comment": "creates some big struct on stack, feeds it to some unknown function"
           }
         }
       },
@@ -1392,7 +1313,7 @@
       { "field": "price", "type": "Dword" },
       { "field": "owner_uid", "type": "EntityUID" },
       { "field": "last_owner_uid", "type": "EntityUID" },
-      { "field": "animation_func", "type": "DataPointer" },
+      { "field": "current_animation", "type": "Animation", "pointer": true },
       { "field": "idle_counter", "type": "UnsignedDword" },
       { "field": "standing_on_uid", "type": "EntityUID" },
       { "field": "velocityx", "type": "Float" },
@@ -1431,7 +1352,7 @@
         "comment": "timer, damage related"
       },
       { "field": "i120b", "type": "UnsignedByte", "comment": "timer" },
-      { "field": "i120c", "type": "UnsignedByte", "comment": "timer" },
+      { "field": "throw_damage_immunity_timer", "type": "UnsignedByte" },
       { "field": "i120d", "type": "UnsignedByte" },
       { "field": "b124", "type": "UnsignedByte" },
       { "field": "falling_timer", "type": "UnsignedByte" },
@@ -1447,15 +1368,13 @@
         "vftablefunctions": {
           "93": {
             "name": "on_blood_collision",
-            "params": "",
-            "return": "",
-            "comment": "only triggers when player has kapala"
+            "return": "bool",
+            "comment": "only triggers when entity has kapala"
           },
           "94": {
-            "name": "unknown_v94",
-            "params": "",
-            "return": "",
-            "comment": "some post damage related? triggers for some monsters that don't die after one hit"
+            "name": "can_clear_last_owner",
+            "return": "bool",
+            "comment": "called for stunned entities, check bunch of stuff like state, hold entity, standing on entity etc. runs until returned 1,  this is used to clear the last_owner of stunned entity when it is no longed stunned"
           }
         }
       },
@@ -1471,32 +1390,23 @@
         "vftablefunctions": {
           "95": {
             "name": "increase_killcount",
-            "params": "",
-            "return": "",
             "comment": "increases state.kills_npc, is not called for normal monsters but they all have the same function"
           },
           "96": {
             "name": "on_aggro",
             "params": "uint8_t, bool",
-            "return": "",
             "comment": "updates state.quests in case of npc"
           },
           "97": {
             "name": "unknown_v97",
-            "params": "",
-            "return": "",
             "comment": "can't trigger it"
           },
           "98": {
-            "name": "on_shop_entered",
-            "params": "",
-            "return": "",
-            "comment": ""
+            "name": "on_shop_entered"
           },
           "99": {
             "name": "attack_logic_related",
-            "params": "",
-            "return": "",
+            "params": "uint8_t, float",
             "comment": [
               "shopkeeper will walk towards you (doesn't work for Yang, even though he has the same virtual)",
               "if disabled some monster will stop moving (like bats, jiangshi) some wont attack (crabman), shopkeeper can still kick you but won't fire hes weapon"
@@ -1504,8 +1414,9 @@
           },
           "100": {
             "name": "update_target",
-            "params": "Entity*",
-            "return": "bool"
+            "params": "Entity* ent, float&",
+            "return": "bool",
+            "comment": "float from the function above, also works as an output?"
           }
         }
       },
@@ -1620,15 +1531,7 @@
     ],
     "Mattock": [{ "field": "remaining", "type": "UnsignedByte" }],
     "Backpack": [
-      {
-        "vftablefunctions": {
-          "99": {
-            "name": "trigger_explosion",
-            "params": "",
-            "return": ""
-          }
-        }
-      },
+      { "vftablefunctions": { "99": { "name": "trigger_explosion" }}},
       { "field": "explosion_trigger", "type": "Bool" },
       {
         "field": "explosion_timer",
@@ -1639,6 +1542,7 @@
       { "field": "unused2", "type": "UnsignedDword" }
     ],
     "Jetpack": [
+      { "vftablefunctions": { "100": { "name": "acceleration", "return": "float" }}},
       {
         "field": "flame_on",
         "type": "Bool",
@@ -1817,19 +1721,15 @@
         "vftablefunctions": {
           "101": {
             "name": "spawn_offset_related",
-            "params": "",
-            "return": "",
             "comment": "disabling this function makes the spider spawn in wierd position"
           },
           "102": {
             "name": "v_102",
-            "params": "",
             "return": "float",
             "comment": "for spider returns 0.02, for giant spider 0.025, game does some calculations with this when triggered by player"
           },
           "103": {
             "name": "on_ceiling",
-            "params": "",
             "return": "bool"
           }
         }
@@ -1860,72 +1760,50 @@
         "vftablefunctions": {
           "101": {
             "name": "on_criminal_act_committed",
-            "params": "uint8_t",
-            "return": "",
-            "comment": ["shows the appropriate message (vandal, cheater, ...)"]
+            "params": "uint8_t reason",
+            "comment": "shows the appropriate message (vandal, cheater, ...)"
           },
           "102": {
             "name": "should_attack_on_sight",
-            "params": "",
             "return": "bool",
             "comment": [
               "for shopkeepers: checks state.shoppie_aggro_levels, for waddler checks the state.quest_flags",
-              "if you return false, but you have attacked them before, they will be patrolling but won't attack you on sight"
+              "if you return false, but you have attacked them before, they will be patrolling but won't attack you on sight",
+              "Tusk and Yang always return false (Yang won't show anymore if attacked before, Tusk is aggroed from the start on 6-3 when you attacked her in tidepool)"
             ]
           },
           "103": {
             "name": "is_angry_flag_set",
-            "params": "",
             "return": "bool",
-            "comment": [
-              "checks state.level_flags 10-16 depending on the monster"
-            ]
+            "comment": "checks state.level_flags 10-16 depending on the monster"
           },
           "104": {
             "name": "set_initial_attack_delay",
-            "params": "",
-            "return": "",
-            "comment": [
-              "for shopkeeper: sets shopkeeper.shotgun_attack_delay to 6",
-              "triggers only at the start when aggroed",
-              "does nothing for yang, waddler, tun"
-            ]
+            "comment": "only for shopkeeper: sets shopkeeper.shotgun_attack_delay to 6, triggers only at the start when aggroed"
           },
           "105": {
-            "name": "on_spawn_weapon",
-            "params": "",
+            "name": "spawn_weapon",
             "return": "Entity*",
-            "comment": [
-              "return the weapon entity that will be used to attack the player"
-            ]
+            "comment": "return the weapon entity that will be used to attack the player"
           },
           "106": {
             "name": "weapon_type",
-            "params": "",
-            "return": "uint32_t",
-            "comment": [
-              "the entity type of the weapon that will be spawned to attack the player"
-            ]
+            "return": "ENT_TYPE",
+            "comment": "the entity type of the weapon that will be spawned to attack the player"
           },
           "107": {
-            "name": "can_attack",
-            "params": "",
+            "name": "should_attack",
+            "params": "std::tuple<Entity*, float, float, float> target",
             "return": "bool",
             "comment": "parameter is some struct that contains the target"
           },
           "108": {
             "name": "unknown_v108",
-            "params": "",
-            "return": "",
-            "comment": [
-              "for shopkeepers, it loops over (some of) the items for sale"
-            ]
+            "comment": "for shopkeepers, it loops over (some of) the items for sale"
           },
           "109": {
             "name": "on_death_treasure_drop",
-            "params": "",
-            "return": "",
-            "comment": ["coins and if you're lucky, gold bar from shopkeeper"]
+            "comment": "coins and if you're lucky, gold bar from shopkeeper"
           }
         }
       },
@@ -2038,8 +1916,6 @@
         "vftablefunctions": {
           "101": {
             "name": "on_body_destroyed",
-            "params": "",
-            "return": "",
             "comment": "clears level_flags [Angry ghist shopkeeper] and other stuff, then calls ->destroy()"
           }
         }
@@ -2117,14 +1993,14 @@
         "vftablefunctions": {
           "101": {
             "name": "can_aggro",
-            "params": "",
             "return": "bool",
             "comment": "Aggro or calm, if forced to return 0 it will not aggro unless you overlap his hitbox. For caveman this is called when he wakes up (from sleep or stun)"
           },
           "102": {
             "name": "v_102",
-            "params": "some_struct?",
-            "return": "parameter is some struct, that it changes and returns it (looks like 3x bool at the start and more)"
+            "params": "Entity*",
+            "return": "Entity*",
+            "comment": "returns the same entity as provided in the parameter"
           }
         }
       },
@@ -2365,47 +2241,40 @@
         "vftablefunctions": {
           "101": {
             "name": "on_criminal_act_committed",
-            "params": "",
-            "return": ""
+            "comment": "RoomOwner and NPC may have common subclass for the first two virtuals, but they later diverge, weapon type is the same spot, but they probably just made one first then copied over the virtuals"
           },
           "102": {
             "name": "should_attack_on_sight",
-            "params": "",
             "return": "bool"
           },
           "103": {
             "name": "v_103",
-            "params": "some_struct?",
-            "return": "",
-            "comment": "take some struct as parameter, sets the first qword to some constant (also returns it?), the first thing in the struct is acutally two floats"
+            "params": "Vec2&",
+            "return": "Vec2&",
+            "comment": "only accessed when not angered"
           },
           "104": {
             "name": "on_interaction",
-            "params": "",
-            "return": "",
+            "params": "bool, bool",
             "comment": "does the quests stuff etc."
           },
           "105": {
-            "name": "on_spawn_weapon",
-            "params": "",
+            "name": "spawn_weapon",
             "return": "Entity*"
           },
           "106": {
             "name": "weapon_type",
-            "params": "",
             "return": "ENT_TYPE"
           },
           "107": {
-            "name": "can_attack",
-            "params": "some_struct?",
-            "return": "bool",
-            "comment": "parameter is some struct that contains the target"
+            "name": "should_attack",
+            "params": "std::tuple<Entity*, float, float, float> target",
+            "return": "bool"
           },
           "108": {
             "name": "on_criminal_act_committed2",
-            "params": "",
-            "return": "",
-            "comment": "calls the on_criminal_act_committed except for bodyguard which calls the should_attack_on_sight and turns off any speechbubble"
+            "params": "void*",
+            "comment": "calls the on_criminal_act_committed except for bodyguard which calls the should_attack_on_sight and turns off any speech-bubble"
           }
         }
       },
@@ -2602,21 +2471,10 @@
         "vftablefunctions": {
           "101": {
             "name": "set_next_attack_timer",
-            "params": "",
-            "return": "",
             "comment": "sets next_attack_timer based on the psychic_orbs_counter"
           },
-          "102": {
-            "name": "attack",
-            "params": "",
-            "return": ""
-          },
-          "103": {
-            "name": "play_attack_sound",
-            "params": "",
-            "return": "",
-            "comment": "also calls virtual 20"
-          }
+          "102": { "name": "normal_attack" },
+          "103": { "name": "play_attack_sound" }
         }
       },
       { "field": "spawn_x", "type": "Float" },
@@ -2801,32 +2659,23 @@
         "vftablefunctions": {
           "101": {
             "name": "v_101",
-            "params": "",
-            "return": "",
             "comment": "can't trigger"
           },
           "102": {
             "name": "attack_related",
-            "params": "some_struct?",
-            "return": "",
+            "params": "float[4]",
             "comment": "parameter is some struct, if disabled it doesn't do jump attack, but still does the protect head thing"
           },
           "103": {
             "name": "v_103",
-            "params": "",
-            "return": "",
             "comment": "return"
           },
           "104": {
             "name": "jump_related",
-            "params": "",
-            "return": "",
             "comment": "if disabled she squads but never makes the jump"
           },
           "105": {
             "name": "on_death",
-            "params": "",
-            "return": "",
             "comment": "spawns the drops"
           }
         }
@@ -2843,32 +2692,23 @@
         "vftablefunctions": {
           "101": {
             "name": "v_101",
-            "params": "",
-            "return": "",
             "comment": "can't trigger"
           },
           "102": {
             "name": "attack_related",
-            "params": "some_struct?",
-            "return": "",
-            "comment": "parameter is some struct, if disabled it doesn't do the attack, but still does the protect head thing"
+            "params": "float[4]",
+            "comment": "parameter is some struct, if disabled it doesn't do jump attack, but still does the protect head thing"
           },
           "103": {
             "name": "on_attack",
-            "params": "",
-            "return": "",
             "comment": "freezes stuff when attacks and spawns particles"
           },
           "104": {
             "name": "screem_related",
-            "params": "",
-            "return": "",
             "comment": "if disabled he opens the mount but never screams"
           },
           "105": {
             "name": "on_death",
-            "params": "",
-            "return": "",
             "comment": "spawns the drops"
           }
         }
@@ -3304,15 +3144,7 @@
       { "field": "unknown1", "type": "UnsignedByte" }
     ],
     "CritterSnail": [
-      {
-        "vftablefunctions": {
-          "101": {
-            "name": "get_speed",
-            "params": "",
-            "return": "float"
-          }
-        }
-      },
+      { "vftablefunctions": { "101": { "name": "get_speed", "return": "float" }}},
       { "field": "x_direction", "type": "Float" },
       { "field": "y_direction", "type": "Float" },
       { "field": "pos_x", "type": "Float" },
@@ -3370,15 +3202,7 @@
       { "field": "move_timer", "type": "UnsignedByte" }
     ],
     "CritterSlime": [
-      {
-        "vftablefunctions": {
-          "101": {
-            "name": "get_speed",
-            "params": "",
-            "return": "float"
-          }
-        }
-      },
+      { "vftablefunctions": { "101": { "name": "get_speed", "return": "float" }}},
       { "field": "x_direction", "type": "Float" },
       { "field": "y_direction", "type": "Float" },
       { "field": "pos_x", "type": "Float" },
@@ -3398,15 +3222,13 @@
         "vftablefunctions": {
           "93": {
             "name": "v93",
-            "params": "",
-            "return": "",
-            "comment": ""
+            "params": "float angle, float speed, Entity* responsible",
+            "comment": "called when shooting (entity it still not added to layer), sets the initial velocities and owner"
           },
           "94": {
             "name": "v94",
-            "params": "",
-            "return": "",
-            "comment": ""
+            "params": "Entity* responsible, float x",
+            "comment": "called when shooting (entity it still not added to layer), returns false when the responsible doesn't have overlay, checks if the verlay is MASK.ITEM and bunch of other stuff"
           }
         }
       }
@@ -3415,79 +3237,62 @@
       {
         "vftablefunctions": {
           "95": {
-            "name": "get_special_offset",
-            "params": "std::pair<float, float>& offset",
-            "return": "std::pair<float, float>&",
-            "comment": "when jumping on mount"
+            "name": "get_rider_offset",
+            "params": "Vec2& output",
+            "return": "Vec2&"
           },
           "96": {
-            "name": "v96",
-            "params": "std::pair<float, float>& value",
-            "return": "std::pair<float, float>&",
-            "comment": "gets something for when crouching on mount"
+            "name": "get_rider_offset_crouching",
+            "params": "Vec2& output",
+            "return": "Vec2&"
           },
           "97": {
             "name": "used_double_jump",
-            "params": "",
             "return": "bool",
             "comment": "checks can_doublejump and unknown9b"
           },
           "98": {
-            "name": "v98",
-            "params": "bool",
+            "name": "get_jump_sound",
+            "params": "bool double_jump",
             "return": "uint32_t",
-            "comment": "returns some constant value"
+            "comment": "returns sound id"
           },
           "99": {
-            "name": "v99",
-            "params": "",
+            "name": "get_attack_sound",
             "return": "uint32_t",
-            "comment": "returns some constant value"
+            "comment": "returns sound id"
           },
-          "100": {
-            "name": "play_jump_on_sound",
-            "params": "",
-            "return": ""
-          },
-          "101": {
-            "name": "remove_rider",
-            "params": "",
-            "return": ""
-          },
+          "100": { "name": "play_jump_on_sound" },
+          "101": { "name": "remove_rider" },
           "102": {
             "name": "v102",
-            "params": "",
             "return": "float",
-            "comment": "get offset? mech returns 0.9, the rest 0.5"
+            "comment": "mech returns 0.9, the rest 0.5, related to distance at which the player can mount"
           },
           "103": {
-            "name": "v103",
-            "params": "",
+            "name": "get_mounting_sound",
             "return": "uint32_t",
-            "comment": "returns some constant value"
+            "comment": "returns sound id"
           },
           "104": {
-            "name": "v104",
-            "params": "",
+            "name": "get_walking_sound",
             "return": "uint32_t",
-            "comment": "returns some constant value"
+            "comment": "returns sound id"
           },
           "105": {
-            "name": "v105",
-            "params": "",
+            "name": "get_untamed_loop_sound",
             "return": "uint32_t",
-            "comment": "returns some constant value"
+            "comment": "returns sound id"
           },
           "106": {
             "name": "can_play_mount_sound",
-            "params": "",
             "return": "bool",
             "comment": "called every frame, if returns true mount will make a sound"
           }
         }
       },
       { "field": "rider_uid", "type": "EntityUID", "comment": "who rides it" },
-      { "field": "unknown4", "type": "UnsignedDword" },
+      { "field": "padding1", "type": "Skip", "offset": 4 },
       { "field": "sound", "type": "SoundMeta" },
       {
         "field": "can_doublejump",
@@ -3501,13 +3306,13 @@
         "comment": "alternates between walking and pausing every time it reaches zero"
       },
       { "field": "unknown9a", "type": "UnsignedByte" },
-      { "field": "unknown9b", "type": "UnsignedByte" },
+      { "field": "double_jumping", "type": "UnsignedByte", "comment": "used to play different animation for the double jump then the standard jump, is true for less then a frame" },
       {
         "field": "taming_timer",
         "type": "UnsignedByte",
         "comment": "when 0 it's tame"
       },
-      { "field": "unknown9d", "type": "UnsignedByte" }
+      { "field": "padding2", "type": "Skip", "offset": 1 }
     ],
     "Rockdog": [{ "field": "attack_cooldown", "type": "UnsignedByte" }],
     "Axolotl": [
@@ -3541,8 +3346,6 @@
         "vftablefunctions": {
           "40": {
             "name": "randomize_timer",
-            "params": "",
-            "return": "",
             "comment": "called after it spawns entity and it's 'ready' (have proper flags set etc.)"
           }
         }
@@ -3813,19 +3616,14 @@
         "vftablefunctions": {
           "37": {
             "name": "decorate_internal",
-            "params": "",
-            "return": "",
             "comment": "decorates undecorated floor and floorstyled, doesn't remove old decorations, runs only on level gen"
           },
           "38": {
             "name": "on_neighbor_destroyed",
-            "params": "",
-            "return": "",
             "comment": "called for every neighbor of destroyed floor (to decorate it, maybe somehting else)"
           },
           "39": {
             "name": "get_floor_type",
-            "params": "",
             "return": "uint32_t",
             "comment": "Returns it's ENT_TYPE except for FLOOR_PEN (returns FLOORSTYLED_MINEWOOD) and FLOOR_QUICKSAND, FLOOR_TOMB, FLOOR_EMPRESS_GRAVE which return FLOOR_GENERIC. Used for spawning decorations"
           }
@@ -3845,13 +3643,11 @@
           "40": {
             "name": "on_enter_attempt",
             "params": "Entity*",
-            "return": "",
             "comment": "this function doesnt do much, checks if it's CHAR_*, checks if hes holding anything (if yes calls some function), then checks if Player.can_use is equal to 4 calls some other function, can't be bother to look into the functions"
           },
           "41": {
             "name": "hide_ui",
             "params": "Entity*",
-            "return": "",
             "comment": "check if it's CHAR_*, then sets State.level_flags -> 21 (Hide hud, transition)"
           },
           "42": {
@@ -3868,19 +3664,17 @@
           },
           "44": {
             "name": "light_level",
-            "params": "",
             "return": "float",
-            "comment": "Returns the darkest light level used to fade the entity when entering or exiting. 0 = black, 1 = no change"
+            "comment": "returns 0.0 except for eggship doors, for example: FLOOR_DOOR_EGGSHIP_ROOM returns 0.75 when entering the room, and 1.0 when exiting, runs every frame while entering/exiting"
           },
           "45": {
             "name": "is_door_unlocked",
-            "params": "",
             "return": "bool",
-            "comment": "Should we display the button prompt when collided by player. Will always return `true` for exits, layers and others that the game never locks"
+            "comment": "Should display the button prompt when collided by player. Will always return `true` for exits, layers and others that the game never locks"
           },
           "46": {
             "name": "can_enter",
-            "params": "",
+            "params": "Entity* player",
             "return": "bool",
             "comment": "Can the door actually be entered by player. Overrides the button prompt too if false"
           }
@@ -4202,6 +3996,18 @@
     "HangAnchor": [{ "field": "spider_uid", "type": "EntityUID" }],
     "HangStrand": [{ "field": "start_pos_y", "type": "Float" }],
     "Arrow": [
+      {
+        "vftablefunctions": {
+          "94": {
+            "name": "poison_arrow",
+            "params": "bool poisoned"
+          },
+          "95": {
+            "name": "light_up",
+            "params": "bool lit"
+          }
+        }
+      },
       { "field": "flame_uid", "type": "EntityUID" },
       { "field": "is_on_fire", "type": "Bool" },
       { "field": "is_poisoned", "type": "Bool" },
@@ -4367,17 +4173,15 @@
         "vftablefunctions": {
           "93": {
             "name": "light_up",
-            "params": "bool",
-            "return": ""
+            "params": "bool lit"
           },
           "94": {
-            "name": "v_94",
-            "params": "double& value",
-            "return": ""
+            "name": "get_flame_offset",
+            "params": "Vec2& output",
+            "return": "Vec2&"
           },
           "95": {
             "name": "get_flame_type",
-            "params": "",
             "return": "ENT_TYPE"
           }
         }
@@ -4400,15 +4204,7 @@
     ],
     "Fly": [{ "field": "timer", "type": "UnsignedByte" }],
     "OlmecCannon": [
-      {
-        "vftablefunctions": {
-          "93": {
-            "name": "spawn_projectile",
-            "params": "",
-            "return": ""
-          }
-        }
-      },
+      { "vftablefunctions": { "93": { "name": "spawn_projectile" }}},
       { "field": "timer", "type": "UnsignedWord" },
       { "field": "bombs_left", "type": "UnsignedByte" }
     ],
@@ -4555,9 +4351,9 @@
       {
         "vftablefunctions": {
           "94": {
-            "name": "on_purches",
-            "params": "",
-            "return": ""
+            "name": "pickup",
+            "params": "Entity* who, bool",
+            "comment": "disable for item to be unpickable"
           }
         }
       },
@@ -4820,20 +4616,33 @@
       {
         "vftablefunctions": {
           "93": {
-            "name": "v93",
-            "params": "size_t&",
-            "return": "size_t&",
-            "comment": "get powerup id/type?"
+            "name": "get_hud_sprite",
+            "params": "SpritePosition& output",
+            "return": "SpritePosition&"
           },
           "94": {
-            "name": "apply_to_player",
-            "params": "PowerupCapable* player",
-            "return": ""
+            "name": "apply_effect",
+            "params": "PowerupCapable* who"
           },
           "95": {
-            "name": "remove_from_player",
-            "params": "PowerupCapable* player",
-            "return": ""
+            "name": "remove_effect",
+            "params": "PowerupCapable* who",
+            "comment": "does not remove powerup from the powerups map"
+          },
+          "96": {
+            "name": "on_putting_on",
+            "params": "PowerupCapable* who",
+            "comment": "only for backpacks, sets offsets etc."
+          },
+          "97": {
+            "name": "on_putting_off",
+            "params": "PowerupCapable* who",
+            "comment": "only for backpacks"
+          },
+          "98": {
+            "name": "in_use",
+            "return": "bool",
+            "comment": "for jetpack returns jetpack.flame_on, for capes Cape.floating_down, for hoverpack hoverpack.is_on, teleporter, powerpack and all other powerups return false"
           }
         }
       }
@@ -5061,7 +4870,7 @@
         "comment": "if you make it the same as size it starts to flicker, making this bigger increases the size as well"
       }
     ],
-    "BGShopEntrence": [{ "field": "on_entering", "type": "Bool" }],
+    "BGShopEntrance": [{ "field": "on_entering", "type": "Bool" }],
     "BGFloatingDebris": [
       {
         "field": "distance",
@@ -5362,8 +5171,8 @@
         "vftablefunctions": {
           "93": {
             "name": "get_arrow_special_offset",
-            "params": "",
-            "return": "float"
+            "return": "float",
+            "comment": "When laying on the ground"
           }
         }
       }
@@ -5372,9 +5181,9 @@
       {
         "vftablefunctions": {
           "93": {
-            "name": "buy",
+            "name": "acquire",
             "params": "Entity* who",
-            "return": ""
+            "comment": "does not consume money"
           }
         }
       }
@@ -5383,15 +5192,15 @@
       {
         "vftablefunctions": {
           "94": {
-            "name": "switch_entities",
-            "params": "void*",
-            "return": "Entity*",
-            "comment": "switches the purchasable cape with normal one, parameter is particle?? maybe?"
+            "name": "trigger_explosion",
+            "params": "Entity* who",
+            "comment": "Transfers ownership etc. for who to blame, sets the exploding bool"
           }
         }
       },
       { "field": "replace_entity", "type": "EntityPointer" },
-      { "field": "exploding", "type": "Bool" }
+      { "field": "exploding", "type": "Bool" },
+      { "field": "explosion_timer", "type": "UnsignedByte" }
     ],
     "Present": [{ "field": "inside", "type": "EntityDBID" }],
     "Web": [
@@ -5401,7 +5210,7 @@
         "comment": "Is subtracted from the color alpha every frame after the `stand_counter` is more than 300"
       }
     ],
-    "CrushingElevator": [
+    "CrushElevator": [
       {
         "field": "y_limit",
         "type": "Float",
