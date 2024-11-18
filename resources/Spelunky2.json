@@ -1983,21 +1983,71 @@
     "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "OnHeapPointer" },
       { "field": "journal_popup_ui", "type": "JournalPopupUI" },
-      { "field": "unknown1", "type": "Array", "arraytype": "UnknownSaveDataStuff", "length": 17 },
+      {
+        "field": "unknown1",
+        "type": "Array",
+        "arraytype": "UnknownSaveDataStuff",
+        "length": 17
+      },
       { "field": "unknown2a", "type": "UnsignedByte" },
       { "field": "unknown2b", "type": "UnsignedByte" },
       { "field": "unknown2c", "type": "UnsignedByte" },
       { "field": "unknown2d", "type": "UnsignedByte" },
       { "field": "unknown3", "type": "UnsignedByte" },
-      { "field": "places_data", "type": "StdUnorderedMap", "keytype": "UnsignedByte", "valuetype": "ThemeInfo" },
-      { "field": "bestiary_data", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "BestiaryInfo" },
-      { "field": "monster_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
-      { "field": "people_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "PeopleInfo" },
-      { "field": "people_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
-      { "field": "item_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "ItemInfo" },
-      { "field": "trap_info", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "TrapInfo" },
-      { "field": "trap_part_to_main", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "EntityDBID" },
-      { "field": "stickers_data", "type": "StdUnorderedMap", "keytype": "EntityDBID", "valuetype": "StickersData" }
+      {
+        "field": "places_data",
+        "type": "StdUnorderedMap",
+        "keytype": "UnsignedByte",
+        "valuetype": "ThemeInfo"
+      },
+      {
+        "field": "bestiary_data",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "BestiaryInfo"
+      },
+      {
+        "field": "monster_part_to_main",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "EntityDBID"
+      },
+      {
+        "field": "people_info",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "PeopleInfo"
+      },
+      {
+        "field": "people_part_to_main",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "EntityDBID"
+      },
+      {
+        "field": "item_info",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "ItemInfo"
+      },
+      {
+        "field": "trap_info",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "TrapInfo"
+      },
+      {
+        "field": "trap_part_to_main",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "EntityDBID"
+      },
+      {
+        "field": "stickers_data",
+        "type": "StdUnorderedMap",
+        "keytype": "EntityDBID",
+        "valuetype": "StickersData"
+      }
     ],
     "ScreenBase": [
       {
@@ -2622,7 +2672,11 @@
       { "field": "ouroboros_angle", "type": "Float" }
     ],
     "ScreenCodeInput": [
-      { "field": "base_screen", "type": "ScreenBase", "comment": "one extra virtual" },
+      {
+        "field": "base_screen",
+        "type": "ScreenBase",
+        "comment": "one extra virtual"
+      },
       { "field": "standard", "type": "ScreenStandardLayout" },
       {
         "field": "allow_random",
@@ -2782,8 +2836,16 @@
       { "field": "topleft_woodpanel_esc_slidein", "type": "Float" },
       { "field": "bottom_woodpanel_slideout", "type": "Float" },
       { "field": "action_buttons_keycap_size", "type": "Float" },
-      { "field": "screen_loading", "type": "Bool", "comment": "locks the inputs" },
-      { "field": "unknown64b", "type": "Bool", "comment": "sets the state.ingame" },
+      {
+        "field": "screen_loading",
+        "type": "Bool",
+        "comment": "locks the inputs"
+      },
+      {
+        "field": "unknown64b",
+        "type": "Bool",
+        "comment": "sets the state.ingame"
+      },
       { "field": "seeded_run", "type": "Bool" },
       { "field": "daily_challenge", "type": "Bool" },
       { "field": "next_screen_to_load", "type": "UnsignedDword" },
@@ -6941,12 +7003,27 @@
           "7": { "name": "~Online" },
           "8": { "name": "v8", "params": "uint8_t, void*", "return": "bool" },
           "9": { "name": "v9", "params": "uint8_t", "return": "bool" },
-          "10": { "name": "v10", "params": "uint32_t", "comment": "code verification? starts new thread" },
-          "11": { "name": "v11", "comment": "similar to the above one, but only starts new thread" },
+          "10": {
+            "name": "v10",
+            "params": "uint32_t",
+            "comment": "code verification? starts new thread"
+          },
+          "11": {
+            "name": "v11",
+            "comment": "similar to the above one, but only starts new thread"
+          },
           "12": { "name": "v12", "comment": "identical function to the above" },
-          "13": { "name": "v13", "params": "void*, void*, void*", "comment": "sockets related, starts new thread (all function do it towards the end, so can be some networking related)" },
+          "13": {
+            "name": "v13",
+            "params": "void*, void*, void*",
+            "comment": "sockets related, starts new thread (all function do it towards the end, so can be some networking related)"
+          },
           "14": { "name": "v14", "params": "void*, void*" },
-          "15": { "name": "v15", "params": "void*, void*, uint32_t", "comment": "http related" },
+          "15": {
+            "name": "v15",
+            "params": "void*, void*, uint32_t",
+            "comment": "http related"
+          },
           "16": { "name": "v16", "comment": "return" },
           "17": { "name": "v17", "params": "uint32_t" },
           "18": { "name": "v18", "comment": "<SteamInternal_ContextInit>" },
@@ -6955,9 +7032,16 @@
           "21": { "name": "v21", "comment": "return" },
           "22": { "name": "v22", "comment": "return" },
           "23": { "name": "v23", "comment": "return" },
-          "24": { "name": "v24", "params": "void*, uint32_t, uint32_t", "comment": "SteamAPI callback related" },
+          "24": {
+            "name": "v24",
+            "params": "void*, uint32_t, uint32_t",
+            "comment": "SteamAPI callback related"
+          },
           "25": { "name": "v25", "comment": "jumps to virtual 26" },
-          "26": { "name": "v26", "comment": "<SteamInternal_ContextInit> plus jumps to the same function as v19" }
+          "26": {
+            "name": "v26",
+            "comment": "<SteamInternal_ContextInit> plus jumps to the same function as v19"
+          }
         }
       },
       { "field": "unknown1", "type": "UnsignedDword" },
@@ -7932,7 +8016,10 @@
             "comment": "Adds an idol room"
           },
           "10": { "name": "add_vault" },
-          "11": { "name": "add_coffin", "comment": "Adds a character unlock coffin room" },
+          "11": {
+            "name": "add_coffin",
+            "comment": "Adds a character unlock coffin room"
+          },
           "12": {
             "name": "add_special_feeling",
             "comment": "metal clanking and air of oppression"
