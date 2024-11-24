@@ -1910,44 +1910,7 @@
         "arraytype": "TextureRenderingInfo"
       }
     ],
-    "UnknownSaveDataStuff": [
-      { "field": "unknown1", "type": "UnsignedByte" },
-      { "field": "unknown2", "type": "UnsignedByte" },
-      { "field": "unknown3", "type": "UnsignedByte" },
-      { "field": "unknown4", "type": "UnsignedByte" },
-      { "field": "unknown5", "type": "UnsignedByte" },
-      { "field": "unknown6", "type": "UnsignedByte" },
-      { "field": "unknown7", "type": "UnsignedByte" }
-    ],
-    "BestiaryInfo": [
-      { "field": "page_nr", "type": "UnsignedDword" },
-      { "field": "sprite_id", "type": "UnsignedDword" },
-      { "field": "name", "type": "StringsTableID" },
-      { "field": "description", "type": "StringsTableID" },
-      { "field": "scale", "type": "Float" },
-      { "field": "offsetx", "type": "Float" },
-      { "field": "offsety", "type": "Float" },
-      { "field": "texture", "type": "TextureDBID" },
-      { "field": "background_sprite_id", "type": "UnsignedDword" },
-      { "field": "killed_by_NA", "type": "Bool" },
-      { "field": "defeated_NA", "type": "Bool" }
-    ],
-    "PeopleInfo": [
-      { "field": "page_nr", "type": "UnsignedDword" },
-      { "field": "sprite_id", "type": "UnsignedDword" },
-      { "field": "name", "type": "StringsTableID" },
-      { "field": "description", "type": "StringsTableID" },
-      { "field": "scale", "type": "Float" },
-      { "field": "offsetx", "type": "Float" },
-      { "field": "offsety", "type": "Float" },
-      { "field": "texture", "type": "TextureDBID" },
-      { "field": "background_sprite_id", "type": "UnsignedDword" },
-      { "field": "killed_by_NA", "type": "Bool" },
-      { "field": "defeated_NA", "type": "Bool" },
-      { "field": "padding", "type": "Word" },
-      { "field": "portret_texture", "type": "TextureDBID" }
-    ],
-    "ItemInfo": [
+    "JournalData": [
       { "field": "page_nr", "type": "UnsignedDword" },
       { "field": "sprite_id", "type": "UnsignedDword" },
       { "field": "name", "type": "StringsTableID" },
@@ -1956,25 +1919,26 @@
       { "field": "offsetx", "type": "Float" },
       { "field": "offsety", "type": "Float" }
     ],
+    "BestiaryInfo": [
+      { "field": "journal_data", "type": "JournalData" },
+      { "field": "texture", "type": "TextureDBID" },
+      { "field": "background_sprite_id", "type": "UnsignedDword" },
+      { "field": "killed_by_NA", "type": "Bool" },
+      { "field": "defeated_NA", "type": "Bool" }
+    ],
+    "PeopleInfo": [
+      { "field": "journal_data", "type": "JournalData" },
+      { "field": "texture", "type": "TextureDBID" },
+      { "field": "background_sprite_id", "type": "UnsignedDword" },
+      { "field": "killed_by_NA", "type": "Bool" },
+      { "field": "defeated_NA", "type": "Bool" },
+      { "field": "padding", "type": "Word" },
+      { "field": "portret_texture", "type": "TextureDBID" }
+    ],
     "TrapInfo": [
-      { "field": "page_nr", "type": "UnsignedDword" },
-      { "field": "sprite_id", "type": "UnsignedDword" },
-      { "field": "name", "type": "StringsTableID" },
-      { "field": "description", "type": "StringsTableID" },
-      { "field": "scale", "type": "Float" },
-      { "field": "offsetx", "type": "Float" },
-      { "field": "offsety", "type": "Float" },
+      { "field": "journal_data", "type": "JournalData" },
       { "field": "texture", "type": "TextureDBID" },
       { "field": "background_sprite_id", "type": "UnsignedDword" }
-    ],
-    "PlacesInfo": [
-      { "field": "page_nr", "type": "UnsignedDword" },
-      { "field": "sprite_id", "type": "UnsignedDword" },
-      { "field": "name", "type": "StringsTableID" },
-      { "field": "description", "type": "StringsTableID" },
-      { "field": "unknown1", "type": "UnsignedDword" },
-      { "field": "unknown2", "type": "Float" },
-      { "field": "unknown3", "type": "Float" }
     ],
     "StickersData": [
       { "field": "sprite_id", "type": "UnsignedDword" },
@@ -1983,22 +1947,19 @@
     "SaveGameDataPointer": [
       { "field": "heap_offset", "type": "OnHeapPointer" },
       { "field": "journal_popup_ui", "type": "JournalPopupUI" },
+      { "field": "player", "type": "EntityDBID", "comment": "for the journal" },
       {
-        "field": "unknown1",
+        "field": "progress_stickers_powerups",
         "type": "Array",
-        "arraytype": "UnknownSaveDataStuff",
-        "length": 17
+        "arraytype": "EntityDBID",
+        "length": 29,
+        "comment": "pre-journal progress setup"
       },
-      { "field": "unknown2a", "type": "UnsignedByte" },
-      { "field": "unknown2b", "type": "UnsignedByte" },
-      { "field": "unknown2c", "type": "UnsignedByte" },
-      { "field": "unknown2d", "type": "UnsignedByte" },
-      { "field": "unknown3", "type": "UnsignedByte" },
       {
         "field": "places_data",
         "type": "StdUnorderedMap",
         "keytype": "UnsignedByte",
-        "valuetype": "ThemeInfo"
+        "valuetype": "JournalData"
       },
       {
         "field": "bestiary_data",
@@ -2028,7 +1989,7 @@
         "field": "item_info",
         "type": "StdUnorderedMap",
         "keytype": "EntityDBID",
-        "valuetype": "ItemInfo"
+        "valuetype": "JournalData"
       },
       {
         "field": "trap_info",
@@ -3200,7 +3161,11 @@
         "comment": "use the odd entry for the left hand page"
       },
       { "field": "timer", "type": "UnsignedDword" },
-      { "field": "slide_position", "type": "Float" }
+      { "field": "slide_position", "type": "Float" },
+      { "field": "unknown1", "type": "UnsignedByte" },
+      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "unknown3", "type": "UnsignedByte" },
+      { "field": "unknown4", "type": "UnsignedByte" }
     ],
     "State": [
       { "field": "p00", "type": "DataPointer" },
@@ -5110,16 +5075,13 @@
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
-            "name": "~QuestHandlerPointer",
-            "params": "",
-            "return": ""
+            "name": "pre_level_gen",
+            "comment": "called during layer loading by the state update, sets the level generation"
           },
           "1": {
-            "name": "initialize",
-            "params": "",
-            "return": "",
+            "name": "post_level_gen",
             "comment": [
-              "Gets called on every non-CO level. Function checks whether the quest needs to be initialized.",
+              "Gets called on every non-CO level by 18 virtual in current theme. Function checks whether the quest needs to be initialized.",
               "Yang: checks whether his quest status = 1 -> makes his pen work",
               "Sisters: make them appear on Olmec",
               "Horsing: makes him appear in Vlad's castle",
@@ -5129,10 +5091,8 @@
             ]
           },
           "2": {
-            "name": "handle_beg_appearances",
-            "params": "",
-            "return": "",
-            "comment": ["Only implemented for Beg quest"]
+            "name": "post_level_gen2",
+            "comment": "Only implemented for Beg quest, called by the 24 virtual in current theme"
           }
         }
       },
