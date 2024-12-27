@@ -3162,7 +3162,7 @@
       },
       { "field": "timer", "type": "UnsignedDword" },
       { "field": "slide_position", "type": "Float" },
-            { "field": "unknown1", "type": "UnsignedByte" },
+      { "field": "unknown1", "type": "UnsignedByte" },
       { "field": "unknown2", "type": "UnsignedByte" },
       { "field": "unknown3", "type": "UnsignedByte" },
       { "field": "unknown4", "type": "UnsignedByte" }
@@ -7131,7 +7131,12 @@
       { "field": "unknown93", "type": "UnsignedQword" },
       { "field": "unknown94", "type": "UnsignedQword" },
       { "field": "unknown95", "type": "Bool" },
-      { "field": "unknown95b", "type": "Array", "length": 7, "arraytype": "UnsignedByte" },
+      {
+        "field": "unknown95b",
+        "type": "Array",
+        "length": 7,
+        "arraytype": "UnsignedByte"
+      },
       { "field": "unknown96", "type": "UnsignedQword" },
       { "field": "unknown97", "type": "UnsignedQword" },
       { "field": "unknown98", "type": "UnsignedQword" },
