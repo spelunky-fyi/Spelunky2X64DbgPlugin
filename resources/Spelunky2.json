@@ -3162,7 +3162,7 @@
       },
       { "field": "timer", "type": "UnsignedDword" },
       { "field": "slide_position", "type": "Float" },
-      { "field": "unknown1", "type": "UnsignedByte" },
+            { "field": "unknown1", "type": "UnsignedByte" },
       { "field": "unknown2", "type": "UnsignedByte" },
       { "field": "unknown3", "type": "UnsignedByte" },
       { "field": "unknown4", "type": "UnsignedByte" }
@@ -4475,9 +4475,12 @@
         "comment": "padding probably"
       },
       {
-        "field": "unknown9",
-        "type": "DataPointer",
-        "comment": "array byte* ? game allocates 0x2F9E8 bytes for it, (0x2F9E8 / g_level_max_x * g_level_max_y = 18) which is weird, but i still think it's position based index, maybe it's 16 and accounts for more rows (grater level height), always allocates after the LiquidPhysics"
+        "field": "liquids_by_third_of_tile",
+        "type": "Matrix",
+        "row": 378,
+        "col": 258,
+        "matrixtype": "LiquidAmounts",
+        "comment": "array byte* game allocates 0x2F9E8 bytes for it ((126 * 3) * (86 * 3) * 2 : y, x, liquid_type)."
       },
       {
         "field": "total_liquid_spawned2?",
@@ -4489,6 +4492,10 @@
       { "field": "padding12b", "type": "Byte" },
       { "field": "padding12c", "type": "Byte" },
       { "field": "unknown13", "type": "UnsignedDword" }
+    ],
+    "LiquidAmounts": [
+      { "field": "lava", "type": "Byte" },
+      { "field": "water", "type": "Byte" }
     ],
     "PointerToPushBlocksMap": [
       {
@@ -5096,12 +5103,7 @@
           }
         }
       },
-      { "field": "id", "type": "UnsignedDword" },
-      { "field": "unknown2", "type": "UnsignedDword" },
-      { "field": "unknown3", "type": "UnsignedDword" },
-      { "field": "unknown4", "type": "UnsignedDword" },
-      { "field": "unknown5", "type": "UnsignedDword" },
-      { "field": "unknown6", "type": "UnsignedDword" }
+      { "field": "id", "type": "UnsignedDword" }
     ],
     "ScreenPointer": [{ "field": "base_screen", "type": "ScreenBase" }],
     "ScreenLevelPointer": [
@@ -7060,7 +7062,10 @@
       { "field": "unknown40", "type": "UnsignedDword" },
       { "field": "unknown41", "type": "UnsignedDword" },
       { "field": "unknown42", "type": "DataPointer" },
-      { "field": "unknown43", "type": "UnsignedDword" },
+      { "field": "unknown43a", "type": "UnsignedByte" },
+      { "field": "unknown43b", "type": "UnsignedByte" },
+      { "field": "unknown43c", "type": "UnsignedByte" },
+      { "field": "unknown43d", "type": "UnsignedByte" },
       { "field": "unknown44", "type": "UnsignedDword" },
       { "field": "unknown45", "type": "UnsignedDword" },
       { "field": "unknown46", "type": "UnsignedDword" },
@@ -7079,7 +7084,82 @@
         "field": "unknown49",
         "type": "StdVector",
         "valuetype": "UnsignedQword"
-      }
+      },
+      { "field": "unknown50", "type": "UnsignedQword" },
+      { "field": "unknown51", "type": "UnsignedQword" },
+      { "field": "unknown52", "type": "UnsignedQword" },
+      { "field": "unknown53", "type": "UnsignedQword" },
+      { "field": "unknown54", "type": "UnsignedQword" },
+      { "field": "unknown55", "type": "UnsignedQword" },
+      { "field": "unknown56", "type": "UnsignedQword" },
+      { "field": "unknown57", "type": "UnsignedQword" },
+      { "field": "unknown58", "type": "UnsignedQword" },
+      { "field": "unknown59", "type": "UnsignedQword" },
+      { "field": "unknown60", "type": "UnsignedQword" },
+      { "field": "unknown61", "type": "UnsignedQword" },
+      { "field": "unknown62", "type": "UnsignedQword" },
+      { "field": "unknown63", "type": "UnsignedQword" },
+      { "field": "unknown64", "type": "UnsignedQword" },
+      { "field": "unknown65", "type": "UnsignedQword" },
+      { "field": "unknown66", "type": "UnsignedQword" },
+      { "field": "unknown67", "type": "UnsignedQword" },
+      { "field": "unknown68", "type": "UnsignedQword" },
+      { "field": "unknown69", "type": "UnsignedQword" },
+      { "field": "unknown70", "type": "UnsignedQword" },
+      { "field": "unknown71", "type": "UnsignedQword" },
+      { "field": "unknown72", "type": "UnsignedQword" },
+      { "field": "unknown73", "type": "UnsignedQword" },
+      { "field": "unknown74", "type": "UnsignedQword" },
+      { "field": "unknown75", "type": "UnsignedQword" },
+      { "field": "unknown76", "type": "UnsignedQword" },
+      { "field": "unknown77", "type": "UnsignedQword" },
+      { "field": "unknown78", "type": "UnsignedQword" },
+      { "field": "unknown79", "type": "UnsignedQword" },
+      { "field": "unknown80", "type": "UnsignedQword" },
+      { "field": "unknown81", "type": "UnsignedQword" },
+      { "field": "unknown82", "type": "UnsignedQword" },
+      { "field": "unknown83", "type": "UnsignedQword" },
+      { "field": "unknown84", "type": "UnsignedQword" },
+      { "field": "unknown85", "type": "UnsignedQword" },
+      { "field": "unknown86", "type": "UnsignedQword" },
+      { "field": "unknown87", "type": "UnsignedQword" },
+      { "field": "unknown88", "type": "UnsignedQword" },
+      { "field": "unknown89", "type": "UnsignedQword" },
+      { "field": "unknown90", "type": "UnsignedQword" },
+      { "field": "unknown91", "type": "UnsignedQword" },
+      { "field": "unknown92", "type": "UnsignedQword" },
+      { "field": "unknown93", "type": "UnsignedQword" },
+      { "field": "unknown94", "type": "UnsignedQword" },
+      { "field": "unknown95", "type": "Bool" },
+      { "field": "unknown95b", "type": "Array", "length": 7, "arraytype": "UnsignedByte" },
+      { "field": "unknown96", "type": "UnsignedQword" },
+      { "field": "unknown97", "type": "UnsignedQword" },
+      { "field": "unknown98", "type": "UnsignedQword" },
+      { "field": "unknown99", "type": "UnsignedQword" },
+      { "field": "unknown100", "type": "UnsignedQword" },
+      { "field": "unknown101", "type": "UnsignedQword" },
+      { "field": "unknown102", "type": "UnsignedQword" },
+      { "field": "unknown103", "type": "UnsignedQword" },
+      { "field": "unknown104", "type": "UnsignedQword" },
+      { "field": "unknown105", "type": "UnsignedQword" },
+      { "field": "unknown106", "type": "UnsignedQword" },
+      { "field": "unknown107", "type": "UnsignedQword" },
+      { "field": "unknown108", "type": "UnsignedQword" },
+      { "field": "unknown109", "type": "UnsignedQword" },
+      { "field": "unknown110", "type": "UnsignedQword" },
+      { "field": "unknown111", "type": "UnsignedQword" },
+      { "field": "unknown112", "type": "UnsignedQword" },
+      { "field": "unknown113", "type": "UnsignedQword" },
+      { "field": "unknown114", "type": "UnsignedQword" },
+      { "field": "unknown115", "type": "UnsignedQword" },
+      { "field": "unknown116", "type": "UnsignedQword" },
+      { "field": "unknown117", "type": "UnsignedQword" },
+      { "field": "unknown118", "type": "UnsignedQword" },
+      { "field": "unknown119", "type": "UnsignedQword" },
+      { "field": "unknown120", "type": "UnsignedQword" },
+      { "field": "unknown121", "type": "UnsignedQword" },
+      { "field": "unknown122", "type": "UnsignedQword" },
+      { "field": "unknown123", "type": "UnsignedQword" }
     ],
     "OnlineServer": [
       { "field": "sockaddr", "type": "SockAddrIn" },
@@ -7092,23 +7172,28 @@
       { "field": "address", "type": "IPv4Address" }
     ],
     "OnlinePlayer": [
-      { "field": "unknown39", "type": "UnsignedByte" },
+      { "field": "player_name_length", "type": "UnsignedByte" },
       { "field": "padding1", "type": "UnsignedByte" },
       { "field": "padding2", "type": "UnsignedByte" },
       { "field": "padding3", "type": "UnsignedByte" },
       { "field": "unknown1", "type": "UnsignedDword" },
-      { "field": "unknown2", "type": "UnsignedDword" },
-      { "field": "unknown3", "type": "UnsignedDword" },
+      { "field": "id", "type": "UnsignedQword", "comment": "like steam id" },
       { "field": "unknown4", "type": "UnsignedDword" },
       { "field": "unknown5", "type": "UnsignedByte" },
       {
         "field": "ready_state",
-        "type": "State8",
-        "states": {
-          "0": "Unassigned",
-          "72": "Not ready",
-          "73": "Ready"
-        }
+        "type": "Flags8",
+        "flags": {
+          "1": "Ready",
+          "2": "Searching",
+          "3": "platform",
+          "4": "platform",
+          "5": "platform",
+          "6": "platform",
+          "7": "platform",
+          "8": "platform"
+        },
+        "comment": "platform is using the 6 remaining bits, hard to visualise that here"
       },
       { "field": "character", "type": "State8", "ref": "character_states" },
       {
