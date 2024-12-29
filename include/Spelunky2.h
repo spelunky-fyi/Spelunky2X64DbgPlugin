@@ -47,7 +47,7 @@ namespace S2Plugin
         };
         uintptr_t get_LiquidEnginePtr() const
         {
-            if (auto base = get_HeapBase(); base == 0)
+            if (auto base = get_HeapBase(); base != 0)
                 return base + GAME_OFFSET::LIQUID_ENGINE;
 
             return 0;
