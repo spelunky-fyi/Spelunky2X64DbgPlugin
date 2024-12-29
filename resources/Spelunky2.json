@@ -4477,6 +4477,7 @@
       {
         "field": "liquids_by_third_of_tile",
         "type": "Matrix",
+        "pointer": true,
         "row": 378,
         "col": 258,
         "matrixtype": "LiquidAmounts",
