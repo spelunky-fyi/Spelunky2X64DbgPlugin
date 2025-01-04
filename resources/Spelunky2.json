@@ -1648,7 +1648,11 @@
       { "field": "unknown15", "type": "TextureRenderingInfo" },
       { "field": "unknown16", "type": "TextureRenderingInfo" },
       { "field": "unknown17", "type": "TextureRenderingInfo" },
-      { "field": "unknown18_a", "type": "TextureRenderingInfo", "comment": "pairs?" },
+      {
+        "field": "unknown18_a",
+        "type": "TextureRenderingInfo",
+        "comment": "pairs?"
+      },
       { "field": "unknown18_b", "type": "TextureRenderingInfo" },
       { "field": "unknown19_a", "type": "TextureRenderingInfo" },
       { "field": "unknown19_b", "type": "TextureRenderingInfo" },
