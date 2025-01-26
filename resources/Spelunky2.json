@@ -3325,8 +3325,13 @@
       { "field": "unknown3", "type": "UnsignedByte" },
       { "field": "unknown4", "type": "UnsignedByte" }
     ],
+    "UnknownStatePointer": [
+      { "field": "unknown1", "type": "Array", "length": 5002, "arraytype": "UnsignedQword" },
+      { "field": "unknown2", "type": "UnsignedDword" },
+      { "field": "unknown3", "type": "UnsignedDword" }
+    ],
     "State": [
-      { "field": "p00", "type": "DataPointer" },
+      { "field": "p00", "type": "UnknownStatePointer", "pointer": true },
       { "field": "screen_last", "type": "State32", "ref": "screen_states" },
       { "field": "screen", "type": "State32", "ref": "screen_states" },
       { "field": "screen_next", "type": "State32", "ref": "screen_states" },
@@ -5848,10 +5853,13 @@
       },
       {
         "field": "stats_scroll_unfurl_sequence_timer",
-        "type": "UnsignedDword"
+        "type": "UnsignedDword",
+        "comment": "game treats it as 16bit"
       },
-      { "field": "unknown30", "type": "UnsignedDword" },
-      { "field": "unknown31", "type": "UnsignedDword" },
+      { "field": "unknown30", "type": "Dword", "comment": "number used for the counting effect (for ex. compares it to the kill_level and if it's different it plays the sound and all and increments the player_stats_scroll_numeric_value" },
+      { "field": "showing_starts", "type": "Bool" },
+      { "field": "couting_money", "type": "Bool" },
+      { "field": "padding1", "type": "Word" },
       { "field": "player1_stats_scroll_numeric_value", "type": "Dword" },
       { "field": "player2_stats_scroll_numeric_value", "type": "Dword" },
       { "field": "player3_stats_scroll_numeric_value", "type": "Dword" },
@@ -5912,10 +5920,7 @@
         "type": "UTF16StringFixedSize",
         "offset": 20
       },
-      { "field": "this_level_money_color_red", "type": "Float" },
-      { "field": "this_level_money_color_green", "type": "Float" },
-      { "field": "this_level_money_color_blue", "type": "Float" },
-      { "field": "this_level_money_color_alpha", "type": "Float" },
+      { "field": "this_level_money_color", "type": "Color" },
       { "field": "player1_buttons", "type": "UnsignedByte" },
       { "field": "player2_buttons", "type": "UnsignedByte" },
       { "field": "player3_buttons", "type": "UnsignedByte" },
@@ -6262,7 +6267,18 @@
       { "field": "skip10", "type": "Skip", "offset": 40 },
       { "field": "players", "type": "SaveGamePlayers" },
       { "field": "arena_favorite_ruleset", "type": "SaveGameArenaRuleset" },
-      { "field": "constellation", "type": "Constellation" }
+      { "field": "constellation", "type": "Constellation" },
+      { "field": "unknown1a", "type": "Dword" },
+      { "field": "unknown1b", "type": "Dword" },
+      { "field": "unknown2", "type": "UnsignedQword" },
+      { "field": "unknown3", "type": "UnsignedQword" },
+      { "field": "unknown4", "type": "UnsignedQword" },
+      { "field": "unknown5", "type": "UnsignedQword" },
+      { "field": "unknown6", "type": "UnsignedQword" },
+      { "field": "unknown7", "type": "UnsignedQword" },
+      { "field": "unknown8", "type": "UnsignedQword" },
+      { "field": "unknown9", "type": "UnsignedQword" }
+      
     ],
     "Constellation": [
       { "field": "star_count", "type": "UnsignedByte" },
@@ -9248,9 +9264,8 @@
       { "field": "unknown62", "type": "UnsignedQword", "comment": "bool?" },
       {
         "field": "unknown63",
-        "type": "StdUnorderedMap",
-        "keytype": "ConstCharPointer",
-        "valuetype": "UnknownTextureStuff"
+        "type": "StdUnorderedSet",
+        "keytype": "StdString"
       },
       {
         "field": "unknown64a",
@@ -9349,11 +9364,11 @@
         "arraytype": "UnknownRenderStuff",
         "length": 110
       },
-      { "field": "unknown87c", "type": "UnsignedQword" },
+      { "field": "camera", "type": "OnHeapPointer", "pointertype": "CameraPointer" },
       { "field": "unknown87d", "type": "UnsignedQword" },
-      { "field": "swap_chain?", "type": "DataPointer" },
+      { "field": "unknown88", "type": "DataPointer" },
       {
-        "field": "unknown88",
+        "field": "swap_chain?",
         "type": "DataPointer",
         "comment": "pointer to vector of functions? dxgi?"
       },
