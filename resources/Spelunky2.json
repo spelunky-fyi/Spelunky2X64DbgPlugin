@@ -3326,7 +3326,12 @@
       { "field": "unknown4", "type": "UnsignedByte" }
     ],
     "UnknownStatePointer": [
-      { "field": "unknown1", "type": "Array", "length": 5002, "arraytype": "UnsignedQword" },
+      {
+        "field": "unknown1",
+        "type": "Array",
+        "length": 5002,
+        "arraytype": "UnsignedQword"
+      },
       { "field": "unknown2", "type": "UnsignedDword" },
       { "field": "unknown3", "type": "UnsignedDword" }
     ],
@@ -5856,7 +5861,11 @@
         "type": "UnsignedDword",
         "comment": "game treats it as 16bit"
       },
-      { "field": "unknown30", "type": "Dword", "comment": "number used for the counting effect (for ex. compares it to the kill_level and if it's different it plays the sound and all and increments the player_stats_scroll_numeric_value" },
+      {
+        "field": "unknown30",
+        "type": "Dword",
+        "comment": "number used for the counting effect (for ex. compares it to the kill_level and if it's different it plays the sound and all and increments the player_stats_scroll_numeric_value"
+      },
       { "field": "showing_starts", "type": "Bool" },
       { "field": "couting_money", "type": "Bool" },
       { "field": "padding1", "type": "Word" },
@@ -6278,7 +6287,6 @@
       { "field": "unknown7", "type": "UnsignedQword" },
       { "field": "unknown8", "type": "UnsignedQword" },
       { "field": "unknown9", "type": "UnsignedQword" }
-      
     ],
     "Constellation": [
       { "field": "star_count", "type": "UnsignedByte" },
@@ -9364,7 +9372,11 @@
         "arraytype": "UnknownRenderStuff",
         "length": 110
       },
-      { "field": "camera", "type": "OnHeapPointer", "pointertype": "CameraPointer" },
+      {
+        "field": "camera",
+        "type": "OnHeapPointer",
+        "pointertype": "CameraPointer"
+      },
       { "field": "unknown87d", "type": "UnsignedQword" },
       { "field": "unknown88", "type": "DataPointer" },
       {
