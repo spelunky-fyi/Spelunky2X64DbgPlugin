@@ -875,12 +875,12 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         case MemoryFieldType::OnHeapPointer:
         {
             std::optional<uint64_t> value;
+            std::optional<uint64_t> comparisonValue;
             value = updateField<uint64_t>(itemField, valueMemoryOffset, itemValue, "<font color='blue'><u>0x%016llX</u></font>", itemValueHex, isPointer, "0x%016llX", true, !pointerUpdate,
                                           highlightColor);
 
             if (comparisonActive)
             {
-                std::optional<uint64_t> comparisonValue;
                 comparisonValue = updateField<uint64_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, "<b>0x%016llX</b>", itemComparisonValueHex, isPointer, "0x%016llX", false, false,
                                                         highlightColor);
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
@@ -889,9 +889,16 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             if (shouldUpdateChildren)
             {
+                // TODO: update address only if there was change in the value
+                auto heapBase = Spelunky2::get()->get_HeapBase();
+                if (value.has_value())
+                    value.value() += heapBase;
+                if (comparisonValue.has_value())
+                    comparisonValue.value() += heapBase;
+
                 for (uint8_t x = 0; x < itemField->rowCount(); ++x)
                 {
-                    updateRow(x, std::nullopt, std::nullopt, itemField, disableChangeHighlighting);
+                    updateRow(x, value, comparisonValue, itemField, disableChangeHighlighting);
                 }
             }
             break;
