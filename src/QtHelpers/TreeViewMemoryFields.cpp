@@ -2333,8 +2333,11 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
     {
         case gsColMemoryAddress:
         {
-            GuiDumpAt(clickedItem->data(gsRoleRawValue).toULongLong());
-            GuiShowCpu();
+            if (!clickedItem->data(gsRoleRawValue).isNull())
+            {
+                GuiDumpAt(clickedItem->data(gsRoleRawValue).toULongLong());
+                GuiShowCpu();
+            }
             break;
         }
         case gsColValueHex:
