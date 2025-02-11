@@ -95,7 +95,10 @@
     "MultiLineTextRenderingPointer",
     "PointerToPointerToEntityList",
     "InputsByControllerPointer",
-    "MovableBehavior"
+    "MovableBehavior",
+    "Resource",
+    "DxResource",
+    "DxBuffer"
   ],
   // Struct alignments needed to calculate the padding in map/set node
   // it's just the biggest standard type in a struct, range: 0-8
@@ -7730,9 +7733,34 @@
       { "field": "unknown1", "type": "UnsignedDword" },
       { "field": "unknown2", "type": "UnsignedDword" }
     ],
+    "DxResource": [
+      {
+        "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": { "name": "unknown1", "params": "int32_t, uint32_t, uint8_t", "return": "bool" },
+          "1": { "name": "release", "comment": "calls Release on all objects"},
+          "2": { "name": "unknown2", "comment": "just return"},
+          "3": { "name": "get_render_target_view", "return": "ID3D11RenderTargetView*"},
+          "4": { "name": "get_dx_id", "return": "ID3D11Texture2D*"}
+        }
+      },
+      { "field": "dx_id", "type": "DataPointer", "comment": "ID3D11Texture2D*" },
+      { "field": "dx_shader", "type": "DataPointer", "comment": "ID3D11ShaderResourceView*" },
+      { "field": "dx_target_view", "type": "DataPointer", "comment": "ID3D11RenderTargetView*" }
+    ],
+    "Resource": [
+      { "field": "name", "type": "ConstCharPointer" },
+      { "field": "unknown1", "type": "UnsignedDword" },
+      { "field": "unknown2", "type": "UnsignedDword" },
+      { "field": "unknown3", "type": "UnsignedDword" },
+      { "field": "probably_padding", "type": "UnsignedDword" },
+      { "field": "dx_resource", "type": "DxResource" },
+      { "field": "unknown5", "type": "UnsignedQword" }
+    ],
     "TextureDB": [
       { "field": "id", "type": "UnsignedQword" },
-      { "field": "name", "type": "ConstCharPointerPointer" },
+      { "field": "resource", "type": "Resource" },
       { "field": "width", "type": "UnsignedDword" },
       { "field": "height", "type": "UnsignedDword" },
       { "field": "num_tiles_width", "type": "UnsignedDword" },
@@ -9116,18 +9144,42 @@
         "comment": "OnGameOverlayActivated"
       }
     ],
-    "UnknownTextureStuff": [
-      { "field": "unknown1", "type": "UnsignedByte" },
-      { "field": "unknown2", "type": "UnsignedByte" },
-      { "field": "unknown3", "type": "UnsignedByte" },
-      { "field": "unknown4", "type": "UnsignedByte" },
-      { "field": "unknown5", "type": "UnsignedByte" },
-      { "field": "unknown6", "type": "UnsignedByte" },
-      { "field": "unknown7", "type": "UnsignedByte" },
-      { "field": "unknown8", "type": "UnsignedByte" },
-      { "field": "unknown9", "type": "UnsignedQword" },
-      { "field": "unknown10", "type": "UnsignedQword" },
-      { "field": "unknown11", "type": "ConstCharPointerPointer" }
+    "DxBuffer": [
+      {
+        "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": {
+          "0": { "name": "~DxBuffer" },
+          "1": {
+            "name": "v1",
+            "params": "uint32_t, bool",
+            "return": "bool",
+            "comment": "create buffer?"
+          },
+          "2": {
+            "name": "v2",
+            "return": "size_t",
+            "comment": " calls some QueryInterface stuff"
+          },
+          "3": { "name": "v3" },
+          "4": {
+            "name": "get_buffer",
+            "return": "ID3D11Buffer*"
+          }
+        }
+      },
+      { "field": "buffer", "type": "DataPointer", "comment": "ID3D11Buffer*" },
+      { "field": "unknown2", "type": "UnsignedQword", "comment": "probably just some allocator weirdness" }
+    ],
+    "DxShader": [
+      {
+        "field": "__vftable",
+        "type": "VirtualFunctionTable",
+        "functions": { "0": { "name": "set_shader_resource" } }
+      },
+      { "field": "vertex", "type": "DataPointer", "comment": "ID3D11VertexShader*" },
+      { "field": "pixel", "type": "DataPointer", "comment": "ID3D11PixelShader*" },
+      { "field": "layout", "type": "DataPointer", "comment": "ID3D11InputLayout*" }
     ],
     "Renderer": [
       {
@@ -9143,7 +9195,65 @@
             "name": "some_dx_stuff",
             "params": "",
             "return": ""
-          }
+          },
+          "2": { "name": "v2" },
+          "3": { "name": "v3" },
+          "4": { "name": "v4" },
+          "5": { "name": "v5" },
+          "6": { "name": "v6" },
+          "7": { "name": "v7" },
+          "8": { "name": "v8" },
+          "9": { "name": "v9" },
+          "10": { "name": "v10" },
+          "11": { "name": "v11" },
+          "12": { "name": "v12" },
+          "13": { "name": "v13" },
+          "14": { "name": "v14" },
+          "15": { "name": "v15" },
+          "16": { "name": "v16" },
+          "17": { "name": "v17" },
+          "18": { "name": "v18" },
+          "19": { "name": "v19" },
+          "20": { "name": "v20" },
+          "21": { "name": "v21" },
+          "22": { "name": "v22" },
+          "23": { "name": "v23" },
+          "24": { "name": "v24" },
+          "25": { "name": "v25" },
+          "26": { "name": "v26" },
+          "27": { "name": "v27" },
+          "28": { "name": "v28" },
+          "29": { "name": "v29" },
+          "30": { "name": "v30" },
+          "31": { "name": "v31" },
+          "32": { "name": "v32" },
+          "33": { "name": "v33" },
+          "34": { "name": "v34" },
+          "35": { "name": "v35" },
+          "36": { "name": "v36" },
+          "37": { "name": "v37" },
+          "38": { "name": "v38" },
+          "39": { "name": "v39" },
+          "40": { "name": "v40" },
+          "41": { "name": "v41" },
+          "42": { "name": "v42" },
+          "43": { "name": "v43" },
+          "44": { "name": "v44" },
+          "45": { "name": "v45" },
+          "46": { "name": "v46" },
+          "47": { "name": "v47" },
+          "48": { "name": "v48" },
+          "49": { "name": "v49" },
+          "50": { "name": "v50" },
+          "51": { "name": "v51" },
+          "52": { "name": "v52" },
+          "52": { "name": "v53" },
+          "53": { "name": "v54" },
+          "54": { "name": "v55" },
+          "55": { "name": "v56" },
+          "56": { "name": "v57" },
+          "57": { "name": "v58" },
+          "58": { "name": "v59" }
         }
       },
       {
@@ -9175,7 +9285,7 @@
         "field": "unknown1",
         "type": "Array",
         "length": 25,
-        "arraytype": "DataPointer"
+        "arraytype": "DxResource"
       },
       { "field": "unknown1a", "type": "UnsignedDword" },
       { "field": "unknown1b", "type": "UnsignedDword", "comment": "padding?" },
@@ -9183,22 +9293,29 @@
         "field": "unknown1c",
         "type": "Array",
         "length": 15,
-        "arraytype": "DataPointer"
+        "arraytype": "DxResource"
       },
       { "field": "unknown1d", "type": "Bool" },
       { "field": "padding2", "type": "Skip", "offset": 7 },
       {
         "field": "unknown1f",
         "type": "Array",
-        "length": 10,
+        "length": 5,
         "arraytype": "DataPointer",
-        "comment": "some directX vtables"
+        "comment": "ID3D11BlendState1[5]"
       },
       {
         "field": "unknown1g",
         "type": "Array",
-        "length": 15,
-        "arraytype": "DataPointer"
+        "length": 6,
+        "arraytype": "DataPointer",
+        "comment": "ID3D11SamplerState[5]"
+      },
+      {
+        "field": "unknown1h",
+        "type": "Array",
+        "length": 14,
+        "arraytype": "DxBuffer"
       },
       { "field": "unknown2", "type": "UnsignedDword" },
       { "field": "unknown3", "type": "UnsignedDword" },
@@ -9208,7 +9325,7 @@
         "field": "unknown6",
         "type": "Array",
         "length": 512,
-        "arraytype": "DataPointer"
+        "arraytype": "DxBuffer"
       },
       {
         "field": "skip1",
@@ -9229,9 +9346,9 @@
       { "field": "unknown42c", "type": "UnsignedByte" },
       { "field": "unknown42d", "type": "UnsignedByte" },
       {
-        "field": "texture_names",
+        "field": "textures_to_load",
         "type": "Array",
-        "arraytype": "ConstCharPointerPointer",
+        "arraytype": "Resource",
         "length": 7
       },
       { "field": "texture_numbers", "type": "UnsignedDword" },
@@ -9271,9 +9388,10 @@
       { "field": "unknown61d", "type": "DataPointer" },
       { "field": "unknown62", "type": "UnsignedQword", "comment": "bool?" },
       {
-        "field": "unknown63",
-        "type": "StdUnorderedSet",
-        "keytype": "StdString"
+        "field": "textures",
+        "type": "StdUnorderedMap",
+        "keytype": "StdString",
+        "valuetype": "Resource"
       },
       {
         "field": "unknown64a",
@@ -9359,12 +9477,13 @@
       { "field": "unknown85", "type": "UnsignedByte" },
       { "field": "padding_probably1", "type": "UnsignedWord" },
       { "field": "padding_probably2", "type": "UnsignedDword" },
-      { "field": "unknown87", "type": "DataPointer" },
+      { "field": "shaders?", "type": "Array", "length": 99, "arraytype": "DxShader", "pointer": true },
       {
         "field": "unknown87a",
         "type": "Array",
         "arraytype": "Bool",
-        "length": 112
+        "length": 112,
+        "comment": "probably size 110 + 2 padding bytes"
       },
       {
         "field": "unknown87b",
@@ -9378,23 +9497,23 @@
         "pointertype": "CameraPointer"
       },
       { "field": "unknown87d", "type": "UnsignedQword" },
-      { "field": "unknown88", "type": "DataPointer" },
+      { "field": "unknown88", "type": "DataPointer", "comment": "IDXGIAdapter4*" },
       {
-        "field": "swap_chain?",
+        "field": "swap_chain",
         "type": "DataPointer",
-        "comment": "pointer to vector of functions? dxgi?"
+        "comment": "IDXGISwapChain4*"
       },
-      { "field": "unknown89", "type": "DataPointer" },
+      { "field": "unknown89", "type": "DataPointer", "comment": "CID3D11Forwarder*?" },
       {
         "field": "unknown90",
         "type": "DataPointer",
-        "comment": "pointer to pointer to vtable"
+        "comment": "some ID3D11DeviceContext stuff"
       },
       { "field": "unknown91", "type": "UnsignedQword" },
-      { "field": "unknown92", "type": "DataPointer" },
-      { "field": "unknown93", "type": "DataPointer" },
-      { "field": "unknown94", "type": "DataPointer" },
-      { "field": "unknown95", "type": "DataPointer" },
+      { "field": "unknown92", "type": "DataPointer", "comment": "ID3D11Texture2D1*" },
+      { "field": "unknown93", "type": "DataPointer", "comment": "ID3D11DepthStencilView*" },
+      { "field": "unknown94", "type": "DataPointer", "comment": "ID3D11RasterizerState2*" },
+      { "field": "unknown95", "type": "DataPointer", "comment": "ID3D11RasterizerState2*" },
       {
         "field": "unknown96",
         "type": "DataPointer",
@@ -9405,10 +9524,10 @@
       { "field": "unknown99", "type": "UnsignedDword" },
       { "field": "unknown100", "type": "UnsignedDword" },
       { "field": "unknown101", "type": "UnsignedDword" },
-      { "field": "unknown102", "type": "UnsignedDword" },
-      { "field": "unknown103", "type": "UnsignedDword" },
-      { "field": "game_width", "type": "UnsignedDword" },
-      { "field": "game_height", "type": "UnsignedDword" },
+      { "field": "unknown102", "type": "UnsignedDword", "comment": "game_width fullscreen?" },
+      { "field": "unknown103", "type": "UnsignedDword", "comment": "game_height fullscreen?" },
+      { "field": "game_width", "type": "UnsignedDword", "comment": "windowed?" },
+      { "field": "game_height", "type": "UnsignedDword", "comment": "windowed?" },
       { "field": "unknown106a", "type": "UnsignedByte" },
       { "field": "unknown106b", "type": "UnsignedByte" },
       { "field": "unknown106c", "type": "UnsignedByte" },
@@ -9432,22 +9551,31 @@
       { "field": "unknown123", "type": "UnsignedQword" },
       { "field": "unknown124", "type": "UnsignedQword" },
       { "field": "unknown125", "type": "UnsignedQword" },
-      { "field": "unknown126", "type": "UnsignedQword" },
-      { "field": "unknown127", "type": "UnsignedQword" },
-      { "field": "unknown128", "type": "UnsignedQword" },
-      { "field": "unknown129", "type": "UnsignedQword" },
-      { "field": "unknown130", "type": "UnsignedQword" },
-      { "field": "unknown131", "type": "UnsignedQword" },
-      { "field": "unknown132", "type": "UnsignedQword" },
-      { "field": "unknown133", "type": "UnsignedQword" },
-      { "field": "unknown134", "type": "UnsignedQword" },
-      { "field": "unknown135", "type": "UnsignedQword" },
-      { "field": "unknown136", "type": "UnsignedQword" },
-      { "field": "unknown137", "type": "UnsignedQword" }
+      { "field": "unknown126a", "type": "Float" },
+      { "field": "unknown126b", "type": "Float" },
+      { "field": "unknown127", "type": "DataPointer", "comment": "ID3D11Buffer*" },
+      { "field": "unknown128", "type": "DataPointer", "comment": "ID3D11Buffer*" },
+      { "field": "horizontal_stretch", "type": "Float" },
+      { "field": "horizontal_skew", "type": "Float" },
+      { "field": "unknown130a", "type": "Float", "comment": "darkens the horizontal edges of the screen?" },
+      { "field": "horizontal_tilt", "type": "Float" },
+      { "field": "vertical_skew", "type": "Float" },
+      { "field": "vertical_stretch", "type": "Float" },
+      { "field": "unknown132a", "type": "Float", "comment": "darkens the vertical edges of the screen?" },
+      { "field": "vertical_tilt", "type": "Float" },
+      { "field": "position_x", "type": "Float" },
+      { "field": "position_y", "type": "Float" },
+      { "field": "unknown134a", "type": "Float" },
+      { "field": "unknown134b", "type": "Float", "comment": "render scale, but negative?" },
+      { "field": "render_offset_x", "type": "Float" },
+      { "field": "render_offset_y", "type": "Float" },
+      { "field": "unknown136a", "type": "Float", "comment": "probably related to unknown134a" },
+      { "field": "render_zoom_out", "type": "Float", "comment": "probably related to unknown134b, zooms out the rendered part of the game inside the window" },
+      { "field": "unknown137", "type": "DataPointer", "comment": "ID3DUserDefinedAnnotation*" }
     ],
     "UnknownRenderStuff": [
-      { "field": "unknown1", "type": "DataPointer" },
-      { "field": "unknown2", "type": "DataPointer" },
+      { "field": "unknown1", "type": "DataPointer", "comment": "ID3D11BlendState1*" },
+      { "field": "unknown2", "type": "DataPointer", "comment": "ID3D11DepthStencilState*" },
       { "field": "unknown3", "type": "UnsignedQword" }
     ],
     "HudInventory": [
