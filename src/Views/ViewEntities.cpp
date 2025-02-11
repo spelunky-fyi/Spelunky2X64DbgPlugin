@@ -21,8 +21,8 @@ S2Plugin::ViewEntities::ViewEntities(QWidget* parent) : QWidget(parent)
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);
     auto config = Configuration::get();
-    mLayer0Address = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr());
-    mLayer1Address = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr());
+    mLayer0Address = config->offsetForField(MemoryFieldType::State, "layer0", Spelunky2::get()->get_StatePtr(false));
+    mLayer1Address = config->offsetForField(MemoryFieldType::State, "layer1", Spelunky2::get()->get_StatePtr(false));
     mLayerMapOffset = config->offsetForField(config->typeFieldsOfDefaultStruct("LayerPointer"), "entities_by_mask");
 
     // initializeRefreshAndFilter
