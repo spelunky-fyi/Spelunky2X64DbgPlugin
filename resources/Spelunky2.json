@@ -9830,6 +9830,32 @@
       },
       { "field": "unknown2", "type": "UnsignedQword" },
       { "field": "unknown3", "type": "UnsignedQword" }
+    ],
+    "DebugSettings": [
+      { "field": "camera_debug", "type": "State32", "states": {"0": "no debug", "1": "center relative level", "2": "center absolute level"} },
+      { "field": "peek_backlayer_thru_door", "type": "UnsignedDword" },
+      { "field": "unknown2", "type": "UnsignedDword" },
+      { "field": "unknown3", "type": "UnsignedWord" },
+      { "field": "unknown4", "type": "Bool" },
+      { "field": "unknown5", "type": "Bool" },
+      
+      { "field": "game_pause", "type": "Bool" },
+      { "field": "unknown7", "type": "Bool", "comment": "unpause? when the game_pause is set, this makes it not paused?" },
+      { "field": "game_slow_down", "type": "Bool", "comment": "slow down engine to 6fps" },
+      { "field": "game_speed_up", "type": "Bool", "comment": "i think, remove the limit, aka run as fast as possible" },
+      { "field": "unknown9", "type": "Bool", "comment": "some weird render filter?" },
+      { "field": "unknown10", "type": "Bool" },
+      { "field": "render_lava_glow?", "type": "Bool" },
+      { "field": "render_liquid_highlights", "type": "Bool" },
+      
+      { "field": "render_liquids", "type": "Bool" },
+      { "field": "render_hud", "type": "Bool" },
+      { "field": "unknown15", "type": "Bool" },
+      { "field": "unknown16", "type": "Bool" },
+      { "field": "unknown17", "type": "Bool" },
+      { "field": "unknown18", "type": "Bool" },
+      { "field": "unknown19", "type": "Bool" },
+      { "field": "unknown20", "type": "Bool" }
     ]
   }
 }

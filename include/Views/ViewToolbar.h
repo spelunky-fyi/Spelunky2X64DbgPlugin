@@ -53,6 +53,7 @@ namespace S2Plugin
         void showGameAPI();
         void showHud();
         void showEntityFactory();
+        void showDebugSettings();
 
       private slots:
         void clearLabels();

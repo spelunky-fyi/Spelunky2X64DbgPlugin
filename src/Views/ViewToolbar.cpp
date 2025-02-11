@@ -86,6 +86,9 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     auto btnHud = new QPushButton("Hud", this);
     mainLayout->addWidget(btnHud);
     QObject::connect(btnHud, &QPushButton::clicked, this, &ViewToolbar::showHud);
+    auto btnDebugSettings = new QPushButton("Debug Settings", this);
+    mainLayout->addWidget(btnDebugSettings);
+    QObject::connect(btnDebugSettings, &QPushButton::clicked, this, &ViewToolbar::showDebugSettings);
     auto btnSaveStates = new QPushButton("Save States", this);
     btnSaveStates->setToolTip("In online, game saves the game state for potential rollback");
     mainLayout->addWidget(btnSaveStates);
@@ -396,24 +399,47 @@ void S2Plugin::ViewToolbar::showMainThreadSaveGame()
 
 void S2Plugin::ViewToolbar::showGameAPI()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameAPIPtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto w = new ViewStruct(Spelunky2::get()->get_GameAPIPtr(), Configuration::get()->typeFields(MemoryFieldType::GameAPI), "GameAPI");
+        auto ptr = Spelunky2::get()->get_GameAPIPtr();
+        if (ptr != 0)
+    {
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::GameAPI), "GameAPI");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);
     }
 }
+}
 
 void S2Plugin::ViewToolbar::showHud()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HudPtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto w = new ViewStruct(Spelunky2::get()->get_HudPtr(), Configuration::get()->typeFields(MemoryFieldType::Hud), "Hud");
+        auto ptr = Spelunky2::get()->get_HudPtr();
+        if (ptr != 0)
+        {
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::Hud), "Hud");
+            auto win = mMDIArea->addSubWindow(w);
+            win->setVisible(true);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+        }
+    }
+}
+
+void S2Plugin::ViewToolbar::showDebugSettings()
+{
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
+    {
+        auto ptr = Spelunky2::get()->get_DebugSettingsPtr();
+        if (ptr != 0)
+    {
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFieldsOfDefaultStruct("DebugSettings"), "Debug Settings");
         auto win = mMDIArea->addSubWindow(w);
         win->setVisible(true);
         win->setAttribute(Qt::WA_DeleteOnClose);
     }
+}
 }
 
 void S2Plugin::ViewToolbar::showEntityFactory()

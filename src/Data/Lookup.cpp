@@ -285,3 +285,20 @@ uintptr_t S2Plugin::Spelunky2::get_SaveStatesPtr()
     }
     return mSaveStatesPtr;
 }
+
+uintptr_t S2Plugin::Spelunky2::get_DebugSettingsPtr()
+{
+    if (mDebugSettings != 0)
+        return mDebugSettings;
+
+    auto instructionAddress = Script::Pattern::FindMem(afterBundle, afterBundleSize, "F3 41 0F 11 47 38 8B 05");
+    if (instructionAddress == 0)
+    {
+        displayError("Lookup error: unable to find DebugSettings");
+        return mDebugSettings;
+    }
+    auto relativeOffset = Script::Memory::ReadDword(instructionAddress + 8);
+    mDebugSettings = instructionAddress + 12 + relativeOffset;
+
+    return mDebugSettings;
+}
