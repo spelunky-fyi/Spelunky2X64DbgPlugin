@@ -3,7 +3,6 @@
 #include "Data/CharacterDB.h"
 #include "Data/EntityDB.h"
 #include "Data/ParticleDB.h"
-#include "Data/State.h"
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
@@ -26,34 +25,34 @@ namespace S2Plugin
         //
         uintptr_t get_GameManagerPtr();
         uintptr_t get_DebugSettingsPtr();
-        uintptr_t get_SaveDataPtr();
+        uintptr_t get_SaveDataPtr(bool quiet);
         uintptr_t get_OnlinePtr();
         uintptr_t get_GameAPIPtr();
         uintptr_t get_HudPtr();
         uintptr_t get_SaveStatesPtr();
-        uintptr_t get_StatePtr() const
+        uintptr_t get_StatePtr(bool quiet)
         {
-            if (auto base = get_HeapBase(); base != 0)
+            if (auto base = get_HeapBase(quiet); base != 0)
                 return base + GAME_OFFSET::STATE;
 
             return 0;
         };
-        uintptr_t get_LevelGenPtr() const
+        uintptr_t get_LevelGenPtr(bool quiet)
         {
 
-            if (auto base = get_HeapBase(); base != 0)
+            if (auto base = get_HeapBase(quiet); base != 0)
                 return base + GAME_OFFSET::LEVEL_GEN;
 
             return 0;
         };
-        uintptr_t get_LiquidEnginePtr() const
+        uintptr_t get_LiquidEnginePtr(bool quiet)
         {
-            if (auto base = get_HeapBase(); base != 0)
+            if (auto base = get_HeapBase(quiet); base != 0)
                 return base + GAME_OFFSET::LIQUID_ENGINE;
 
             return 0;
         }
-        uintptr_t get_HeapBase() const;
+        uintptr_t get_HeapBase(bool quiet);
 
         const TextureDB& get_TextureDB();
         const CharacterDB& get_CharacterDB();
@@ -61,16 +60,12 @@ namespace S2Plugin
         const EntityDB& get_EntityDB();
         const StringsTable& get_StringsTable();
         const VirtualTableLookup& get_VirtualTableLookup();
-        State get_State() const
-        {
-            return State{get_StatePtr()};
-        }
         //
 
         uintptr_t find(const char* pattern, uintptr_t start = 0, size_t size = 0) const;
         uintptr_t find_between(const char* pattern, uintptr_t start = 0, uintptr_t end = 0) const;
 
-        const QString& themeNameOfOffset(uintptr_t offset) const;
+        const QString& themeNameOfOffset(uintptr_t offset);
 
       private:
         static Spelunky2* ptr;

@@ -90,6 +90,9 @@ void S2Plugin::ItemModelGatherVirtualData::gatherEntities()
     auto spel2 = Spelunky2::get();
     auto config = Configuration::get();
     auto& vtl = spel2->get_VirtualTableLookup();
+    auto statePtr = spel2->get_StatePtr(false);
+    if (statePtr == 0)
+        return;
 
     auto processEntities = [&](size_t layerEntities, uint32_t count)
     {
@@ -114,13 +117,13 @@ void S2Plugin::ItemModelGatherVirtualData::gatherEntities()
     };
 
     beginResetModel();
-    auto layer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", spel2->get_StatePtr());
+    auto layer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", statePtr);
     auto layer0 = Script::Memory::ReadQword(layer0Offset);
     auto layer0Count = Script::Memory::ReadDword(layer0 + 28);
     auto layer0Entities = Script::Memory::ReadQword(layer0 + 8);
     processEntities(layer0Entities, layer0Count);
 
-    auto layer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", spel2->get_StatePtr());
+    auto layer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", statePtr);
     auto layer1 = Script::Memory::ReadQword(layer1Offset);
     auto layer1Count = Script::Memory::ReadDword(layer1 + 28);
     auto layer1Entities = Script::Memory::ReadQword(layer1 + 8);
@@ -134,237 +137,247 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
     auto spel2 = Spelunky2::get();
     auto config = Configuration::get();
     auto& vtl = spel2->get_VirtualTableLookup();
-
-    static const auto themes = {"theme_dwelling", "theme_jungle",     "theme_volcana",       "theme_olmec",       "theme_tidepool",     "theme_temple",
-                                "theme_icecaves", "theme_neobabylon", "theme_sunkencity",    "theme_cosmicocean", "theme_city_of_gold", "theme_duat",
-                                "theme_abzu",     "theme_tiamat",     "theme_eggplantworld", "theme_hundun",      "theme_basecamp",     "theme_arena"};
-    size_t index = 1000;
-    auto firstThemeOffset = config->offsetForField(config->typeFields(MemoryFieldType::LevelGen), "theme_dwelling", spel2->get_LevelGenPtr());
+    size_t index;
     uint8_t counter = 0;
-    for (const auto& themeName : themes)
-    {
-        auto themeAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstThemeOffset + counter * sizeof(uintptr_t)));
-        auto tableOffset = (themeAddress - vtl.tableStartAddress()) / sizeof(size_t);
-        bool foundInEntries = false;
-        for (auto& entry : mEntries)
-        {
-            if (entry.id == index)
-            {
-                entry.virtualTableOffset = tableOffset;
-                foundInEntries = true;
-            }
-        }
-        if (!foundInEntries)
-        {
-            auto g = GatheredDataEntry();
-            g.id = index;
-            std::string themeUpper = themeName;
-            std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-            g.name = QString::fromStdString(themeUpper);
-            g.virtualTableOffset = tableOffset;
-            g.collision1Present = false;
-            g.collision2Present = false;
-            mEntries.emplace_back(std::move(g));
-        }
-        index++;
-        counter++;
-    }
 
-    std::vector<std::string> logics;
-    uintptr_t firstLogicPtr = spel2->get_StatePtr();
-    if (firstLogicPtr != 0)
+    if (auto levelGenPtr = spel2->get_LevelGenPtr(false); levelGenPtr != 0)
     {
-        auto& stateFields = config->typeFields(MemoryFieldType::State);
-        size_t delta = 0;
-        std::string logicTypeName;
-        for (auto& field : stateFields)
+        static const auto themes = {"theme_dwelling", "theme_jungle",     "theme_volcana",       "theme_olmec",       "theme_tidepool",     "theme_temple",
+                                    "theme_icecaves", "theme_neobabylon", "theme_sunkencity",    "theme_cosmicocean", "theme_city_of_gold", "theme_duat",
+                                    "theme_abzu",     "theme_tiamat",     "theme_eggplantworld", "theme_hundun",      "theme_basecamp",     "theme_arena"};
+        index = 1000;
+        auto firstThemeOffset = config->offsetForField(config->typeFields(MemoryFieldType::LevelGen), "theme_dwelling", levelGenPtr);
+        for (const auto& themeName : themes)
         {
-            if (field.name == "logic")
+            auto themeAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstThemeOffset + counter * sizeof(uintptr_t)));
+            auto tableOffset = (themeAddress - vtl.tableStartAddress()) / sizeof(size_t);
+            bool foundInEntries = false;
+            for (auto& entry : mEntries)
             {
-                logicTypeName = field.jsonName;
-                break;
-            }
-            delta += field.get_size();
-        }
-        auto& logicListFields = config->typeFieldsOfDefaultStruct(logicTypeName);
-        logics.reserve(logicListFields.size());
-        for (auto& field : logicListFields)
-            logics.push_back(field.name);
-
-        firstLogicPtr = Script::Memory::ReadQword(firstLogicPtr + delta);
-    }
-
-    index = 2000;
-    counter = 0;
-    for (const auto& logicName : logics)
-    {
-        auto logicAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstLogicPtr + counter * sizeof(uintptr_t)));
-        size_t tableOffset = 0;
-        if (logicAddress != 0)
-        {
-            tableOffset = (logicAddress - vtl.tableStartAddress()) / sizeof(size_t);
-        }
-        bool foundInEntries = false;
-        for (auto& entry : mEntries)
-        {
-            if (entry.id == index)
-            {
-                if (tableOffset != 0)
+                if (entry.id == index)
                 {
                     entry.virtualTableOffset = tableOffset;
+                    foundInEntries = true;
                 }
-                foundInEntries = true;
             }
-        }
-        if (!foundInEntries)
-        {
-            auto g = GatheredDataEntry();
-            g.id = index;
-            auto themeUpper = "LOGIC_" + logicName;
-            std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-            g.name = QString::fromStdString(themeUpper);
-            g.virtualTableOffset = tableOffset;
-            g.collision1Present = false;
-            g.collision2Present = false;
-            mEntries.emplace_back(std::move(g));
-        }
-        index++;
-        counter++;
-    }
-
-    auto screens_gamemanager = std::vector<std::string>{
-        "screen_logo",         "screen_intro",      "screen_prologue", "screen_title", "screen_menu",           "screen_options",      "screen_player_profile",
-        "screen_leaderboards", "screen_seed_input", "screen_camp",     "screen_level", "screen_online_loading", "screen_online_lobby",
-    };
-    index = 3000;
-    for (const auto& screenName : screens_gamemanager)
-    {
-        auto offset = config->offsetForField(config->typeFields(MemoryFieldType::GameManager), screenName, spel2->get_GameManagerPtr());
-        auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(offset));
-        size_t tableOffset = 0;
-        if (screenAddress != 0)
-        {
-            tableOffset = (screenAddress - vtl.tableStartAddress()) / sizeof(size_t);
-        }
-        bool foundInEntries = false;
-        for (auto& entry : mEntries)
-        {
-            if (entry.id == index)
+            if (!foundInEntries)
             {
-                if (tableOffset != 0)
-                {
-                    entry.virtualTableOffset = tableOffset;
-                }
-                foundInEntries = true;
+                auto g = GatheredDataEntry();
+                g.id = index;
+                std::string themeUpper = themeName;
+                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(themeUpper);
+                g.virtualTableOffset = tableOffset;
+                g.collision1Present = false;
+                g.collision2Present = false;
+                mEntries.emplace_back(std::move(g));
             }
+            index++;
+            counter++;
         }
-        if (!foundInEntries)
-        {
-            auto g = GatheredDataEntry();
-            g.id = index;
-            std::string themeUpper = screenName;
-            std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-            g.name = QString::fromStdString(themeUpper);
-            g.virtualTableOffset = tableOffset;
-            g.collision1Present = false;
-            g.collision2Present = false;
-            mEntries.emplace_back(std::move(g));
-        }
-        index++;
     }
 
-    auto screens_state = std::vector<std::string>{
-        "screen_character_select",
-        "screen_team_select",
-        "screen_transition",
-        "screen_death",
-        "screen_win",
-        "screen_credits",
-        "screen_scores",
-        "screen_constellation",
-        "screen_recap",
-        "screen_arena_menu",
-        "screen_arena_stages_select1",
-        "screen_arena_items",
-        "screen_arena_intro",
-        "screen_arena_level",
-        "screen_arena_score",
-    };
-    index = 3500;
-    for (const auto& screenName : screens_state)
+    uintptr_t statePtr = spel2->get_StatePtr(false);
+    if (statePtr != 0)
     {
-        auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), screenName, spel2->get_StatePtr())));
-        size_t tableOffset = 0;
-        if (screenAddress != 0)
-        {
-            tableOffset = (screenAddress - vtl.tableStartAddress()) / sizeof(size_t);
-        }
-        bool foundInEntries = false;
-        for (auto& entry : mEntries)
-        {
-            if (entry.id == index)
+        std::vector<std::string> logics;
+        uintptr_t firstLogicPtr;
+        { // get the names and address of the logics
+            auto& stateFields = config->typeFields(MemoryFieldType::State);
+            size_t delta = 0;
+            std::string logicTypeName;
+            for (auto& field : stateFields)
             {
-                if (tableOffset != 0)
+                if (field.name == "logic")
                 {
-                    entry.virtualTableOffset = tableOffset;
+                    logicTypeName = field.jsonName;
+                    break;
                 }
-                foundInEntries = true;
+                delta += field.get_size();
             }
-        }
-        if (!foundInEntries)
-        {
-            auto g = GatheredDataEntry();
-            g.id = index;
-            std::string themeUpper = screenName;
-            std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-            g.name = QString::fromStdString(themeUpper);
-            g.virtualTableOffset = tableOffset;
-            g.collision1Present = false;
-            g.collision2Present = false;
-            mEntries.emplace_back(std::move(g));
-        }
-        index++;
-    }
+            auto& logicListFields = config->typeFieldsOfDefaultStruct(logicTypeName);
+            logics.reserve(logicListFields.size());
+            for (auto& field : logicListFields)
+                logics.push_back(field.name);
 
-    auto quests = std::vector<std::string>{
-        "yang", "jungle_sisters", "van_horsing", "sparrow", "madame_tusk", "beg",
-    };
-    index = 4000;
-    for (const auto& questName : quests)
+            firstLogicPtr = Script::Memory::ReadQword(statePtr + delta);
+        }
+
+        index = 2000;
+        counter = 0;
+        for (const auto& logicName : logics)
+        {
+            auto logicAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstLogicPtr + counter * sizeof(uintptr_t)));
+            size_t tableOffset = 0;
+            if (logicAddress != 0)
+            {
+                tableOffset = (logicAddress - vtl.tableStartAddress()) / sizeof(size_t);
+            }
+            bool foundInEntries = false;
+            for (auto& entry : mEntries)
+            {
+                if (entry.id == index)
+                {
+                    if (tableOffset != 0)
+                    {
+                        entry.virtualTableOffset = tableOffset;
+                    }
+                    foundInEntries = true;
+                }
+            }
+            if (!foundInEntries)
+            {
+                auto g = GatheredDataEntry();
+                g.id = index;
+                auto themeUpper = "LOGIC_" + logicName;
+                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(themeUpper);
+                g.virtualTableOffset = tableOffset;
+                g.collision1Present = false;
+                g.collision2Present = false;
+                mEntries.emplace_back(std::move(g));
+            }
+            index++;
+            counter++;
+        }
+    }
+    if (auto gameManagerPtr = spel2->get_GameManagerPtr(); gameManagerPtr != 0)
     {
-        auto questAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), "quests." + questName, spel2->get_StatePtr())));
-        size_t tableOffset = 0;
-        if (questAddress != 0)
+        auto screens_gamemanager = std::vector<std::string>{
+            "screen_logo",         "screen_intro",      "screen_prologue", "screen_title", "screen_menu",           "screen_options",      "screen_player_profile",
+            "screen_leaderboards", "screen_seed_input", "screen_camp",     "screen_level", "screen_online_loading", "screen_online_lobby",
+        };
+        index = 3000;
+        for (const auto& screenName : screens_gamemanager)
         {
-            tableOffset = (questAddress - vtl.tableStartAddress()) / sizeof(size_t);
-        }
-        bool foundInEntries = false;
-        for (auto& entry : mEntries)
-        {
-            if (entry.id == index)
+            auto offset = config->offsetForField(config->typeFields(MemoryFieldType::GameManager), screenName, gameManagerPtr);
+            auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(offset));
+            size_t tableOffset = 0;
+            if (screenAddress != 0)
             {
-                if (tableOffset != 0)
-                {
-                    entry.virtualTableOffset = tableOffset;
-                }
-                foundInEntries = true;
+                tableOffset = (screenAddress - vtl.tableStartAddress()) / sizeof(size_t);
             }
+            bool foundInEntries = false;
+            for (auto& entry : mEntries)
+            {
+                if (entry.id == index)
+                {
+                    if (tableOffset != 0)
+                    {
+                        entry.virtualTableOffset = tableOffset;
+                    }
+                    foundInEntries = true;
+                }
+            }
+            if (!foundInEntries)
+            {
+                auto g = GatheredDataEntry();
+                g.id = index;
+                std::string themeUpper = screenName;
+                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(themeUpper);
+                g.virtualTableOffset = tableOffset;
+                g.collision1Present = false;
+                g.collision2Present = false;
+                mEntries.emplace_back(std::move(g));
+            }
+            index++;
         }
-        if (!foundInEntries)
-        {
-            auto g = GatheredDataEntry();
-            g.id = index;
-            auto themeUpper = "QUEST_" + questName;
-            std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-            g.name = QString::fromStdString(themeUpper);
-            g.virtualTableOffset = tableOffset;
-            g.collision1Present = false;
-            g.collision2Present = false;
-            mEntries.emplace_back(std::move(g));
-        }
-        index++;
     }
+    if (statePtr != 0)
+    {
+        auto screens_state = std::vector<std::string>{
+            "screen_character_select",
+            "screen_team_select",
+            "screen_transition",
+            "screen_death",
+            "screen_win",
+            "screen_credits",
+            "screen_scores",
+            "screen_constellation",
+            "screen_recap",
+            "screen_arena_menu",
+            "screen_arena_stages_select1",
+            "screen_arena_items",
+            "screen_arena_intro",
+            "screen_arena_level",
+            "screen_arena_score",
+        };
+        index = 3500;
+        for (const auto& screenName : screens_state)
+        {
+            auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), screenName, statePtr)));
+            size_t tableOffset = 0;
+            if (screenAddress != 0)
+            {
+                tableOffset = (screenAddress - vtl.tableStartAddress()) / sizeof(size_t);
+            }
+            bool foundInEntries = false;
+            for (auto& entry : mEntries)
+            {
+                if (entry.id == index)
+                {
+                    if (tableOffset != 0)
+                    {
+                        entry.virtualTableOffset = tableOffset;
+                    }
+                    foundInEntries = true;
+                }
+            }
+            if (!foundInEntries)
+            {
+                auto g = GatheredDataEntry();
+                g.id = index;
+                std::string themeUpper = screenName;
+                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(themeUpper);
+                g.virtualTableOffset = tableOffset;
+                g.collision1Present = false;
+                g.collision2Present = false;
+                mEntries.emplace_back(std::move(g));
+            }
+            index++;
+        }
 
+        auto quests = std::vector<std::string>{
+            "yang", "jungle_sisters", "van_horsing", "sparrow", "madame_tusk", "beg",
+        };
+        index = 4000;
+        for (const auto& questName : quests)
+        {
+            auto questAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), "quests." + questName, statePtr)));
+            size_t tableOffset = 0;
+            if (questAddress != 0)
+            {
+                tableOffset = (questAddress - vtl.tableStartAddress()) / sizeof(size_t);
+            }
+            bool foundInEntries = false;
+            for (auto& entry : mEntries)
+            {
+                if (entry.id == index)
+                {
+                    if (tableOffset != 0)
+                    {
+                        entry.virtualTableOffset = tableOffset;
+                    }
+                    foundInEntries = true;
+                }
+            }
+            if (!foundInEntries)
+            {
+                auto g = GatheredDataEntry();
+                g.id = index;
+                auto themeUpper = "QUEST_" + questName;
+                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(themeUpper);
+                g.virtualTableOffset = tableOffset;
+                g.collision1Present = false;
+                g.collision2Present = false;
+                mEntries.emplace_back(std::move(g));
+            }
+            index++;
+        }
+    }
     endResetModel();
 }
 
