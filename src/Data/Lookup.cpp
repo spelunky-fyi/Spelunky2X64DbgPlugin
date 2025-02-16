@@ -204,16 +204,6 @@ const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable()
     }
 
     mStringsTable.ptr = addr;
-    for (auto stringIndex = 0; stringIndex < 5000; ++stringIndex)
-    {
-        size_t stringPointer = Script::Memory::ReadQword(mStringsTable.ptr + (stringIndex * sizeof(uintptr_t)));
-        if (Script::Memory::IsValidPtr(stringPointer))
-        {
-            mStringsTable.size++;
-        }
-        else
-            break;
-    }
     return mStringsTable;
 }
 

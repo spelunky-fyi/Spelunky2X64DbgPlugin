@@ -62,11 +62,13 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 void S2Plugin::ViewStringsTable::reload()
 {
     auto& stringTable = Spelunky2::get()->get_StringsTable();
+    auto stringsTableSize = stringTable.count(stringTable.modelCache()->rowCount() != 0); // recount unless it's the first reload call to initialise
+    setWindowTitle(QString("Strings table (%1 strings)").arg(stringsTableSize));
     stringTable.modelCache()->clear();
     stringTable.modelCache()->setHorizontalHeaderLabels({"ID", "Table offset", "Memory offset", "Value"});
     auto parrent = stringTable.modelCache()->invisibleRootItem();
 
-    for (uint32_t idx = 0; idx < stringTable.count(); ++idx)
+    for (uint32_t idx = 0; idx < stringsTableSize; ++idx)
     {
         QStandardItem* fieldID = new QStandardItem(QString::number(idx));
         auto offset = stringTable.addressOfIndex(idx);
@@ -81,7 +83,7 @@ void S2Plugin::ViewStringsTable::reload()
         parrent->appendRow(QList<QStandardItem*>() << fieldID << fieldTableOfset << fieldMemoryOffset << fieldValue);
     }
     // [Known Issue]: Because we use the same model for potentially multiple StringsTable windows
-    // the size will only be updated for this window when using "Reload" button
+    // the column size will only be updated for this window when using "Reload" button
     mMainTableView->setColumnWidth(gsColStringID, 50);
     mMainTableView->setColumnWidth(gsColStringTableOffset, 130);
     mMainTableView->setColumnWidth(gsColStringMemoryOffset, 130);
