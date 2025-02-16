@@ -23,7 +23,7 @@ namespace S2Plugin
         };
 
         //
-        uintptr_t get_GameManagerPtr();
+        uintptr_t get_GameManagerPtr(bool quiet = false);
         uintptr_t get_DebugSettingsPtr();
         uintptr_t get_SaveDataPtr(bool quiet);
         uintptr_t get_OnlinePtr();
@@ -81,7 +81,7 @@ namespace S2Plugin
         uintptr_t mGameAPIPtr{0};
         uintptr_t mHudPtr{0};
         uintptr_t mSaveStatesPtr{0};
-        uintptr_t mDebugSettings{0};
+        uintptr_t mDebugSettingsPtr{0};
 
         EntityDB mEntityDB;
         ParticleDB mParticleDB;

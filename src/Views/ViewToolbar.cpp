@@ -386,7 +386,7 @@ void S2Plugin::ViewToolbar::showOnline()
 
 void S2Plugin::ViewToolbar::showEntities()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid() && Spelunky2::get()->get_HeapBase(false) != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HeapBase(false) != 0)
     {
         auto w = new ViewEntities();
         auto win = mMDIArea->addSubWindow(w);
