@@ -2192,15 +2192,21 @@
     ],
     "Robot": [
       { "field": "sound", "type": "SoundMeta" },
-      { "field": "emitted_light_explosion", "type": "IlluminationPointer" }
+      { "field": "emitted_light_explosion", "type": "IlluminationPointer" },
+	  { "field": "unknown1", "type": "UnsignedByte" }
     ],
     "Quillback": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "particle", "type": "ParticleEmitterInfoPointer" },
       {
         "field": "unknown_state",
-        "type": "Flags16",
+        "type": "Flags8",
         "comment": "accessed as byte and word, so, flags?, changed mostly when breaking floors"
+      },
+      {
+        "field": "hit_wall_direction",
+        "type": "byte",
+        "comment": "set when in apply_movement to 1 when colliding with a hard wall to the left, -1 if to the right, 0 if no collision."
       },
       { "field": "unknown_timer", "type": "UnsignedByte" },
       { "field": "seen_player", "type": "Bool" }
@@ -2878,18 +2884,18 @@
         "type": "Float",
         "comment": "is it? i seen it in the code compared as a bit with 1, but not sure when it happens"
       },
-      { "field": "drop", "type": "Bool" },
+      { "field": "rotation_direction", "type": "Bool", "comment": "Counter-clockwise if true" },
       { "field": "unknown3", "type": "Bool" },
       {
-        "field": "looking_for_new_direction_timer",
+        "field": "wall_collision_cooldown",
         "type": "UnsignedByte",
         "comment": "used when he touches floor/wall/ceiling"
       },
       { "field": "padding1", "type": "UnsignedByte" },
       {
-        "field": "unknown6_timer",
+        "field": "rotation_direction_timer",
         "type": "UnsignedWord",
-        "comment": "paused when not moving"
+        "comment": "switch between clockwise/counter-clockwise"
       },
       {
         "field": "walk_pause_timer",
@@ -5041,19 +5047,17 @@
       { "field": "hand/feet_x_offset", "type": "Float" },
       { "field": "hand/feet_y_offset", "type": "Float" },
       {
-        "field": "x_unk5",
-        "type": "Float",
-        "comment": "all of those are offsets/positions of different joints, i'm too lazy to document thme all"
-      },
-      { "field": "y_unk6", "type": "Float" },
-      { "field": "x_unk7", "type": "Float" },
-      { "field": "y_unk8", "type": "Float" },
-      { "field": "x_unk9", "type": "Float" },
-      { "field": "y_unk10", "type": "Float" },
+        "field": "abs_x", "type": "Float" },
+      { "field": "abs_y", "type": "Float" },
+      { "field": "move_origin_x", "type": "Float" },
+      { "field": "move_origin_y", "type": "Float" },
+      { "field": "move_destination_x", "type": "Float" },
+      { "field": "move_destination_y", "type": "Float" },
       { "field": "unk11", "type": "Float" },
       { "field": "unk12", "type": "Float" },
       { "field": "unk13", "type": "Float" },
-      { "field": "move_timer", "type": "UnsignedWord" },
+      { "field": "elapsed_move_time", "type": "UnsignedByte" },
+      { "field": "move_timer", "type": "UnsignedByte" },
       { "field": "flip_vertical", "type": "Bool" }
     ],
     "LogicalConveyorbeltSound": [
