@@ -1293,7 +1293,7 @@
         "field": "cutscene_logic",
         "type": "CutsceneBehavior",
         "pointer": true,
-        "comment": "seams to be the same structs used in state.logic ? or similar at least"
+        "comment": "seems to be the same structs used in state.logic ? or similar at least"
       },
       { "field": "movex", "type": "Float" },
       { "field": "movey", "type": "Float" },
@@ -1328,7 +1328,7 @@
       {
         "field": "lock_input_timer",
         "type": "UnsignedWord",
-        "comment": "Related to taking damage, also drops you from ladder/rope, can't be set while on the ground unless you'r on a mount"
+        "comment": "Related to taking damage, also drops you from ladder/rope, can't be set while on the ground unless you're on a mount"
       },
       { "field": "wet_effect_timer", "type": "UnsignedWord" },
       { "field": "poison_tick_timer", "type": "Word" },
@@ -4171,7 +4171,7 @@
       {
         "field": "unknown",
         "type": "Float",
-        "comment": "seams to be distance between camera_anchor and telescope, but it's off by a little"
+        "comment": "seems to be distance between camera_anchor and telescope, but it's off by a little"
       }
     ],
     "Torch": [
@@ -4797,7 +4797,7 @@
       {
         "field": "attack_angle2",
         "type": "Float",
-        "comment": "seams to be exactly the same as above"
+        "comment": "seems to be exactly the same as above"
       },
       { "field": "unknown", "type": "Bool" }
     ],
@@ -4980,7 +4980,7 @@
       {
         "field": "zoomin_level",
         "type": "Float",
-        "comment": "can be set to negaative, seams to trigger the warp at some value"
+        "comment": "can be set to negative, seems to trigger the warp at some value"
       }
     ],
     "CinematicAnchor": [
