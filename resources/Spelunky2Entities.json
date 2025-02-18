@@ -1308,7 +1308,7 @@
         "field": "cutscene_logic",
         "type": "CutsceneBehavior",
         "pointer": true,
-        "comment": "seams to be the same structs used in state.logic ? or similar at least"
+        "comment": "seems to be the same structs used in state.logic ? or similar at least"
       },
       { "field": "movex", "type": "Float" },
       { "field": "movey", "type": "Float" },
@@ -4210,7 +4210,7 @@
       {
         "field": "unknown",
         "type": "Float",
-        "comment": "seams to be distance between camera_anchor and telescope, but it's off by a little"
+        "comment": "seems to be distance between camera_anchor and telescope, but it's off by a little"
       }
     ],
     "Torch": [
@@ -4836,7 +4836,7 @@
       {
         "field": "attack_angle2",
         "type": "Float",
-        "comment": "seams to be exactly the same as above"
+        "comment": "seems to be exactly the same as above"
       },
       { "field": "unknown", "type": "Bool" }
     ],
@@ -5019,7 +5019,7 @@
       {
         "field": "zoomin_level",
         "type": "Float",
-        "comment": "can be set to negative, seams to trigger the warp at some value"
+        "comment": "can be set to negative, seems to trigger the warp at some value"
       }
     ],
     "CinematicAnchor": [
