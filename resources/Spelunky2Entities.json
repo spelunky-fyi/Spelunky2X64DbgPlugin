@@ -1359,8 +1359,12 @@
         "comment": "blinks the entity"
       },
       { "field": "frozen_timer", "type": "UnsignedByte" },
-      { "field": "unknown_damage_counter_a", "type": "UnsignedByte" },
-      { "field": "unknown_damage_counter_b", "type": "UnsignedByte" },
+      {
+        "field": "dont_damage_owner_timer",
+        "type": "UnsignedByte"
+        "comment": "When > 0, will not deal damage to the owner_uid, so that throwing an object does not harm yourself."
+      },
+      { "field": "knockback_invincibility_timer", "type": "UnsignedByte" },
       {
         "field": "i120a",
         "type": "UnsignedByte",
@@ -1372,7 +1376,7 @@
       { "field": "b124", "type": "UnsignedByte" },
       { "field": "falling_timer", "type": "UnsignedByte" },
       {
-        "field": "b126",
+        "field": "exit_gold_invincibility_timer",
         "type": "UnsignedByte",
         "comment": "timer, after layer change?"
       },
