@@ -1997,8 +1997,8 @@
         "type": "Word",
         "comment": "counts up to 400 (6.6 sec); when 0 the pet yells out"
       },
-      { "field": "unknown1", "type": "UnsignedWord" },
-      { "field": "unknown2", "type": "UnsignedWord" },
+      { "field": "sit_timer", "type": "UnsignedWord" },
+      { "field": "sit_cooldown_timer", "type": "UnsignedWord" },
       {
         "field": "func_timer",
         "type": "Word",
@@ -2197,7 +2197,11 @@
     "Robot": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "emitted_light_explosion", "type": "IlluminationPointer" },
-	  { "field": "unknown1", "type": "UnsignedByte" }
+	  {
+        "field": "prev_move_state",
+        "type": "UnsignedByte",
+        "comment": "used to return to the correct state when landing after falling when activated"
+      }
     ],
     "Quillback": [
       { "field": "sound", "type": "SoundMeta" },
@@ -2242,7 +2246,7 @@
         "comment": "amount of gold he picked up, will be dropped on death"
       },
       { "field": "timer_after_humping", "type": "UnsignedByte" },
-      { "field": "unknown", "type": "UnsignedByte" },
+      { "field": "jump_trigger", "type": "Bool", "comment": "triggers a jump on the next frame" },
       { "field": "padding", "type": "UnsignedWord" },
       {
         "field": "collected_treasure",
@@ -2541,7 +2545,7 @@
       }
     ],
     "CatMummy": [
-      { "field": "ai_state", "type": "UnsignedByte" },
+      { "field": "jump_height_multiplier", "type": "UnsignedByte" },
       { "field": "attack_timer", "type": "UnsignedByte" }
     ],
     "Sorceress": [
@@ -2648,7 +2652,7 @@
       },
       { "field": "left_hand_uid", "type": "EntityUID" },
       { "field": "moving_left", "type": "Bool" },
-      { "field": "targeting_timer?", "type": "UnsignedByte" },
+      { "field": "oscillation_position", "type": "UnsignedByte" },
       { "field": "invincibility_timer", "type": "UnsignedByte" }
     ],
     "OsirisHand": [
@@ -2660,12 +2664,8 @@
         "type": "UnsignedWord",
         "comment": "when 0 it jumps"
       },
-      { "field": "unknown1", "type": "UnsignedByte" },
-      {
-        "field": "unknown2",
-        "type": "UnsignedByte",
-        "comment": "seen timer here once maybe? it's accessed right as he jumps from the UFO"
-      }
+      { "field": "shudder_timer", "type": "UnsignedByte" },
+      { "field": "leg_shake_timer", "type": "UnsignedByte" }
     ],
     "UFO": [
       { "field": "sound", "type": "SoundMeta" },
@@ -2675,21 +2675,13 @@
         "comment": "pos = right, neg = left"
       },
       { "field": "attack_cooldown_timer", "type": "UnsignedByte" },
-      {
-        "field": "is_falling",
-        "type": "Bool",
-        "comment": "read only, manually setting this true has no effect"
-      }
+      { "field": "is_rising", "type": "Bool" }
     ],
     "Lahamu": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "eyeball", "type": "EntityPointer" },
       { "field": "attack_cooldown_timer", "type": "UnsignedWord" },
-      {
-        "field": "unknown_proximity_related",
-        "type": "Bool",
-        "comment": "gets set to true when you get close to Lahamu"
-      }
+      { "field": "has_logged_to_journal", "type": "Bool" }
     ],
     "YetiQueen": [
       {
@@ -2785,9 +2777,9 @@
       },
       { "field": "attack_angle", "type": "Float" },
       {
-        "field": "unknown_state",
-        "type": "UnsignedByte",
-        "comment": "bool: is flying when attacking?"
+        "field": "was_flying",
+        "type": "Bool",
+        "comment": "Lets lamassu know what state to go to after finishing an attack"
       }
     ],
     "Olmite": [
@@ -3079,9 +3071,9 @@
         "comment": "defaults to true, when toggled to false, a new carried item spawns"
       },
       {
-        "field": "unknown",
-        "type": "UnsignedByte",
-        "comment": "sometimes i see 1 here, didn't get anything with break-point"
+        "field": "moving_up",
+        "type": "Bool",
+        "comment": "when climbing a pole"
       }
     ],
     "Necromancer": [
@@ -3089,7 +3081,7 @@
       { "field": "red_skeleton_spawn_x", "type": "Float" },
       { "field": "red_skeleton_spawn_y", "type": "Float" },
       { "field": "resurrection_uid", "type": "EntityUID" },
-      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "target_layer", "type": "UnsignedByte" },
       { "field": "resurrection_timer", "type": "UnsignedByte" }
     ],
     "ProtoShopkeeper": [
