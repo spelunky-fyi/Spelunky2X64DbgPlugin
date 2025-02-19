@@ -1361,7 +1361,7 @@
       { "field": "frozen_timer", "type": "UnsignedByte" },
       {
         "field": "dont_damage_owner_timer",
-        "type": "UnsignedByte"
+        "type": "UnsignedByte",
         "comment": "When > 0, will not deal damage to the owner_uid, so that throwing an object does not harm yourself."
       },
       { "field": "knockback_invincibility_timer", "type": "UnsignedByte" },
@@ -1997,8 +1997,8 @@
         "type": "Word",
         "comment": "counts up to 400 (6.6 sec); when 0 the pet yells out"
       },
-      { "field": "sit_timer", "type": "UnsignedWord" },
-      { "field": "sit_cooldown_timer", "type": "UnsignedWord" },
+      { "field": "sit_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
+      { "field": "sit_cooldown_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
       {
         "field": "func_timer",
         "type": "Word",
