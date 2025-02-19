@@ -344,7 +344,8 @@
     "Present": "Purchasable",
     "Web": "Movable",
     "CrushElevator": "Movable",
-    "Scepter": "Movable"
+    "Scepter": "Movable",
+    "Whip": "Movable"
   },
   // a mapping of a regular expression or full name of an entity to its type
   "default_entity_types": {
@@ -497,6 +498,7 @@
     "ITEM_ROCK": "Purchasable",
     "ITEM_SKULL": "Purchasable",
     "ITEM_MACHETE": "Purchasable",
+    "ITEM_WHIP": "Whip",
     "ITEM_WHIP_FLAME": "FlameSize",
     "ITEM_BOMB": "Bomb",
     "ITEM_PASTEBOMB": "Bomb",
@@ -5261,5 +5263,6 @@
       }
     ],
     "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }]
+    "Whip": [{ "field": "flaming", "type": "Bool" }]
   }
 }
