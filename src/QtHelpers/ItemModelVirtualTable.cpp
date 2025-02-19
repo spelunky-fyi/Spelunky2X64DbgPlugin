@@ -6,13 +6,6 @@
 #include "Spelunky2.h"
 #include "pluginmain.h"
 
-S2Plugin::ItemModelVirtualTable::ItemModelVirtualTable(QObject* parent) : QAbstractItemModel(parent)
-{
-    auto config = Configuration::get();
-    mLayer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", Spelunky2::get()->get_StatePtr());
-    mLayer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", Spelunky2::get()->get_StatePtr());
-}
-
 QVariant S2Plugin::ItemModelVirtualTable::data(const QModelIndex& index, int role) const
 {
     if (role == Qt::DisplayRole)
@@ -73,6 +66,17 @@ QVariant S2Plugin::ItemModelVirtualTable::headerData(int section, Qt::Orientatio
 
 void S2Plugin::ItemModelVirtualTable::detectEntities()
 {
+    auto statePtr = Spelunky2::get()->get_StatePtr(false);
+    if (statePtr == 0)
+        return;
+
+    if (mLayer0Offset == 0 || mLayer1Offset == 0)
+    {
+        auto config = Configuration::get();
+        mLayer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", 0);
+        mLayer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", 0);
+    }
+
     auto processEntities = [&](size_t layerEntities, uint32_t count)
     {
         size_t maximum = (std::min)(count, 10000u);
@@ -88,12 +92,12 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
     };
 
     beginResetModel();
-    auto layer0 = Script::Memory::ReadQword(mLayer0Offset);
+    auto layer0 = Script::Memory::ReadQword(mLayer0Offset + statePtr);
     auto layer0Count = Script::Memory::ReadDword(layer0 + 28);
     auto layer0Entities = Script::Memory::ReadQword(layer0 + 8);
     processEntities(layer0Entities, layer0Count);
 
-    auto layer1 = Script::Memory::ReadQword(mLayer1Offset);
+    auto layer1 = Script::Memory::ReadQword(mLayer1Offset + statePtr);
     auto layer1Count = Script::Memory::ReadDword(layer1 + 28);
     auto layer1Entities = Script::Memory::ReadQword(layer1 + 8);
     processEntities(layer1Entities, layer1Count);
