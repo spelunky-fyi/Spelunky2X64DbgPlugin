@@ -403,13 +403,13 @@ void S2Plugin::ViewToolbar::showGameAPI()
     {
         auto ptr = Spelunky2::get()->get_GameAPIPtr();
         if (ptr != 0)
-    {
+        {
             auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::GameAPI), "GameAPI");
-        auto win = mMDIArea->addSubWindow(w);
-        win->setVisible(true);
-        win->setAttribute(Qt::WA_DeleteOnClose);
+            auto win = mMDIArea->addSubWindow(w);
+            win->setVisible(true);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+        }
     }
-}
 }
 
 void S2Plugin::ViewToolbar::showHud()
@@ -433,13 +433,13 @@ void S2Plugin::ViewToolbar::showDebugSettings()
     {
         auto ptr = Spelunky2::get()->get_DebugSettingsPtr();
         if (ptr != 0)
-    {
+        {
             auto w = new ViewStruct(ptr, Configuration::get()->typeFieldsOfDefaultStruct("DebugSettings"), "Debug Settings");
-        auto win = mMDIArea->addSubWindow(w);
-        win->setVisible(true);
-        win->setAttribute(Qt::WA_DeleteOnClose);
+            auto win = mMDIArea->addSubWindow(w);
+            win->setVisible(true);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+        }
     }
-}
 }
 
 void S2Plugin::ViewToolbar::showEntityFactory()
