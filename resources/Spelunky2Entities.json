@@ -5042,8 +5042,7 @@
       { "field": "y_pos", "type": "Float" },
       { "field": "hand/feet_x_offset", "type": "Float" },
       { "field": "hand/feet_y_offset", "type": "Float" },
-      {
-        "field": "abs_x", "type": "Float" },
+      { "field": "abs_x", "type": "Float" },
       { "field": "abs_y", "type": "Float" },
       { "field": "move_origin_x", "type": "Float" },
       { "field": "move_origin_y", "type": "Float" },
