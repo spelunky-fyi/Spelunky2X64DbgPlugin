@@ -1366,9 +1366,9 @@
       },
       { "field": "knockback_invincibility_timer", "type": "UnsignedByte" },
       {
-        "field": "i120a",
+        "field": "damage_owner_timer",
         "type": "UnsignedByte",
-        "comment": "timer, damage related"
+        "comment": "timer for resetting owner_uid"
       },
       { "field": "i120b", "type": "UnsignedByte", "comment": "timer" },
       { "field": "throw_damage_immunity_timer", "type": "UnsignedByte" },
