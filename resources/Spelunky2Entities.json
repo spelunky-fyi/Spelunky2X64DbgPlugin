@@ -5097,7 +5097,7 @@
         "type": "Dword",
         "comment": "can be set negative for longer time period, spawns boulder at 150, setting it higher with count to overflow"
       },
-      { "field": "padding?", "type": "Dword" },
+      { "field": "owner_uid", "type": "EntityUID" },
       { "field": "sound", "type": "SoundMeta" }
     ],
     "PipeTravelerSound": [
