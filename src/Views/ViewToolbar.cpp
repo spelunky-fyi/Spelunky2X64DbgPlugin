@@ -289,7 +289,7 @@ S2Plugin::ViewTextureDB* S2Plugin::ViewToolbar::showTextureDB()
 
 S2Plugin::ViewCharacterDB* S2Plugin::ViewToolbar::showCharacterDB()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid() && Spelunky2::get()->get_CharacterDB().isValid())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_CharacterDB().isValid())
     {
         auto w = new ViewCharacterDB();
         auto win = mMDIArea->addSubWindow(w);

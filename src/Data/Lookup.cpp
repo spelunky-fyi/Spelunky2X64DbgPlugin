@@ -168,19 +168,18 @@ const S2Plugin::CharacterDB& S2Plugin::Spelunky2::get_CharacterDB()
         return mCharacterDB;
     }
 
-    const size_t characterSize = mCharacterDB.characterSize();
-    auto& stringsTable = get_StringsTable();
-    if (stringsTable.isValid())
-    {
-        for (size_t x = 0; x < 20; ++x)
-        {
-            size_t startOffset = mCharacterDB.ptr + (x * characterSize);
-            size_t offset = startOffset;
-            QString characterName = stringsTable.stringForIndex(Script::Memory::ReadDword(offset + 0x14));
-
-            mCharacterDB.mCharacterNamesStringList << characterName;
-        }
-    }
+    // const size_t characterSize = mCharacterDB.characterSize();
+    // auto& stringsTable = get_StringsTable();
+    // if (stringsTable.isValid())
+    //{
+    //    for (size_t x = 0; x < 20; ++x)
+    //    {
+    //        size_t startOffset = mCharacterDB.ptr + (x * characterSize);
+    //        size_t offset = startOffset;
+    //        QString characterName = stringsTable.stringForIndex(Script::Memory::ReadDword(offset + 0x14));
+    //        mCharacterDB.mCharacterNamesStringList << characterName;
+    //    }
+    //}
     return mCharacterDB;
 }
 

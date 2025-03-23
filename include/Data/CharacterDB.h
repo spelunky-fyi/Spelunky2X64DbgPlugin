@@ -15,17 +15,22 @@ namespace S2Plugin
         }
         const QStringList& characterNamesStringList() const noexcept
         {
-            return mCharacterNamesStringList;
+            static QStringList characterNames = {
+                "Ana Spelunky",      "Margaret Tunnel", "Colin Northward", "Roffy D. Sloth", "Alto Singh",    "Liz Mutton", "Nekka The Eagle",   "LISE Project",
+                "Coco Von Diamonds", "Manfred Tunnel",  "Little Jay",      "Tina Flan",      "Valerie Crump", "Au",         "Demi Von Diamonds", "Pilot",
+                "Princess Airyn",    "Dirk Yamaoka",    "Guy Spelunky",    "Classic Guy",
+            };
+            return characterNames;
         }
-        bool isValid() const
+        bool isValid() const noexcept
         {
             return ptr != 0;
         }
-        uintptr_t addressOfIndex(uint8_t id) const
+        uintptr_t addressOfIndex(uint8_t id) const noexcept
         {
             return ptr + id * characterSize();
         }
-        static constexpr size_t characterSize()
+        static constexpr size_t characterSize() noexcept
         {
             // [Known Issue]: constant value, needs to rebuild program to update
             return 0x2Cu;
@@ -33,7 +38,6 @@ namespace S2Plugin
 
       private:
         uintptr_t ptr{0};
-        QStringList mCharacterNamesStringList;
 
         CharacterDB() = default;
         ~CharacterDB(){};
