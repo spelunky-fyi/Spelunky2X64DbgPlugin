@@ -80,5 +80,5 @@ QString S2Plugin::ViewParticleDB::recordNameForID(ID_type id) const
 
 uintptr_t S2Plugin::ViewParticleDB::addressOfRecordID(ID_type id) const
 {
-    return Spelunky2::get()->get_ParticleDB().addressOfIndex(id);
+    return Spelunky2::get()->get_ParticleDB().addressOfIndex(id - 1);
 }
