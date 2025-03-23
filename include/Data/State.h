@@ -4,7 +4,7 @@
 
 namespace S2Plugin
 {
-    struct State
+    struct State // TODO: probably remove since it's only for one function
     {
         explicit State(uintptr_t addr) : mStatePtr(addr){};
 
