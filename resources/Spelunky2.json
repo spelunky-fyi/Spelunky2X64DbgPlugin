@@ -988,7 +988,7 @@
       {
         "field": "invisible",
         "type": "Bool",
-        "comment": "used for shockwaves and warping"
+        "comment": "used for shock waves and warping"
       },
       { "field": "unknown39", "type": "Bool" },
       { "field": "unknown40", "type": "UnsignedByte" },
@@ -1450,7 +1450,7 @@
       { "field": "input_index_unknown", "type": "Byte" },
       { "field": "padding_probably1", "type": "Byte" },
       { "field": "padding_probably2", "type": "Word" },
-      { "field": "next_player_entrence", "type": "Dword" },
+      { "field": "next_player_entrance", "type": "Dword" },
       { "field": "leader player slot?", "type": "Byte" },
       { "field": "unknown24", "type": "Byte" },
       { "field": "padding_probably3", "type": "Word" },
@@ -2281,7 +2281,7 @@
     "ScreenMenuOption": [
       { "field": "option_name", "type": "StringsTableID" },
       { "field": "y_position", "type": "Float" },
-      { "field": "brigthness", "type": "Float" },
+      { "field": "brightness", "type": "Float" },
       { "field": "enabled", "type": "Bool" },
       { "field": "-", "type": "Skip", "offset": 3 },
       {
@@ -2681,7 +2681,7 @@
       {
         "field": "unknown57",
         "type": "UnsignedQword",
-        "comment": "grabage/unused?"
+        "comment": "garbage/unused?"
       }
     ],
     "ScreenStandardLayout": [
@@ -3641,8 +3641,8 @@
           "18": "Dark level (draw halo)",
           "19": "Altar destroyed",
           "20": "Allow pause",
-          "21": "Hide hud, transition",
-          "22": "Hide hud, camp",
+          "21": "Hide HUD, transition",
+          "22": "Hide HUD, camp",
           "23": "Have clover",
           "24": "You feel forgiven level",
           "25": "",
@@ -3939,7 +3939,7 @@
       {
         "field": "value2",
         "type": "UnsignedQword",
-        "comment": "get's incremented with a `lock'"
+        "comment": "gets incremented with a `lock'"
       }
     ],
     "AITarget": [
@@ -7384,7 +7384,7 @@
           "7": "platform",
           "8": "platform"
         },
-        "comment": "platform is using the 6 remaining bits, hard to visualise that here"
+        "comment": "platform is using the 6 remaining bits, hard to visualize that here"
       },
       { "field": "character", "type": "State8", "ref": "character_states" },
       {
@@ -7873,7 +7873,7 @@
         "comment": "grid_entities 126*86*8 minus the one above"
       },
       {
-        "field": "entities_overlaping_grid",
+        "field": "entities_overlapping_grid",
         "type": "Matrix",
         "row": 126,
         "col": 86,
@@ -7933,7 +7933,7 @@
         "comment": "Entity**"
       },
       {
-        "field": "udis",
+        "field": "uids",
         "type": "DataPointer",
         "comment": "int32_t*"
       },
@@ -8074,7 +8074,7 @@
           },
           "2": {
             "name": "get_name?",
-            "params": "void* buttor, uint32_t size"
+            "params": "void* buffer, uint32_t size"
           },
           "3": { "name": "~SoundMeta" },
           "4": {
@@ -8110,7 +8110,7 @@
       {
         "field": "destroy_sound",
         "type": "Bool",
-        "comment": "only backgound music?"
+        "comment": "only background music?"
       }
     ],
     "RenderInfoPointer": [
@@ -8144,7 +8144,7 @@
       { "field": "y", "type": "Float" },
       { "field": "unknown3", "type": "UnsignedDword" },
       { "field": "offset_x", "type": "Float" },
-      { "field": "offste_y", "type": "Float" },
+      { "field": "offset_y", "type": "Float" },
       { "field": "unknown6", "type": "UnsignedDword" },
       { "field": "unknown7", "type": "UnsignedDword" },
       { "field": "unknown8", "type": "Float" },
@@ -8188,7 +8188,7 @@
       {
         "field": "destination_bottom_left_x",
         "type": "Float",
-        "comment": "in woorld coords"
+        "comment": "in world coords"
       },
       { "field": "destination_bottom_left_y", "type": "Float" },
       { "field": "destination_bottom_left_unknown", "type": "Float" },
@@ -8220,7 +8220,7 @@
       {
         "field": "x_dupe4",
         "type": "Float",
-        "comment": "this will be writen into x next refresh"
+        "comment": "this will be written into x next refresh"
       },
       { "field": "y_dupe4", "type": "Float" },
       { "field": "angle1", "type": "Float" },
@@ -8455,7 +8455,7 @@
             "return": "bool",
             "comment": [
               "used to make the player invincible in basecamp (but does an OOB check)",
-              "if you return false in other themes you are invincible except for crushing deaths, and you do still experience knockback and stun"
+              "if you return false in other themes you are invincible except for crushing deaths, and you do still experience knock back and stun"
             ]
           },
           "38": {
@@ -8572,7 +8572,7 @@
       {
         "field": "allow_bees",
         "type": "Bool",
-        "comment": "will have a chance to change rooms to behive if true"
+        "comment": "will have a chance to change rooms to beehive if true"
       },
       { "field": "allow_leprechaun", "type": "Bool" },
       { "field": "padding1?", "type": "UnsignedByte" },
@@ -8616,7 +8616,7 @@
         "type": "DataPointer",
         "comment": "points to the next element in list (StrListIteratorPointer)"
       },
-      { "field": "value", "type": "Dword", "comment": "type can varray" }
+      { "field": "value", "type": "Dword", "comment": "type can vary" }
     ],
     "LiquidPhysicsEngine": [
       { "field": "pause_physics", "type": "Bool" },
@@ -8711,7 +8711,7 @@
       {
         "field": "unknown61",
         "type": "SomeUnknownArray",
-        "comment": "array of some pointers, amongst them is MysteryLiquidPointer2? maybe?"
+        "comment": "array of some pointers, among them is MysteryLiquidPointer2? maybe?"
       },
       { "field": "unknown63a", "type": "Dword" },
       { "field": "unknown63b", "type": "Dword" },
@@ -8770,7 +8770,7 @@
         "comment": "LiquidParam->cohesion?, surface tension? setting it to -1 makes the blobs repel each other"
       },
       {
-        "field": "current_gavity",
+        "field": "current_gravity",
         "type": "Float",
         "comment": "LiquidParam->gravity"
       },
@@ -8986,7 +8986,7 @@
       {
         "field": "ai_state",
         "type": "Byte",
-        "comment": "8 = HH agro, flags maybe?"
+        "comment": "8 = HH aggro, flags maybe?"
       },
       { "field": "last_ai_state", "type": "Byte" },
       { "field": "trust", "type": "Byte" },
@@ -8996,7 +8996,7 @@
       {
         "field": "walk_pause_timer",
         "type": "Word",
-        "comment": "positive: walking, negative: wating/idle"
+        "comment": "positive: walking, negative: waiting/idle"
       },
       { "field": "unknown19", "type": "Word" },
       {
@@ -9004,7 +9004,7 @@
         "type": "Word",
         "comment": "distance to target?"
       },
-      { "field": "targer_uid", "type": "EntityUID" },
+      { "field": "target_uid", "type": "EntityUID" },
       { "field": "unknown22", "type": "Byte" },
       { "field": "unknown23", "type": "Byte" },
       { "field": "unknown24", "type": "Byte" },
@@ -9745,7 +9745,7 @@
       {
         "field": "unknown2",
         "type": "Dword",
-        "comment": "some weird padding? since all fields are 32bit max feels wierd to be here"
+        "comment": "some weird padding? since all fields are 32bit max feels weird to be here"
       }
     ],
     "HudMoney": [
@@ -9799,7 +9799,7 @@
       {
         "field": "level_icon",
         "type": "TextureRenderingInfo",
-        "comment": "inco, seeded incon, angry shopkeeper etc."
+        "comment": "icon, seeded icon, angry shopkeeper etc."
       },
       { "field": "seed_background", "type": "TextureRenderingInfo" },
       { "field": "roll_in", "type": "Float" },
@@ -9835,7 +9835,7 @@
         "field": "hud_elements?",
         "type": "StdVector",
         "valuetype": "DataPointer",
-        "comment": "Just pointers to the hud elements"
+        "comment": "Just pointers to the HUD elements"
       },
       { "field": "unknown20", "type": "UnsignedDword" },
       { "field": "unknown21", "type": "UnsignedByte" },
