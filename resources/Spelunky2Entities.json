@@ -855,7 +855,7 @@
           "11": {
             "name": "v11",
             "return": "bool",
-            "comment": "for arrows: returns true if it's moving (for y possibily checks for some speed as well?)"
+            "comment": "for arrows: returns true if it's moving (for y possibly checks for some speed as well?)"
           },
           "12": {
             "name": "is_in_liquid",
@@ -942,7 +942,7 @@
           "31": {
             "name": "on_ledge_grab",
             "params": "Entity* who",
-            "comment": "only ACTIVEFLOOR_FALLING_PLATFORM, does something with game menager"
+            "comment": "only ACTIVEFLOOR_FALLING_PLATFORM, does something with game manager"
           },
           "32": {
             "name": "on_stood_on_by",
@@ -959,7 +959,7 @@
           },
           "35": {
             "name": "liberate_from_shop",
-            "params": "bool clear_parrent",
+            "params": "bool clear_parent",
             "comment": "can also be seen as event: when you anger the shopkeeper, this function gets called for each item; `clear_parent` used only for CHAR_* entities, sets the `linked_companion_parent` to -1. It's not called when item is bought"
           },
           "36": { "name": "apply_db", "comment": "This is actually just an initialize call that is happening once after  the entity is created" }
@@ -1256,7 +1256,7 @@
             "params": "Entity* entity, float, Entity* floor, float, bool",
             "comment": "on_contact_with_ground ? calls on_stood_on_by, on_fall_onto"
           },
-          "88": { "name": "v88", "params": "Entity* entity, float vecloty", "comment": "on_ragdoll? - for player, triggers only when you throw him into wall/ground/celling" },
+          "88": { "name": "v88", "params": "Entity* entity, float velocity", "comment": "on_ragdoll? - for player, triggers only when you throw him into wall/ground/ceiling" },
           "89": {
             "name": "v89",
             "params": "void*, void*, bool, bool default_return_flipped",
@@ -1285,7 +1285,7 @@
         "type": "StdMap",
         "keytype": "UnsignedDword",
         "valuetype": "MovableBehavior",
-        "comment": "map of avaible behaviors for this entity, behavior is just a vtable"
+        "comment": "map of available behaviors for this entity, behavior is just a vtable"
       },
       { "field": "behaviors", "type": "StdSet", "keytype": "MovableBehavior" },
       { "field": "current_behavior", "type": "MovableBehavior" },
@@ -1328,7 +1328,7 @@
       {
         "field": "lock_input_timer",
         "type": "UnsignedWord",
-        "comment": "Related to taking damage, also drops you from ladder/rope, can't be set while on the ground unless you'r on a mount"
+        "comment": "Related to taking damage, also drops you from ladder/rope, can't be set while on the ground unless you're on a mount"
       },
       { "field": "wet_effect_timer", "type": "UnsignedWord" },
       { "field": "poison_tick_timer", "type": "Word" },
@@ -1458,7 +1458,7 @@
         "field": "can_use",
         "type": "Flags8",
         "flags": {
-          "1": "is overlaying something or is attached to something or who the hell knowns sometimes",
+          "1": "is overlaying something or is attached to something or who the hell knows sometimes",
           "2": "changing layer",
           "3": "unknown, stays on when switching on",
           "4": "unknown, stays on when switching on",
@@ -1646,7 +1646,7 @@
         "comment": "Controls ghost pacing when all players are dead."
       },
       {
-        "field": "ghost_behaviour",
+        "field": "ghost_behavior",
         "type": "State8",
         "states": {
           "0": "standard, chasing",
@@ -1721,7 +1721,7 @@
         "vftablefunctions": {
           "101": {
             "name": "spawn_offset_related",
-            "comment": "disabling this function makes the spider spawn in wierd position"
+            "comment": "disabling this function makes the spider spawn in weird position"
           },
           "102": {
             "name": "v_102",
@@ -1840,7 +1840,7 @@
       {
         "field": "was_hurt",
         "type": "Bool",
-        "comment": "also is set true if you set aggro to true, get's trigger even when whiping"
+        "comment": "also is set true if you set aggro to true, gets trigger even when whipping"
       },
       { "field": "padding1", "type": "UnsignedByte" },
       { "field": "padding2", "type": "UnsignedByte" },
@@ -2013,7 +2013,7 @@
       {
         "field": "cooldown_timer",
         "type": "Word",
-        "comment": "used fo chatting with other monsters, attack cooldowns etc."
+        "comment": "used for chatting with other monsters, attack cool downs etc."
       }
     ],
     "Caveman": [
@@ -2206,7 +2206,7 @@
       {
         "field": "gold",
         "type": "UnsignedWord",
-        "comment": "ammoung of gold he picked up, will be droped on death"
+        "comment": "amount of gold he picked up, will be dropped on death"
       },
       { "field": "timer_after_humping", "type": "UnsignedByte" },
       { "field": "unknown", "type": "UnsignedByte" },
@@ -2297,7 +2297,7 @@
       {
         "field": "show_text",
         "type": "Bool",
-        "comment": "if set to true, he will say 'i've been hunting this fiend a long time!' when on screen"
+        "comment": "if set to true, he will say 'I've been hunting this fiend a long time!' when on screen"
       },
       {
         "field": "special_message_shown",
@@ -2385,14 +2385,14 @@
         "states": {
           "0": "none",
           "1": "Tusk dice shop",
-          "2": "Entrence to pleasure palace",
+          "2": "Entrance to pleasure palace",
           "3": "Basement entrance to pleasure palace"
         }
       },
       {
         "field": "message_shown",
         "type": "Bool",
-        "comment": "entrence and basement entrence"
+        "comment": "entrance and basement entrance"
       }
     ],
     "Fish": [{ "field": "change_direction_timer", "type": "UnsignedDword" }],
@@ -2462,7 +2462,7 @@
       {
         "field": "initial_shell_health",
         "type": "UnsignedByte",
-        "comment": "excalibur wipes out immediately, bombs take off 11 points; when 0 vulnerable to whip"
+        "comment": "Excalibur wipes out immediately, bombs take off 11 points; when 0 vulnerable to whip"
       },
       { "field": "player_seen_by_kingu?", "type": "Bool" }
     ],
@@ -2483,7 +2483,7 @@
       {
         "field": "attack_proximity_y",
         "type": "Float",
-        "comment": "how close you have to be to be attacked; set both to 0 for a pet anubis"
+        "comment": "how close you have to be to be attacked; set both to 0 for a pet Anubis"
       },
       { "field": "attack_proximity_x", "type": "Float" },
       { "field": "ai_timer", "type": "UnsignedByte" },
@@ -2627,7 +2627,7 @@
       {
         "field": "unknown2",
         "type": "UnsignedByte",
-        "comment": "seen timer here once maybe? it's accessed right as he jumps from the ufo"
+        "comment": "seen timer here once maybe? it's accessed right as he jumps from the UFO"
       }
     ],
     "UFO": [
@@ -2704,7 +2704,7 @@
             "comment": "freezes stuff when attacks and spawns particles"
           },
           "104": {
-            "name": "screem_related",
+            "name": "scream_related",
             "comment": "if disabled he opens the mount but never screams"
           },
           "105": {
@@ -2754,7 +2754,7 @@
       }
     ],
     "Olmite": [
-      { "field": "armore_on", "type": "Bool" },
+      { "field": "armor_on", "type": "Bool" },
       {
         "field": "in_stack",
         "type": "Bool",
@@ -2967,19 +2967,19 @@
       {
         "field": "attack_position_x",
         "type": "Float",
-        "comment": "Posiotion where the head will move"
+        "comment": "Position where the head will move"
       },
       {
         "field": "attack_position_y",
         "type": "Float",
-        "comment": "Posiotion where the head will move"
+        "comment": "Position where the head will move"
       },
       { "field": "egg_crack_effect_uid", "type": "EntityUID" },
       { "field": "targeted_player_uid", "type": "EntityUID" },
       {
         "field": "looking_for_target_timer",
         "type": "UnsignedWord",
-        "comment": "also cooldown before attack"
+        "comment": "also cool down before attack"
       },
       { "field": "invincibility_timer", "type": "UnsignedByte" }
     ],
@@ -3044,7 +3044,7 @@
       {
         "field": "unknown",
         "type": "UnsignedByte",
-        "comment": "sometimes i see 1 here, didn't get anything with breakpoint"
+        "comment": "sometimes i see 1 here, didn't get anything with break-point"
       }
     ],
     "Necromancer": [
@@ -3078,7 +3078,7 @@
       {
         "field": "walk_pause_explode_timer",
         "type": "UnsignedWord",
-        "comment": "alternates between walking and pausing; when stunned: crawl timer;  after crawling: head pulse timer (pulse frequency dependend on timer)"
+        "comment": "alternates between walking and pausing; when stunned: crawl timer;  after crawling: head pulse timer (pulse frequency depended on timer)"
       },
       {
         "field": "walking_speed",
@@ -3228,7 +3228,7 @@
           "94": {
             "name": "v94",
             "params": "Entity* responsible, float x",
-            "comment": "called when shooting (entity it still not added to layer), returns false when the responsible doesn't have overlay, checks if the verlay is MASK.ITEM and bunch of other stuff"
+            "comment": "called when shooting (entity it still not added to layer), returns false when the responsible doesn't have overlay, checks if the overlay is MASK.ITEM and bunch of other stuff"
           }
         }
       }
@@ -3406,7 +3406,7 @@
       {
         "field": "timer",
         "type": "UnsignedDword",
-        "comment": "max 300? at 100 it's start the proces, changing the animation_frame"
+        "comment": "max 300? at 100 it's start the process, changing the animation_frame"
       },
       { "field": "pause", "type": "Bool" }
     ],
@@ -3546,7 +3546,7 @@
       {
         "field": "unknown1",
         "type": "Float",
-        "comment": "1.0 when hited from left and -1.0 when hited from right"
+        "comment": "1.0 when hit from left and -1.0 when hit from right"
       }
     ],
     "TimedPowderkeg": [
@@ -3620,7 +3620,7 @@
           },
           "38": {
             "name": "on_neighbor_destroyed",
-            "comment": "called for every neighbor of destroyed floor (to decorate it, maybe somehting else)"
+            "comment": "called for every neighbor of destroyed floor (to decorate it, maybe something else)"
           },
           "39": {
             "name": "get_floor_type",
@@ -3643,12 +3643,12 @@
           "40": {
             "name": "on_enter_attempt",
             "params": "Entity*",
-            "comment": "this function doesnt do much, checks if it's CHAR_*, checks if hes holding anything (if yes calls some function), then checks if Player.can_use is equal to 4 calls some other function, can't be bother to look into the functions"
+            "comment": "this function doesn't do much, checks if it's CHAR_*, checks if hes holding anything (if yes calls some function), then checks if Player.can_use is equal to 4 calls some other function, can't be bother to look into the functions"
           },
           "41": {
             "name": "hide_ui",
             "params": "Entity*",
-            "comment": "check if it's CHAR_*, then sets State.level_flags -> 21 (Hide hud, transition)"
+            "comment": "check if it's CHAR_*, then sets State.level_flags -> 21 (Hide HUD, transition)"
           },
           "42": {
             "name": "enter",
@@ -3957,7 +3957,7 @@
       {
         "field": "player_respawn",
         "type": "Bool",
-        "comment": "if true, will respawn dead player instead of HH, doesn't work with anubis coffin"
+        "comment": "if true, will respawn dead player instead of HH, doesn't work with Anubis coffin"
       }
     ],
     "SpecialShot": [
@@ -4031,7 +4031,7 @@
       {
         "field": "unknown",
         "type": "Word",
-        "comment": "setting it low or high can make it last forever, won't matter if you change it back afterwards, anubis is 300 and player 400 by default"
+        "comment": "setting it low or high can make it last forever, won't matter if you change it back afterwards, Anubis is 300 and player 400 by default"
       }
     ],
     "TimedShot": [{ "field": "timer", "type": "UnsignedByte" }],
@@ -4343,7 +4343,7 @@
       {
         "field": "unknown_shine",
         "type": "UnsignedByte",
-        "comment": "get's updated every time animation_frame is changes by the game, setting it to 64 or less disables the effect"
+        "comment": "gets updated every time animation_frame is changes by the game, setting it to 64 or less disables the effect"
       }
     ],
     "Coin": [{ "field": "nominal_price", "type": "UnsignedDword" }],
@@ -4668,7 +4668,7 @@
         "type": "Bool",
         "comment": "also sound_played, keeps re-triggering from time to time"
       },
-      { "field": "pop_in_out_procentage", "type": "UnsignedByte" }
+      { "field": "pop_in_out_percentage", "type": "UnsignedByte" }
     ],
     "FxPickupEffect": [
       { "field": "spawn_y", "type": "Float" },
@@ -4932,7 +4932,7 @@
       {
         "field": "counter1?",
         "type": "Dword",
-        "comment": "one of those wierd counters that counts all the traps, not only this single one"
+        "comment": "one of those weird counters that counts all the traps, not only this single one"
       },
       {
         "field": "counter2?",
@@ -4974,7 +4974,7 @@
       {
         "field": "zoomin_level",
         "type": "Float",
-        "comment": "can be set to negaative, seams to trigger the warp at some value"
+        "comment": "can be set to negative, seams to trigger the warp at some value"
       }
     ],
     "CinematicAnchor": [
@@ -5099,7 +5099,7 @@
       {
         "field": "timer",
         "type": "UnsignedWord",
-        "comment": "delay between spwning ufo"
+        "comment": "delay between spawning ufo"
       }
     ],
     "DMSpawning": [
@@ -5140,7 +5140,7 @@
       {
         "field": "self_destruct?",
         "type": "Bool",
-        "comment": "have reverse effect of spawning in after the broke is blocken, unsued in the game?"
+        "comment": "have reverse effect of spawning in after the block is broken, unused in the game?"
       }
     ],
     "DestructibleBG": [

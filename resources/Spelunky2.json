@@ -8455,7 +8455,7 @@
             "return": "bool",
             "comment": [
               "used to make the player invincible in basecamp (but does an OOB check)",
-              "if you return false in other themes you are invincible except for crushing deaths, and you do still experience knockback and stun"
+              "if you return false in other themes you are invincible except for crushing deaths, and you do still experience knock back and stun"
             ]
           },
           "38": {
@@ -9835,7 +9835,7 @@
         "field": "hud_elements?",
         "type": "StdVector",
         "valuetype": "DataPointer",
-        "comment": "Just pointers to the hud elements"
+        "comment": "Just pointers to the HUD elements"
       },
       { "field": "unknown20", "type": "UnsignedDword" },
       { "field": "unknown21", "type": "UnsignedByte" },
