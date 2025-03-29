@@ -54,7 +54,7 @@ namespace S2Plugin
         }
         uintptr_t get_HeapBase(bool quiet);
 
-        const TextureDB& get_TextureDB();
+        TextureDB& get_TextureDB();
         const CharacterDB& get_CharacterDB();
         const ParticleDB& get_ParticleDB();
         const EntityDB& get_EntityDB();

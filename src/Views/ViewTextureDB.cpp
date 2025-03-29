@@ -5,6 +5,9 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include <QCompleter>
+#include <QLayout>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::TextureDB, parent)
 {
@@ -16,12 +19,22 @@ S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(M
     QObject::connect(textureNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewTextureDB::searchFieldCompleterActivated);
     mSearchLineEdit->setCompleter(textureNameCompleter);
     mCompareTableWidget->setRowCount(static_cast<int>(textureDB.count()));
+
+    // reload cache button
+    mReloadCacheButton = new QPushButton("Reload Cache", this);
+    mReloadCacheButton->setGeometry(400, 2, 90, 22);
+    QObject::connect(mReloadCacheButton, &QPushButton::clicked, this, []() { Spelunky2::get()->get_TextureDB().reloadCache(); });
     showID(0);
 }
 
 QSize S2Plugin::ViewTextureDB::sizeHint() const
 {
     return QSize(750, 375);
+}
+
+QSize S2Plugin::ViewTextureDB::minimumSizeHint() const
+{
+    return QSize(250, 150);
 }
 
 void S2Plugin::ViewTextureDB::searchFieldCompleterActivated(const QString& text)
@@ -93,4 +106,11 @@ QString S2Plugin::ViewTextureDB::recordNameForID(ID_type id) const
 uintptr_t S2Plugin::ViewTextureDB::addressOfRecordID(ID_type id) const
 {
     return Spelunky2::get()->get_TextureDB().addressOfID(id);
+}
+
+void S2Plugin::ViewTextureDB::resizeEvent(QResizeEvent* resizeEvent)
+{
+    AbstractDatabaseView::resizeEvent(resizeEvent);
+    int windowWidth = width();
+    mReloadCacheButton->move(windowWidth - 95, mReloadCacheButton->pos().y());
 }

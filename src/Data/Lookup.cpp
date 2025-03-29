@@ -64,7 +64,7 @@ const S2Plugin::EntityDB& S2Plugin::Spelunky2::get_EntityDB()
     return mEntityDB;
 }
 
-const S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
+S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
 {
     if (mTextureDB.ptr != 0)
         return mTextureDB;
@@ -84,25 +84,7 @@ const S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
         return mTextureDB;
     }
     mTextureDB.ptr = textureStartAddress + 0x8;
-
-    constexpr uintptr_t textureSize = 0x40ull;
-    for (auto x = 0; x < (std::min)(500ull, textureCount); ++x)
-    {
-        uintptr_t offset = mTextureDB.ptr + textureSize * x;
-        auto textureID = Script::Memory::ReadQword(offset);
-        mTextureDB.mHighestID = std::max(mTextureDB.mHighestID, textureID);
-
-        auto nameOffset = offset + 0x8;
-
-        size_t value = (nameOffset == 0 ? 0 : Script::Memory::ReadQword(Script::Memory::ReadQword(nameOffset)));
-        if (value != 0)
-        {
-            std::string name = ReadConstString(value);
-
-            mTextureDB.mTextureNamesStringList << QString("Texture %1 (%2)").arg(textureID).arg(QString::fromStdString(name));
-            mTextureDB.mTextures.emplace(textureID, std::make_pair(std::move(name), offset));
-        }
-    }
+    mTextureDB.reloadCache();
     return mTextureDB;
 }
 
