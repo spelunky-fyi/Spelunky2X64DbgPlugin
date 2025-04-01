@@ -33,7 +33,7 @@ struct ComparisonField
     S2Plugin::MemoryFieldType type{S2Plugin::MemoryFieldType::None};
     size_t offset{0};
     std::string refName; // for flags
-    uint8_t flag_index;
+    uint8_t flagIndex;
 };
 Q_DECLARE_METATYPE(ComparisonField)
 
@@ -276,7 +276,7 @@ void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 
     ComparisonField comparisonData = fieldData.value<ComparisonField>();
     comparisonData.type = MemoryFieldType::Flag;
-    comparisonData.flag_index = flagData.value<uint8_t>();
+    comparisonData.flagIndex = flagData.value<uint8_t>();
     auto newData = QVariant::fromValue(comparisonData);
 
     populateComparisonTableWidget(newData);
@@ -496,7 +496,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         }
         case MemoryFieldType::Flag:
         {
-            uint8_t flagToCheck = compData.flag_index;
+            uint8_t flagToCheck = compData.flagIndex;
             bool isFlagSet = false;
             if (flagToCheck > 15)
                 isFlagSet = ((Script::Memory::ReadDword(offset) & (1 << flagToCheck)) != 0);

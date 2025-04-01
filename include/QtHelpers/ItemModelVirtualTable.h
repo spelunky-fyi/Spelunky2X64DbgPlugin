@@ -19,7 +19,7 @@ namespace S2Plugin
         Q_OBJECT
 
       public:
-        explicit ItemModelVirtualTable(QObject* parent = nullptr);
+        explicit ItemModelVirtualTable(QObject* parent = nullptr) : QAbstractItemModel(parent){};
 
         Qt::ItemFlags flags(const QModelIndex&) const override
         {

@@ -123,6 +123,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Data/CPPGenerator.cpp
 	src/Data/Logger.cpp
 	src/Data/Lookup.cpp
+	src/Data/TextureDB.cpp
 	src/Views/ViewToolbar.cpp
 	src/Views/ViewEntityDB.cpp
 	src/Views/ViewParticleDB.cpp

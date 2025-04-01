@@ -14,15 +14,8 @@ namespace S2Plugin
         {
             return (ptr != 0);
         }
-        const std::string& nameForID(uint32_t id) const // id != index since there is no id 325 and the order is different
-        {
-            if (auto it = mTextures.find(id); it != mTextures.end())
-            {
-                return it->second.first;
-            }
-            static std::string unknownName("UNKNOWN TEXTURE");
-            return unknownName;
-        }
+        // id != index since there is no id 325 but there is no gap for it
+        const std::string& nameForID(uint32_t id) const;
         uintptr_t addressOfID(uint32_t id) const
         {
             if (auto it = mTextures.find(id); it != mTextures.end())
@@ -51,6 +44,7 @@ namespace S2Plugin
         {
             return mHighestID;
         }
+        void reloadCache();
 
       private:
         uintptr_t ptr{0};
