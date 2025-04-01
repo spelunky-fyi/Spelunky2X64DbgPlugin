@@ -5,9 +5,7 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include <QCompleter>
-#include <QLayout>
 #include <QPushButton>
-#include <QVBoxLayout>
 
 S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::TextureDB, parent)
 {
@@ -23,7 +21,14 @@ S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(M
     // reload cache button
     mReloadCacheButton = new QPushButton("Reload Cache", this);
     mReloadCacheButton->setGeometry(400, 2, 90, 22);
-    QObject::connect(mReloadCacheButton, &QPushButton::clicked, this, []() { Spelunky2::get()->get_TextureDB().reloadCache(); });
+    QObject::connect(mReloadCacheButton, &QPushButton::clicked, this,
+                     [this]()
+                     {
+                         auto& db = Spelunky2::get()->get_TextureDB();
+                         db.reloadCache();
+                         mCompareTableWidget->setRowCount(static_cast<int>(db.count()));
+                         setWindowTitle(QString("Texture DB (%1 textures)").arg(db.count()));
+                     });
     showID(0);
 }
 
