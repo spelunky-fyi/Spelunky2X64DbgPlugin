@@ -885,7 +885,11 @@
             "name": "reset_draw_depth",
             "comment": "resets to default from EntityDB"
           },
-          "19": { "name": "friction", "return": "float", "comment": "Friction of this entity, affects it's contact with other entities (how fast it slows down on the floor, how fast it can move but also the other way around for floors/activefloors: how other entities can move on it)" },
+          "19": {
+            "name": "friction",
+            "return": "float",
+            "comment": "Friction of this entity, affects it's contact with other entities (how fast it slows down on the floor, how fast it can move but also the other way around for floors/activefloors: how other entities can move on it)"
+          },
           "20": {
             "name": "set_as_sound_source",
             "params": "SoundMeta*"
@@ -962,7 +966,10 @@
             "params": "bool clear_parent",
             "comment": "can also be seen as event: when you anger the shopkeeper, this function gets called for each item; `clear_parent` used only for CHAR_* entities, sets the `linked_companion_parent` to -1. It's not called when item is bought"
           },
-          "36": { "name": "apply_db", "comment": "This is actually just an initialize call that is happening once after  the entity is created" }
+          "36": {
+            "name": "apply_db",
+            "comment": "This is actually just an initialize call that is happening once after  the entity is created"
+          }
         }
       },
       { "field": "type", "type": "EntityDBPointer" },
@@ -1027,7 +1034,11 @@
             "params": "CollisionInfo* dest",
             "comment": "from entityDB"
           },
-          "39": { "name": "sprint_factor", "return": "float", "comment": "from entityDB" },
+          "39": {
+            "name": "sprint_factor",
+            "return": "float",
+            "comment": "from entityDB"
+          },
           "40": {
             "name": "calculate_jump_height",
             "params": "bool dont_ignore_liquid",
@@ -1256,7 +1267,11 @@
             "params": "Entity* entity, float, Entity* floor, float, bool",
             "comment": "on_contact_with_ground ? calls on_stood_on_by, on_fall_onto"
           },
-          "88": { "name": "v88", "params": "Entity* entity, float velocity", "comment": "on_ragdoll? - for player, triggers only when you throw him into wall/ground/ceiling" },
+          "88": {
+            "name": "v88",
+            "params": "Entity* entity, float velocity",
+            "comment": "on_ragdoll? - for player, triggers only when you throw him into wall/ground/ceiling"
+          },
           "89": {
             "name": "v89",
             "params": "void*, void*, bool, bool default_return_flipped",
@@ -1431,7 +1446,11 @@
       { "field": "ai_func", "type": "Ai_func" },
       { "field": "input_ptr", "type": "PlayerSlot", "pointer": true },
       { "field": "basecamp_button", "type": "EntityPointer" },
-      { "field": "special_sound", "type": "SoundMeta", "comment": "For Lise System walking and looking up sounds" },
+      {
+        "field": "special_sound",
+        "type": "SoundMeta",
+        "comment": "For Lise System walking and looking up sounds"
+      },
       { "field": "y_pos?", "type": "Float" },
       {
         "field": "jump_lock_timer",
@@ -1531,7 +1550,7 @@
     ],
     "Mattock": [{ "field": "remaining", "type": "UnsignedByte" }],
     "Backpack": [
-      { "vftablefunctions": { "99": { "name": "trigger_explosion" }}},
+      { "vftablefunctions": { "99": { "name": "trigger_explosion" } } },
       { "field": "explosion_trigger", "type": "Bool" },
       {
         "field": "explosion_timer",
@@ -1542,7 +1561,11 @@
       { "field": "unused2", "type": "UnsignedDword" }
     ],
     "Jetpack": [
-      { "vftablefunctions": { "100": { "name": "acceleration", "return": "float" }}},
+      {
+        "vftablefunctions": {
+          "100": { "name": "acceleration", "return": "float" }
+        }
+      },
       {
         "field": "flame_on",
         "type": "Bool",
@@ -2211,7 +2234,11 @@
       { "field": "timer_after_humping", "type": "UnsignedByte" },
       { "field": "unknown", "type": "UnsignedByte" },
       { "field": "padding", "type": "UnsignedWord" },
-      { "field": "collected_treasure", "type": "StdVector", "valuetype": "EntityDBID" }
+      {
+        "field": "collected_treasure",
+        "type": "StdVector",
+        "valuetype": "EntityDBID"
+      }
     ],
     "Crocman": [{ "field": "teleport_cooldown", "type": "UnsignedByte" }],
     "Mummy": [
@@ -3144,7 +3171,11 @@
       { "field": "unknown1", "type": "UnsignedByte" }
     ],
     "CritterSnail": [
-      { "vftablefunctions": { "101": { "name": "get_speed", "return": "float" }}},
+      {
+        "vftablefunctions": {
+          "101": { "name": "get_speed", "return": "float" }
+        }
+      },
       { "field": "x_direction", "type": "Float" },
       { "field": "y_direction", "type": "Float" },
       { "field": "pos_x", "type": "Float" },
@@ -3202,7 +3233,11 @@
       { "field": "move_timer", "type": "UnsignedByte" }
     ],
     "CritterSlime": [
-      { "vftablefunctions": { "101": { "name": "get_speed", "return": "float" }}},
+      {
+        "vftablefunctions": {
+          "101": { "name": "get_speed", "return": "float" }
+        }
+      },
       { "field": "x_direction", "type": "Float" },
       { "field": "y_direction", "type": "Float" },
       { "field": "pos_x", "type": "Float" },
@@ -3306,7 +3341,11 @@
         "comment": "alternates between walking and pausing every time it reaches zero"
       },
       { "field": "unknown9a", "type": "UnsignedByte" },
-      { "field": "double_jumping", "type": "UnsignedByte", "comment": "used to play different animation for the double jump then the standard jump, is true for less then a frame" },
+      {
+        "field": "double_jumping",
+        "type": "UnsignedByte",
+        "comment": "used to play different animation for the double jump then the standard jump, is true for less then a frame"
+      },
       {
         "field": "taming_timer",
         "type": "UnsignedByte",
@@ -4204,7 +4243,7 @@
     ],
     "Fly": [{ "field": "timer", "type": "UnsignedByte" }],
     "OlmecCannon": [
-      { "vftablefunctions": { "93": { "name": "spawn_projectile" }}},
+      { "vftablefunctions": { "93": { "name": "spawn_projectile" } } },
       { "field": "timer", "type": "UnsignedWord" },
       { "field": "bombs_left", "type": "UnsignedByte" }
     ],
@@ -5222,8 +5261,6 @@
         "comment": "does don't actually exist, added for compatibility with OL API"
       }
     ],
-    "Scepter": [
-      { "field": "cooldown", "type": "UnsignedByte" }
-    ]
+    "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }]
   }
 }
