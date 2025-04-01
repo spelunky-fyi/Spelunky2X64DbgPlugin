@@ -5329,7 +5329,7 @@
       { "field": "unknown1", "type": "UnsignedDword" },
       { "field": "input_mapping_keyboard", "type": "InputMappingPointer" },
       { "field": "input_mapping_controller", "type": "InputMappingPointer" },
-      { "field": "player_slot", "type": "UnsignedByte" },
+      { "field": "player_slot", "type": "Byte" },
       { "field": "is_participating", "type": "Bool" },
       { "field": "unknown4", "type": "UnsignedByte" },
       { "field": "unknown5", "type": "UnsignedByte" },

@@ -4227,7 +4227,7 @@
     "Honey": [{ "field": "wiggle_timer", "type": "UnsignedByte" }],
     "PlayerGhost": [
       { "field": "sparkles_particle", "type": "ParticleEmitterInfoPointer" },
-      { "field": "player_inputs", "type": "PlayerSlotPointer" },
+      { "field": "player_inputs", "type": "PlayerSlot", "pointer": true },
       { "field": "inventory", "type": "PlayerInventory", "pointer": true },
       { "field": "sound", "type": "SoundMeta" },
       { "field": "body", "type": "EntityUID" },
