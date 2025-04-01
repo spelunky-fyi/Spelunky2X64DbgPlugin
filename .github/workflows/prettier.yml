@@ -19,10 +19,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.do_formatting != 'true' }}
         with:
           dry: True
-          prettier_options: --check resources/Spelunky2.json
+          prettier_options: --check resources/Spelunky2.json resources/Spelunky2Entities.json
 
       - uses: creyD/prettier_action@v4.3
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.do_formatting == 'true' }}
         with:
-          prettier_options: --write resources/Spelunky2.json
+          prettier_options: --write resources/Spelunky2.json resources/Spelunky2Entities.json
           commit_message: "Automated prettier changes"
