@@ -1420,7 +1420,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             std::optional<uint32_t> value;
             value = updateField<uint32_t>(itemField, valueMemoryOffset, itemValue, nullptr, itemValueHex, isPointer, "0x%08X", true, !pointerUpdate, highlightColor);
             if (value.has_value())
-                itemValue->setData(QString("%1: %2").arg(value.value()).arg(Spelunky2::get()->get_StringsTable().stringForIndex(value.value())).toHtmlEscaped(), Qt::DisplayRole);
+                itemValue->setData(QString("%1: %2").arg(value.value()).arg(Spelunky2::get()->get_StringsTable(true).stringForIndex(value.value())).toHtmlEscaped(), Qt::DisplayRole);
 
             if (comparisonActive)
             {
@@ -1429,7 +1429,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     updateField<uint32_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, nullptr, itemComparisonValueHex, isPointer, "0x%08X", false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
-                    itemComparisonValue->setData(QString("%1: %2").arg(comparisonValue.value()).arg(Spelunky2::get()->get_StringsTable().stringForIndex(comparisonValue.value())).toHtmlEscaped(),
+                    itemComparisonValue->setData(QString("%1: %2").arg(comparisonValue.value()).arg(Spelunky2::get()->get_StringsTable(true).stringForIndex(comparisonValue.value())).toHtmlEscaped(),
                                                  Qt::DisplayRole);
                 }
 

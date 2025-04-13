@@ -165,7 +165,7 @@ const S2Plugin::CharacterDB& S2Plugin::Spelunky2::get_CharacterDB()
     return mCharacterDB;
 }
 
-const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable()
+const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable(bool quiet)
 {
     if (mStringsTable.ptr != 0)
         return mStringsTable;
@@ -173,14 +173,18 @@ const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable()
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "48 8D 15 ?? ?? ?? ?? 4C 8B 0C CA");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find StringsTable");
+        if (!quiet)
+            displayError("Lookup error: unable to find StringsTable");
+
         return mStringsTable;
     }
     auto relativeOffset = Script::Memory::ReadDword(instructionOffset + 3);
     auto addr = instructionOffset + 7 + relativeOffset;
     if (Script::Memory::ReadQword(addr) == 0)
     {
-        displayError("Lookup error: StringsTable not yet initialised");
+        if (!quiet)
+            displayError("Lookup error: StringsTable not yet initialised");
+
         return mStringsTable;
     }
 

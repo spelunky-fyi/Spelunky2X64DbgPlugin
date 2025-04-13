@@ -8,6 +8,10 @@ QString S2Plugin::StringsTable::stringForIndex(uint32_t idx) const
 {
     if (count() <= idx)
     {
+        // [Known Issue]: hardcoded number for valid strings
+        if (idx < 1964)
+            return QString("StringsDB NOT INITIALISED");
+
         return QString("INVALID OR NOT APPLICABLE");
     }
     auto str = ReadConstBasicString<ushort>(stringAddressOfIndex(idx));

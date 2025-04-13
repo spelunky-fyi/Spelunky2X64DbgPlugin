@@ -58,7 +58,7 @@ namespace S2Plugin
         const CharacterDB& get_CharacterDB();
         const ParticleDB& get_ParticleDB();
         const EntityDB& get_EntityDB();
-        const StringsTable& get_StringsTable();
+        const StringsTable& get_StringsTable(bool quiet);
         const VirtualTableLookup& get_VirtualTableLookup();
         //
 

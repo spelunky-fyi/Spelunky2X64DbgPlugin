@@ -16,7 +16,7 @@ constexpr uint32_t gsRoleRawValue = 1;
 S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 {
     setWindowIcon(getCavemanIcon());
-    setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable().count()));
+    setWindowTitle(QString("Strings table (%1 strings)").arg(Spelunky2::get()->get_StringsTable(false).count()));
 
     auto mainLayout = new QVBoxLayout(this);
     auto topLayout = new QHBoxLayout();
@@ -46,7 +46,7 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
     QObject::connect(mMainTableView, &QTableView::clicked, this, &ViewStringsTable::cellClicked);
     mainLayout->addWidget(mMainTableView);
 
-    auto mModel = Spelunky2::get()->get_StringsTable().modelCache();
+    auto mModel = Spelunky2::get()->get_StringsTable(false).modelCache();
     if (mModel->rowCount() == 0) // there is probably a better way to check if it's "empty"
         reload();                // initial "load"
 
@@ -61,7 +61,10 @@ S2Plugin::ViewStringsTable::ViewStringsTable(QWidget* parent) : QWidget(parent)
 
 void S2Plugin::ViewStringsTable::reload()
 {
-    auto& stringTable = Spelunky2::get()->get_StringsTable();
+    auto& stringTable = Spelunky2::get()->get_StringsTable(false);
+    if (!stringTable.isValid())
+        return;
+
     auto stringsTableSize = stringTable.count(stringTable.modelCache()->rowCount() != 0); // recount unless it's the first reload call to initialise
     setWindowTitle(QString("Strings table (%1 strings)").arg(stringsTableSize));
     stringTable.modelCache()->clear();

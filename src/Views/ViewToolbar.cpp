@@ -360,7 +360,7 @@ S2Plugin::ViewVirtualTable* S2Plugin::ViewToolbar::showVirtualTableLookup()
 
 void S2Plugin::ViewToolbar::showStringsTable()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable(false).isValid())
     {
         auto w = new ViewStringsTable();
         auto win = mMDIArea->addSubWindow(w);

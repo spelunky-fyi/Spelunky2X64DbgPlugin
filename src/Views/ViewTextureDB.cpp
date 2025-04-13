@@ -18,7 +18,7 @@ S2Plugin::ViewTextureDB::ViewTextureDB(QWidget* parent) : AbstractDatabaseView(M
     mSearchLineEdit->setCompleter(textureNameCompleter);
     mCompareTableWidget->setRowCount(static_cast<int>(textureDB.count()));
 
-    // reload cache button
+    // hack in reload cache button
     mReloadCacheButton = new QPushButton("Reload Cache", this);
     mReloadCacheButton->setGeometry(400, 2, 90, 22);
     QObject::connect(mReloadCacheButton, &QPushButton::clicked, this,
