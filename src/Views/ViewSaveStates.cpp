@@ -87,7 +87,7 @@ void S2Plugin::ViewSaveStates::refreshSlots()
     };
 
     uintptr_t heapOffsetSaveGame = 0;
-    auto gm = Spelunky2::get()->get_GameManagerPtr();
+    auto gm = Spelunky2::get()->get_GameManagerPtr(true);
     if (gm != 0)
         heapOffsetSaveGame = Script::Memory::ReadQword(Script::Memory::ReadQword(gm + 8));
 

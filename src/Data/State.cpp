@@ -23,7 +23,7 @@ static constexpr uint32_t lowbias32(uint32_t x)
 uintptr_t S2Plugin::State::findEntitybyUID(uint32_t uid) const
 {
     // ported from overlunky
-    if (uid == ~0)
+    if (uid == ~0 || ptr() == 0)
     {
         return 0;
     }

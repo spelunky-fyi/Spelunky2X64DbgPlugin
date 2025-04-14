@@ -411,8 +411,8 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 break;
 
             // no isPointer check, for now
-            auto addr = Spelunky2::get()->get_HeapBase();
-            addr += Script::Memory::ReadQword(memoryAddress);
+            auto addr = Spelunky2::get()->get_HeapBase(true);
+            addr += addr == 0 ? 0 : Script::Memory::ReadQword(memoryAddress);
             if (auto fields = config->typeFieldsOfDefaultStruct(field.jsonName); !fields.empty())
             {
                 addMemoryFields(fields, fieldNameOverride, addr, 0, deltaPrefixCount + 1, returnField);
@@ -890,15 +890,18 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             if (shouldUpdateChildren)
             {
                 // TODO: update address only if there was change in the value
-                auto heapBase = Spelunky2::get()->get_HeapBase();
-                if (value.has_value())
-                    value.value() += heapBase;
-                if (comparisonValue.has_value())
-                    comparisonValue.value() += heapBase;
-
-                for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                auto heapBase = Spelunky2::get()->get_HeapBase(true);
+                if (heapBase != 0) // there should not be a situation when Heap Base is set to 0 when it previously had a value
                 {
-                    updateRow(x, value, comparisonValue, itemField, disableChangeHighlighting);
+                    if (value.has_value())
+                        value.value() += heapBase;
+                    if (comparisonValue.has_value())
+                        comparisonValue.value() += heapBase;
+
+                    for (uint8_t x = 0; x < itemField->rowCount(); ++x)
+                    {
+                        updateRow(x, value, comparisonValue, itemField, disableChangeHighlighting);
+                    }
                 }
             }
             break;
@@ -1417,7 +1420,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             std::optional<uint32_t> value;
             value = updateField<uint32_t>(itemField, valueMemoryOffset, itemValue, nullptr, itemValueHex, isPointer, "0x%08X", true, !pointerUpdate, highlightColor);
             if (value.has_value())
-                itemValue->setData(QString("%1: %2").arg(value.value()).arg(Spelunky2::get()->get_StringsTable().stringForIndex(value.value())).toHtmlEscaped(), Qt::DisplayRole);
+                itemValue->setData(QString("%1: %2").arg(value.value()).arg(Spelunky2::get()->get_StringsTable(true).stringForIndex(value.value())).toHtmlEscaped(), Qt::DisplayRole);
 
             if (comparisonActive)
             {
@@ -1426,7 +1429,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     updateField<uint32_t>(itemField, valueComparisonMemoryOffset, itemComparisonValue, nullptr, itemComparisonValueHex, isPointer, "0x%08X", false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
-                    itemComparisonValue->setData(QString("%1: %2").arg(comparisonValue.value()).arg(Spelunky2::get()->get_StringsTable().stringForIndex(comparisonValue.value())).toHtmlEscaped(),
+                    itemComparisonValue->setData(QString("%1: %2").arg(comparisonValue.value()).arg(Spelunky2::get()->get_StringsTable(true).stringForIndex(comparisonValue.value())).toHtmlEscaped(),
                                                  Qt::DisplayRole);
                 }
 
@@ -1476,7 +1479,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 }
                 else
                 {
-                    uintptr_t entityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr()}.findEntitybyUID(value.value());
+                    uintptr_t entityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr(true)}.findEntitybyUID(value.value());
                     if (entityOffset != 0)
                     {
                         auto entityName = Configuration::get()->getEntityName(Entity{entityOffset}.entityTypeID());
@@ -1504,7 +1507,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     }
                     else
                     {
-                        uintptr_t comparisonEntityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr()}.findEntitybyUID(comparisonValue.value());
+                        uintptr_t comparisonEntityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr(true)}.findEntitybyUID(comparisonValue.value());
                         if (comparisonEntityOffset != 0)
                         {
                             auto entityName = Configuration::get()->getEntityName(Entity{comparisonEntityOffset}.entityTypeID());
@@ -2385,9 +2388,10 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 case MemoryFieldType::OnHeapPointer:
                 {
                     auto offset = clickedItem->data(gsRoleRawValue).toULongLong();
-                    if (offset != 0)
+                    auto base = Spelunky2::get()->get_HeapBase(true);
+                    if (offset != 0 && base != 0)
                     {
-                        GuiDumpAt(Spelunky2::get()->get_HeapBase() + offset);
+                        GuiDumpAt(base + offset);
                         GuiShowCpu();
                     }
                     break;
@@ -2885,7 +2889,11 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
                     return;
 
                 auto uid = Script::Memory::ReadDword(dataAddr);
-                auto entityPtr = Spelunky2::get()->get_State().findEntitybyUID(uid);
+                auto statePtr = Spelunky2::get()->get_StatePtr(true);
+                if (statePtr == 0)
+                    return;
+
+                auto entityPtr = S2Plugin::State{statePtr}.findEntitybyUID(uid);
                 if (entityPtr == 0)
                     return;
 

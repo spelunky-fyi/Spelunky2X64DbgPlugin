@@ -107,28 +107,31 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
         }
 
         // draw level dimensions
-        uintptr_t offsetWidth = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_width_rooms", Spelunky2::get()->get_StatePtr());
-        uintptr_t offsetHeight = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_height_rooms", Spelunky2::get()->get_StatePtr());
-        auto levelWidth = Script::Memory::ReadDword(offsetWidth);
-        auto levelHeight = Script::Memory::ReadDword(offsetHeight);
-        uint32_t borderX = gsMarginHor;
-        uint32_t borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
-        uint32_t borderWidth, borderHeight;
-        if (mIsMetaData)
+        if (auto statePtr = Spelunky2::get()->get_StatePtr(true); statePtr != 0)
         {
-            borderWidth = (levelWidth * (mTextAdvance.width() + mSpaceAdvance)) - mSpaceAdvance;
-            borderHeight = levelHeight * mTextAdvance.height();
+            uintptr_t offsetWidth = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_width_rooms", statePtr);
+            uintptr_t offsetHeight = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_height_rooms", statePtr);
+            auto levelWidth = Script::Memory::ReadDword(offsetWidth);
+            auto levelHeight = Script::Memory::ReadDword(offsetHeight);
+            uint32_t borderX = gsMarginHor;
+            uint32_t borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
+            uint32_t borderWidth, borderHeight;
+            if (mIsMetaData)
+            {
+                borderWidth = (levelWidth * (mTextAdvance.width() + mSpaceAdvance)) - mSpaceAdvance;
+                borderHeight = levelHeight * mTextAdvance.height();
+            }
+            else
+            {
+                borderWidth = (levelWidth * (2 * (mTextAdvance.width() + mSpaceAdvance))) - mSpaceAdvance;
+                borderHeight = levelHeight * mTextAdvance.height();
+            }
+            auto border = QRect(borderX, borderY, borderWidth, borderHeight);
+            border.adjust(-2, -2, +2, +2);
+            painter.setPen(QPen(Qt::blue, 1));
+            painter.setBrush(Qt::transparent);
+            painter.drawRect(border);
         }
-        else
-        {
-            borderWidth = (levelWidth * (2 * (mTextAdvance.width() + mSpaceAdvance))) - mSpaceAdvance;
-            borderHeight = levelHeight * mTextAdvance.height();
-        }
-        auto border = QRect(borderX, borderY, borderWidth, borderHeight);
-        border.adjust(-2, -2, +2, +2);
-        painter.setPen(QPen(Qt::blue, 1));
-        painter.setBrush(Qt::transparent);
-        painter.drawRect(border);
     }
 }
 

@@ -289,7 +289,7 @@ S2Plugin::ViewTextureDB* S2Plugin::ViewToolbar::showTextureDB()
 
 S2Plugin::ViewCharacterDB* S2Plugin::ViewToolbar::showCharacterDB()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid() && Spelunky2::get()->get_CharacterDB().isValid())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_CharacterDB().isValid())
     {
         auto w = new ViewCharacterDB();
         auto win = mMDIArea->addSubWindow(w);
@@ -304,7 +304,7 @@ void S2Plugin::ViewToolbar::showMainThreadState()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto statePtr = Spelunky2::get()->get_StatePtr();
+        auto statePtr = Spelunky2::get()->get_StatePtr(false);
         if (statePtr != 0)
             showState(statePtr);
     }
@@ -314,7 +314,7 @@ void S2Plugin::ViewToolbar::showMainThreadLevelGen()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto levelGenPtr = Spelunky2::get()->get_LevelGenPtr();
+        auto levelGenPtr = Spelunky2::get()->get_LevelGenPtr(false);
         if (levelGenPtr != 0)
             showLevelGen(levelGenPtr);
     }
@@ -324,7 +324,7 @@ void S2Plugin::ViewToolbar::showMainThreadLiquidPhysics()
 {
     if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto ptr = Spelunky2::get()->get_LiquidEnginePtr();
+        auto ptr = Spelunky2::get()->get_LiquidEnginePtr(false);
         if (ptr != 0)
             showLiquidPhysics(ptr);
     }
@@ -332,12 +332,16 @@ void S2Plugin::ViewToolbar::showMainThreadLiquidPhysics()
 
 void S2Plugin::ViewToolbar::showGameManager()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_GameManagerPtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto w = new ViewStruct(Spelunky2::get()->get_GameManagerPtr(), Configuration::get()->typeFields(MemoryFieldType::GameManager), "GameManager");
-        auto win = mMDIArea->addSubWindow(w);
-        win->setVisible(true);
-        win->setAttribute(Qt::WA_DeleteOnClose);
+        auto ptr = Spelunky2::get()->get_GameManagerPtr();
+        if (ptr != 0)
+        {
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::GameManager), "GameManager");
+            auto win = mMDIArea->addSubWindow(w);
+            win->setVisible(true);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+        }
     }
 }
 
@@ -356,7 +360,7 @@ S2Plugin::ViewVirtualTable* S2Plugin::ViewToolbar::showVirtualTableLookup()
 
 void S2Plugin::ViewToolbar::showStringsTable()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable().isValid())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_StringsTable(false).isValid())
     {
         auto w = new ViewStringsTable();
         auto win = mMDIArea->addSubWindow(w);
@@ -367,18 +371,22 @@ void S2Plugin::ViewToolbar::showStringsTable()
 
 void S2Plugin::ViewToolbar::showOnline()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_OnlinePtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto w = new ViewStruct(Spelunky2::get()->get_OnlinePtr(), Configuration::get()->typeFields(MemoryFieldType::Online), "Online");
-        auto win = mMDIArea->addSubWindow(w);
-        win->setVisible(true);
-        win->setAttribute(Qt::WA_DeleteOnClose);
+        auto ptr = Spelunky2::get()->get_OnlinePtr();
+        if (ptr != 0)
+        {
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::Online), "Online");
+            auto win = mMDIArea->addSubWindow(w);
+            win->setVisible(true);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+        }
     }
 }
 
 void S2Plugin::ViewToolbar::showEntities()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_EntityDB().isValid())
+    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_HeapBase(false) != 0)
     {
         auto w = new ViewEntities();
         auto win = mMDIArea->addSubWindow(w);
@@ -389,11 +397,11 @@ void S2Plugin::ViewToolbar::showEntities()
 
 void S2Plugin::ViewToolbar::showMainThreadSaveGame()
 {
-    if (Spelunky2::is_loaded() && Configuration::is_loaded() && Spelunky2::get()->get_SaveDataPtr() != 0)
+    if (Spelunky2::is_loaded() && Configuration::is_loaded())
     {
-        auto ptr = Spelunky2::get()->get_SaveDataPtr();
+        auto ptr = Spelunky2::get()->get_SaveDataPtr(false);
         if (ptr != 0)
-            showSaveGame(Spelunky2::get()->get_SaveDataPtr());
+            showSaveGame(ptr);
     }
 }
 

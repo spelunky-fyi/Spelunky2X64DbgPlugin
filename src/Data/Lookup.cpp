@@ -14,7 +14,7 @@ uintptr_t S2Plugin::Spelunky2::getAfterBundle(uintptr_t sectionStart, size_t sec
     return Spelunky2AfterBundle;
 }
 
-uintptr_t S2Plugin::Spelunky2::get_GameManagerPtr()
+uintptr_t S2Plugin::Spelunky2::get_GameManagerPtr(bool quiet)
 {
     if (mGameManagerPtr != 0)
         return mGameManagerPtr;
@@ -22,13 +22,22 @@ uintptr_t S2Plugin::Spelunky2::get_GameManagerPtr()
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "C6 80 39 01 00 00 00 48");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find GameManager");
+        if (!quiet)
+            displayError("Lookup error: unable to find GameManager");
+
         return 0;
     }
 
     auto pcOffset = Script::Memory::ReadDword(instructionOffset + 10);
     auto offsetPtr = instructionOffset + pcOffset + 14;
     mGameManagerPtr = Script::Memory::ReadQword(offsetPtr);
+    if (!Script::Memory::IsValidPtr(mGameManagerPtr))
+    {
+        if (!quiet)
+            displayError("Lookup error: GameManager not yet initialised");
+
+        mGameManagerPtr = 0;
+    }
     return mGameManagerPtr;
 }
 
@@ -46,10 +55,16 @@ const S2Plugin::EntityDB& S2Plugin::Spelunky2::get_EntityDB()
 
     auto entitiesPtr = instructionEntitiesPtr - 33 + 7 + (duint)Script::Memory::ReadDword(instructionEntitiesPtr - 30);
     mEntityDB.ptr = Script::Memory::ReadQword(entitiesPtr);
+    if (!Script::Memory::IsValidPtr(mEntityDB.ptr))
+    {
+        displayError("Lookup error: EntityDB not yet initialised");
+        mEntityDB.ptr = 0;
+    }
+
     return mEntityDB;
 }
 
-const S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
+S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
 {
     if (mTextureDB.ptr != 0)
         return mTextureDB;
@@ -63,26 +78,13 @@ const S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
 
     auto textureStartAddress = instructionPtr + 12 + (duint)Script::Memory::ReadDword(instructionPtr + 8);
     auto textureCount = Script::Memory::ReadQword(textureStartAddress);
-    mTextureDB.ptr = textureStartAddress + 0x8;
-
-    constexpr uintptr_t textureSize = 0x40ull;
-    for (auto x = 0; x < (std::min)(500ull, textureCount); ++x)
+    if (textureCount == 0)
     {
-        uintptr_t offset = mTextureDB.ptr + textureSize * x;
-        auto textureID = Script::Memory::ReadQword(offset);
-        mTextureDB.mHighestID = std::max(mTextureDB.mHighestID, textureID);
-
-        auto nameOffset = offset + 0x8;
-
-        size_t value = (nameOffset == 0 ? 0 : Script::Memory::ReadQword(Script::Memory::ReadQword(nameOffset)));
-        if (value != 0)
-        {
-            std::string name = ReadConstString(value);
-
-            mTextureDB.mTextureNamesStringList << QString("Texture %1 (%2)").arg(textureID).arg(QString::fromStdString(name));
-            mTextureDB.mTextures.emplace(textureID, std::make_pair(std::move(name), offset));
-        }
+        displayError("Lookup error: TextureDB not yet initialised");
+        return mTextureDB;
     }
+    mTextureDB.ptr = textureStartAddress + 0x8;
+    mTextureDB.reloadCache();
     return mTextureDB;
 }
 
@@ -95,10 +97,15 @@ uintptr_t S2Plugin::Spelunky2::get_OnlinePtr()
     if (instructionOffset == 0)
     {
         displayError("Lookup error: unable to find Online");
-        return 0;
+        return mOnlinePtr;
     }
     auto relativeOffset = Script::Memory::ReadDword(instructionOffset + 3);
     mOnlinePtr = Script::Memory::ReadQword(instructionOffset + 7 + relativeOffset);
+    if (!Script::Memory::IsValidPtr(mOnlinePtr))
+    {
+        displayError("Lookup error: Online not yet initialised");
+        mOnlinePtr = 0;
+    }
 
     return mOnlinePtr;
 }
@@ -112,11 +119,15 @@ const S2Plugin::ParticleDB& S2Plugin::Spelunky2::get_ParticleDB()
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "FE FF FF FF 66 C7 05");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find ParticleDB");
+        displayError("Lookup error: unable to find ParticleDB (1)");
         return mParticleDB;
     }
     mParticleDB.ptr = instructionOffset + 13 + (duint)Script::Memory::ReadDword(instructionOffset + 7);
-
+    if (!Script::Memory::IsValidPtr(mParticleDB.ptr))
+    {
+        displayError("Lookup error: unable to find ParticleDB (2)");
+        mParticleDB.ptr = 0;
+    }
     return mParticleDB;
 }
 
@@ -128,25 +139,33 @@ const S2Plugin::CharacterDB& S2Plugin::Spelunky2::get_CharacterDB()
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "48 6B C3 2C 48 8D 15 ?? ?? ?? ?? 48");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find CharacterDB");
+        displayError("Lookup error: unable to find CharacterDB (1)");
         return mCharacterDB;
     }
     mCharacterDB.ptr = instructionOffset + 11 + (duint)Script::Memory::ReadDword(instructionOffset + 7);
-
-    const size_t characterSize = mCharacterDB.characterSize();
-    auto& stringsTable = get_StringsTable();
-    for (size_t x = 0; x < 20; ++x)
+    if (!Script::Memory::IsValidPtr(mCharacterDB.ptr))
     {
-        size_t startOffset = mCharacterDB.ptr + (x * characterSize);
-        size_t offset = startOffset;
-        QString characterName = stringsTable.stringForIndex(Script::Memory::ReadDword(offset + 0x14));
-
-        mCharacterDB.mCharacterNamesStringList << characterName;
+        displayError("Lookup error: unable to find CharacterDB (2)");
+        mCharacterDB.ptr = 0;
+        return mCharacterDB;
     }
+
+    // const size_t characterSize = mCharacterDB.characterSize();
+    // auto& stringsTable = get_StringsTable();
+    // if (stringsTable.isValid())
+    //{
+    //    for (size_t x = 0; x < 20; ++x)
+    //    {
+    //        size_t startOffset = mCharacterDB.ptr + (x * characterSize);
+    //        size_t offset = startOffset;
+    //        QString characterName = stringsTable.stringForIndex(Script::Memory::ReadDword(offset + 0x14));
+    //        mCharacterDB.mCharacterNamesStringList << characterName;
+    //    }
+    //}
     return mCharacterDB;
 }
 
-const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable()
+const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable(bool quiet)
 {
     if (mStringsTable.ptr != 0)
         return mStringsTable;
@@ -154,22 +173,22 @@ const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable()
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "48 8D 15 ?? ?? ?? ?? 4C 8B 0C CA");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find StringsTable");
+        if (!quiet)
+            displayError("Lookup error: unable to find StringsTable");
+
         return mStringsTable;
     }
     auto relativeOffset = Script::Memory::ReadDword(instructionOffset + 3);
-    mStringsTable.ptr = instructionOffset + 7 + relativeOffset;
-
-    for (auto stringIndex = 0; stringIndex < 5000; ++stringIndex)
+    auto addr = instructionOffset + 7 + relativeOffset;
+    if (Script::Memory::ReadQword(addr) == 0)
     {
-        size_t stringPointer = Script::Memory::ReadQword(mStringsTable.ptr + (stringIndex * sizeof(uintptr_t)));
-        if (Script::Memory::IsValidPtr(stringPointer))
-        {
-            mStringsTable.size++;
-        }
-        else
-            break;
+        if (!quiet)
+            displayError("Lookup error: StringsTable not yet initialised");
+
+        return mStringsTable;
     }
+
+    mStringsTable.ptr = addr;
     return mStringsTable;
 }
 
@@ -185,12 +204,18 @@ const S2Plugin::VirtualTableLookup& S2Plugin::Spelunky2::get_VirtualTableLookup(
     auto instructionOffset = Script::Pattern::FindMem(afterBundle, afterBundleSize, "48 8D 0D ?? ?? ?? ?? 48 89 0D ?? ?? ?? ?? 48 C7 05");
     if (instructionOffset == 0)
     {
-        displayError("Lookup error: unable to find VirtualTable start");
+        displayError("Lookup error: unable to find VirtualTable start (1)");
         return mVirtualTableLookup;
     }
 
     auto pcOffset = Script::Memory::ReadDword(instructionOffset + 3);
     mVirtualTableLookup.mTableStartAddress = instructionOffset + pcOffset + 7;
+    if (!Script::Memory::IsValidPtr(mVirtualTableLookup.mTableStartAddress))
+    {
+        displayError("Lookup error: unable to find VirtualTable start (2)");
+        mVirtualTableLookup.mTableStartAddress = 0;
+        return mVirtualTableLookup;
+    }
 
     // import the pointers
     auto buffer = std::make_unique<size_t[]>(gsAmountOfPointers);
@@ -288,17 +313,22 @@ uintptr_t S2Plugin::Spelunky2::get_SaveStatesPtr()
 
 uintptr_t S2Plugin::Spelunky2::get_DebugSettingsPtr()
 {
-    if (mDebugSettings != 0)
-        return mDebugSettings;
+    if (mDebugSettingsPtr != 0)
+        return mDebugSettingsPtr;
 
     auto instructionAddress = Script::Pattern::FindMem(afterBundle, afterBundleSize, "F3 41 0F 11 47 38 8B 05");
     if (instructionAddress == 0)
     {
-        displayError("Lookup error: unable to find DebugSettings");
-        return mDebugSettings;
+        displayError("Lookup error: unable to find DebugSettings (1)");
+        return mDebugSettingsPtr;
     }
     auto relativeOffset = Script::Memory::ReadDword(instructionAddress + 8);
-    mDebugSettings = instructionAddress + 12 + relativeOffset;
+    mDebugSettingsPtr = instructionAddress + 12 + relativeOffset;
+    if (!Script::Memory::IsValidPtr(mDebugSettingsPtr))
+    {
+        displayError("Lookup error: unable to find DebugSettings (2)");
+        mDebugSettingsPtr = 0;
+    }
 
-    return mDebugSettings;
+    return mDebugSettingsPtr;
 }
