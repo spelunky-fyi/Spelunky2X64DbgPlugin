@@ -8874,7 +8874,12 @@
     ],
     "b2World": [
       { "field": "m_blockAllocator", "type": "b2BlockAllocator" },
-      { "field": "unknown", "type": "Array", "arraytype": "Qword", "length": 12 },
+      {
+        "field": "unknown",
+        "type": "Array",
+        "arraytype": "Qword",
+        "length": 12
+      },
       { "field": "m_stackAllocator", "type": "b2StackAllocator" },
       { "field": "m_flags", "type": "Dword" },
       { "field": "padding1", "type": "Dword" },
@@ -8899,12 +8904,22 @@
       { "field": "m_liquidFunVersionString", "type": "ConstCharPointer" }
     ],
     "b2StackAllocator": [
-      { "field": "m_data", "type": "Array", "arraytype": "Byte", "length": 102400 },
+      {
+        "field": "m_data",
+        "type": "Array",
+        "arraytype": "Byte",
+        "length": 102400
+      },
       { "field": "m_index", "type": "Dword" },
       { "field": "m_allocation", "type": "Dword" },
       { "field": "m_maxAllocation", "type": "Dword" },
       { "field": "padding1", "type": "Dword" },
-      { "field": "m_entries", "type": "Array", "arraytype": "b2StackEntry", "length": 32 },
+      {
+        "field": "m_entries",
+        "type": "Array",
+        "arraytype": "b2StackEntry",
+        "length": 32
+      },
       { "field": "m_entryCount", "type": "Dword" },
       { "field": "padding2", "type": "Dword" }
     ],
@@ -8952,7 +8967,11 @@
       { "field": "m_chunkCount", "type": "Dword" },
       { "field": "m_chunkSpace", "type": "Dword" },
       { "field": "m_freeLists", "type": "DataPointer" },
-      { "field": "m_giants1", "type": "Dword", "comment": "don't care, just typed out some inner struct thing for match the size" },
+      {
+        "field": "m_giants1",
+        "type": "Dword",
+        "comment": "don't care, just typed out some inner struct thing for match the size"
+      },
       { "field": "padding", "type": "Dword" },
       { "field": "m_giants3", "type": "DataPointer" },
       { "field": "m_giants4", "type": "DataPointer" }
