@@ -87,7 +87,6 @@
     "LiquidPhysicsEngine",
     "MapBucket",
     "MapBucket1",
-    "MysteryLiquidPointer1",
     "MysteryLiquidPointer2",
     "PointerToPushBlocksMap",
     "PointerToFloorsMap",
@@ -4588,7 +4587,7 @@
       { "field": "top", "type": "Float" }
     ],
     "LiquidPhysics": [
-      { "field": "unknown1", "type": "MysteryLiquidPointer1" },
+      { "field": "liquid_fun_world", "type": "b2World", "pointer": true },
       { "field": "water_physics_defaults", "type": "LiquidPhysicsParams" },
       { "field": "water_physics_engine", "type": "LiquidPhysicsEngine" },
       { "field": "water_tile_spawn_data", "type": "LiquidTileSpawnData" },
@@ -4662,8 +4661,7 @@
       { "field": "unknown12", "type": "Bool" },
       { "field": "padding12a", "type": "Byte" },
       { "field": "padding12b", "type": "Byte" },
-      { "field": "padding12c", "type": "Byte" },
-      { "field": "unknown13", "type": "UnsignedDword" }
+      { "field": "padding12c", "type": "Byte" }
     ],
     "LiquidAmounts": [
       { "field": "lava", "type": "Byte" },
@@ -8874,42 +8872,126 @@
       { "field": "unknown108", "type": "Qword" },
       { "field": "unknown109", "type": "Qword" }
     ],
-    "MysteryLiquidPointer1": [
-      {
-        "field": "unknown1",
-        "type": "DataPointer",
-        "comment": "some sort of container"
-      },
-      {
-        "field": "size",
-        "type": "Dword",
-        "comment": "related to the level size?"
-      },
-      { "field": "cap", "type": "Dword" },
-      { "field": "unknown4", "type": "DataPointer" },
-      { "field": "unknown5", "type": "DataPointer" },
-      { "field": "unknown6", "type": "DataPointer" },
-      { "field": "unknown7", "type": "DataPointer" },
-      { "field": "unknown8", "type": "DataPointer" },
-      {
-        "field": "unknown9",
-        "type": "DataPointer",
-        "comment": "array of entities? removed ones?"
-      },
-      { "field": "unknown10", "type": "DataPointer", "comment": "map?" },
-      { "field": "unknown11", "type": "Qword" },
-      { "field": "skip", "type": "Skip", "offset": 102472 },
-      {
-        "field": "unknown12",
-        "type": "Array",
-        "length": 46,
-        "arraytype": "UnsignedQword"
-      },
-      { "field": "unknown13", "type": "Qword", "comment": "the end?" }
+    "b2World": [
+      { "field": "m_blockAllocator", "type": "b2BlockAllocator" },
+      { "field": "unknown", "type": "Array", "arraytype": "Qword", "length": 12 },
+      { "field": "m_stackAllocator", "type": "b2StackAllocator" },
+      { "field": "m_flags", "type": "Dword" },
+      { "field": "padding1", "type": "Dword" },
+      { "field": "m_contactManager", "type": "b2ContactManager" },
+      { "field": "m_bodyList", "type": "DataPointer" },
+      { "field": "m_jointList", "type": "DataPointer" },
+      { "field": "m_particleSystemList", "type": "DataPointer" },
+      { "field": "m_bodyCount", "type": "Dword" },
+      { "field": "m_jointCount", "type": "Dword" },
+      { "field": "m_gravity", "type": "XY" },
+      { "field": "m_allowSleep", "type": "Bool" },
+      { "field": "padding2", "type": "Skip", "offset": 7 },
+      { "field": "m_destructionListener", "type": "DataPointer" },
+      { "field": "m_debugDraw", "type": "DataPointer" },
+      { "field": "m_inv_dt0", "type": "Float" },
+      { "field": "m_warmStarting", "type": "Bool" },
+      { "field": "m_continuousPhysics", "type": "Bool" },
+      { "field": "m_subStepping", "type": "Bool" },
+      { "field": "m_stepComplete", "type": "Bool" },
+      { "field": "m_profile", "type": "b2Profile" },
+      { "field": "m_liquidFunVersion", "type": "DataPointer" },
+      { "field": "m_liquidFunVersionString", "type": "ConstCharPointer" }
+    ],
+    "b2StackAllocator": [
+      { "field": "m_data", "type": "Array", "arraytype": "Byte", "length": 102400 },
+      { "field": "m_index", "type": "Dword" },
+      { "field": "m_allocation", "type": "Dword" },
+      { "field": "m_maxAllocation", "type": "Dword" },
+      { "field": "padding1", "type": "Dword" },
+      { "field": "m_entries", "type": "Array", "arraytype": "b2StackEntry", "length": 32 },
+      { "field": "m_entryCount", "type": "Dword" },
+      { "field": "padding2", "type": "Dword" }
+    ],
+    "b2StackEntry": [
+      { "field": "data", "type": "DataPointer" },
+      { "field": "size", "type": "Dword" },
+      { "field": "usedMalloc", "type": "Bool" },
+      { "field": "padding", "type": "Skip", "offset": 3 }
+    ],
+    "b2ContactManager": [
+      { "field": "m_broadPhase", "type": "b2BroadPhase" },
+      { "field": "m_contactList", "type": "DataPointer" },
+      { "field": "m_contactCount", "type": "Dword" },
+      { "field": "padding", "type": "Dword" },
+      { "field": "m_contactFilter", "type": "DataPointer" },
+      { "field": "m_contactListener", "type": "DataPointer" },
+      { "field": "m_allocator", "type": "DataPointer" }
+    ],
+    "b2BroadPhase": [
+      { "field": "m_tree", "type": "b2DynamicTree" },
+      { "field": "m_proxyCount", "type": "Dword" },
+      { "field": "padding1", "type": "Dword" },
+      { "field": "m_moveBuffer", "type": "DataPointer" },
+      { "field": "m_moveCapacity", "type": "Dword" },
+      { "field": "m_moveCount", "type": "Dword" },
+      { "field": "m_pairBuffer", "type": "DataPointer" },
+      { "field": "m_pairCapacity", "type": "Dword" },
+      { "field": "m_pairCount", "type": "Dword" },
+      { "field": "m_queryProxyId", "type": "Dword" },
+      { "field": "padding2", "type": "Dword" }
+    ],
+    "b2DynamicTree": [
+      { "field": "m_root", "type": "Dword" },
+      { "field": "padding1", "type": "Dword" },
+      { "field": "m_nodes", "type": "DataPointer" },
+      { "field": "m_nodeCount", "type": "Dword" },
+      { "field": "m_nodeCapacity", "type": "Dword" },
+      { "field": "m_freeList", "type": "Dword" },
+      { "field": "m_path", "type": "UnsignedDword" },
+      { "field": "m_insertionCount", "type": "Dword" },
+      { "field": "padding2", "type": "Dword" }
+    ],
+    "b2BlockAllocator": [
+      { "field": "m_chunks", "type": "DataPointer" },
+      { "field": "m_chunkCount", "type": "Dword" },
+      { "field": "m_chunkSpace", "type": "Dword" },
+      { "field": "m_freeLists", "type": "DataPointer" },
+      { "field": "m_giants1", "type": "Dword", "comment": "don't care, just typed out some inner struct thing for match the size" },
+      { "field": "padding", "type": "Dword" },
+      { "field": "m_giants3", "type": "DataPointer" },
+      { "field": "m_giants4", "type": "DataPointer" }
+    ],
+    "b2Profile": [
+      { "field": "step", "type": "Float" },
+      { "field": "collide", "type": "Float" },
+      { "field": "solve", "type": "Float" },
+      { "field": "solveInit", "type": "Float" },
+      { "field": "solveVelocity", "type": "Float" },
+      { "field": "solvePosition", "type": "Float" },
+      { "field": "broadphase", "type": "Float" },
+      { "field": "solveTOI", "type": "Float" }
     ],
     "MysteryLiquidPointer2": [
       { "field": "last_spawn_liquid", "type": "EntityPointer" },
-      { "field": "unknown2", "type": "Qword", "comment": "counter? offset?" }
+      { "field": "unknown2", "type": "MysteryLiquidPointer3", "pointer": true }
+    ],
+    "MysteryLiquidPointer3": [
+      { "field": "xy1", "type": "XY" },
+      { "field": "xy2", "type": "XY" },
+      { "field": "xy3", "type": "XY" },
+      { "field": "xy4", "type": "XY" },
+      { "field": "xy5", "type": "XY" },
+      { "field": "xy6", "type": "XY" },
+      { "field": "xy7", "type": "XY" },
+      { "field": "xy8", "type": "XY" },
+      { "field": "xy9", "type": "XY" },
+      { "field": "xy10", "type": "XY" },
+      { "field": "unknown1", "type": "Byte" },
+      { "field": "padding1", "type": "Skip", "offset": 7 },
+      { "field": "unknown2", "type": "UnsignedQword" },
+      { "field": "unknown3", "type": "UnsignedQword" },
+      { "field": "unknown4", "type": "UnsignedQword" },
+      { "field": "unknown5", "type": "UnsignedQword" },
+      { "field": "unknown6", "type": "UnsignedQword" },
+      { "field": "unknown7", "type": "UnsignedQword" },
+      { "field": "unknown8", "type": "Float" },
+      { "field": "unknown9", "type": "Float" }
     ],
     "SomeUnknownArray": [
       { "field": "array_pointer", "type": "DataPointer" },
@@ -9949,8 +10031,7 @@
         "keytype": "StdString",
         "valuetype": "UnsignedWord"
       },
-      { "field": "unknown2", "type": "UnsignedQword" },
-      { "field": "unknown3", "type": "UnsignedQword" }
+      { "field": "unknown2", "type": "UnsignedQword" }
     ],
     "DebugSettings": [
       {
