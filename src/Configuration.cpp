@@ -373,7 +373,10 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         case MemoryFieldType::Skip:
         {
             if (memField.isPointer)
-                throw std::runtime_error("skip elment cannot be marked as pointer (" + struct_name + "." + memField.name + ")");
+                throw std::runtime_error("Skip elment cannot be marked as pointer (" + struct_name + "." + memField.name + ")");
+
+            if (memField.size == 0)
+                throw std::runtime_error("no offset specified for Skip (" + struct_name + "." + memField.name + ")");
             break;
         }
         case MemoryFieldType::StdVector:
