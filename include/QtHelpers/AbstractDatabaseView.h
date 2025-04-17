@@ -1,7 +1,7 @@
 #pragma once
 
+#include "LineEditEx.h"
 #include <QComboBox>
-#include <QLineEdit>
 #include <QModelIndex>
 #include <QSize>
 #include <QStandardItem>
@@ -71,7 +71,7 @@ namespace S2Plugin
         void groupedComparisonItemClicked(QTreeWidgetItem* item);
 
       protected:
-        QLineEdit* mSearchLineEdit;
+        LineEditEx* mSearchLineEdit;
         TreeViewMemoryFields* mMainTreeView;
         QTableWidget* mCompareTableWidget;
         bool mFieldChoosen{false};

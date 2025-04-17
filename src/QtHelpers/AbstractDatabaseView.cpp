@@ -65,7 +65,7 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
     {
         auto topLayout = new QHBoxLayout();
 
-        mSearchLineEdit = new QLineEdit();
+        mSearchLineEdit = new LineEditEx();
         mSearchLineEdit->setPlaceholderText("Search");
         topLayout->addWidget(mSearchLineEdit);
         QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, &AbstractDatabaseView::searchFieldReturnPressed);

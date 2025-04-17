@@ -4,16 +4,38 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include <QCompleter>
+#include <QTimer>
 
 S2Plugin::ViewCharacterDB::ViewCharacterDB(QWidget* parent) : AbstractDatabaseView(MemoryFieldType::CharacterDB, parent)
 {
-    setWindowTitle("Character DB");
+    setWindowTitle("Character DB (20 characters)");
     auto& charDB = Spelunky2::get()->get_CharacterDB();
     auto characterNameCompleter = new QCompleter(charDB.characterNamesStringList(), this);
     characterNameCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     characterNameCompleter->setFilterMode(Qt::MatchContains);
     QObject::connect(characterNameCompleter, static_cast<void (QCompleter::*)(const QString&)>(&QCompleter::activated), this, &ViewCharacterDB::searchFieldCompleterActivated);
     mSearchLineEdit->setCompleter(characterNameCompleter);
+    QObject::connect(mSearchLineEdit, static_cast<void (LineEditEx::*)(Qt::MouseButton)>(&LineEditEx::mouseRelease), this,
+                     [characterNameCompleter, this](Qt::MouseButton button)
+                     {
+                         if (button == Qt::LeftButton)
+                         {
+                             if (mSearchLineEdit->text().isEmpty())
+                                 characterNameCompleter->setCompletionPrefix("");
+
+                             characterNameCompleter->complete();
+                         }
+                     });
+    QObject::connect(mSearchLineEdit, static_cast<void (LineEditEx::*)(const QString&)>(&LineEditEx::textEdited), this,
+                     [characterNameCompleter](const QString& text)
+                     {
+                         if (text.isEmpty())
+                         {
+                             characterNameCompleter->setCompletionPrefix("");
+                             QTimer::singleShot(0, [characterNameCompleter]() { characterNameCompleter->complete(); });
+                         }
+                     });
+    QObject::connect(mSearchLineEdit, &QLineEdit::returnPressed, this, [characterNameCompleter]() { characterNameCompleter->complete(); });
     mCompareTableWidget->setRowCount(charDB.charactersCount());
     showID(0);
 }

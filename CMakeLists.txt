@@ -111,6 +111,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/QtHelpers/WidgetAutorefresh.h
 	include/QtHelpers/LongLongSpinBox.h
 	include/QtHelpers/WidgetPagination.h
+	include/QtHelpers/LineEditEx.h
 	src/Spelunky2.cpp
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
