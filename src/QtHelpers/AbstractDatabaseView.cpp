@@ -248,7 +248,7 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
 
 void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 {
-    // protect againts infinite loops since this slot is called when adding firts element to combo box
+    // protect against infinite loops since this slot is called when adding first element to combo box
     if (mFieldChoosen)
         return;
 
@@ -315,7 +315,7 @@ void S2Plugin::AbstractDatabaseView::populateComparisonTreeWidget(const QVariant
     mCompareTreeWidget->setSortingEnabled(false);
 
     std::unordered_map<QString, QVariant> rootValues;
-    std::unordered_map<QString, std::vector<ID_type>> groupedValues; // valueString -> vector<character id's>
+    std::unordered_map<QString, std::vector<ID_type>> groupedValues; // valueString -> vector<id's>
     for (ID_type x = 0; x <= highestRecordID(); ++x)
     {
         if (!isValidRecordID(x))
@@ -343,12 +343,12 @@ void S2Plugin::AbstractDatabaseView::populateComparisonTreeWidget(const QVariant
         {
             auto name = recordNameForID(recordID);
             auto caption = QString("<font color='blue'><u>%1</u></font>").arg(name);
-            auto childItem = new QTreeWidgetItem(rootItem, QStringList(caption));
+            auto childItem = new TreeWidgetItemNumeric(rootItem, QStringList(caption));
             childItem->setData(0, Qt::UserRole, recordID);
             mCompareTreeWidget->insertTopLevelItem(0, childItem);
         }
+        rootItem->sortChildren(0, Qt::AscendingOrder);
     }
-
     mCompareTreeWidget->setSortingEnabled(true);
     mCompareTreeWidget->sortItems(0, Qt::AscendingOrder);
 }
