@@ -617,7 +617,7 @@
     "EntityDB": [
       { "field": "create_func", "type": "CodePointer" },
       { "field": "destroy_func", "type": "CodePointer" },
-      { "field": "field_10", "type": "UnsignedDword" },
+      { "field": "memory_size", "type": "UnsignedDword", "comment": "allocated, multiple of 8" },
       { "field": "id", "type": "EntityDBID" },
       {
         "field": "search_flags",
