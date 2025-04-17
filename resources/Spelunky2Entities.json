@@ -3822,7 +3822,7 @@
     "TransferFloor": [
       {
         "field": "transferred_entities",
-        "type": "UnorderedMap",
+        "type": "StdUnorderedMap",
         "comment": "unordered_map<int32_t, uint32_t> key is the uid, value is frame entity entered the floor"
       }
     ],
