@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pluginmain.h"
-#include <list>
+#include <cstdint>
 
 namespace S2Plugin
 {

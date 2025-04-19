@@ -1,6 +1,10 @@
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26 FATAL_ERROR)
 
-set(Qt5ROOT "" CACHE PATH "Path to Qt 5.6.3 folder")
+project(Spelunky2)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(Qt5_DIR "" CACHE PATH "Path to cmake Qt 5.6.3 folder")
 set(X64DBG_PLUGINS_ROOT "" CACHE PATH "Path to 64-bit plugins folder of x64dbg")
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "")
@@ -9,37 +13,21 @@ set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "/INCREMENTAL:NO" CACHE STRING "") # /DEBU
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
 
-project(Spelunky2)
-set(CMAKE_CXX_STANDARD 17)
 add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0)
 add_compile_definitions(NOMINMAX)
 add_compile_definitions(WIN32_LEAN_AND_MEAN)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include(CPM.cmake)
-
-CPMAddPackage(
-	NAME x64dbg
-	SYSTEM SOURCE_DIR "${CMAKE_HOME_DIRECTORY}/3rdParty/x64dbg-src"
-)
-
-set(Qt5Core_DIR "${Qt5ROOT}/lib/cmake/Qt5Core")
-set(Qt5Widgets_DIR "${Qt5ROOT}/lib/cmake/Qt5Widgets")
-
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Widgets REQUIRED)
+add_subdirectory(3rdparty/x64dbg-src)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+#set(CMAKE_AUTOUIC ON)
 if(QT_NAMESPACE)
 	add_definitions(-DQT_NAMESPACE=${QT_NAMESPACE})
 endif()
 
-
 # Create a plugin
 configure_file(config/pluginconfig.h.in include/pluginconfig.h ESCAPE_QUOTES)
-
-qt5_add_resources(SOURCES resources/spelunky2.qrc)
 
 x64dbg_plugin(${PROJECT_NAME}
 	src/pluginmain.cpp
@@ -171,16 +159,19 @@ x64dbg_plugin(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5ROOT}/include/QtCore)
 target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5ROOT}/include/QtWidgets)
-target_include_directories(${PROJECT_NAME} PUBLIC 3rdParty/json/single_include/)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC 3rdParty/json/single_include/)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include)
 target_link_libraries(${PROJECT_NAME} PRIVATE 	Qt5::Core 
 												Qt5::Widgets)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Set the plugin as the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /w44242 /w44254 /w44263 /w44265 /w44266 /w44287 /w44296 /w44365 /w44388 /w45038)
+
+#TODO debug config with /RTCcsu /Z7 ?
 
 # Copy the plugin to the x64dbg plugins folder
 
