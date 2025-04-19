@@ -30,7 +30,7 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
         const auto& samples = mLogger->samplesForField(field.uuid);
         int x = 0;
         uint16_t mappedY = 0;
-        uint16_t prevX = 0, prevY = 0;
+        int prevX = 0, prevY = 0;
         bool first = true;
         for (const auto& sample : samples)
         {

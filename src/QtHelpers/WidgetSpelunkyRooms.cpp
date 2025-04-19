@@ -1,6 +1,5 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
 #include "Configuration.h"
-#include "Data/State.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"

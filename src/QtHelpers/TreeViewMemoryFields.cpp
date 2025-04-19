@@ -5,7 +5,6 @@
 #include "Data/Entity.h"
 #include "Data/EntityDB.h"
 #include "Data/ParticleDB.h"
-#include "Data/State.h"
 #include "Data/StdList.h"
 #include "Data/StdString.h"
 #include "Data/StdUnorderedMap.h"
@@ -1479,7 +1478,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 }
                 else
                 {
-                    uintptr_t entityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr(true)}.findEntitybyUID(value.value());
+                    uintptr_t entityOffset = Spelunky2::get()->findEntitybyUID(value.value());
                     if (entityOffset != 0)
                     {
                         auto entityName = Configuration::get()->getEntityName(Entity{entityOffset}.entityTypeID());
@@ -1507,7 +1506,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     }
                     else
                     {
-                        uintptr_t comparisonEntityOffset = S2Plugin::State{Spelunky2::get()->get_StatePtr(true)}.findEntitybyUID(comparisonValue.value());
+                        uintptr_t comparisonEntityOffset = Spelunky2::get()->findEntitybyUID(comparisonValue.value());
                         if (comparisonEntityOffset != 0)
                         {
                             auto entityName = Configuration::get()->getEntityName(Entity{comparisonEntityOffset}.entityTypeID());
@@ -2889,11 +2888,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
                     return;
 
                 auto uid = Script::Memory::ReadDword(dataAddr);
-                auto statePtr = Spelunky2::get()->get_StatePtr(true);
-                if (statePtr == 0)
-                    return;
-
-                auto entityPtr = S2Plugin::State{statePtr}.findEntitybyUID(uid);
+                auto entityPtr = Spelunky2::get()->findEntitybyUID(uid);
                 if (entityPtr == 0)
                     return;
 

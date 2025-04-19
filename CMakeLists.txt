@@ -37,7 +37,6 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/read_helpers.h
 	include/Data/EntityDB.h
 	include/Data/Entity.h
-	include/Data/State.h
 	include/Data/ParticleDB.h
 	include/Data/TextureDB.h
 	include/Data/IDNameList.h
@@ -104,7 +103,6 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Configuration.cpp
 	src/Data/EntityDB.cpp
 	src/Data/Entity.cpp
-	src/Data/State.cpp
 	src/Data/ParticleDB.cpp
 	src/Data/IDNameList.cpp
 	src/Data/VirtualTableLookup.cpp

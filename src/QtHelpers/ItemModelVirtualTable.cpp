@@ -1,7 +1,6 @@
 #include "QtHelpers/ItemModelVirtualTable.h"
 #include "Configuration.h"
 #include "Data/Entity.h"
-#include "Data/State.h"
 #include "Data/VirtualTableLookup.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"

@@ -6,8 +6,9 @@
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
-#include <QString>
 #include <cstdint>
+
+class QString;
 
 namespace S2Plugin
 {
@@ -66,6 +67,7 @@ namespace S2Plugin
         uintptr_t find_between(const char* pattern, uintptr_t start = 0, uintptr_t end = 0) const;
 
         const QString& themeNameOfOffset(uintptr_t offset);
+        uintptr_t findEntitybyUID(uint32_t uid, uintptr_t statePtr = 0);
 
       private:
         static Spelunky2* ptr;

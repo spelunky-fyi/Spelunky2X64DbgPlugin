@@ -36,10 +36,6 @@ namespace S2Plugin
         {
             return mTextures.count(id) != 0;
         }
-        const auto textures() const
-        {
-            return mTextures;
-        }
         size_t highestID() const
         {
             return mHighestID;
