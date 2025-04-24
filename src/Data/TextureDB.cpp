@@ -23,7 +23,7 @@ void S2Plugin::TextureDB::reloadCache()
 
     auto textureCount = Script::Memory::ReadQword(ptr - 0x8);
     constexpr uintptr_t textureSize = 0x40ull;
-    for (auto x = 0; x < (std::min)(500ull, textureCount); ++x)
+    for (size_t x = 0; x < (std::min)(500ull, textureCount); ++x)
     {
         uintptr_t offset = ptr + textureSize * x;
         auto textureID = Script::Memory::ReadQword(offset);

@@ -466,7 +466,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 vector.reserve(field["functions"].size());
                 for (const auto& [funcIndex, func] : field["functions"].items())
                 {
-                    size_t index = std::stoll(funcIndex);
+                    size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed function"s);
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
@@ -598,7 +598,7 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
                 vector.reserve(field["vftablefunctions"].size());
                 for (const auto& [funcIndex, func] : field["vftablefunctions"].items())
                 {
-                    size_t index = std::stoll(funcIndex);
+                    size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed function"s);
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
@@ -1053,7 +1053,7 @@ void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
     }
     for (const auto& [roomCodeStr, roomDetails] : j["roomcodes"].items())
     {
-        auto id = std::stoi(roomCodeStr, 0, 16);
+        auto id = static_cast<uint16_t>(std::stoul(roomCodeStr, 0, 16));
         QColor color = roomDetails.contains("color") ? getColor(roomDetails["color"].get<std::string>()) : QColor(Qt::lightGray);
         mRoomCodes.emplace(id, RoomCode(id, value_or(roomDetails, "name", "Unnamed room code"s), std::move(color)));
     }

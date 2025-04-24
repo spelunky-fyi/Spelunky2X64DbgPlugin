@@ -91,12 +91,12 @@ std::optional<S2Plugin::ID_type> S2Plugin::ViewCharacterDB::getIDForName(QString
 
 S2Plugin::ID_type S2Plugin::ViewCharacterDB::highestRecordID() const
 {
-    return Spelunky2::get()->get_CharacterDB().charactersCount() - 1;
+    return Spelunky2::get()->get_CharacterDB().charactersCount() - 1u;
 }
 
 QString S2Plugin::ViewCharacterDB::recordNameForID(ID_type id) const
 {
-    return Spelunky2::get()->get_CharacterDB().characterNamesStringList()[id];
+    return Spelunky2::get()->get_CharacterDB().characterNamesStringList()[static_cast<int>(id)];
 }
 
 uintptr_t S2Plugin::ViewCharacterDB::addressOfRecordID(ID_type id) const

@@ -59,7 +59,7 @@ void S2Plugin::ViewEntityDB::label() const
 
 S2Plugin::ID_type S2Plugin::ViewEntityDB::highestRecordID() const
 {
-    return Configuration::get()->entityList().highestID() + 1; // allow one more, since there is unused type
+    return Configuration::get()->entityList().highestID() + 1u; // allow one more, since there is unused type
 }
 
 bool S2Plugin::ViewEntityDB::isValidRecordID(ID_type id) const

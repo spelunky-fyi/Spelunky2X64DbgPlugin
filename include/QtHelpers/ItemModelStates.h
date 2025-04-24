@@ -22,7 +22,7 @@ namespace S2Plugin
         }
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override
         {
-            auto& [stateID, state] = mStates.at(index.row());
+            auto& [stateID, state] = mStates.at(static_cast<size_t>(index.row()));
             if (role == Qt::DisplayRole)
             {
                 return QString("%1: %2").arg(stateID).arg(QString::fromStdString(state));

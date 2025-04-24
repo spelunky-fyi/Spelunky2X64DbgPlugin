@@ -72,7 +72,7 @@ void S2Plugin::DialogEditString::changeBtnClicked()
     {
         case MemoryFieldType::UTF16Char:
         {
-            ushort v = mLineEdit->text().isEmpty() ? 0 : mLineEdit->text()[0].unicode();
+            ushort v = mLineEdit->text().isEmpty() ? 0u : mLineEdit->text()[0].unicode();
             Script::Memory::WriteWord(mMemoryAddress, v);
             break;
         }

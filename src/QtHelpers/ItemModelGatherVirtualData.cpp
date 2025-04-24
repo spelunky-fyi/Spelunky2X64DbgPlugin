@@ -26,7 +26,7 @@ QVariant S2Plugin::ItemModelGatherVirtualData::data(const QModelIndex& index, in
 {
     if (role == Qt::DisplayRole)
     {
-        const auto& entry = mEntries.at(index.row());
+        const auto& entry = mEntries.at(static_cast<size_t>(index.row()));
         switch (index.column())
         {
             case gsColGatherID:
@@ -96,8 +96,8 @@ void S2Plugin::ItemModelGatherVirtualData::gatherEntities()
 
     auto processEntities = [&](size_t layerEntities, uint32_t count)
     {
-        size_t maximum = (std::min)(count, 10000u);
-        for (auto x = 0; x < maximum; ++x)
+        uint32_t maximum = (std::min)(count, 10000u);
+        for (uint32_t x = 0; x < maximum; ++x)
         {
             auto entityPtr = layerEntities + (x * sizeof(size_t));
             auto entity = Script::Memory::ReadQword(entityPtr);

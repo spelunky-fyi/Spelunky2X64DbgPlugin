@@ -5,7 +5,7 @@
 
 QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int role) const
 {
-    auto& field = mLogger->fieldAt(index.row());
+    auto& field = mLogger->fieldAt(static_cast<size_t>(index.row()));
     if (role == Qt::DisplayRole)
     {
         switch (index.column())

@@ -174,16 +174,23 @@ namespace S2Plugin
             // row count for matrix
             size_t rows;
         };
-        // column count for matrix
-        size_t columns{0};
-
         // For checking duplicate names
         bool operator==(const MemoryField& other) const
         {
             return name == other.name;
         }
+        void setNumColumns(size_t num)
+        {
+            columns = num;
+        };
+        size_t getNumColumns() const
+        {
+            return columns;
+        };
 
       private:
+        // column count for matrix
+        size_t columns{0};
         size_t size{0};
         friend class Configuration;
     };

@@ -9,7 +9,7 @@ QVariant S2Plugin::ItemModelVirtualTable::data(const QModelIndex& index, int rol
 {
     if (role == Qt::DisplayRole)
     {
-        const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(index.row());
+        const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(static_cast<size_t>(index.row()));
         switch (index.column())
         {
             case gsColTableOffset:
@@ -78,8 +78,8 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
 
     auto processEntities = [&](size_t layerEntities, uint32_t count)
     {
-        size_t maximum = (std::min)(count, 10000u);
-        for (auto x = 0; x < maximum; ++x)
+        uint32_t maximum = (std::min)(count, 10000u);
+        for (uint32_t x = 0; x < maximum; ++x)
         {
             auto entityPtr = layerEntities + (x * sizeof(size_t));
             Entity entity{Script::Memory::ReadQword(entityPtr)};
@@ -107,7 +107,7 @@ S2Plugin::SortFilterProxyModelVirtualTable::SortFilterProxyModelVirtualTable(QOb
 
 bool S2Plugin::SortFilterProxyModelVirtualTable::filterAcceptsRow(int sourceRow, const QModelIndex&) const
 {
-    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(sourceRow);
+    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(static_cast<size_t>(sourceRow));
 
     // only do text filtering when symbolless entries are not shown
     // because we will just jump to the first match in ViewVirtualTable::filterTextChanged

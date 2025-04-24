@@ -61,7 +61,7 @@ void S2Plugin::Logger::sample()
         {
             case MemoryFieldType::Byte:
             {
-                int8_t value = Script::Memory::ReadByte(field.memoryAddr);
+                int8_t value = static_cast<int8_t>(Script::Memory::ReadByte(field.memoryAddr));
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -77,7 +77,7 @@ void S2Plugin::Logger::sample()
             }
             case MemoryFieldType::Word:
             {
-                int16_t value = Script::Memory::ReadWord(field.memoryAddr);
+                int16_t value = static_cast<int16_t>(Script::Memory::ReadWord(field.memoryAddr));
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -94,7 +94,7 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::EntityUID:
             case MemoryFieldType::TextureDBID:
             {
-                int32_t value = Script::Memory::ReadDword(field.memoryAddr);
+                int32_t value = static_cast<int32_t>(Script::Memory::ReadDword(field.memoryAddr));
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -124,7 +124,7 @@ void S2Plugin::Logger::sample()
             }
             case MemoryFieldType::Qword:
             {
-                int64_t value = Script::Memory::ReadQword(field.memoryAddr);
+                int64_t value = static_cast<int64_t>(Script::Memory::ReadQword(field.memoryAddr));
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -234,18 +234,19 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
                     }
                     case MemoryFieldType::UnsignedQword:
                     {
-                        v = std::any_cast<uint64_t>(value);
+                        v = static_cast<int64_t>(std::any_cast<uint64_t>(value));
+                        // [Known Issue]: there is no way to represent all unsigned 64bit values in signed 64bit variable
+                        // and standard does not provide bigger type to properly compare and determinate biggest and lowest values from the two types
+                        if (v < 0)
+                            v = std::numeric_limits<int64_t>::max();
                         break;
                     }
                 }
                 if (v > highest)
-                {
                     highest = v;
-                }
+
                 if (v < lowest)
-                {
                     lowest = v;
-                }
             }
         }
     }

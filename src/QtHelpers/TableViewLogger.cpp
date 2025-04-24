@@ -104,7 +104,7 @@ void S2Plugin::TableViewLogger::cellClicked(const QModelIndex& index)
         auto newColor = QColorDialog::getColor(currentColor, this, "Pick a color");
         if (newColor.isValid())
         {
-            mLogger->updateFieldColor(index.row(), newColor);
+            mLogger->updateFieldColor(static_cast<size_t>(index.row()), newColor);
         }
     }
 }

@@ -101,7 +101,7 @@ namespace S2Plugin
       private:
         bool mEnableChangeHighlighting = true;
         bool drawTopBranch = true;
-        std::array<uint32_t, 9> mSavedColumnWidths = {};
+        std::array<int, 9> mSavedColumnWidths = {};
         QStandardItemModel* mModel;
     };
 } // namespace S2Plugin

@@ -6,7 +6,7 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent) : mMapAddress(address), AbstractContainerView(parent)
+S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent) : AbstractContainerView(parent), mMapAddress(address)
 {
     auto config = Configuration::get();
 
@@ -14,7 +14,7 @@ S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeNa
     mValueField = config->nameToMemoryField(valuetypeName);
 
     mMapKeyAlignment = config->getAlingment(keytypeName);
-    mMapValueAlignment = valuetypeName.empty() ? 0 : config->getAlingment(valuetypeName);
+    mMapValueAlignment = valuetypeName.empty() ? 0u : config->getAlingment(valuetypeName);
 
     if (valuetypeName.empty())
         setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
@@ -66,7 +66,7 @@ void S2Plugin::ViewStdMap::reloadContainer()
     auto _cur = the_map.begin();
     MemoryField parent_field;
     parent_field.type = MemoryFieldType::Dummy;
-    for (int x = 0; _cur != _end && x < range.second; ++x, ++_cur)
+    for (size_t x = 0; _cur != _end && x < range.second; ++x, ++_cur)
     {
         if (x < range.first)
             continue;

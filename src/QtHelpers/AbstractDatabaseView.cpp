@@ -428,7 +428,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::Byte:
         case MemoryFieldType::State8:
         {
-            int8_t value = Script::Memory::ReadByte(offset);
+            int8_t value = static_cast<int8_t>(Script::Memory::ReadByte(offset));
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::CharacterDBID:
@@ -441,7 +441,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::Word:
         case MemoryFieldType::State16:
         {
-            int16_t value = Script::Memory::ReadWord(offset);
+            int16_t value = static_cast<int16_t>(Script::Memory::ReadWord(offset));
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedWord:
@@ -454,7 +454,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::Dword:
         case MemoryFieldType::State32:
         {
-            int32_t value = Script::Memory::ReadDword(offset);
+            int32_t value = static_cast<int32_t>(Script::Memory::ReadDword(offset));
             return std::make_pair(QString::asprintf("%ld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::ParticleDBID:
@@ -468,7 +468,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         }
         case MemoryFieldType::Qword:
         {
-            int64_t value = Script::Memory::ReadQword(offset);
+            int64_t value = static_cast<int64_t>(Script::Memory::ReadQword(offset));
             return std::make_pair(QString::asprintf("%lld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedQword:

@@ -225,7 +225,7 @@ void S2Plugin::ViewVirtualTable::tableEntryClicked(const QModelIndex& index)
 {
     auto mappedIndex = mSortFilterProxy->mapToSource(index);
     auto offset = mappedIndex.row();
-    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(offset);
+    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(static_cast<size_t>(offset));
     auto column = mappedIndex.column();
     switch (column)
     {

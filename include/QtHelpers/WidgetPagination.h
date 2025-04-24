@@ -49,9 +49,9 @@ namespace S2Plugin
             mRightEnd->setDisabled(true);
             mRightEnd->setMaximumWidth(mRightEnd->sizeHint().height());
             QObject::connect(mLeftEnd, &QPushButton::clicked, [this]() { setPage(1); });
-            QObject::connect(mLeft, &QPushButton::clicked, [this]() { setPage(mCurrentPage - 1); });
+            QObject::connect(mLeft, &QPushButton::clicked, [this]() { setPage(static_cast<int64_t>(mCurrentPage) - 1); });
             QObject::connect(mSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int value) { setPage(value); });
-            QObject::connect(mRight, &QPushButton::clicked, [this]() { setPage(mCurrentPage + 1); });
+            QObject::connect(mRight, &QPushButton::clicked, [this]() { setPage(static_cast<int64_t>(mCurrentPage) + 1); });
             QObject::connect(mRightEnd, &QPushButton::clicked, [this]() { setPage(-1); });
             layout->addWidget(mLeftEnd);
             layout->addWidget(mLeft);
@@ -59,13 +59,13 @@ namespace S2Plugin
             layout->addWidget(mRight);
             layout->addWidget(mRightEnd);
         }
-        void setPage(int page)
+        void setPage(int64_t page)
         {
-            if (page == (int)mCurrentPage)
+            if (page == static_cast<int64_t>(mCurrentPage))
                 return;
 
-            auto count = pageCount();
-            if (page == -1 || (size_t)page >= count)
+            auto count = static_cast<int64_t>(pageCount());
+            if (page == -1 || page >= count)
             {
                 page = count;
             }
@@ -73,12 +73,12 @@ namespace S2Plugin
             {
                 page = 1;
             }
-            mCurrentPage = page;
+            mCurrentPage = static_cast<size_t>(page);
             mLeftEnd->setDisabled(page == 1);
             mLeft->setDisabled(page == 1);
-            mRight->setDisabled((size_t)page == count);
-            mRightEnd->setDisabled((size_t)page == count);
-            mSpinBox->setValue(page);
+            mRight->setDisabled(page == count);
+            mRightEnd->setDisabled(page == count);
+            mSpinBox->setValue(static_cast<int>(page));
             emit pageUpdate();
         }
         void setSize(size_t size)
@@ -88,8 +88,8 @@ namespace S2Plugin
         }
         std::pair<size_t, size_t> getRange() const
         {
-            uint pageIndex = mCurrentPage - 1;
-            size_t upper = (size_t)pageIndex * recordsPerPage() + recordsPerPage();
+            size_t pageIndex = mCurrentPage - 1;
+            size_t upper = pageIndex * recordsPerPage() + recordsPerPage();
             if (upper > mSize)
             {
                 upper = mSize;
@@ -106,11 +106,11 @@ namespace S2Plugin
             }
             updateSpinBoxRange();
         }
-        uint recordsPerPage() const
+        size_t recordsPerPage() const
         {
-            return mPageSizes[mComboBox->currentIndex()];
+            return mPageSizes[static_cast<size_t>(mComboBox->currentIndex())];
         }
-        uint getCurrentPage() const
+        size_t getCurrentPage() const
         {
             return mCurrentPage;
         }
@@ -119,9 +119,9 @@ namespace S2Plugin
         void pageUpdate();
 
       private:
-        uint pageCount() const
+        size_t pageCount() const
         {
-            uint count = (uint)(mSize / recordsPerPage());
+            size_t count = mSize / recordsPerPage();
             if (mSize % recordsPerPage() > 0)
             {
                 count++;
@@ -131,10 +131,10 @@ namespace S2Plugin
         void updateSpinBoxRange()
         {
             auto count = pageCount();
-            mSpinBox->setRange(1, count);
+            mSpinBox->setRange(1, static_cast<int>(count));
             if (mCurrentPage > count)
             {
-                setPage(count);
+                setPage(static_cast<int64_t>(count));
             }
             else if (mCurrentPage == count)
             {
@@ -156,6 +156,6 @@ namespace S2Plugin
 
         std::vector<uint> mPageSizes = {50, 100, 200, 500, 1000};
         size_t mSize = 0;
-        uint mCurrentPage = 1;
+        size_t mCurrentPage = 1;
     };
 }; // namespace S2Plugin

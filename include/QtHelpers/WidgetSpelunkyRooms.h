@@ -39,7 +39,7 @@ namespace S2Plugin
         size_t mOffset{0};
         QFont mFont;
         QSize mTextAdvance;
-        uint8_t mSpaceAdvance;
+        int mSpaceAdvance;
         std::vector<ToolTipRect> mToolTipRects;
     };
 

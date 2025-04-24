@@ -95,7 +95,7 @@ namespace S2Plugin
 
         bool filterAcceptsRow(int sourceRow, const QModelIndex&) const override
         {
-            if (mHideCompleted && dynamic_cast<ItemModelGatherVirtualData*>(sourceModel())->isEntryCompleted(sourceRow))
+            if (mHideCompleted && dynamic_cast<ItemModelGatherVirtualData*>(sourceModel())->isEntryCompleted(static_cast<size_t>(sourceRow)))
             {
                 return false;
             }

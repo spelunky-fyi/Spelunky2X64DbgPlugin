@@ -26,7 +26,7 @@ namespace S2Plugin
         {
             return ptr != 0;
         }
-        uintptr_t addressOfIndex(uint8_t id) const noexcept
+        uintptr_t addressOfIndex(uint32_t id) const noexcept
         {
             return ptr + id * characterSize();
         }

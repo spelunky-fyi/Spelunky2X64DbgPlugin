@@ -7,7 +7,7 @@
 #include <QString>
 
 S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent)
-    : mMapAddress(address), AbstractContainerView(parent)
+    : AbstractContainerView(parent), mMapAddress(address)
 {
     auto config = Configuration::get();
 
@@ -66,7 +66,7 @@ void S2Plugin::ViewStdUnorderedMap::reloadContainer()
     auto _cur = the_map.begin();
     MemoryField parent_field;
     parent_field.type = MemoryFieldType::Dummy;
-    for (int x = 0; _cur != _end && x < range.second; ++x, ++_cur)
+    for (size_t x = 0; _cur != _end && x < range.second; ++x, ++_cur)
     {
         if (x < range.first)
             continue;

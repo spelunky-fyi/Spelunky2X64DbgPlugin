@@ -150,7 +150,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
         QString typeName = field.isPointer ? "<b>P</b>: " : ""; // add color?
         if (field.type == MemoryFieldType::Matrix)
-            typeName += QString("%1[%2][%3]").arg(QString::fromStdString(field.firstParameterType)).arg(field.rows).arg(field.columns);
+            typeName += QString("%1[%2][%3]").arg(QString::fromStdString(field.firstParameterType)).arg(field.rows).arg(field.getNumColumns());
         else if (field.type == MemoryFieldType::Array)
             typeName += QString("%1[%2]").arg(QString::fromStdString(field.firstParameterType)).arg(field.numberOfElements);
         else if (field.type == MemoryFieldType::EntitySubclass || field.type == MemoryFieldType::DefaultStructType)
@@ -280,7 +280,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
-            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             break;
         }
         case MemoryFieldType::OldStdList:
@@ -290,7 +290,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             if (field.isPointer)
-                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             else
                 addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
@@ -303,7 +303,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
             returnField->setData(QVariant::fromValue(field.secondParameterType), gsRoleStdContainerSecondParameterType);
             if (field.isPointer)
-                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             else
                 addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
@@ -338,9 +338,9 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 size_t idx = 0;
                 if (field.secondParameterType == "#")
                 {
-                    delta += field.columns * index.get_size();
-                    memoryAddress += field.columns * index.get_size();
-                    idx = field.columns;
+                    delta += field.getNumColumns() * index.get_size();
+                    memoryAddress += field.getNumColumns() * index.get_size();
+                    idx = field.getNumColumns();
                 }
 
                 for (; idx < field.numberOfElements; ++idx)
@@ -348,7 +348,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                     index.name.erase(initialNameSize);
                     index.name += std::to_string(idx) + ']';
 
-                    addMemoryField(index, fieldNameOverride + index.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1 : deltaPrefixCount, returnField);
+                    addMemoryField(index, fieldNameOverride + index.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1u : deltaPrefixCount, returnField);
                     delta += index.get_size();
                     if (memoryAddress != 0)
                         memoryAddress += index.get_size();
@@ -365,14 +365,14 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
                 returnField->setData(QVariant::fromValue(field.firstParameterType), gsRoleStdContainerFirstParameterType);
                 returnField->setData(field.rows, gsRoleSize);
-                returnField->setData(field.columns, gsRoleColumns);
+                returnField->setData(field.getNumColumns(), gsRoleColumns);
             }
 
             if (field.rows <= 30 || !field.secondParameterType.empty()) // TODO: get the number from settings when done
                                                                         // columns limit dealt by the array
             {
                 MemoryField row;
-                row.numberOfElements = field.columns;
+                row.numberOfElements = field.getNumColumns();
                 row.firstParameterType = field.firstParameterType;
                 row.secondParameterType = "$"; // just to let it know it should put all the elements in, no matrix element
                                                // it can't be # since we still want the array to be placed normally, just no size limit
@@ -385,7 +385,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 size_t idx = 0;
                 if (!field.secondParameterType.empty())
                 {
-                    auto rowStart = std::stoll(field.secondParameterType);
+                    auto rowStart = std::stoull(field.secondParameterType);
                     delta += rowStart * row.get_size();
                     memoryAddress += rowStart * row.get_size();
                     idx = rowStart;
@@ -395,7 +395,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 {
                     row.name.erase(initialNameSize);
                     row.name += std::to_string(idx) + ']';
-                    addMemoryField(row, fieldNameOverride + row.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1 : deltaPrefixCount, returnField);
+                    addMemoryField(row, fieldNameOverride + row.name, field.isPointer ? 0 : memoryAddress, delta, field.isPointer ? deltaPrefixCount + 1u : deltaPrefixCount, returnField);
                     delta += row.get_size();
                     if (memoryAddress != 0)
                         memoryAddress += row.get_size();
@@ -414,12 +414,12 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             addr += addr == 0 ? 0 : Script::Memory::ReadQword(memoryAddress);
             if (auto fields = config->typeFieldsOfDefaultStruct(field.jsonName); !fields.empty())
             {
-                addMemoryFields(fields, fieldNameOverride, addr, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(fields, fieldNameOverride, addr, 0, deltaPrefixCount + 1u, returnField);
             }
             else
             {
                 auto newField = config->nameToMemoryField(field.jsonName);
-                addMemoryField(newField, fieldNameOverride, addr, 0, deltaPrefixCount + 1, returnField);
+                addMemoryField(newField, fieldNameOverride, addr, 0, deltaPrefixCount + 1u, returnField);
             }
             break;
         }
@@ -427,7 +427,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
-                addMemoryFields(config->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             else
                 addMemoryFields(config->typeFieldsOfDefaultStruct(field.jsonName), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
@@ -437,7 +437,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             if (field.isPointer)
-                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1, returnField);
+                addMemoryFields(config->typeFields(field.type), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             else
                 addMemoryFields(config->typeFields(field.type), fieldNameOverride, memoryAddress, delta, deltaPrefixCount, returnField);
 
@@ -703,7 +703,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
     {
         std::stringstream ss;
         uint8_t counter = 0;
-        for (uint8_t x = size - 1;; --x)
+        for (uint8_t x = size - 1u;; --x)
         {
             if (counter % 4 == 0)
             {
@@ -1056,7 +1056,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
 
             // [Known Issue]: null memory address is not handled
             const auto flagIndex = itemField->data(gsRoleFlagIndex).toUInt();
-            const uint mask = (1 << (flagIndex - 1));
+            const uint mask = (1u << (flagIndex - 1u));
 
             auto value = getDataFrom(itemField->parent()->index(), gsColValue, gsRoleRawValue).toUInt();
             bool flagSet = (value & mask) == mask;
@@ -1219,7 +1219,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     {
                         std::stringstream ss;
                         ss << "0x" << std::hex << std::setfill('0');
-                        for (int i = 0; i < std::min(lenght, 10ull); ++i)
+                        for (size_t i = 0; i < std::min(lenght, 10ull); ++i)
                             ss << std::setw(4) << reinterpret_cast<const uint16_t&>(buffer_w[i]);
 
                         itemValueHex->setData(QString::fromStdString(ss.str()), Qt::DisplayRole);
@@ -1253,7 +1253,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                         {
                             std::stringstream ss;
                             ss << "0x" << std::hex << std::setfill('0');
-                            for (int i = 0; i < std::min(lenght, 10ull) && buffer_w[i] != 0; ++i)
+                            for (size_t i = 0; i < std::min(lenght, 10ull) && buffer_w[i] != 0; ++i)
                                 ss << std::setw(4) << reinterpret_cast<const uint16_t&>(buffer_w[i]);
 
                             itemComparisonValueHex->setData(QString::fromStdString(ss.str()), Qt::DisplayRole);
@@ -1293,7 +1293,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     {
                         std::stringstream ss;
                         ss << "0x" << std::hex << std::setfill('0');
-                        for (int i = 0; i < std::min(size, 10ull); ++i)
+                        for (size_t i = 0; i < std::min(size, 10ull); ++i)
                             ss << std::setw(2) << reinterpret_cast<uint8_t&>(value->data()[i]);
 
                         itemValueHex->setData(QString::fromStdString(ss.str()), Qt::DisplayRole);
@@ -1326,7 +1326,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                         {
                             std::stringstream ss;
                             ss << "0x" << std::hex << std::setfill('0');
-                            for (int i = 0; i < std::min(size, 10ull); ++i)
+                            for (size_t i = 0; i < std::min(size, 10ull); ++i)
                                 ss << std::setw(2) << reinterpret_cast<uint8_t&>(comparisonValue->data()[i]);
 
                             itemComparisonValueHex->setData(QString::fromStdString(ss.str()), Qt::DisplayRole);
@@ -1385,8 +1385,9 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 }
                 else
                 {
-                    itemValue->setData(QString::asprintf("<font color='blue'><u>%d (%s)</u></font>", value.value(), Spelunky2::get()->get_TextureDB().nameForID(value.value()).c_str()),
-                                       Qt::DisplayRole);
+                    itemValue->setData(
+                        QString::asprintf("<font color='blue'><u>%d (%s)</u></font>", value.value(), Spelunky2::get()->get_TextureDB().nameForID(static_cast<uint32_t>(value.value())).c_str()),
+                        Qt::DisplayRole);
                 }
             }
             if (comparisonActive)
@@ -1402,9 +1403,9 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     }
                     else
                     {
-                        itemComparisonValue->setData(
-                            QString::asprintf("<font color='blue'><u>%d (%s)</u></font>", comparisonValue.value(), Spelunky2::get()->get_TextureDB().nameForID(comparisonValue.value()).c_str()),
-                            Qt::DisplayRole);
+                        itemComparisonValue->setData(QString::asprintf("<font color='blue'><u>%d (%s)</u></font>", comparisonValue.value(),
+                                                                       Spelunky2::get()->get_TextureDB().nameForID(static_cast<uint32_t>(comparisonValue.value())).c_str()),
+                                                     Qt::DisplayRole);
                     }
                 }
 
@@ -1478,7 +1479,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 }
                 else
                 {
-                    uintptr_t entityOffset = Spelunky2::get()->findEntitybyUID(value.value());
+                    uintptr_t entityOffset = Spelunky2::get()->findEntitybyUID(static_cast<uint32_t>(value.value()));
                     if (entityOffset != 0)
                     {
                         auto entityName = Configuration::get()->getEntityName(Entity{entityOffset}.entityTypeID());
@@ -1506,7 +1507,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     }
                     else
                     {
-                        uintptr_t comparisonEntityOffset = Spelunky2::get()->findEntitybyUID(comparisonValue.value());
+                        uintptr_t comparisonEntityOffset = Spelunky2::get()->findEntitybyUID(static_cast<uint32_t>(comparisonValue.value()));
                         if (comparisonEntityOffset != 0)
                         {
                             auto entityName = Configuration::get()->getEntityName(Entity{comparisonEntityOffset}.entityTypeID());
@@ -1686,7 +1687,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 auto& characterDB = Spelunky2::get()->get_CharacterDB();
                 bool isValidCharacter = value.value() < characterDB.charactersCount();
-                auto& characterName = isValidCharacter ? Spelunky2::get()->get_CharacterDB().characterNamesStringList().at(value.value()) : "";
+                auto& characterName = isValidCharacter ? Spelunky2::get()->get_CharacterDB().characterNamesStringList().at(static_cast<int>(value.value())) : "";
                 itemValue->setData(QString("<font color='blue'><u>%1 (%2)</u></font>").arg(value.value()).arg(characterName), Qt::DisplayRole);
             }
 
@@ -1699,7 +1700,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 {
                     auto& characterDB = Spelunky2::get()->get_CharacterDB();
                     bool isValidCharacter = comparisonValue.value() < characterDB.charactersCount();
-                    auto& characterName = isValidCharacter ? Spelunky2::get()->get_CharacterDB().characterNamesStringList().at(comparisonValue.value()) : "";
+                    auto& characterName = isValidCharacter ? Spelunky2::get()->get_CharacterDB().characterNamesStringList().at(static_cast<int>(comparisonValue.value())) : "";
                     itemComparisonValue->setData(QString("<font color='blue'><u>%1 (%2)</u></font>").arg(comparisonValue.value()).arg(characterName), Qt::DisplayRole);
                 }
 
@@ -2707,12 +2708,12 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (address != 0)
                     {
-                        int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
+                        auto size = getDataFrom(index, gsColField, gsRoleSize).toULongLong();
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto stringData = std::make_unique<ushort[]>(size);
                         Script::Memory::Read(address, stringData.get(), size, nullptr);
                         auto s = QString::fromUtf16(stringData.get());
-                        auto dialog = new DialogEditString(fieldName, s, address, size / 2 - 1, dataType, this);
+                        auto dialog = new DialogEditString(fieldName, s, address, static_cast<int>(size / 2 - 1), dataType, this);
                         dialog->exec();
                     }
                     break;
@@ -2724,7 +2725,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto s = QString::fromStdString(ReadConstString(address));
-                        // [Known Issue]: Now way to safely determinate allowed lenght, so we just allow as much characters as there is already
+                        // [Known Issue]: Now way to safely determinate allowed length, so we just allow as much characters as there is already
                         auto dialog = new DialogEditString(fieldName, s, address, s.length(), dataType, this);
                         dialog->exec();
                     }
@@ -2735,12 +2736,12 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
                     if (address != 0)
                     {
-                        int size = getDataFrom(index, gsColField, gsRoleSize).toInt();
+                        auto size = getDataFrom(index, gsColField, gsRoleSize).toULongLong();
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto stringData = std::make_unique<char[]>(size);
                         Script::Memory::Read(address, stringData.get(), size, nullptr);
                         auto s = QString::fromUtf8(stringData.get());
-                        auto dialog = new DialogEditString(fieldName, s, address, size - 1, dataType, this);
+                        auto dialog = new DialogEditString(fieldName, s, address, static_cast<int>(size - 1), dataType, this);
                         dialog->exec();
                     }
                     break;

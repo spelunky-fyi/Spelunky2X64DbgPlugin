@@ -28,7 +28,7 @@ S2Plugin::IDNameList::IDNameList(const std::string& relFilePath, const std::rege
         std::smatch m;
         if (std::regex_match(line, m, regex))
         {
-            uint32_t id = std::stoi(m[1].str());
+            uint32_t id = std::stoul(m[1].str());
             auto name = m[2].str();
             mEntries[id] = name;
             mNames << QString::fromStdString(name);

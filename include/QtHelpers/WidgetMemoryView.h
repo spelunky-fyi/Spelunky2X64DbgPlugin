@@ -57,7 +57,7 @@ namespace S2Plugin
         size_t mSize{0};
         QFont mFont;
         QSize mTextAdvance;
-        uint8_t mSpaceAdvance;
+        int mSpaceAdvance;
 
         std::vector<HighlightedField> mHighlightedFields;
         std::vector<ToolTipRect> mToolTipRects;

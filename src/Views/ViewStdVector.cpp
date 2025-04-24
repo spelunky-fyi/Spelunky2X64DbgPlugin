@@ -5,7 +5,7 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdVector::ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent) : mVectorAddress(vectoraddr), AbstractContainerView(parent)
+S2Plugin::ViewStdVector::ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent) : AbstractContainerView(parent), mVectorAddress(vectoraddr)
 {
     mValueField = Configuration::get()->nameToMemoryField(vectorType);
 

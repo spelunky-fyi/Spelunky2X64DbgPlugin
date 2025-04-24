@@ -68,7 +68,7 @@ void S2Plugin::ViewArray::pageListUpdate()
     mMainTreeView->updateTableHeader();
     auto range = mPagination->getRange();
     // using columns to store the initial index
-    mArray.columns = range.first;
+    mArray.setNumColumns(range.first);
     mArray.numberOfElements = range.second;
     mMainTreeView->addMemoryField(mArray, {}, mArrayAddress, 0);
 }
@@ -80,7 +80,7 @@ S2Plugin::ViewMatrix::ViewMatrix(uintptr_t address, std::string arrayTypeName, s
     mMatrix.type = MemoryFieldType::Matrix;
     mMatrix.firstParameterType = arrayTypeName;
     mMatrix.rows = rows;
-    mMatrix.columns = columns;
+    mMatrix.setNumColumns(columns);
 
     mPagination = new WidgetPagination(this);
     layout()->addWidget(mPagination);

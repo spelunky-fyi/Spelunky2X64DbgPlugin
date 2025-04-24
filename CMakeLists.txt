@@ -167,13 +167,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Set the plugin as the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /w44242 /w44254 /w44263 /w44265 /w44266 /w44287 /w44296 /w44365 /w44388 /w45038)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /w44242 /w44254 /w44263 /w44265 /w44266 /w44287 /w44296 /w44365 /w44388 /w45038
+													 /wd4324) # structure was padded due to alignment specifier
 
 #TODO debug config with /RTCcsu /Z7 ?
 
 # Copy the plugin to the x64dbg plugins folder
 
-if(CMAKE_GENERATOR STREQUAL "Ninja") # dodgy solution for VS Community having different path to the binary
+if(CMAKE_GENERATOR STREQUAL "Ninja") # dodgy solution for VS Community and VS Code having different path to the binary
 	add_custom_command(	TARGET ${PROJECT_NAME} 
 						POST_BUILD
 						COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_BINARY_DIR}/Spelunky2.dp64" ${X64DBG_PLUGINS_ROOT})
