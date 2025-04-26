@@ -61,7 +61,7 @@
 #define dputs(x) _plugin_logputs("[" PLUGIN_NAME "] " x)
 #define PLUG_EXPORT extern "C" __declspec(dllexport)
 
-// superglobal variables
+// super-global variables
 namespace S2Plugin
 {
     extern int handle;

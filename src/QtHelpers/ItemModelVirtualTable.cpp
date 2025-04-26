@@ -109,7 +109,7 @@ bool S2Plugin::SortFilterProxyModelVirtualTable::filterAcceptsRow(int sourceRow,
 {
     const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(static_cast<size_t>(sourceRow));
 
-    // only do text filtering when symbolless entries are not shown
+    // only do text filtering when symbol-less entries are not shown
     // because we will just jump to the first match in ViewVirtualTable::filterTextChanged
     if (!mShowSymbollessEntries && !mFilterString.isEmpty() && entry.symbols.size() > 0)
     {

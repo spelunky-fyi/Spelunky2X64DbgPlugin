@@ -3,7 +3,7 @@
 
 size_t S2Plugin::ParticleDB::particleSize()
 {
-    // [Known Issue]: Static value, have to restart programm for size to update
+    // [Known Issue]: Static value, have to restart program for size to update
     static size_t particleDBRecordSize = []()
     {
         auto& fields = Configuration::get()->typeFields(MemoryFieldType::ParticleDB);

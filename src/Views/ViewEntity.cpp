@@ -40,7 +40,7 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
     updateMemoryViewOffsetAndSize();
 
     auto entityClassName = Entity{mEntityPtr}.entityClassName();
-    // the combobox is set as Entity by default, so we have to manually call interpretAsChanged
+    // the comboBox is set as Entity by default, so we have to manually call interpretAsChanged
     if (entityClassName == "Entity")
         interpretAsChanged(QString::fromStdString(entityClassName));
     else
@@ -118,13 +118,13 @@ void S2Plugin::ViewEntity::initializeUI()
     {
         mMemoryScrollArea = new QScrollArea(tabMemory);
         mMemoryView = new WidgetMemoryView(mMemoryScrollArea);
-        mMemoryScrollArea->setStyleSheet("background-color: #fff;");
+        mMemoryScrollArea->setStyleSheet("background-color: #FFF;");
         mMemoryScrollArea->setWidget(mMemoryView);
         tabMemory->layout()->addWidget(mMemoryScrollArea);
 
         mMemoryComparisonScrollArea = new QScrollArea(tabMemory);
         mMemoryComparisonView = new WidgetMemoryView(mMemoryComparisonScrollArea);
-        mMemoryComparisonScrollArea->setStyleSheet("background-color: #fff;");
+        mMemoryComparisonScrollArea->setStyleSheet("background-color: #FFF;");
         mMemoryComparisonScrollArea->setWidget(mMemoryComparisonView);
         tabMemory->layout()->addWidget(mMemoryComparisonScrollArea);
         mMemoryComparisonScrollArea->setVisible(false);
@@ -143,7 +143,7 @@ void S2Plugin::ViewEntity::initializeUI()
         // mSpelunkyLevel->paintEntityMask(0x4000, QColor(255, 87, 6));  // lava
         // mSpelunkyLevel->paintEntityMask(0x2000, QColor(6, 213, 249)); // water
         mSpelunkyLevel->paintEntityMask(0x80, QColor(85, 170, 170)); // active floors
-        tabLevel->setStyleSheet("background-color: #fff;");
+        tabLevel->setStyleSheet("background-color: #FFF;");
         tabLevel->setWidget(mSpelunkyLevel);
     }
     // TAB CPP
@@ -217,7 +217,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
             {
                 if (!field.isPointer)
                 {
-                    // note: this will not work with arrays and probably other sutff, in the future prefer to use mMainTreeView
+                    // note: this will not work with arrays and probably other stuff, in the future prefer to use mMainTreeView
                     if (field.type == MemoryFieldType::DefaultStructType)
                     {
                         self(prefix + field.name + ".", config->typeFieldsOfDefaultStruct(field.jsonName), self);
@@ -281,11 +281,11 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
     QColor color;
     MemoryFieldType type{};
 
-    auto highlightFields = [&](QStandardItem* parrent, auto&& self) -> void
+    auto highlightFields = [&](QStandardItem* parent, auto&& self) -> void
     {
-        for (int idx = 0; idx < parrent->rowCount(); ++idx)
+        for (int idx = 0; idx < parent->rowCount(); ++idx)
         {
-            auto field = parrent->child(idx, gsColField);
+            auto field = parent->child(idx, gsColField);
             type = field->data(gsRoleType).value<MemoryFieldType>();
             bool isPointer = field->data(gsRoleIsPointer).toBool();
             // [Known Issue]: This may need update if we ever add field types that have children with not actual memory representation
@@ -294,7 +294,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
                 self(field, self);
                 continue;
             }
-            auto deltaField = parrent->child(idx, gsColMemoryAddressDelta);
+            auto deltaField = parent->child(idx, gsColMemoryAddressDelta);
             size_t delta = deltaField->data(gsRoleRawValue).toULongLong();
             // get the size by the difference in offset delta
             // TODO: this will fail in getting the correct size if there is a skip element between fields
@@ -305,7 +305,7 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
             }
             offset = delta;
             fieldName = field->data(gsRoleUID).toString().toStdString();
-            color = parrent->child(idx, gsColComparisonValueHex)->background().color();
+            color = parent->child(idx, gsColComparisonValueHex)->background().color();
         }
     };
 

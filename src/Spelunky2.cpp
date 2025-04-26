@@ -195,7 +195,7 @@ static constexpr uint32_t lowbias32(uint32_t x)
     return x;
 }
 
-// Just for refrence
+// Just for reference
 // struct RobinHoodTableEntry
 // {
 //    uint32_t uid_plus_one;
@@ -203,7 +203,7 @@ static constexpr uint32_t lowbias32(uint32_t x)
 //    Entity* entity;
 // };
 
-uintptr_t S2Plugin::Spelunky2::findEntitybyUID(uint32_t uid, uintptr_t statePtr)
+uintptr_t S2Plugin::Spelunky2::findEntityByUID(uint32_t uid, uintptr_t statePtr)
 {
     if (statePtr == 0)
         statePtr = get_StatePtr(true);
@@ -211,7 +211,7 @@ uintptr_t S2Plugin::Spelunky2::findEntitybyUID(uint32_t uid, uintptr_t statePtr)
     if (uid == ~0 || statePtr == 0)
         return 0;
 
-    // [Known Issue]: Static value, have to restart programm for size to update
+    // [Known Issue]: Static value, have to restart program for size to update
     static size_t mask_offset = Configuration::get()->offsetForField(MemoryFieldType::State, "uid_to_entity_mask");
 
     const uint32_t mask = Script::Memory::ReadDword(statePtr + mask_offset);

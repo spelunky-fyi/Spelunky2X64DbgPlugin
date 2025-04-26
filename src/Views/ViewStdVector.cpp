@@ -5,11 +5,11 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdVector::ViewStdVector(uintptr_t vectoraddr, const std::string& vectorType, QWidget* parent) : AbstractContainerView(parent), mVectorAddress(vectoraddr)
+S2Plugin::ViewStdVector::ViewStdVector(uintptr_t address, const std::string& valueTypeName, QWidget* parent) : AbstractContainerView(parent), mVectorAddress(address)
 {
-    mValueField = Configuration::get()->nameToMemoryField(vectorType);
+    mValueField = Configuration::get()->nameToMemoryField(valueTypeName);
 
-    setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(vectorType)));
+    setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(valueTypeName)));
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 145);

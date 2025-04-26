@@ -6,20 +6,20 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent) : AbstractContainerView(parent), mMapAddress(address)
+S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName, QWidget* parent) : AbstractContainerView(parent), mMapAddress(address)
 {
     auto config = Configuration::get();
 
-    mKeyField = config->nameToMemoryField(keytypeName);
-    mValueField = config->nameToMemoryField(valuetypeName);
+    mKeyField = config->nameToMemoryField(keyTypeName);
+    mValueField = config->nameToMemoryField(valueTypeName);
 
-    mMapKeyAlignment = config->getAlingment(keytypeName);
-    mMapValueAlignment = valuetypeName.empty() ? 0u : config->getAlingment(valuetypeName);
+    mMapKeyAlignment = config->getAlignment(keyTypeName);
+    mMapValueAlignment = valueTypeName.empty() ? 0u : config->getAlignment(valueTypeName);
 
-    if (valuetypeName.empty())
-        setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keytypeName)));
+    if (valueTypeName.empty())
+        setWindowTitle(QString("std::set<%1>").arg(QString::fromStdString(keyTypeName)));
     else
-        setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
+        setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keyTypeName), QString::fromStdString(valueTypeName)));
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);

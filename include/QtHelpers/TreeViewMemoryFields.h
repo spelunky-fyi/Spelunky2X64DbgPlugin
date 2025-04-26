@@ -91,7 +91,7 @@ namespace S2Plugin
         void startDrag(Qt::DropActions supportedActions) override;
         void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
       signals:
-        void memoryFieldValueUpdated(int row, QStandardItem* parrent);
+        void memoryFieldValueUpdated(int row, QStandardItem* parent);
         void levelGenRoomsPointerClicked();
         void offsetDropped(uintptr_t offset);
 

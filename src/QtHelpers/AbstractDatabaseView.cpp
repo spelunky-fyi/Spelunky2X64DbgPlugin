@@ -51,12 +51,12 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
     auto tabCompare = new QWidget();
     tabLookup->setLayout(new QVBoxLayout());
     tabLookup->layout()->setMargin(10);
-    tabLookup->setObjectName("lookupwidget");
-    tabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
+    tabLookup->setObjectName("lookupWidget");
+    tabLookup->setStyleSheet("QWidget#lookupWidget {border: 1px solid #999;}");
     tabCompare->setLayout(new QVBoxLayout());
     tabCompare->layout()->setMargin(10);
-    tabCompare->setObjectName("comparewidget");
-    tabCompare->setStyleSheet("QWidget#comparewidget {border: 1px solid #999;}");
+    tabCompare->setObjectName("compareWidget");
+    tabCompare->setStyleSheet("QWidget#compareWidget {border: 1px solid #999;}");
 
     mMainTabWidget->addTab(tabLookup, "Lookup");
     mMainTabWidget->addTab(tabCompare, "Compare");
@@ -98,7 +98,7 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
         auto topLayout = new QHBoxLayout();
         mCompareFieldComboBox = new QComboBox();
         mCompareFieldComboBox->addItem(QString::fromStdString(""));
-        populateComparisonCombobox(config->typeFields(type));
+        populateComparisonComboBox(config->typeFields(type));
 
         QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &AbstractDatabaseView::comparisonFieldChosen);
         topLayout->addWidget(mCompareFieldComboBox);
@@ -170,20 +170,20 @@ void S2Plugin::AbstractDatabaseView::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::AbstractDatabaseView::fieldUpdated(int row, QStandardItem* parrent)
+void S2Plugin::AbstractDatabaseView::fieldUpdated(int row, QStandardItem* parent)
 {
-    if (parrent != nullptr) // special case: for flag field need to update it's parrent, not the flag field
+    if (parent != nullptr) // special case: for flag field need to update it's parent, not the flag field
     {
         auto model = qobject_cast<QStandardItemModel*>(mMainTreeView->model());
-        auto parrentIndex = parrent->index();
-        auto index = model->index(row, gsColField, parrentIndex);
+        auto parentIndex = parent->index();
+        auto index = model->index(row, gsColField, parentIndex);
         if (model->data(index, gsRoleType).value<MemoryFieldType>() == MemoryFieldType::Flag)
         {
-            mMainTreeView->updateRow(parrentIndex.row(), std::nullopt, std::nullopt, parrent->parent(), true);
+            mMainTreeView->updateRow(parentIndex.row(), std::nullopt, std::nullopt, parent->parent(), true);
             return;
         }
     }
-    mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parrent, true);
+    mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parent, true);
 }
 
 void S2Plugin::AbstractDatabaseView::fieldExpanded(const QModelIndex& index)
@@ -200,7 +200,7 @@ void S2Plugin::AbstractDatabaseView::compareGroupByCheckBoxClicked(int state)
 
 void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
 {
-    mFieldChoosen = true;
+    mFieldChosen = true;
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
 
@@ -208,11 +208,11 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
     if (comboIndex == 0)
         return;
 
-    auto comboboxData = mCompareFieldComboBox->currentData();
-    if (!comboboxData.isValid())
+    auto comboBoxData = mCompareFieldComboBox->currentData();
+    if (!comboBoxData.isValid())
         return;
 
-    auto type = comboboxData.value<ComparisonField>().type;
+    auto type = comboBoxData.value<ComparisonField>().type;
     uint8_t flagsCount = 0;
     if (type == MemoryFieldType::Flags8)
         flagsCount = 8;
@@ -225,7 +225,7 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
     {
         mCompareFlagComboBox->clear();
         mCompareFlagComboBox->addItem("");
-        std::string refName = comboboxData.value<ComparisonField>().refName;
+        std::string refName = comboBoxData.value<ComparisonField>().refName;
         for (uint8_t x = 1; x <= flagsCount; ++x)
         {
             auto flagName = Configuration::get()->flagTitle(refName, x);
@@ -241,15 +241,15 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
         mCompareFlagComboBox->hide();
     }
 
-    populateComparisonTableWidget(comboboxData);
-    populateComparisonTreeWidget(comboboxData);
-    mFieldChoosen = false;
+    populateComparisonTableWidget(comboBoxData);
+    populateComparisonTreeWidget(comboBoxData);
+    mFieldChosen = false;
 }
 
 void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 {
     // protect against infinite loops since this slot is called when adding first element to combo box
-    if (mFieldChoosen)
+    if (mFieldChosen)
         return;
 
     mCompareTableWidget->clearContents();
@@ -257,12 +257,12 @@ void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 
     if (text.isEmpty())
     {
-        auto comboboxData = mCompareFieldComboBox->currentData();
-        if (!comboboxData.isValid())
+        auto comboBoxData = mCompareFieldComboBox->currentData();
+        if (!comboBoxData.isValid())
             return;
 
-        populateComparisonTableWidget(comboboxData);
-        populateComparisonTreeWidget(comboboxData);
+        populateComparisonTableWidget(comboBoxData);
+        populateComparisonTreeWidget(comboBoxData);
 
         return;
     }
@@ -372,7 +372,7 @@ void S2Plugin::AbstractDatabaseView::groupedComparisonItemClicked(QTreeWidgetIte
     }
 }
 
-size_t S2Plugin::AbstractDatabaseView::populateComparisonCombobox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
+size_t S2Plugin::AbstractDatabaseView::populateComparisonComboBox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
 {
     for (const auto& field : fields)
     {
@@ -391,16 +391,16 @@ size_t S2Plugin::AbstractDatabaseView::populateComparisonCombobox(const std::vec
             case MemoryFieldType::Flags16:
             case MemoryFieldType::Flags8:
             {
-                ComparisonField parrentFlag;
-                parrentFlag.type = field.type;
-                parrentFlag.offset = offset;
-                parrentFlag.refName = field.firstParameterType;
-                mCompareFieldComboBox->addItem(QString::fromStdString(prefix + field.name), QVariant::fromValue(parrentFlag));
+                ComparisonField parentFlag;
+                parentFlag.type = field.type;
+                parentFlag.offset = offset;
+                parentFlag.refName = field.firstParameterType;
+                mCompareFieldComboBox->addItem(QString::fromStdString(prefix + field.name), QVariant::fromValue(parentFlag));
                 break;
             }
             case MemoryFieldType::DefaultStructType:
             {
-                offset = populateComparisonCombobox(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), offset, prefix + field.name + ".");
+                offset = populateComparisonComboBox(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), offset, prefix + field.name + ".");
                 continue;
             }
             default:
@@ -424,7 +424,7 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
     auto offset = addr + compData.offset;
     switch (compData.type)
     {
-        // we only handle types that occur in the db's
+        // we only handle types that occur in the DB's
         case MemoryFieldType::Byte:
         case MemoryFieldType::State8:
         {

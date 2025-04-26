@@ -14,7 +14,7 @@ namespace S2Plugin
         {
             return Script::Memory::ReadQword(addr + 0x10);
         }
-        size_t lenght() const
+        size_t length() const
         {
             return size();
         }
@@ -28,11 +28,11 @@ namespace S2Plugin
         }
         size_t end() const
         {
-            return string_ptr() + lenght() * sizeof(T);
+            return string_ptr() + length() * sizeof(T);
         }
         bool empty() const
         {
-            return lenght() == 0;
+            return length() == 0;
         }
         size_t string_ptr() const
         {
@@ -46,12 +46,12 @@ namespace S2Plugin
         std::basic_string<T> get_string() const
         {
             size_t string_addr = string_ptr();
-            size_t string_lenght = lenght();
+            size_t string_length = length();
             std::basic_string<T> buffer;
-            buffer.resize(string_lenght);
-            if (string_lenght != 0)
+            buffer.resize(string_length);
+            if (string_length != 0)
             {
-                Script::Memory::Read(string_addr, buffer.data(), string_lenght * sizeof(T), nullptr);
+                Script::Memory::Read(string_addr, buffer.data(), string_length * sizeof(T), nullptr);
             }
             return buffer;
         }
@@ -60,8 +60,8 @@ namespace S2Plugin
             if (string_ptr() == other.string_ptr())
                 return true;
 
-            auto l = lenght();
-            auto other_l = other.lenght();
+            auto l = length();
+            auto other_l = other.length();
             if (l != other_l)
                 return false;
 

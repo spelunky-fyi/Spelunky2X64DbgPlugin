@@ -9,7 +9,7 @@
 
 namespace S2Plugin
 {
-    // this shoudl only ever be used as temporary
+    // this should only ever be used as temporary
     class EntityList
     {
       public:

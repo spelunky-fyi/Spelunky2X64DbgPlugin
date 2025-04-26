@@ -12,24 +12,24 @@ namespace S2Plugin
         LineEditEx(QWidget* parent = 0) : QLineEdit(parent){};
 
       signals:
-        void focussed(bool hasFocus);
+        void focused(bool hasFocus);
         void mouseRelease(Qt::MouseButton button);
 
       protected:
         virtual void focusInEvent(QFocusEvent* e)
         {
             QLineEdit::focusInEvent(e);
-            emit(focussed(true));
+            emit focused(true);
         }
         virtual void focusOutEvent(QFocusEvent* e)
         {
             QLineEdit::focusInEvent(e);
-            emit(focussed(false));
+            emit focused(false);
         }
         virtual void mouseReleaseEvent(QMouseEvent* e)
         {
             QLineEdit::mouseReleaseEvent(e);
-            emit(mouseRelease(e->button()));
+            emit mouseRelease(e->button());
         }
     };
 } // namespace S2Plugin

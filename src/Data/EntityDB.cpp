@@ -3,7 +3,7 @@
 
 size_t S2Plugin::EntityDB::entitySize()
 {
-    // [Known Issue]: Static value, have to restart programm for size to update
+    // [Known Issue]: Static value, have to restart program for size to update
     static size_t entityDBRecordSize = []()
     {
         auto& fields = Configuration::get()->typeFields(MemoryFieldType::EntityDB);

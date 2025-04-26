@@ -116,26 +116,26 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
         }
         case MemoryFieldType::Float:
         {
-            auto spinbox = new QDoubleSpinBox(this);
-            spinbox->setDecimals(6);
-            spinbox->setRange(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-            QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
+            auto spinBox = new QDoubleSpinBox(this);
+            spinBox->setDecimals(6);
+            spinBox->setRange(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+            QObject::connect(spinBox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
             uint32_t tmp = Script::Memory::ReadDword(mMemoryAddress);
             auto v = reinterpret_cast<float&>(tmp);
-            spinbox->setValue(v);
-            mSpinBox = spinbox;
+            spinBox->setValue(v);
+            mSpinBox = spinBox;
             break;
         }
         case MemoryFieldType::Double:
         {
-            auto spinbox = new QDoubleSpinBox(this);
-            spinbox->setDecimals(15);
-            spinbox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-            QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
+            auto spinBox = new QDoubleSpinBox(this);
+            spinBox->setDecimals(15);
+            spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+            QObject::connect(spinBox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
             size_t tmp = Script::Memory::ReadQword(mMemoryAddress);
             double v = reinterpret_cast<double&>(tmp);
-            spinbox->setValue(v);
-            mSpinBox = spinbox;
+            spinBox->setValue(v);
+            mSpinBox = spinBox;
             break;
         }
     }

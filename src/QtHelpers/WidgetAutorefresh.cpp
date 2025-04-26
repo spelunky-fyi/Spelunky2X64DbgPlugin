@@ -2,7 +2,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-S2Plugin::WidgetAutorefresh::WidgetAutorefresh(int initialInterval, QWidget* parrent) : QWidget(parrent)
+S2Plugin::WidgetAutorefresh::WidgetAutorefresh(int initialInterval, QWidget* parent) : QWidget(parent)
 {
     auto refreshLayout = new QHBoxLayout(this);
     refreshLayout->setMargin(0);

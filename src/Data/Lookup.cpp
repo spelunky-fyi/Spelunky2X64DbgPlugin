@@ -34,7 +34,7 @@ uintptr_t S2Plugin::Spelunky2::get_GameManagerPtr(bool quiet)
     if (!Script::Memory::IsValidPtr(mGameManagerPtr))
     {
         if (!quiet)
-            displayError("Lookup error: GameManager not yet initialised");
+            displayError("Lookup error: GameManager not yet initialized");
 
         mGameManagerPtr = 0;
     }
@@ -57,7 +57,7 @@ const S2Plugin::EntityDB& S2Plugin::Spelunky2::get_EntityDB()
     mEntityDB.ptr = Script::Memory::ReadQword(entitiesPtr);
     if (!Script::Memory::IsValidPtr(mEntityDB.ptr))
     {
-        displayError("Lookup error: EntityDB not yet initialised");
+        displayError("Lookup error: EntityDB not yet initialized");
         mEntityDB.ptr = 0;
     }
 
@@ -80,7 +80,7 @@ S2Plugin::TextureDB& S2Plugin::Spelunky2::get_TextureDB()
     auto textureCount = Script::Memory::ReadQword(textureStartAddress);
     if (textureCount == 0)
     {
-        displayError("Lookup error: TextureDB not yet initialised");
+        displayError("Lookup error: TextureDB not yet initialized");
         return mTextureDB;
     }
     mTextureDB.ptr = textureStartAddress + 0x8;
@@ -103,7 +103,7 @@ uintptr_t S2Plugin::Spelunky2::get_OnlinePtr()
     mOnlinePtr = Script::Memory::ReadQword(instructionOffset + 7 + relativeOffset);
     if (!Script::Memory::IsValidPtr(mOnlinePtr))
     {
-        displayError("Lookup error: Online not yet initialised");
+        displayError("Lookup error: Online not yet initialized");
         mOnlinePtr = 0;
     }
 
@@ -183,7 +183,7 @@ const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable(bool quiet)
     if (Script::Memory::ReadQword(addr) == 0)
     {
         if (!quiet)
-            displayError("Lookup error: StringsTable not yet initialised");
+            displayError("Lookup error: StringsTable not yet initialized");
 
         return mStringsTable;
     }

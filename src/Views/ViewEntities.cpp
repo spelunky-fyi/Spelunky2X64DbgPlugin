@@ -170,7 +170,7 @@ void S2Plugin::ViewEntities::refreshEntities()
                 EntityList maskEntList{itr.value_ptr()};
 
                 field_count += maskEntList.size();
-                // loop only if uid was not entered and the mask was choosen
+                // loop only if uid was not entered and the mask was chosen
                 if (!isUIDlookupSuccess && checkbox.mCheckbox->checkState() == Qt::Checked)
                 {
                     for (size_t i = 0; i < maskEntList.size(); ++i)
