@@ -43,7 +43,6 @@ namespace S2Plugin
             TYPE_PTR = 0x8,
             DB_TYPE_ID = 0x14,
             POS = 0x40,
-            ABS_POS = 0x48,
             OVERLAY = 0x10,
         };
     };
