@@ -8,6 +8,7 @@
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
+#include "read_helpers.h"
 #include <QCheckBox>
 #include <QCompleter>
 #include <QHash>
@@ -428,33 +429,33 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::Byte:
         case MemoryFieldType::State8:
         {
-            int8_t value = static_cast<int8_t>(Script::Memory::ReadByte(offset));
+            int8_t value = Read<int8_t>(offset);
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::CharacterDBID:
         case MemoryFieldType::UnsignedByte:
         case MemoryFieldType::Flags8:
         {
-            uint8_t value = Script::Memory::ReadByte(offset);
+            uint8_t value = Read<uint8_t>(offset);
             return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Word:
         case MemoryFieldType::State16:
         {
-            int16_t value = static_cast<int16_t>(Script::Memory::ReadWord(offset));
+            int16_t value = Read<int16_t>(offset);
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedWord:
         case MemoryFieldType::Flags16:
         {
-            uint16_t value = Script::Memory::ReadWord(offset);
+            uint16_t value = Read<uint16_t>(offset);
             return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::TextureDBID:
         case MemoryFieldType::Dword:
         case MemoryFieldType::State32:
         {
-            int32_t value = static_cast<int32_t>(Script::Memory::ReadDword(offset));
+            int32_t value = Read<int32_t>(offset);
             return std::make_pair(QString::asprintf("%ld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::ParticleDBID:
@@ -463,17 +464,17 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::UnsignedDword:
         case MemoryFieldType::Flags32:
         {
-            uint32_t value = Script::Memory::ReadDword(offset);
+            uint32_t value = Read<uint32_t>(offset);
             return std::make_pair(QString::asprintf("%lu", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Qword:
         {
-            int64_t value = static_cast<int64_t>(Script::Memory::ReadQword(offset));
+            int64_t value = Read<int64_t>(offset);
             return std::make_pair(QString::asprintf("%lld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedQword:
         {
-            uint64_t value = Script::Memory::ReadQword(offset);
+            uint64_t value = Read<uint64_t>(offset);
             return std::make_pair(QString::asprintf("%llu", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Float:
@@ -484,15 +485,14 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         }
         case MemoryFieldType::Double:
         {
-            size_t qword = Script::Memory::ReadQword(offset);
+            uint64_t qword = Script::Memory::ReadQword(offset);
             double value = reinterpret_cast<double&>(qword);
             return std::make_pair(QString::asprintf("%lf", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Bool:
         {
-            auto b = Script::Memory::ReadByte(offset);
-            bool value = b != 0;
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(b));
+            auto b = Read<bool>(offset);
+            return std::make_pair(b ? "True" : "False", QVariant::fromValue(b));
         }
         case MemoryFieldType::Flag:
         {

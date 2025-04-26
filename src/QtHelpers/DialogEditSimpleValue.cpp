@@ -108,7 +108,7 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
         {
             auto spinBox = new ULongLongSpinBox(this);
             QObject::connect(spinBox, &ULongLongSpinBox::valueChanged, this, &DialogEditSimpleValue::decValueChanged);
-            // spinBox->setRange(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+            // spinBox->setRange(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
             auto v = Read<uint64_t>(mMemoryAddress);
             spinBox->setValue(v);
             mSpinBox = spinBox;
