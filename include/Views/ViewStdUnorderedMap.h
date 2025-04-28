@@ -2,9 +2,10 @@
 
 #include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
-#include <QWidget>
 #include <cstdint>
 #include <string>
+
+class QModelIndex;
 
 namespace S2Plugin
 {

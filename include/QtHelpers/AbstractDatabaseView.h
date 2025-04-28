@@ -1,20 +1,16 @@
 #pragma once
 
+#include "Configuration.h"
 #include "LineEditEx.h"
-#include <QComboBox>
-#include <QModelIndex>
-#include <QSize>
-#include <QStandardItem>
+#include "QtHelpers/TreeViewMemoryFields.h"
 #include <QString>
-#include <QTabWidget>
 #include <QTableWidget>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
 #include <QVariant>
 #include <QWidget>
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 /* Things to implement:
@@ -26,11 +22,15 @@
  * override pure virtuals
  */
 
+class QComboBox;
+class QStandardItem;
+class QTreeWidgetItem;
+class QModelIndex;
+class QTabWidget;
+class QTreeWidget;
+
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-    enum class MemoryFieldType;
-    struct MemoryField;
     using ID_type = uint32_t;
 
     class AbstractDatabaseView : public QWidget

@@ -4,6 +4,7 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetPagination.h"
 #include "pluginmain.h"
+#include <QStandardItem>
 #include <QString>
 
 S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName, QWidget* parent) : AbstractContainerView(parent), mMapAddress(address)

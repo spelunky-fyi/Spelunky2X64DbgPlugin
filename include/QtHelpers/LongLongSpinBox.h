@@ -2,9 +2,6 @@
 
 #include <QAbstractSpinBox>
 #include <QLineEdit>
-#include <QString>
-#include <QValidator>
-#include <QWidget>
 #include <limits>
 
 namespace S2Plugin

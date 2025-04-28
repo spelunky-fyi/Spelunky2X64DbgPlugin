@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QLineEdit>
-#include <QModelIndex>
-#include <QSize>
-#include <QTableView>
 #include <QWidget>
 #include <cstdint>
+#include <string>
+
+class QLineEdit;
+class QModelIndex;
+class QTableView;
 
 namespace S2Plugin
 {

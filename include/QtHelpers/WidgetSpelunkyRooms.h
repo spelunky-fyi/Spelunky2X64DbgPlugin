@@ -1,14 +1,9 @@
 #pragma once
 
-#include <QFont>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QSize>
 #include <QString>
 #include <QWidget>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace S2Plugin
@@ -18,7 +13,6 @@ namespace S2Plugin
     class WidgetSpelunkyRooms : public QWidget
     {
         Q_OBJECT
-
       public:
         explicit WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent = nullptr);
 
@@ -37,10 +31,8 @@ namespace S2Plugin
         QString mFieldName;
         bool mIsMetaData = false;
         size_t mOffset{0};
-        QFont mFont;
         QSize mTextAdvance;
         int mSpaceAdvance;
         std::vector<ToolTipRect> mToolTipRects;
     };
-
 } // namespace S2Plugin

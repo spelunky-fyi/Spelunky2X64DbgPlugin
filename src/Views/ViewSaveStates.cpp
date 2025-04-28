@@ -9,6 +9,7 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QString>
+#include <QTableWidget>
 #include <QVBoxLayout>
 #include <cstdint>
 

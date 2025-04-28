@@ -1,6 +1,11 @@
 #include "QtHelpers/WidgetAutorefresh.h"
+
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QTimer>
 
 S2Plugin::WidgetAutorefresh::WidgetAutorefresh(int initialInterval, QWidget* parent) : QWidget(parent)
 {

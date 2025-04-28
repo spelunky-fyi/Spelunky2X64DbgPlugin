@@ -1,4 +1,5 @@
 #include "Data/IDNameList.h"
+
 #include "pluginmain.h"
 #include <QDir>
 #include <QFile>

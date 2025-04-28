@@ -8,11 +8,11 @@
 #include <QStringList>
 #include <QWidget>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace S2Plugin
 {
-
     class WidgetPagination : public QWidget
     {
         Q_OBJECT

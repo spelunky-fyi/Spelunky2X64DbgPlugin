@@ -9,8 +9,12 @@
 #include "QtPlugin.h"
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QScrollArea>
+#include <QTabWidget>
+#include <QTableView>
 #include <QVBoxLayout>
 
 S2Plugin::ViewLogger::ViewLogger(QWidget* parent) : QWidget(parent)

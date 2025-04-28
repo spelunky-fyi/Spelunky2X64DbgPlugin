@@ -1,11 +1,15 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
+
 #include "Configuration.h"
-#include "QtHelpers/WidgetMemoryView.h"
+#include "QtHelpers/WidgetMemoryView.h" // for ToolTipRect
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QEvent>
+#include <QFont>
 #include <QFontMetrics>
 #include <QHelpEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QToolTip>
 #include <array>
@@ -17,19 +21,20 @@ static constexpr size_t gsHalfBufferSize = 8 * 16 * 1; // 8x16 rooms * 1 byte/bo
 
 S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent) : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
 {
-    mFont = QFont("Courier", 11);
-    mTextAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, "00");
-    mSpaceAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, " ").width();
+    auto font = QFont("Courier", 11);
+    mTextAdvance = QFontMetrics(font).size(Qt::TextSingleLine, "00");
+    mSpaceAdvance = QFontMetrics(font).size(Qt::TextSingleLine, " ").width();
     setMouseTracking(true);
     setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
 }
 
 void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
 {
+    const static auto font = QFont("Courier", 11);
     auto config = Configuration::get();
     QPainter painter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-    painter.setFont(mFont);
+    painter.setFont(font);
     {
         auto rect = QRectF(QPointF(0, 0), sizeHint());
         rect.adjust(0, 0, -0.5, -0.5);

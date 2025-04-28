@@ -1,9 +1,7 @@
 #include "pluginmain.h"
-#include "QtPlugin.h"
 
-#include <QIcon>
+#include "QtPlugin.h"
 #include <QMessageBox>
-#include <string>
 
 int S2Plugin::handle;
 HWND S2Plugin::hwndDlg;

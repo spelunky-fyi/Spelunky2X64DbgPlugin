@@ -13,8 +13,15 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QHeaderView>
+#include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QString>
+#include <QTabWidget>
+#include <QTableView>
+#include <QTableWidget>
 #include <QVBoxLayout>
 #include <fstream>
 

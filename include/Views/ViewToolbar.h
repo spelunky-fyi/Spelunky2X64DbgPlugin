@@ -2,7 +2,6 @@
 
 #include <QDockWidget>
 #include <QMdiArea>
-#include <QWidget>
 #include <cstdint>
 #include <string>
 

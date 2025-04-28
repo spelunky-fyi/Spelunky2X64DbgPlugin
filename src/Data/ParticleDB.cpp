@@ -1,4 +1,5 @@
 #include "Data/ParticleDB.h"
+
 #include "Configuration.h"
 
 size_t S2Plugin::ParticleDB::particleSize()

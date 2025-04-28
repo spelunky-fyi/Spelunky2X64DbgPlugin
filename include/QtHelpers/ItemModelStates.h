@@ -1,11 +1,10 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
-#include <QVariant>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace S2Plugin
@@ -57,7 +56,6 @@ namespace S2Plugin
     class SortFilterProxyModelStates : public QSortFilterProxyModel
     {
         Q_OBJECT
-
       public:
         explicit SortFilterProxyModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QSortFilterProxyModel(parent), mStates(states)
         {
@@ -75,5 +73,4 @@ namespace S2Plugin
       private:
         std::vector<std::pair<int64_t, std::string>> mStates;
     };
-
 } // namespace S2Plugin

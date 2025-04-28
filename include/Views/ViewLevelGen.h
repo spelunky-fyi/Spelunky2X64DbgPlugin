@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QSize>
-#include <QTabWidget>
 #include <QWidget>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+
+class QTabWidget;
 
 namespace S2Plugin
 {

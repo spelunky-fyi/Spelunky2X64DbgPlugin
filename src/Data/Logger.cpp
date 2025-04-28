@@ -1,8 +1,10 @@
 #include "Data/Logger.h"
+
 #include "Configuration.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
+#include <QTimer>
 
 void S2Plugin::Logger::addField(const LoggerField& field)
 {
@@ -32,10 +34,10 @@ void S2Plugin::Logger::start(int samplePeriod, int duration)
 {
     mSamples.clear();
 
-    mSampleTimer = std::make_unique<QTimer>(this);
-    mDurationTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mSampleTimer.get(), &QTimer::timeout, this, &Logger::sample);
-    QObject::connect(mDurationTimer.get(), &QTimer::timeout, this, &Logger::durationEnded);
+    mSampleTimer = new QTimer(this);
+    mDurationTimer = new QTimer(this);
+    QObject::connect(mSampleTimer, &QTimer::timeout, this, &Logger::sample);
+    QObject::connect(mDurationTimer, &QTimer::timeout, this, &Logger::durationEnded);
 
     mSampleTimer->setTimerType(Qt::PreciseTimer);
     mSampleTimer->setInterval(samplePeriod);

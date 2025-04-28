@@ -2,11 +2,8 @@
 
 #include "Data/Entity.h"
 #include <QBrush>
-#include <QPaintEvent>
-#include <QSize>
 #include <QWidget>
 #include <array>
-#include <bitset>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -29,7 +26,6 @@ namespace S2Plugin
     class WidgetSpelunkyLevel : public QWidget
     {
         Q_OBJECT
-
       public:
         // main_entity used to get the layer
         explicit WidgetSpelunkyLevel(uintptr_t main_entity, QWidget* parent = nullptr);
@@ -71,5 +67,4 @@ namespace S2Plugin
 
         uintptr_t mLevelFloors[msLevelMaxHeight + 1][msLevelMaxWidth + 1] = {};
     };
-
 } // namespace S2Plugin

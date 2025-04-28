@@ -1,4 +1,5 @@
 #include "Data/EntityDB.h"
+
 #include "Configuration.h"
 
 size_t S2Plugin::EntityDB::entitySize()

@@ -1,19 +1,20 @@
 #include "QtHelpers/AbstractDatabaseView.h"
 
-#include "Configuration.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
-#include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
 #include "QtPlugin.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
 #include <QCheckBox>
-#include <QCompleter>
+#include <QComboBox>
 #include <QHash>
 #include <QHeaderView>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QStandardItem>
+#include <QTabWidget>
+#include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
@@ -34,7 +35,7 @@ struct ComparisonField
     S2Plugin::MemoryFieldType type{S2Plugin::MemoryFieldType::None};
     size_t offset{0};
     std::string refName; // for flags
-    uint8_t flagIndex;
+    uint8_t flagIndex{0};
 };
 Q_DECLARE_METATYPE(ComparisonField)
 

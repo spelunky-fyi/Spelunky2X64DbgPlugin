@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFocusEvent>
 #include <QLineEdit>
 #include <QMouseEvent>
 

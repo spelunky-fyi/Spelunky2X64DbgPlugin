@@ -1,14 +1,9 @@
 #pragma once
 
-#include "Data/Entity.h"
+#include "Data/Entity.h" // for gBigEntityBucket
 #include <QColor>
-#include <QFont>
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QRect>
-#include <QSize>
 #include <QString>
-#include <QStyleOptionTabWidgetFrame>
 #include <QWidget>
 #include <cstdint>
 #include <string>
@@ -34,7 +29,6 @@ namespace S2Plugin
     class WidgetMemoryView : public QWidget
     {
         Q_OBJECT
-
       public:
         explicit WidgetMemoryView(QWidget* parent = nullptr);
 
@@ -55,7 +49,6 @@ namespace S2Plugin
       private:
         uintptr_t mAddress{0};
         size_t mSize{0};
-        QFont mFont;
         QSize mTextAdvance;
         int mSpaceAdvance;
 

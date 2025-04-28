@@ -1,7 +1,6 @@
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
-#include <QString>
 #include <memory>
 
 uintptr_t S2Plugin::Spelunky2::getAfterBundle(uintptr_t sectionStart, size_t sectionSize)

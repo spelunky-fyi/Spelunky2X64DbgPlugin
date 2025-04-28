@@ -1,18 +1,23 @@
 #include "QtHelpers/TableViewLogger.h"
-#include "Configuration.h"
+
+#include "Configuration.h" // for MemoryFieldType
 #include "Data/Logger.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "QtHelpers/StyledItemDelegateColorPicker.h"
-#include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/TreeViewMemoryFields.h" // for gsDragDropMemoryField_UID, gsDragDropMemoryField_Type ...
 #include "QtPlugin.h"
 #include <QColorDialog>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QFont>
 #include <QFontMetrics>
 #include <QHeaderView>
+#include <QKeyEvent>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QPaintEvent>
 #include <QPainter>
-#include <QTextCodec>
 #include <QUuid>
 
 S2Plugin::TableViewLogger::TableViewLogger(Logger* logger, QWidget* parent) : QTableView(parent), mLogger(logger)

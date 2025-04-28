@@ -8,7 +8,10 @@
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QString>
+#include <QTableView>
 #include <QVBoxLayout>
 
 constexpr uint32_t gsRoleRawValue = 1;

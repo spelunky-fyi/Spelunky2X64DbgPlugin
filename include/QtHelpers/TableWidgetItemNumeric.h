@@ -13,5 +13,4 @@ namespace S2Plugin
             return data(Qt::UserRole) < other.data(Qt::UserRole);
         }
     };
-
 } // namespace S2Plugin

@@ -2,10 +2,10 @@
 
 #include "pluginmain.h"
 #include <cstdint>
+#include <utility>
 
 namespace S2Plugin
 {
-
     constexpr size_t gsStdUnorderedMapSize = 64;
     // std::unordered_map internally basically consists of a std::list (but with next/prev switched around) and std::vector + hash stuff
     class StdUnorderedMap

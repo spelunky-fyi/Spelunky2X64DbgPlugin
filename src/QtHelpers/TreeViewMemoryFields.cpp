@@ -1,15 +1,10 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 
 #include "Configuration.h"
-#include "Data/CharacterDB.h"
 #include "Data/Entity.h"
-#include "Data/EntityDB.h"
-#include "Data/ParticleDB.h"
 #include "Data/StdList.h"
 #include "Data/StdString.h"
 #include "Data/StdUnorderedMap.h"
-#include "Data/StringsTable.h"
-#include "Data/TextureDB.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "QtHelpers/DialogEditState.h"
 #include "QtHelpers/DialogEditString.h"
@@ -26,13 +21,16 @@
 #include "pluginmain.h"
 #include "read_helpers.h"
 #include <QDrag>
+#include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QMimeData>
+#include <QModelIndex>
+#include <QPainter>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QString>
 #include <QTextCodec>
-#include <inttypes.h>
 #include <iomanip>
 #include <sstream>
 #include <string>

@@ -3,13 +3,9 @@
 #include "pluginmain.h"
 #include <QDir>
 #include <QFileInfo>
-#include <QIcon>
-#include <QMessageBox>
 #include <QString>
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <regex>
-#include <string>
 
 using nlohmann::ordered_json;
 

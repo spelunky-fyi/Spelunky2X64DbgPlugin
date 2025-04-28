@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
 #include <QVariant>
 #include <cstdint>
@@ -38,7 +37,6 @@ namespace S2Plugin
     class ItemModelGatherVirtualData : public QAbstractItemModel
     {
         Q_OBJECT
-
       public:
         explicit ItemModelGatherVirtualData(QObject* parent = nullptr) : QAbstractItemModel(parent)
         {
@@ -89,7 +87,6 @@ namespace S2Plugin
     class SortFilterProxyModelGatherVirtualData : public QSortFilterProxyModel
     {
         Q_OBJECT
-
       public:
         explicit SortFilterProxyModelGatherVirtualData(QObject* parent = nullptr) : QSortFilterProxyModel(parent){};
 
@@ -111,5 +108,4 @@ namespace S2Plugin
       private:
         bool mHideCompleted = false;
     };
-
 } // namespace S2Plugin

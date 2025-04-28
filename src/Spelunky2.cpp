@@ -1,10 +1,8 @@
 #include "Spelunky2.h"
 
 #include "Configuration.h"
-#include "Data/EntityDB.h"
 #include "pluginmain.h"
-#include <QIcon>
-#include <QMessageBox>
+#include <QStringList>
 
 S2Plugin::Spelunky2* S2Plugin::Spelunky2::ptr = nullptr;
 

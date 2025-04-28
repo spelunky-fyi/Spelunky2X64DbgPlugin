@@ -1,13 +1,9 @@
 #include "QtHelpers/AbstractContainerView.h"
 
-#include "Configuration.h"
-#include "Data/EntityList.h"
-#include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
-#include "QtHelpers/WidgetPagination.h"
 #include "QtPlugin.h"
+#include <QHBoxLayout>
 #include <QPushButton>
-#include <QString>
 #include <QVBoxLayout>
 
 S2Plugin::AbstractContainerView::AbstractContainerView(QWidget* parent) : QWidget(parent)

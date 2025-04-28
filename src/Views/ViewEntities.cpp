@@ -8,8 +8,10 @@
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
+#include <QCheckBox>
 #include <QHeaderView>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 

@@ -6,9 +6,8 @@
 #include "Data/StringsTable.h"
 #include "Data/TextureDB.h"
 #include "Data/VirtualTableLookup.h"
+#include <QString>
 #include <cstdint>
-
-class QString;
 
 namespace S2Plugin
 {

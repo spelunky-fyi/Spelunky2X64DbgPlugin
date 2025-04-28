@@ -1,4 +1,5 @@
 #include "Data/Entity.h"
+
 #include "Configuration.h"
 #include "pluginmain.h"
 #include <regex>

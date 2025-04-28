@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QSize>
-#include <QTableWidget>
 #include <QWidget>
+
+class QTableWidget;
 
 namespace S2Plugin
 {

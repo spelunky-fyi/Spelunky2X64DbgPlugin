@@ -1,15 +1,11 @@
 #pragma once
 
-#include <QSize>
+#include "QtHelpers/TreeViewMemoryFields.h"
+#include "QtHelpers/WidgetPagination.h"
 #include <QWidget>
-#include <cstdint>
-#include <string>
 
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-    class WidgetPagination;
-
     class AbstractContainerView : public QWidget
     {
         Q_OBJECT

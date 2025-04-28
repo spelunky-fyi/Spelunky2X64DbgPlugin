@@ -1,6 +1,6 @@
 #include "QtHelpers/SortFilterProxyModelStringsTable.h"
+
 #include "Views/ViewStringsTable.h" // just for gsColStringValue
-#include <QAbstractItemModel>
 
 bool S2Plugin::SortFilterProxyModelStringsTable::filterAcceptsRow(int sourceRow, const QModelIndex&) const
 {

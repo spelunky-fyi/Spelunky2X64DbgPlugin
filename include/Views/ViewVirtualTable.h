@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QLabel>
-#include <QLineEdit>
-#include <QModelIndex>
-#include <QSize>
-#include <QString>
-#include <QTabWidget>
-#include <QTableView>
-#include <QTableWidget>
 #include <QWidget>
+
+class QLineEdit;
+class QLabel;
+class QModelIndex;
+class QString;
+class QTabWidget;
+class QTableView;
+class QTableWidget;
 
 namespace S2Plugin
 {

@@ -1,12 +1,14 @@
 #include "QtHelpers/DialogEditSimpleValue.h"
-#include "Configuration.h"
+
 #include "QtHelpers/LongLongSpinBox.h"
 #include "QtPlugin.h"
 #include "read_helpers.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QVBoxLayout>
 #include <iomanip>
 #include <sstream>

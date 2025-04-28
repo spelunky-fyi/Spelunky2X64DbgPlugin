@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSpinBox>
-#include <QString>
-#include <QTimer>
 #include <QWidget>
+
+class QPushButton;
+class QCheckBox;
+class QTimer;
+class QSpinBox;
 
 namespace S2Plugin
 {

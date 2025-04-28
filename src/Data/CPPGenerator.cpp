@@ -1,4 +1,5 @@
 #include "Data/CPPGenerator.h"
+
 #include "Configuration.h"
 #include "QtHelpers/CPPSyntaxHighlighter.h"
 

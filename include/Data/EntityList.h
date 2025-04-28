@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Entity.h"
+// #include "Entity.h"
+// #include <utility>
+
 #include "pluginmain.h"
 #include "read_helpers.h"
 #include <cstdint>
-#include <utility>
 #include <vector>
 
 namespace S2Plugin

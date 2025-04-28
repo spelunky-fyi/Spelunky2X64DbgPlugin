@@ -1,13 +1,6 @@
 #pragma once
 
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QKeyEvent>
-#include <QModelIndex>
-#include <QPaintEvent>
 #include <QTableView>
-#include <QWidget>
 #include <cstdint>
 
 namespace S2Plugin

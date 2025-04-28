@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QSize>
-#include <QString>
 #include <QWidget>
 #include <cstdint>
+
+class QString;
 
 namespace S2Plugin
 {

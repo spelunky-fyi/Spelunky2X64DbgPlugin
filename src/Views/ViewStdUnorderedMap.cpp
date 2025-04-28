@@ -4,6 +4,8 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetPagination.h"
 #include "pluginmain.h"
+#include <QModelIndex>
+#include <QStandardItem>
 #include <QString>
 
 S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName, QWidget* parent)

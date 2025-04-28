@@ -1,9 +1,7 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
-#include <QVariant>
 #include <cstdint>
 #include <string>
 
@@ -68,5 +66,4 @@ namespace S2Plugin
             return leftValue < rightValue;
         }
     };
-
 } // namespace S2Plugin

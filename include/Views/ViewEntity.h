@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QComboBox>
-#include <QScrollArea>
-#include <QSize>
-#include <QString>
-#include <QTabWidget>
-#include <QTextEdit>
 #include <QWidget>
 #include <cstdint>
+
+class QComboBox;
+class QScrollArea;
+class QString;
+class QTabWidget;
+class QTextEdit;
 
 namespace S2Plugin
 {

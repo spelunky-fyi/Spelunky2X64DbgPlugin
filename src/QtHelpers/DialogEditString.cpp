@@ -1,13 +1,13 @@
 #include "QtHelpers/DialogEditString.h"
-#include "Configuration.h"
+
 #include "QtPlugin.h"
 #include "pluginmain.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <string>
 
 S2Plugin::DialogEditString::DialogEditString(const QString& fieldName, QString value, uintptr_t memoryAddress, int size, MemoryFieldType type, QWidget* parent)
     : QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint), mMemoryAddress(memoryAddress), mFieldType(type)

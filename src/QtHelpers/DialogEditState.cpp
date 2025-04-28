@@ -1,13 +1,14 @@
 #include "QtHelpers/DialogEditState.h"
-#include "Configuration.h"
+
 #include "QtHelpers/ItemModelStates.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
+#include <QComboBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QIcon>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -119,7 +120,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
         case MemoryFieldType::State16:
         {
             bool success = false;
-            int16_t v = static_cast<int16_t>(mStateLineEdit->text().toShort(&success));
+            int16_t v = mStateLineEdit->text().toShort(&success);
             if (success)
             {
                 Script::Memory::WriteWord(mMemoryAddress, static_cast<uint16_t>(v));
