@@ -155,8 +155,6 @@ x64dbg_plugin(${PROJECT_NAME}
 	resources/spelunky2.qrc
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5ROOT}/include/QtCore)
-target_include_directories(${PROJECT_NAME} PRIVATE ${Qt5ROOT}/include/QtWidgets)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC 3rdParty/json/single_include/)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/include)

@@ -2842,10 +2842,10 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
         auto rootItem = mModel->invisibleRootItem();
         auto getThisTypeName = [rootItem]() -> QString
         {
-            auto parrent = rootItem;
-            for (int idx = 0; idx < parrent->rowCount(); ++idx)
+            auto parent = rootItem;
+            for (int idx = 0; idx < parent->rowCount(); ++idx)
             {
-                auto item = parrent->child(idx, gsColField);
+                auto item = parent->child(idx, gsColField);
                 if (item == nullptr)
                     break;
 
@@ -2859,7 +2859,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
                 }
                 if (item->hasChildren())
                 {
-                    parrent = item;
+                    parent = item;
                     idx = 0;
                 }
             }
