@@ -148,17 +148,17 @@ void S2Plugin::ViewToolbar::showStdVector(uintptr_t address, const std::string& 
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void S2Plugin::ViewToolbar::showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName)
+void S2Plugin::ViewToolbar::showStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName)
 {
-    auto w = new ViewStdMap(address, keytypeName, valuetypeName);
+    auto w = new ViewStdMap(address, keyTypeName, valueTypeName);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void S2Plugin::ViewToolbar::showStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName)
+void S2Plugin::ViewToolbar::showStdUnorderedMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName)
 {
-    auto w = new ViewStdUnorderedMap(address, keytypeName, valuetypeName);
+    auto w = new ViewStdUnorderedMap(address, keyTypeName, valueTypeName);
     auto win = mMDIArea->addSubWindow(w);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);

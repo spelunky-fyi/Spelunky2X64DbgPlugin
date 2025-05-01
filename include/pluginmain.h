@@ -11,8 +11,10 @@
 #include <string>
 #include <windows.h>
 
+#pragma warning(push, 0)
 #include "pluginsdk/_plugins.h"
 #include "pluginsdk/bridgemain.h"
+#pragma warning(pop)
 
 #include "pluginsdk/_scriptapi_argument.h"
 #include "pluginsdk/_scriptapi_assembler.h"
@@ -61,7 +63,7 @@
 #define dputs(x) _plugin_logputs("[" PLUGIN_NAME "] " x)
 #define PLUG_EXPORT extern "C" __declspec(dllexport)
 
-// superglobal variables
+// super-global variables
 namespace S2Plugin
 {
     extern int handle;

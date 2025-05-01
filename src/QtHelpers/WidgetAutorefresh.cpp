@@ -1,8 +1,13 @@
 #include "QtHelpers/WidgetAutorefresh.h"
+
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QTimer>
 
-S2Plugin::WidgetAutorefresh::WidgetAutorefresh(int initialInterval, QWidget* parrent) : QWidget(parrent)
+S2Plugin::WidgetAutorefresh::WidgetAutorefresh(int initialInterval, QWidget* parent) : QWidget(parent)
 {
     auto refreshLayout = new QHBoxLayout(this);
     refreshLayout->setMargin(0);

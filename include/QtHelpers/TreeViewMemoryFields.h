@@ -1,24 +1,19 @@
 #pragma once
 
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QModelIndex>
-#include <QStandardItemModel>
+#include "Configuration.h"
 #include <QTreeView>
-#include <QWidget>
 #include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
+
+class QStandardItemModel;
+class QStandardItem;
 
 namespace S2Plugin
 {
-    struct MemoryField;
-
     constexpr char* gsDragDropMemoryField_UID = "uid";
     constexpr char* gsDragDropMemoryField_Address = "addr";
     constexpr char* gsDragDropMemoryField_Type = "type";
@@ -91,7 +86,7 @@ namespace S2Plugin
         void startDrag(Qt::DropActions supportedActions) override;
         void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
       signals:
-        void memoryFieldValueUpdated(int row, QStandardItem* parrent);
+        void memoryFieldValueUpdated(int row, QStandardItem* parent);
         void levelGenRoomsPointerClicked();
         void offsetDropped(uintptr_t offset);
 
@@ -101,7 +96,7 @@ namespace S2Plugin
       private:
         bool mEnableChangeHighlighting = true;
         bool drawTopBranch = true;
-        std::array<uint32_t, 9> mSavedColumnWidths = {0};
+        std::array<int, 9> mSavedColumnWidths = {};
         QStandardItemModel* mModel;
     };
 } // namespace S2Plugin

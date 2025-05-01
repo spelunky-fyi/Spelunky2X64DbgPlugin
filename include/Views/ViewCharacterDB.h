@@ -4,8 +4,6 @@
 
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-
     class ViewCharacterDB : public AbstractDatabaseView
     {
         Q_OBJECT

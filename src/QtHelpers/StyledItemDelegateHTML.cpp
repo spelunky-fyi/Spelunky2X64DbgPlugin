@@ -1,7 +1,9 @@
 #include "QtHelpers/StyledItemDelegateHTML.h"
+
 #include <QAbstractTextDocumentLayout>
+#include <QModelIndex>
 #include <QPainter>
-#include <QSize>
+#include <QStyleOptionViewItem>
 #include <QTextDocument>
 
 void S2Plugin::StyledItemDelegateHTML::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const

@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QLineEdit>
-#include <QModelIndex>
-#include <QSize>
-#include <QString>
-#include <QTableView>
 #include <QWidget>
 #include <cstdint>
+
+class QModelIndex;
+class QString;
+class QTableView;
 
 namespace S2Plugin
 {
@@ -36,5 +35,4 @@ namespace S2Plugin
         QTableView* mMainTableView;
         SortFilterProxyModelStringsTable* mModelProxy;
     };
-
 } // namespace S2Plugin

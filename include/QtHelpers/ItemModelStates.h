@@ -1,11 +1,10 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
-#include <QVariant>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace S2Plugin
@@ -22,7 +21,7 @@ namespace S2Plugin
         }
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override
         {
-            auto& [stateID, state] = mStates.at(index.row());
+            auto& [stateID, state] = mStates.at(static_cast<size_t>(index.row()));
             if (role == Qt::DisplayRole)
             {
                 return QString("%1: %2").arg(stateID).arg(QString::fromStdString(state));
@@ -57,7 +56,6 @@ namespace S2Plugin
     class SortFilterProxyModelStates : public QSortFilterProxyModel
     {
         Q_OBJECT
-
       public:
         explicit SortFilterProxyModelStates(const std::vector<std::pair<int64_t, std::string>>& states, QObject* parent = nullptr) : QSortFilterProxyModel(parent), mStates(states)
         {
@@ -75,5 +73,4 @@ namespace S2Plugin
       private:
         std::vector<std::pair<int64_t, std::string>> mStates;
     };
-
 } // namespace S2Plugin

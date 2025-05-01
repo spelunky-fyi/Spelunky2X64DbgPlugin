@@ -5,7 +5,7 @@
 #include "QtHelpers/WidgetPagination.h"
 #include <QString>
 
-S2Plugin::ViewEntityList::ViewEntityList(uintptr_t address, QWidget* parent) : mEntityListAddress(address), AbstractContainerView(parent)
+S2Plugin::ViewEntityList::ViewEntityList(uintptr_t address, QWidget* parent) : AbstractContainerView(parent), mEntityListAddress(address)
 {
     setWindowTitle("EntityList");
     mEntityField.isPointer = true;

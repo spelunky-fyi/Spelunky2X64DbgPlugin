@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
 
 namespace S2Plugin
 {

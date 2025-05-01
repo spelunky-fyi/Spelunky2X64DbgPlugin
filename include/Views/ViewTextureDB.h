@@ -2,13 +2,10 @@
 
 #include "QtHelpers/AbstractDatabaseView.h"
 
-class QResizeEvent;
 class QPushButton;
 
 namespace S2Plugin
 {
-    class TreeViewMemoryFields;
-
     class ViewTextureDB : public AbstractDatabaseView
     {
         Q_OBJECT

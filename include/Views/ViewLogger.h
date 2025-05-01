@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSize>
-#include <QTabWidget>
-#include <QTableView>
 #include <QWidget>
+
+class QLineEdit;
+class QPushButton;
+class QTabWidget;
+class QTableView;
 
 namespace S2Plugin
 {
@@ -17,7 +17,6 @@ namespace S2Plugin
     class ViewLogger : public QWidget
     {
         Q_OBJECT
-
       public:
         explicit ViewLogger(QWidget* parent = nullptr);
 

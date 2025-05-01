@@ -1,7 +1,10 @@
 #include "Data/Logger.h"
+
 #include "Configuration.h"
 #include "QtHelpers/ItemModelLoggerFields.h"
 #include "pluginmain.h"
+#include "read_helpers.h"
+#include <QTimer>
 
 void S2Plugin::Logger::addField(const LoggerField& field)
 {
@@ -31,10 +34,10 @@ void S2Plugin::Logger::start(int samplePeriod, int duration)
 {
     mSamples.clear();
 
-    mSampleTimer = std::make_unique<QTimer>(this);
-    mDurationTimer = std::make_unique<QTimer>(this);
-    QObject::connect(mSampleTimer.get(), &QTimer::timeout, this, &Logger::sample);
-    QObject::connect(mDurationTimer.get(), &QTimer::timeout, this, &Logger::durationEnded);
+    mSampleTimer = new QTimer(this);
+    mDurationTimer = new QTimer(this);
+    QObject::connect(mSampleTimer, &QTimer::timeout, this, &Logger::sample);
+    QObject::connect(mDurationTimer, &QTimer::timeout, this, &Logger::durationEnded);
 
     mSampleTimer->setTimerType(Qt::PreciseTimer);
     mSampleTimer->setInterval(samplePeriod);
@@ -60,32 +63,32 @@ void S2Plugin::Logger::sample()
         switch (field.type)
         {
             case MemoryFieldType::Byte:
+            case MemoryFieldType::State8:
             {
-                int8_t value = Script::Memory::ReadByte(field.memoryAddr);
+                int8_t value = Read<int8_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedByte:
             case MemoryFieldType::Bool:
             case MemoryFieldType::Flags8:
-            case MemoryFieldType::State8:
             case MemoryFieldType::CharacterDBID:
             {
-                uint8_t value = Script::Memory::ReadByte(field.memoryAddr);
+                uint8_t value = Read<uint8_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Word:
+            case MemoryFieldType::State16:
             {
-                int16_t value = Script::Memory::ReadWord(field.memoryAddr);
+                int16_t value = Read<int16_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedWord:
             case MemoryFieldType::Flags16:
-            case MemoryFieldType::State16:
             {
-                uint16_t value = Script::Memory::ReadWord(field.memoryAddr);
+                uint16_t value = Read<uint16_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -94,7 +97,7 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::EntityUID:
             case MemoryFieldType::TextureDBID:
             {
-                int32_t value = Script::Memory::ReadDword(field.memoryAddr);
+                int32_t value = Read<int32_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -104,7 +107,7 @@ void S2Plugin::Logger::sample()
             case MemoryFieldType::ParticleDBID:
             case MemoryFieldType::StringsTableID:
             {
-                uint32_t value = Script::Memory::ReadDword(field.memoryAddr);
+                uint32_t value = Read<uint32_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -117,20 +120,20 @@ void S2Plugin::Logger::sample()
             }
             case MemoryFieldType::Double:
             {
-                uint32_t tmp = Script::Memory::ReadDword(field.memoryAddr);
+                uint64_t tmp = Script::Memory::ReadQword(field.memoryAddr);
                 double value = reinterpret_cast<double&>(tmp);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::Qword:
             {
-                int64_t value = Script::Memory::ReadQword(field.memoryAddr);
+                int64_t value = Read<int64_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
             case MemoryFieldType::UnsignedQword:
             {
-                uint64_t value = Script::Memory::ReadQword(field.memoryAddr);
+                uint64_t value = Read<uint64_t>(field.memoryAddr);
                 mSamples[field.uuid].emplace_back(value);
                 break;
             }
@@ -185,6 +188,7 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
                 switch (field.type)
                 {
                     case MemoryFieldType::Byte:
+                    case MemoryFieldType::State8:
                     {
                         v = std::any_cast<int8_t>(value);
                         break;
@@ -192,36 +196,35 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
                     case MemoryFieldType::UnsignedByte:
                     case MemoryFieldType::Bool:
                     case MemoryFieldType::Flags8:
-                    case MemoryFieldType::State8:
                     case MemoryFieldType::CharacterDBID:
                     {
                         v = std::any_cast<uint8_t>(value);
                         break;
                     }
                     case MemoryFieldType::Word:
+                    case MemoryFieldType::State16:
                     {
                         v = std::any_cast<int16_t>(value);
                         break;
                     }
                     case MemoryFieldType::UnsignedWord:
                     case MemoryFieldType::Flags16:
-                    case MemoryFieldType::State16:
                     {
                         v = std::any_cast<uint16_t>(value);
                         break;
                     }
                     case MemoryFieldType::Dword:
+                    case MemoryFieldType::State32:
+                    case MemoryFieldType::EntityUID:
+                    case MemoryFieldType::TextureDBID:
                     {
                         v = std::any_cast<int32_t>(value);
                         break;
                     }
                     case MemoryFieldType::UnsignedDword:
                     case MemoryFieldType::Flags32:
-                    case MemoryFieldType::State32:
                     case MemoryFieldType::EntityDBID:
-                    case MemoryFieldType::EntityUID:
                     case MemoryFieldType::ParticleDBID:
-                    case MemoryFieldType::TextureDBID:
                     case MemoryFieldType::StringsTableID:
                     {
                         v = std::any_cast<uint32_t>(value);
@@ -234,18 +237,19 @@ std::pair<int64_t, int64_t> S2Plugin::Logger::sampleBounds(const LoggerField& fi
                     }
                     case MemoryFieldType::UnsignedQword:
                     {
-                        v = std::any_cast<uint64_t>(value);
+                        v = static_cast<int64_t>(std::any_cast<uint64_t>(value));
+                        // [Known Issue]: there is no way to represent all unsigned 64bit values in signed 64bit variable
+                        // and standard does not provide bigger type to properly compare and determinate biggest and lowest values from the two types
+                        if (v < 0)
+                            v = std::numeric_limits<int64_t>::max();
                         break;
                     }
                 }
                 if (v > highest)
-                {
                     highest = v;
-                }
+
                 if (v < lowest)
-                {
                     lowest = v;
-                }
             }
         }
     }

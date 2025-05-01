@@ -3,7 +3,6 @@
 #include <QStandardItemModel>
 #include <QString>
 #include <cstdint>
-#include <string>
 
 namespace S2Plugin
 {

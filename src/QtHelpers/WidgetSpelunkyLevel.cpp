@@ -9,13 +9,13 @@
 
 S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidget* parent) : QWidget(parent), mMainEntityAddr(main_entity)
 {
-    auto stateptr = Spelunky2::get()->get_StatePtr(false);
-    mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.entities_by_mask", stateptr);
-    mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.entities_by_mask", stateptr);
-    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities", stateptr);
-    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities", stateptr);
+    auto statePtr = Spelunky2::get()->get_StatePtr(false);
+    mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.entities_by_mask", statePtr);
+    mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.entities_by_mask", statePtr);
+    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities", statePtr);
+    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities", statePtr);
 
-    // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", stateptr);
+    // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", statePtr);
     // mLevelWidth = Script::Memory::ReadDword(offset) * 10;
     // mLevelHeight = Script::Memory::ReadDword(offset + 4) * 8;
 
@@ -53,7 +53,7 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
     painter.setPen(Qt::transparent);
     if (mPaintFloors)
     {
-        // painting floors is quite expensive, any optimisations are always welcome (like maybe use provided event to not draw obstructed parts of the level view?)
+        // painting floors is quite expensive, any optimizations are always welcome (like maybe use provided event to not draw obstructed parts of the level view?)
         painter.setBrush(mFloorColor);
         // y: 0-125, x: 0-85
         // note: the y = 125 is at the top of a level and the level is build from the top
@@ -64,12 +64,12 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
     }
     if (mEntityMasksToPaint != 0)
     {
-        for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
+        for (uint8_t bitNumber = 0; bitNumber < mEntityMaskColors.size(); ++bitNumber)
         {
-            if ((mEntityMasksToPaint >> bit_number) & 1)
+            if ((mEntityMasksToPaint >> bitNumber) & 1)
             {
-                painter.setBrush(mEntityMaskColors[bit_number]);
-                for (auto& [posX, posY] : mEntitiesMaskCoordinates[bit_number])
+                painter.setBrush(mEntityMaskColors[bitNumber]);
+                for (auto& [posX, posY] : mEntitiesMaskCoordinates[bitNumber])
                     painter.drawRect(QRectF(msMarginHor + posX, msMarginVer + msLevelMaxHeight - posY, 1.0, 1.0));
             }
         }
@@ -105,9 +105,9 @@ void S2Plugin::WidgetSpelunkyLevel::paintEntityMask(uint32_t entityMask, const Q
 {
     mEntityMasksToPaint |= entityMask;
 
-    for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
-        if ((entityMask >> bit_number) & 1)
-            mEntityMaskColors[bit_number] = color;
+    for (uint8_t bitNumber = 0; bitNumber < mEntityMaskColors.size(); ++bitNumber)
+        if ((entityMask >> bitNumber) & 1)
+            mEntityMaskColors[bitNumber] = color;
 }
 
 void S2Plugin::WidgetSpelunkyLevel::clearAllPaintedEntities()
@@ -115,8 +115,8 @@ void S2Plugin::WidgetSpelunkyLevel::clearAllPaintedEntities()
     mEntitiesToPaint.clear();
     mEntityMasksToPaint = 0;
     mPaintFloors = false;
-    for (uint8_t bit_number = 0; bit_number < mEntityMaskColors.size(); ++bit_number)
-        mEntitiesMaskCoordinates[bit_number].clear();
+    for (uint8_t bitNumber = 0; bitNumber < mEntityMaskColors.size(); ++bitNumber)
+        mEntitiesMaskCoordinates[bitNumber].clear();
 
     update();
 }
@@ -152,7 +152,7 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
     {
         auto gridAddr = layerToDraw == 0 ? mGridEntitiesAddr.first : mGridEntitiesAddr.second;
         // Maybe don't read the whole array?
-        constexpr auto dataSize = (msLevelMaxHeight + 1) * ((msLevelMaxWidth + 1) * sizeof(uintptr_t));
+        constexpr auto dataSize = static_cast<size_t>(msLevelMaxHeight + 1u) * ((msLevelMaxWidth + 1u) * sizeof(uintptr_t));
         Script::Memory::Read(gridAddr, &mLevelFloors, dataSize, nullptr);
     }
 
@@ -162,13 +162,13 @@ void S2Plugin::WidgetSpelunkyLevel::updateLevel()
     if (mEntityMasksToPaint != 0)
     {
         StdMap<uint32_t, size_t> maskMap{layerToDraw == 0 ? mMaskMapAddr.first : mMaskMapAddr.second};
-        for (auto [key, value_ptr] : maskMap)
+        for (auto [key, valuePtr] : maskMap)
         {
             uint8_t bit_number = std::log2(key);
             mEntitiesMaskCoordinates[bit_number].clear();
             if ((mEntityMasksToPaint & key) != 0)
             {
-                EntityList entityList{value_ptr};
+                EntityList entityList{valuePtr};
                 mEntitiesMaskCoordinates[bit_number].reserve(entityList.size());
                 std::vector<uintptr_t> entities = entityList.getAllEntities();
 

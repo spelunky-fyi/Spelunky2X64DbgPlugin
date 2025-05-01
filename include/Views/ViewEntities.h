@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QSize>
 #include <QString>
 #include <QWidget>
 #include <array>
+
+class QCheckBox;
+class QLineEdit;
 
 namespace S2Plugin
 {

@@ -2,7 +2,6 @@
 
 #include <QRegularExpression>
 #include <QSet>
-#include <QString>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QTextDocument>
@@ -29,7 +28,6 @@ namespace S2Plugin
     class CPPSyntaxHighlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
-
       public:
         explicit CPPSyntaxHighlighter(QTextDocument* parent = nullptr);
         void addRule(const QString& pattern, HighlightColor color);

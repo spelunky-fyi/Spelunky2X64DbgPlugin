@@ -1,13 +1,14 @@
 #include "QtHelpers/DialogEditState.h"
-#include "Configuration.h"
+
 #include "QtHelpers/ItemModelStates.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
+#include <QComboBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QIcon>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -109,20 +110,20 @@ void S2Plugin::DialogEditState::changeBtnClicked()
         case MemoryFieldType::State8:
         {
             bool success = false;
-            int8_t v = mStateLineEdit->text().toInt(&success);
+            int8_t v = static_cast<int8_t>(mStateLineEdit->text().toShort(&success));
             if (success)
             {
-                Script::Memory::WriteByte(mMemoryAddress, v);
+                Script::Memory::WriteByte(mMemoryAddress, static_cast<uint8_t>(v));
             }
             break;
         }
         case MemoryFieldType::State16:
         {
             bool success = false;
-            int16_t v = mStateLineEdit->text().toInt(&success);
+            int16_t v = mStateLineEdit->text().toShort(&success);
             if (success)
             {
-                Script::Memory::WriteWord(mMemoryAddress, v);
+                Script::Memory::WriteWord(mMemoryAddress, static_cast<uint16_t>(v));
             }
             break;
         }
@@ -132,7 +133,7 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             int32_t v = mStateLineEdit->text().toInt(&success);
             if (success)
             {
-                Script::Memory::WriteDword(mMemoryAddress, v);
+                Script::Memory::WriteDword(mMemoryAddress, static_cast<uint32_t>(v));
             }
             break;
         }

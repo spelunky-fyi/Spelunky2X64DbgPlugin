@@ -1,13 +1,13 @@
 #include "QtHelpers/DialogEditString.h"
-#include "Configuration.h"
+
 #include "QtPlugin.h"
 #include "pluginmain.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <string>
 
 S2Plugin::DialogEditString::DialogEditString(const QString& fieldName, QString value, uintptr_t memoryAddress, int size, MemoryFieldType type, QWidget* parent)
     : QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint), mMemoryAddress(memoryAddress), mFieldType(type)
@@ -72,7 +72,7 @@ void S2Plugin::DialogEditString::changeBtnClicked()
     {
         case MemoryFieldType::UTF16Char:
         {
-            ushort v = mLineEdit->text().isEmpty() ? 0 : mLineEdit->text()[0].unicode();
+            ushort v = mLineEdit->text().isEmpty() ? 0u : mLineEdit->text()[0].unicode();
             Script::Memory::WriteWord(mMemoryAddress, v);
             break;
         }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "pluginmain.h"
-#include <list>
+#include <cstdint>
 
 namespace S2Plugin
 {
@@ -115,10 +115,7 @@ namespace S2Plugin
 
         StdList(uintptr_t address)
         {
-            uintptr_t data[2];
-            Script::Memory::Read(address, &data, 2 * sizeof(uintptr_t), nullptr);
-            mHead = Node{data[0]};
-            mSize = data[1];
+            Script::Memory::Read(address, this, sizeof(StdList), nullptr);
         }
         Node begin() const
         {

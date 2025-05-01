@@ -1,36 +1,40 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
+
 #include "Configuration.h"
-#include "Data/State.h"
-#include "QtHelpers/WidgetMemoryView.h"
+#include "QtHelpers/WidgetMemoryView.h" // for ToolTipRect
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QEvent>
+#include <QFont>
 #include <QFontMetrics>
 #include <QHelpEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QToolTip>
 #include <array>
 
-static const uint32_t gsMarginHor = 10;
-static const uint32_t gsMarginVer = 5;
+static const int gsMarginHor = 10;
+static const int gsMarginVer = 5;
 static constexpr size_t gsBufferSize = 8 * 16 * 2;     // 8x16 rooms * 2 bytes per room
 static constexpr size_t gsHalfBufferSize = 8 * 16 * 1; // 8x16 rooms * 1 byte/bool per room
 
 S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent) : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
 {
-    mFont = QFont("Courier", 11);
-    mTextAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, "00");
-    mSpaceAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, " ").width();
+    auto font = QFont("Courier", 11);
+    mTextAdvance = QFontMetrics(font).size(Qt::TextSingleLine, "00");
+    mSpaceAdvance = QFontMetrics(font).size(Qt::TextSingleLine, " ").width();
     setMouseTracking(true);
     setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
 }
 
 void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
 {
+    const static auto font = QFont("Courier", 11);
     auto config = Configuration::get();
     QPainter painter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-    painter.setFont(mFont);
+    painter.setFont(font);
     {
         auto rect = QRectF(QPointF(0, 0), sizeHint());
         rect.adjust(0, 0, -0.5, -0.5);
@@ -40,8 +44,8 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
     }
     mToolTipRects.clear();
     painter.setBrush(Qt::black);
-    uint32_t x = gsMarginHor;
-    uint32_t y = gsMarginVer + mTextAdvance.height();
+    int x = gsMarginHor;
+    int y = gsMarginVer + mTextAdvance.height();
 
     painter.drawText(x, y, mFieldName);
     y += mTextAdvance.height() + gsMarginVer;
@@ -51,7 +55,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
         auto buffer = std::array<uint8_t, gsBufferSize>();
         Script::Memory::Read(mOffset, buffer.data(), bufferSize, nullptr);
 
-        for (auto counter = 0; counter < bufferSize; ++counter)
+        for (size_t counter = 0; counter < bufferSize; ++counter)
         {
             if (mIsMetaData)
             {
@@ -111,11 +115,11 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
         {
             uintptr_t offsetWidth = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_width_rooms", statePtr);
             uintptr_t offsetHeight = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_height_rooms", statePtr);
-            auto levelWidth = Script::Memory::ReadDword(offsetWidth);
-            auto levelHeight = Script::Memory::ReadDword(offsetHeight);
-            uint32_t borderX = gsMarginHor;
-            uint32_t borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
-            uint32_t borderWidth, borderHeight;
+            int levelWidth = static_cast<int>(Script::Memory::ReadDword(offsetWidth));
+            int levelHeight = static_cast<int>(Script::Memory::ReadDword(offsetHeight));
+            int borderX = gsMarginHor;
+            int borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
+            int borderWidth, borderHeight;
             if (mIsMetaData)
             {
                 borderWidth = (levelWidth * (mTextAdvance.width() + mSpaceAdvance)) - mSpaceAdvance;
@@ -149,9 +153,10 @@ QSize S2Plugin::WidgetSpelunkyRooms::minimumSizeHint() const
         cutoff = 8;
     }
 
-    auto totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * cutoff) + (gsMarginHor * 2) - mSpaceAdvance;
-    auto totalHeight = gsMarginVer + mTextAdvance.height() + (mTextAdvance.height() * static_cast<uint32_t>(std::ceil(static_cast<double>(bufferSize) / static_cast<double>(cutoff)))) +
-                       (gsMarginVer * 2) + mTextAdvance.height();
+    int totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * cutoff) + (gsMarginHor * 2) - mSpaceAdvance;
+    int totalHeight = gsMarginVer + mTextAdvance.height() + (mTextAdvance.height() * static_cast<int>(std::ceil(static_cast<double>(bufferSize) / static_cast<double>(cutoff)))) + (gsMarginVer * 2) +
+                      mTextAdvance.height();
+
     return QSize(totalWidth, totalHeight);
 }
 

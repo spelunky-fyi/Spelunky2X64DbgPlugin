@@ -4,7 +4,7 @@
 
 QVariant S2Plugin::ItemModelVirtualFunctions::data(const QModelIndex& index, int role) const
 {
-    const VirtualFunction entry = Configuration::get()->virtualFunctionsOfType(mTypeName).at(index.row());
+    const VirtualFunction entry = Configuration::get()->virtualFunctionsOfType(mTypeName).at(static_cast<size_t>(index.row()));
     switch (role)
     {
         case Qt::DisplayRole:

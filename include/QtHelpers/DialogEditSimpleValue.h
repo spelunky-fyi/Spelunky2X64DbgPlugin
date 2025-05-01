@@ -1,21 +1,19 @@
 #pragma once
 
+#include "Configuration.h"
 #include <QDialog>
-#include <QLineEdit>
-#include <QSize>
-#include <QSpinBox>
 #include <QString>
 #include <QWidget>
 #include <cstdint>
 
+class QLineEdit;
+class QAbstractSpinBox;
+
 namespace S2Plugin
 {
-    enum class MemoryFieldType;
-
     class DialogEditSimpleValue : public QDialog
     {
         Q_OBJECT
-
       public:
         explicit DialogEditSimpleValue(const QString& fieldName, uintptr_t memoryAddress, MemoryFieldType type, QWidget* parent = nullptr);
 

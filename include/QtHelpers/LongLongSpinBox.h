@@ -1,9 +1,7 @@
 #pragma once
+
 #include <QAbstractSpinBox>
 #include <QLineEdit>
-#include <QString>
-#include <QValidator>
-#include <QWidget>
 #include <limits>
 
 namespace S2Plugin
@@ -213,7 +211,7 @@ namespace S2Plugin
             if (input.isEmpty())
                 return QValidator::Acceptable;
 
-            // technically should to be more complicated, chacking if the range allows positive / negative values
+            // technically should be more complicated, checking if the range allows positive / negative values
             if (input.length() == 1 && input[0] == '+')
                 return QValidator::Acceptable;
 

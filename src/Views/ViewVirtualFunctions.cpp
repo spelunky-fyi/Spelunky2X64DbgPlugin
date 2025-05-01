@@ -6,7 +6,10 @@
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QLabel>
+#include <QLineEdit>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QTableView>
 #include <QVBoxLayout>
 
 S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, const std::string& typeName, QWidget* parent) : QWidget(parent), mMemoryAddress(address)

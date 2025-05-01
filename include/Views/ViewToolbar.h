@@ -2,7 +2,6 @@
 
 #include <QDockWidget>
 #include <QMdiArea>
-#include <QWidget>
 #include <cstdint>
 #include <string>
 
@@ -22,8 +21,8 @@ namespace S2Plugin
         void showEntity(uintptr_t address);
         void showState(uintptr_t statePtr);
         void showStdVector(uintptr_t address, const std::string& typeName);
-        void showStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
-        void showStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName);
+        void showStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName);
+        void showStdUnorderedMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName);
         void showVirtualFunctions(uintptr_t address, const std::string& typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);

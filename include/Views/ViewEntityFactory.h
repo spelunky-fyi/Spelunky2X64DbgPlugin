@@ -4,13 +4,12 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include "ViewStruct.h"
-#include <QSize>
-#include <QWidget>
 
 namespace S2Plugin
 {
     class ViewEntityFactory : public ViewStruct
     {
+        Q_OBJECT
       public:
         explicit ViewEntityFactory(QWidget* parent = nullptr) : ViewStruct(0, {}, "Entity Factory", parent)
         {

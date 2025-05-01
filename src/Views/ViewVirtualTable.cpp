@@ -13,8 +13,15 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QHeaderView>
+#include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QString>
+#include <QTabWidget>
+#include <QTableView>
+#include <QTableWidget>
 #include <QVBoxLayout>
 #include <fstream>
 
@@ -50,20 +57,20 @@ void S2Plugin::ViewVirtualTable::initializeUI()
     auto tabData = new QWidget();
     tabData->setLayout(new QVBoxLayout());
     tabData->layout()->setMargin(10);
-    tabData->setObjectName("datawidget");
-    tabData->setStyleSheet("QWidget#datawidget {border: 1px solid #999;}");
+    tabData->setObjectName("dataWidget");
+    tabData->setStyleSheet("QWidget#dataWidget {border: 1px solid #999;}");
 
     auto tabLookup = new QWidget();
     tabLookup->setLayout(new QVBoxLayout());
     tabLookup->layout()->setMargin(10);
-    tabLookup->setObjectName("lookupwidget");
-    tabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
+    tabLookup->setObjectName("lookupWidget");
+    tabLookup->setStyleSheet("QWidget#lookupWidget {border: 1px solid #999;}");
 
     auto tabGather = new QWidget();
     tabGather->setLayout(new QVBoxLayout());
     tabGather->layout()->setMargin(10);
-    tabGather->setObjectName("gatherwidget");
-    tabGather->setStyleSheet("QWidget#gatherwidget {border: 1px solid #999;}");
+    tabGather->setObjectName("gatherWidget");
+    tabGather->setStyleSheet("QWidget#gatherWidget {border: 1px solid #999;}");
 
     mMainTabWidget->addTab(tabData, "Data");
     mMainTabWidget->addTab(tabLookup, "Lookup");
@@ -225,7 +232,7 @@ void S2Plugin::ViewVirtualTable::tableEntryClicked(const QModelIndex& index)
 {
     auto mappedIndex = mSortFilterProxy->mapToSource(index);
     auto offset = mappedIndex.row();
-    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(offset);
+    const auto& entry = Spelunky2::get()->get_VirtualTableLookup().entryForOffset(static_cast<size_t>(offset));
     auto column = mappedIndex.column();
     switch (column)
     {

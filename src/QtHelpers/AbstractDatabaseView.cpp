@@ -1,18 +1,20 @@
 #include "QtHelpers/AbstractDatabaseView.h"
 
-#include "Configuration.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtHelpers/TableWidgetItemNumeric.h"
-#include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
 #include "QtPlugin.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
+#include "read_helpers.h"
 #include <QCheckBox>
-#include <QCompleter>
+#include <QComboBox>
 #include <QHash>
 #include <QHeaderView>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QStandardItem>
+#include <QTabWidget>
+#include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
@@ -33,7 +35,7 @@ struct ComparisonField
     S2Plugin::MemoryFieldType type{S2Plugin::MemoryFieldType::None};
     size_t offset{0};
     std::string refName; // for flags
-    uint8_t flagIndex;
+    uint8_t flagIndex{0};
 };
 Q_DECLARE_METATYPE(ComparisonField)
 
@@ -51,12 +53,12 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
     auto tabCompare = new QWidget();
     tabLookup->setLayout(new QVBoxLayout());
     tabLookup->layout()->setMargin(10);
-    tabLookup->setObjectName("lookupwidget");
-    tabLookup->setStyleSheet("QWidget#lookupwidget {border: 1px solid #999;}");
+    tabLookup->setObjectName("lookupWidget");
+    tabLookup->setStyleSheet("QWidget#lookupWidget {border: 1px solid #999;}");
     tabCompare->setLayout(new QVBoxLayout());
     tabCompare->layout()->setMargin(10);
-    tabCompare->setObjectName("comparewidget");
-    tabCompare->setStyleSheet("QWidget#comparewidget {border: 1px solid #999;}");
+    tabCompare->setObjectName("compareWidget");
+    tabCompare->setStyleSheet("QWidget#compareWidget {border: 1px solid #999;}");
 
     mMainTabWidget->addTab(tabLookup, "Lookup");
     mMainTabWidget->addTab(tabCompare, "Compare");
@@ -98,7 +100,7 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
         auto topLayout = new QHBoxLayout();
         mCompareFieldComboBox = new QComboBox();
         mCompareFieldComboBox->addItem(QString::fromStdString(""));
-        populateComparisonCombobox(config->typeFields(type));
+        populateComparisonComboBox(config->typeFields(type));
 
         QObject::connect(mCompareFieldComboBox, &QComboBox::currentTextChanged, this, &AbstractDatabaseView::comparisonFieldChosen);
         topLayout->addWidget(mCompareFieldComboBox);
@@ -170,20 +172,20 @@ void S2Plugin::AbstractDatabaseView::searchFieldReturnPressed()
     }
 }
 
-void S2Plugin::AbstractDatabaseView::fieldUpdated(int row, QStandardItem* parrent)
+void S2Plugin::AbstractDatabaseView::fieldUpdated(int row, QStandardItem* parent)
 {
-    if (parrent != nullptr) // special case: for flag field need to update it's parrent, not the flag field
+    if (parent != nullptr) // special case: for flag field need to update it's parent, not the flag field
     {
         auto model = qobject_cast<QStandardItemModel*>(mMainTreeView->model());
-        auto parrentIndex = parrent->index();
-        auto index = model->index(row, gsColField, parrentIndex);
+        auto parentIndex = parent->index();
+        auto index = model->index(row, gsColField, parentIndex);
         if (model->data(index, gsRoleType).value<MemoryFieldType>() == MemoryFieldType::Flag)
         {
-            mMainTreeView->updateRow(parrentIndex.row(), std::nullopt, std::nullopt, parrent->parent(), true);
+            mMainTreeView->updateRow(parentIndex.row(), std::nullopt, std::nullopt, parent->parent(), true);
             return;
         }
     }
-    mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parrent, true);
+    mMainTreeView->updateRow(row, std::nullopt, std::nullopt, parent, true);
 }
 
 void S2Plugin::AbstractDatabaseView::fieldExpanded(const QModelIndex& index)
@@ -200,7 +202,7 @@ void S2Plugin::AbstractDatabaseView::compareGroupByCheckBoxClicked(int state)
 
 void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
 {
-    mFieldChoosen = true;
+    mFieldChosen = true;
     mCompareTableWidget->clearContents();
     mCompareTreeWidget->clear();
 
@@ -208,11 +210,11 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
     if (comboIndex == 0)
         return;
 
-    auto comboboxData = mCompareFieldComboBox->currentData();
-    if (!comboboxData.isValid())
+    auto comboBoxData = mCompareFieldComboBox->currentData();
+    if (!comboBoxData.isValid())
         return;
 
-    auto type = comboboxData.value<ComparisonField>().type;
+    auto type = comboBoxData.value<ComparisonField>().type;
     uint8_t flagsCount = 0;
     if (type == MemoryFieldType::Flags8)
         flagsCount = 8;
@@ -225,7 +227,7 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
     {
         mCompareFlagComboBox->clear();
         mCompareFlagComboBox->addItem("");
-        std::string refName = comboboxData.value<ComparisonField>().refName;
+        std::string refName = comboBoxData.value<ComparisonField>().refName;
         for (uint8_t x = 1; x <= flagsCount; ++x)
         {
             auto flagName = Configuration::get()->flagTitle(refName, x);
@@ -241,15 +243,15 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
         mCompareFlagComboBox->hide();
     }
 
-    populateComparisonTableWidget(comboboxData);
-    populateComparisonTreeWidget(comboboxData);
-    mFieldChoosen = false;
+    populateComparisonTableWidget(comboBoxData);
+    populateComparisonTreeWidget(comboBoxData);
+    mFieldChosen = false;
 }
 
 void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 {
     // protect against infinite loops since this slot is called when adding first element to combo box
-    if (mFieldChoosen)
+    if (mFieldChosen)
         return;
 
     mCompareTableWidget->clearContents();
@@ -257,12 +259,12 @@ void S2Plugin::AbstractDatabaseView::comparisonFlagChosen(const QString& text)
 
     if (text.isEmpty())
     {
-        auto comboboxData = mCompareFieldComboBox->currentData();
-        if (!comboboxData.isValid())
+        auto comboBoxData = mCompareFieldComboBox->currentData();
+        if (!comboBoxData.isValid())
             return;
 
-        populateComparisonTableWidget(comboboxData);
-        populateComparisonTreeWidget(comboboxData);
+        populateComparisonTableWidget(comboBoxData);
+        populateComparisonTreeWidget(comboBoxData);
 
         return;
     }
@@ -372,7 +374,7 @@ void S2Plugin::AbstractDatabaseView::groupedComparisonItemClicked(QTreeWidgetIte
     }
 }
 
-size_t S2Plugin::AbstractDatabaseView::populateComparisonCombobox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
+size_t S2Plugin::AbstractDatabaseView::populateComparisonComboBox(const std::vector<MemoryField>& fields, size_t offset, std::string prefix)
 {
     for (const auto& field : fields)
     {
@@ -391,16 +393,16 @@ size_t S2Plugin::AbstractDatabaseView::populateComparisonCombobox(const std::vec
             case MemoryFieldType::Flags16:
             case MemoryFieldType::Flags8:
             {
-                ComparisonField parrentFlag;
-                parrentFlag.type = field.type;
-                parrentFlag.offset = offset;
-                parrentFlag.refName = field.firstParameterType;
-                mCompareFieldComboBox->addItem(QString::fromStdString(prefix + field.name), QVariant::fromValue(parrentFlag));
+                ComparisonField parentFlag;
+                parentFlag.type = field.type;
+                parentFlag.offset = offset;
+                parentFlag.refName = field.firstParameterType;
+                mCompareFieldComboBox->addItem(QString::fromStdString(prefix + field.name), QVariant::fromValue(parentFlag));
                 break;
             }
             case MemoryFieldType::DefaultStructType:
             {
-                offset = populateComparisonCombobox(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), offset, prefix + field.name + ".");
+                offset = populateComparisonComboBox(Configuration::get()->typeFieldsOfDefaultStruct(field.jsonName), offset, prefix + field.name + ".");
                 continue;
             }
             default:
@@ -424,37 +426,37 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
     auto offset = addr + compData.offset;
     switch (compData.type)
     {
-        // we only handle types that occur in the db's
+        // we only handle types that occur in the DB's
         case MemoryFieldType::Byte:
         case MemoryFieldType::State8:
         {
-            int8_t value = Script::Memory::ReadByte(offset);
+            int8_t value = Read<int8_t>(offset);
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::CharacterDBID:
         case MemoryFieldType::UnsignedByte:
         case MemoryFieldType::Flags8:
         {
-            uint8_t value = Script::Memory::ReadByte(offset);
+            uint8_t value = Read<uint8_t>(offset);
             return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Word:
         case MemoryFieldType::State16:
         {
-            int16_t value = Script::Memory::ReadWord(offset);
+            int16_t value = Read<int16_t>(offset);
             return std::make_pair(QString::asprintf("%d", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedWord:
         case MemoryFieldType::Flags16:
         {
-            uint16_t value = Script::Memory::ReadWord(offset);
+            uint16_t value = Read<uint16_t>(offset);
             return std::make_pair(QString::asprintf("%u", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::TextureDBID:
         case MemoryFieldType::Dword:
         case MemoryFieldType::State32:
         {
-            int32_t value = Script::Memory::ReadDword(offset);
+            int32_t value = Read<int32_t>(offset);
             return std::make_pair(QString::asprintf("%ld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::ParticleDBID:
@@ -463,17 +465,17 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         case MemoryFieldType::UnsignedDword:
         case MemoryFieldType::Flags32:
         {
-            uint32_t value = Script::Memory::ReadDword(offset);
+            uint32_t value = Read<uint32_t>(offset);
             return std::make_pair(QString::asprintf("%lu", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Qword:
         {
-            int64_t value = Script::Memory::ReadQword(offset);
+            int64_t value = Read<int64_t>(offset);
             return std::make_pair(QString::asprintf("%lld", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::UnsignedQword:
         {
-            uint64_t value = Script::Memory::ReadQword(offset);
+            uint64_t value = Read<uint64_t>(offset);
             return std::make_pair(QString::asprintf("%llu", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Float:
@@ -484,15 +486,14 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
         }
         case MemoryFieldType::Double:
         {
-            size_t qword = Script::Memory::ReadQword(offset);
+            uint64_t qword = Script::Memory::ReadQword(offset);
             double value = reinterpret_cast<double&>(qword);
             return std::make_pair(QString::asprintf("%lf", value), QVariant::fromValue(value));
         }
         case MemoryFieldType::Bool:
         {
-            auto b = Script::Memory::ReadByte(offset);
-            bool value = b != 0;
-            return std::make_pair(value ? "True" : "False", QVariant::fromValue(b));
+            auto b = Read<bool>(offset);
+            return std::make_pair(b ? "True" : "False", QVariant::fromValue(b));
         }
         case MemoryFieldType::Flag:
         {

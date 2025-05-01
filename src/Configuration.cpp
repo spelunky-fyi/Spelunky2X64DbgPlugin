@@ -3,13 +3,9 @@
 #include "pluginmain.h"
 #include <QDir>
 #include <QFileInfo>
-#include <QIcon>
-#include <QMessageBox>
 #include <QString>
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <regex>
-#include <string>
 
 using nlohmann::ordered_json;
 
@@ -81,7 +77,7 @@ namespace S2Plugin
     };
 
     const MemoryFieldData gsMemoryFieldType = {
-        // MemoryFieldEnum, Name for desplay, c++ type name, name in json, size (if 0 will be determinated from json struct), is pointer
+        // MemoryFieldEnum, Name for display, c++ type name, name in json, size (if 0 will be determinate from json struct), is pointer
 
         // Basic types
         {MemoryFieldType::CodePointer, "Code pointer", "size_t*", "CodePointer", 8, true},
@@ -168,7 +164,7 @@ S2Plugin::Configuration* S2Plugin::Configuration::get()
     if (ptr == nullptr)
     {
         auto new_config = new Configuration{};
-        if (new_config->initialisedCorrectly)
+        if (new_config->initializedCorrectly)
             ptr = new_config;
         else
             delete new_config;
@@ -179,7 +175,7 @@ S2Plugin::Configuration* S2Plugin::Configuration::get()
 bool S2Plugin::Configuration::reload()
 {
     auto new_config = new Configuration{};
-    if (new_config->initialisedCorrectly)
+    if (new_config->initializedCorrectly)
     {
         delete ptr;
         ptr = new_config;
@@ -200,19 +196,19 @@ S2Plugin::Configuration::Configuration()
     if (!QFile(path).exists())
     {
         displayError("Could not find " + path.toStdString());
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
     if (!QFile(pathENT).exists())
     {
         displayError("Could not find " + pathENT.toStdString());
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
     if (!QFile(pathRC).exists())
     {
         displayError("Could not find " + pathRC.toStdString());
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
 
@@ -243,22 +239,22 @@ S2Plugin::Configuration::Configuration()
     catch (const ordered_json::exception& e)
     {
         displayError("Exception while parsing json: " + std::string(e.what()));
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
     catch (const std::exception& e)
     {
         displayError("Exception while parsing json: " + std::string(e.what()));
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
     catch (...)
     {
         displayError("Unknown exception while parsing json");
-        initialisedCorrectly = false;
+        initializedCorrectly = false;
         return;
     }
-    initialisedCorrectly = true;
+    initializedCorrectly = true;
 }
 
 template <class T>
@@ -373,7 +369,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         case MemoryFieldType::Skip:
         {
             if (memField.isPointer)
-                throw std::runtime_error("Skip elment cannot be marked as pointer (" + struct_name + "." + memField.name + ")");
+                throw std::runtime_error("Skip element cannot be marked as pointer (" + struct_name + "." + memField.name + ")");
 
             if (memField.size == 0)
                 throw std::runtime_error("no offset specified for Skip (" + struct_name + "." + memField.name + ")");
@@ -459,14 +455,14 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         }
         case MemoryFieldType::VirtualFunctionTable:
         {
-            memField.firstParameterType = struct_name; // use firstParameterType to hold the parrent type of the vtable
+            memField.firstParameterType = struct_name; // use firstParameterType to hold the parent type of the vtable
             if (field.contains("functions"))
             {
                 auto& vector = mVirtualFunctions[struct_name];
                 vector.reserve(field["functions"].size());
                 for (const auto& [funcIndex, func] : field["functions"].items())
                 {
-                    size_t index = std::stoll(funcIndex);
+                    size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed function"s);
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
@@ -485,7 +481,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 break;
             }
             else if (memField.size == 0)
-                throw std::runtime_error("Missing `lenght` or `offset` parameter for UTF16StringFixedSize (" + struct_name + "." + memField.name + ")");
+                throw std::runtime_error("Missing `length` or `offset` parameter for UTF16StringFixedSize (" + struct_name + "." + memField.name + ")");
 
             memField.numberOfElements = memField.size / 2;
             memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
@@ -497,7 +493,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 memField.size = field["length"].get<size_t>();
 
             if (memField.size == 0)
-                throw std::runtime_error("Missing valid `lenght` or `offset` parameter for UTF8StringFixedSize (" + struct_name + "." + memField.name + ")");
+                throw std::runtime_error("Missing valid `length` or `offset` parameter for UTF8StringFixedSize (" + struct_name + "." + memField.name + ")");
 
             memField.numberOfElements = memField.size;
             memField.name += "[" + std::to_string(memField.numberOfElements) + "]";
@@ -592,13 +588,13 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
         vec.reserve(jsonArray.size());
         for (const auto& field : jsonArray)
         {
-            if (field.contains("vftablefunctions")) // for the vtable in entity subclasses
+            if (field.contains("vftablefunctions")) // for the vtable in entity sub-classes
             {
                 auto& vector = mVirtualFunctions[key];
                 vector.reserve(field["vftablefunctions"].size());
                 for (const auto& [funcIndex, func] : field["vftablefunctions"].items())
                 {
-                    size_t index = std::stoll(funcIndex);
+                    size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed function"s);
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
@@ -822,7 +818,7 @@ std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctions
     }
 }
 
-uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
+uint8_t S2Plugin::Configuration::getAlignment(const std::string& typeName) const
 {
     if (isPermanentPointer(typeName))
     {
@@ -833,7 +829,7 @@ uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
         if (isPointerType(type))
             return sizeof(uintptr_t);
 
-        return getAlingment(type);
+        return getAlignment(type);
     }
     auto itr = mAlignments.find(typeName);
     if (itr != mAlignments.end())
@@ -842,7 +838,7 @@ uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
     uint8_t alignment = 0;
     for (auto& field : typeFieldsOfDefaultStruct(typeName))
     {
-        alignment = std::max(alignment, getAlingment(field));
+        alignment = std::max(alignment, getAlignment(field));
         if (alignment == 8)
             break;
     }
@@ -852,7 +848,7 @@ uint8_t S2Plugin::Configuration::getAlingment(const std::string& typeName) const
     dprintf("alignment not found for (%s)\n", typeName.c_str());
     return sizeof(uintptr_t);
 }
-uint8_t S2Plugin::Configuration::getAlingment(const MemoryField& field) const
+uint8_t S2Plugin::Configuration::getAlignment(const MemoryField& field) const
 {
     if (field.isPointer)
         return sizeof(uintptr_t);
@@ -861,14 +857,14 @@ uint8_t S2Plugin::Configuration::getAlingment(const MemoryField& field) const
     {
         case MemoryFieldType::Array:
         case MemoryFieldType::Matrix:
-            return getAlingment(field.firstParameterType);
+            return getAlignment(field.firstParameterType);
         case MemoryFieldType::DefaultStructType:
-            return getAlingment(field.jsonName);
+            return getAlignment(field.jsonName);
         default:
-            return getAlingment(field.type);
+            return getAlignment(field.type);
     }
 }
-uint8_t S2Plugin::Configuration::getAlingment(MemoryFieldType type) const
+uint8_t S2Plugin::Configuration::getAlignment(MemoryFieldType type) const
 {
     switch (type)
     {
@@ -1053,7 +1049,7 @@ void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
     }
     for (const auto& [roomCodeStr, roomDetails] : j["roomcodes"].items())
     {
-        auto id = std::stoi(roomCodeStr, 0, 16);
+        auto id = static_cast<uint16_t>(std::stoul(roomCodeStr, 0, 16));
         QColor color = roomDetails.contains("color") ? getColor(roomDetails["color"].get<std::string>()) : QColor(Qt::lightGray);
         mRoomCodes.emplace(id, RoomCode(id, value_or(roomDetails, "name", "Unnamed room code"s), std::move(color)));
     }

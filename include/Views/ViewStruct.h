@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Configuration.h"
-#include <QSize>
 #include <QWidget>
 #include <cstdint>
 #include <vector>
@@ -10,7 +9,6 @@ namespace S2Plugin
 {
     class TreeViewMemoryFields;
     class WidgetPagination;
-    struct MemoryField;
 
     class ViewStruct : public QWidget
     {

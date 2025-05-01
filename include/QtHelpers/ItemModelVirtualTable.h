@@ -1,10 +1,8 @@
 #pragma once
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
 #include <QString>
-#include <QVariant>
 #include <cstdint>
 
 namespace S2Plugin
@@ -17,7 +15,6 @@ namespace S2Plugin
     class ItemModelVirtualTable : public QAbstractItemModel
     {
         Q_OBJECT
-
       public:
         explicit ItemModelVirtualTable(QObject* parent = nullptr) : QAbstractItemModel(parent){};
 
@@ -51,7 +48,6 @@ namespace S2Plugin
     class SortFilterProxyModelVirtualTable : public QSortFilterProxyModel
     {
         Q_OBJECT
-
       public:
         explicit SortFilterProxyModelVirtualTable(QObject* parent = nullptr);
 
@@ -76,7 +72,6 @@ namespace S2Plugin
             mFilterString = f;
             invalidateFilter();
         }
-
         bool symbollessEntriesShown() const noexcept
         {
             return mShowSymbollessEntries;
@@ -88,5 +83,4 @@ namespace S2Plugin
         bool mShowSymbollessEntries = true;
         QString mFilterString = "";
     };
-
 } // namespace S2Plugin

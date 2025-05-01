@@ -1,7 +1,8 @@
 #include "QtPlugin.h"
+
 #include "Spelunky2.h"
 #include "Views/ViewToolbar.h"
-#include "Views/ViewVirtualTable.h"
+#include "Views/ViewVirtualTable.h" // TODO: remove, do it thru toolbar?
 #include "pluginmain.h"
 #include <QFile>
 #include <QMainWindow>

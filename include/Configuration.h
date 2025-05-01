@@ -8,7 +8,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <unordered_set>
+#include <vector>
 
 namespace S2Plugin
 {
@@ -28,10 +28,10 @@ namespace S2Plugin
      * those are used as information about the row
      * memory address in the name field are used just for row update and shouldn't really be used for anything else
      *
-     * value, comparison value, memoryaddress and delta fields all should contain the `gsRoleRawValue` data
+     * value, comparison value, memoryAddress and delta fields all should contain the `gsRoleRawValue` data
      * (may differ with some special types)
      *
-     * valueHex and comparison valuehex contain `gsRoleRawValue` only when it's a pointer (used for update check and click event)
+     * valueHex and comparison valueHex contain `gsRoleRawValue` only when it's a pointer (used for update check and click event)
      * value and comparison value also contain `gsRoleMemoryAddress` for field editing purposes
      * for pointers, that will be the pointer value, not memory address of the pointer
      *
@@ -59,7 +59,7 @@ namespace S2Plugin
     // - optionally in Spelunky2.json if they have static structure
     // - handling of the json is done in populateMemoryField in Configuration.cpp
     // - displaying the data and handling the click event is done in TreeViewMemoryFields.cpp
-    // - if it's common use/basic type, you may also want to add it in getAlingment function
+    // - if it's common use/basic type, you may also want to add it in getAlignment function
     // - there are some specific conditions for comparison in database handled in DatabaseHelper.cpp
     // new subclasses of Entity can just be added to the class hierarchy in Spelunky2Entities.json
     // and have its fields defined there
@@ -117,7 +117,7 @@ namespace S2Plugin
         StdWstring,
         EntitySubclass,               // a subclass of an entity defined in json
         DefaultStructType,            // a struct defined in json
-        UndeterminedThemeInfoPointer, // used to look up the theme pointer in the levelgen and show the correct theme name
+        UndeterminedThemeInfoPointer, // used to look up the theme pointer in the levelGen and show the correct theme name
         COThemeInfoPointer,           // same as above, but does not add struct tree
         LevelGenRoomsPointer,         // used to make the level gen rooms title clickable
         LevelGenRoomsMetaPointer,     // used to make the level gen rooms title clickable
@@ -152,7 +152,7 @@ namespace S2Plugin
         VirtualFunction(size_t i, std::string n, std::string p, std::string r, std::string t) : index(i), name(n), params(p), returnValue(r), type(t){};
     };
 
-    struct MemoryField // TODO this got big over time, consider size optimaizations
+    struct MemoryField // TODO this got big over time, consider size optimizations
     {
         std::string name;
         MemoryFieldType type{MemoryFieldType::None};
@@ -174,16 +174,23 @@ namespace S2Plugin
             // row count for matrix
             size_t rows;
         };
-        // column count for matrix
-        size_t columns{0};
-
         // For checking duplicate names
         bool operator==(const MemoryField& other) const
         {
             return name == other.name;
         }
+        void setNumColumns(size_t num)
+        {
+            columns = num;
+        };
+        size_t getNumColumns() const
+        {
+            return columns;
+        };
 
       private:
+        // column count for matrix
+        size_t columns{0};
         size_t size{0};
         friend class Configuration;
     };
@@ -251,9 +258,9 @@ namespace S2Plugin
         uintptr_t offsetForField(MemoryFieldType type, std::string_view fieldUID, uintptr_t base_addr = 0) const;
 
         // equivalent to alignof operator
-        uint8_t getAlingment(const std::string& type) const;
-        uint8_t getAlingment(MemoryFieldType type) const;
-        uint8_t getAlingment(const MemoryField& type) const;
+        uint8_t getAlignment(const std::string& type) const;
+        uint8_t getAlignment(MemoryFieldType type) const;
+        uint8_t getAlignment(const MemoryField& type) const;
 
         std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
         std::string stateTitle(const std::string& fieldName, int64_t state) const;
@@ -279,7 +286,7 @@ namespace S2Plugin
 
       private:
         static Configuration* ptr;
-        bool initialisedCorrectly = false;
+        bool initializedCorrectly = false;
 
         std::unordered_map<std::string, std::string> mEntityClassHierarchy;
         std::vector<std::pair<std::string, std::string>> mDefaultEntityClassTypes;

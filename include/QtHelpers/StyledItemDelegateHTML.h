@@ -1,14 +1,17 @@
 #pragma once
 
-#include <QModelIndex>
-#include <QPainter>
-#include <QStyleOptionViewItem>
+#include <QSize>
 #include <QStyledItemDelegate>
+
+class QModelIndex;
+class QPainter;
+class QStyleOptionViewItem;
 
 namespace S2Plugin
 {
     class StyledItemDelegateHTML : public QStyledItemDelegate
     {
+        Q_OBJECT
       public:
         using QStyledItemDelegate::QStyledItemDelegate;
         void setCenterVertically(bool b)

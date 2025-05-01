@@ -8,7 +8,10 @@
 #include "pluginmain.h"
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QModelIndex>
 #include <QPushButton>
+#include <QString>
+#include <QTableView>
 #include <QVBoxLayout>
 
 constexpr uint32_t gsRoleRawValue = 1;
@@ -65,25 +68,25 @@ void S2Plugin::ViewStringsTable::reload()
     if (!stringTable.isValid())
         return;
 
-    auto stringsTableSize = stringTable.count(stringTable.modelCache()->rowCount() != 0); // recount unless it's the first reload call to initialise
+    auto stringsTableSize = stringTable.count(stringTable.modelCache()->rowCount() != 0); // recount unless it's the first reload call to initialize
     setWindowTitle(QString("Strings table (%1 strings)").arg(stringsTableSize));
     stringTable.modelCache()->clear();
     stringTable.modelCache()->setHorizontalHeaderLabels({"ID", "Table offset", "Memory offset", "Value"});
-    auto parrent = stringTable.modelCache()->invisibleRootItem();
+    auto parent = stringTable.modelCache()->invisibleRootItem();
 
     for (uint32_t idx = 0; idx < stringsTableSize; ++idx)
     {
         QStandardItem* fieldID = new QStandardItem(QString::number(idx));
         auto offset = stringTable.addressOfIndex(idx);
-        QStandardItem* fieldTableOfset = new QStandardItem(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", offset));
-        fieldTableOfset->setData(offset, gsRoleRawValue);
+        QStandardItem* fieldTableOffset = new QStandardItem(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", offset));
+        fieldTableOffset->setData(offset, gsRoleRawValue);
         auto stringOffset = Script::Memory::ReadQword(offset);
         QStandardItem* fieldMemoryOffset = new QStandardItem(QString::asprintf("<font color='blue'><u>0x%016llX</u></font>", stringOffset));
         fieldMemoryOffset->setData(stringOffset, gsRoleRawValue);
         QString str = stringTable.stringForIndex(idx);
         QStandardItem* fieldValue = new QStandardItem(str);
 
-        parrent->appendRow(QList<QStandardItem*>() << fieldID << fieldTableOfset << fieldMemoryOffset << fieldValue);
+        parent->appendRow(QList<QStandardItem*>() << fieldID << fieldTableOffset << fieldMemoryOffset << fieldValue);
     }
     // [Known Issue]: Because we use the same model for potentially multiple StringsTable windows
     // the column size will only be updated for this window when using "Reload" button

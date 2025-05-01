@@ -94,7 +94,7 @@ namespace S2Plugin
             {
                 return (bool)Script::Memory::ReadByte(node_ptr + 0x19);
             }
-            // returning value ptr instead of value itself since it's more usefull for us
+            // returning value ptr instead of value itself since it's more useful for us
             std::pair<Key, uintptr_t> operator*()
             {
                 return {key(), value_ptr()};
@@ -127,7 +127,7 @@ namespace S2Plugin
                 // normally you would just check the nil flag
                 Node _end = r;
                 // if the right node is nil, we go up
-                // if the parrent node it's nil, then that's the end
+                // if the parent node it's nil, then that's the end
                 Node p = parent();
                 Node c = *this;
                 while (p != _end && p.right() == c)

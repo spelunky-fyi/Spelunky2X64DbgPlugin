@@ -2,13 +2,13 @@
 
 #include <QColor>
 #include <QObject>
-#include <QTimer>
 #include <any>
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+class QTimer;
 
 namespace S2Plugin
 {
@@ -78,8 +78,8 @@ namespace S2Plugin
         std::vector<LoggerField> mFields;
         ItemModelLoggerFields* mTableModel = nullptr;
 
-        std::unique_ptr<QTimer> mSampleTimer;
-        std::unique_ptr<QTimer> mDurationTimer;
+        QTimer* mSampleTimer;
+        QTimer* mDurationTimer;
         std::unordered_map<std::string, std::vector<std::any>> mSamples; // field uuid -> value
     };
 } // namespace S2Plugin

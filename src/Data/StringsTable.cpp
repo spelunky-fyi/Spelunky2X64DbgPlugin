@@ -1,7 +1,7 @@
 #include "Data/StringsTable.h"
+
 #include "pluginmain.h"
 #include "read_helpers.h"
-#include <QString>
 #include <array>
 
 QString S2Plugin::StringsTable::stringForIndex(uint32_t idx) const

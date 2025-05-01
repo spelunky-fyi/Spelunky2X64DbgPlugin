@@ -7,11 +7,30 @@
 namespace S2Plugin
 {
     template <typename T>
-    [[nodiscard]] T Read(uintptr_t addr)
+    [[nodiscard]] inline T Read(uintptr_t addr)
     {
-        T x{};
-        Script::Memory::Read(addr, &x, sizeof(T), nullptr);
-        return x;
+        if constexpr (sizeof(T) == 1)
+        {
+            return static_cast<T>(Script::Memory::ReadByte(addr));
+        }
+        else if constexpr (sizeof(T) == 2)
+        {
+            return static_cast<T>(Script::Memory::ReadWord(addr));
+        }
+        else if constexpr (sizeof(T) == 4)
+        {
+            return static_cast<T>(Script::Memory::ReadDword(addr));
+        }
+        else if constexpr (sizeof(T) == 8)
+        {
+            return static_cast<T>(Script::Memory::ReadQword(addr));
+        }
+        else
+        {
+            T x{};
+            Script::Memory::Read(addr, &x, sizeof(T), nullptr);
+            return x;
+        }
     }
 
     template <typename T>

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace S2Plugin
 {
@@ -36,10 +37,6 @@ namespace S2Plugin
         {
             return mTextures.count(id) != 0;
         }
-        const auto textures() const
-        {
-            return mTextures;
-        }
         size_t highestID() const
         {
             return mHighestID;
@@ -50,7 +47,7 @@ namespace S2Plugin
         uintptr_t ptr{0};
         std::unordered_map<uint32_t, std::pair<std::string, uintptr_t>> mTextures; // id -> {name, address}
         QStringList mTextureNamesStringList;
-        size_t mHighestID;
+        size_t mHighestID{0};
 
         TextureDB() = default;
         ~TextureDB(){};

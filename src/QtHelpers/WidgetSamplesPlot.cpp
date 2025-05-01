@@ -21,7 +21,7 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
     painter.drawRect(paintBounds);
     painter.translate(gsPlotMargin, gsPlotMargin);
 
-    for (auto i = 0; i < mLogger->fieldCount(); ++i)
+    for (size_t i = 0; i < mLogger->fieldCount(); ++i)
     {
         const auto& field = mLogger->fieldAt(i);
         painter.setPen(field.color);
@@ -30,7 +30,7 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
         const auto& samples = mLogger->samplesForField(field.uuid);
         int x = 0;
         uint16_t mappedY = 0;
-        uint16_t prevX = 0, prevY = 0;
+        int prevX = 0, prevY = 0;
         bool first = true;
         for (const auto& sample : samples)
         {
@@ -121,9 +121,8 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
 
         painter.setPen(Qt::cyan);
         painter.drawLine(mCurrentMousePos.x(), 0, mCurrentMousePos.x(), paintBounds.height());
-
-        int64_t sampleIndex = static_cast<int64_t>(mCurrentMousePos.x()) - gsPlotMargin;
-        if (sampleIndex >= 0 && sampleIndex < static_cast<int64_t>(mLogger->sampleCount()))
+        auto sampleIndex = mCurrentMousePos.x() - gsPlotMargin;
+        if (sampleIndex >= 0 && static_cast<size_t>(sampleIndex) < mLogger->sampleCount())
         {
             auto scrollArea = qobject_cast<QScrollArea*>(parent()->parent());
             auto drawOnLeftSide = (scrollArea->mapFromGlobal(QCursor::pos()).x() > (scrollArea->width() / 2));
@@ -140,11 +139,11 @@ void S2Plugin::WidgetSamplesPlot::paintEvent(QPaintEvent*)
             }
 
             uint16_t y = 15;
-            for (auto i = 0; i < mLogger->fieldCount(); ++i)
+            for (size_t i = 0; i < mLogger->fieldCount(); ++i)
             {
                 const auto& field = mLogger->fieldAt(i);
                 const auto& samples = mLogger->samplesForField(field.uuid);
-                const auto& sample = samples.at(sampleIndex);
+                const auto& sample = samples.at(static_cast<size_t>(sampleIndex));
                 QString caption;
                 switch (field.type)
                 {

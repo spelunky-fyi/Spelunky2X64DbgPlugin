@@ -1,21 +1,22 @@
 #include "QtHelpers/WidgetMemoryView.h"
 
 #include "pluginmain.h"
-#include <QEvent>
+#include <QFont>
 #include <QFontMetrics>
-#include <QHelpEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QToolTip>
 #include <cmath>
 
-static constexpr uint32_t gsMarginHor = 10;
-static constexpr uint32_t gsMarginVer = 5;
+static constexpr int gsMarginHor = 10;
+static constexpr int gsMarginVer = 5;
 
 S2Plugin::WidgetMemoryView::WidgetMemoryView(QWidget* parent) : QWidget(parent)
 {
-    mFont = QFont("Courier", 11);
-    mTextAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, "00");
-    mSpaceAdvance = QFontMetrics(mFont).size(Qt::TextSingleLine, " ").width();
+    auto font = QFont("Courier", 11);
+    mTextAdvance = QFontMetrics(font).size(Qt::TextSingleLine, "00");
+    mSpaceAdvance = QFontMetrics(font).size(Qt::TextSingleLine, " ").width();
     setMouseTracking(true);
 }
 
@@ -23,15 +24,16 @@ void S2Plugin::WidgetMemoryView::paintEvent(QPaintEvent*)
 {
     if (mAddress != 0 && mSize != 0)
     {
+        const static auto font = QFont("Courier", 11);
         QPainter painter(this);
         painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-        painter.setFont(mFont);
+        painter.setFont(font);
 
         // mToolTipRects.clear();
         painter.setBrush(Qt::black);
-        uint32_t x = gsMarginHor;
-        uint32_t y = gsMarginVer + mTextAdvance.height();
-        uint32_t index = 0;
+        int x = gsMarginHor;
+        int y = gsMarginVer + mTextAdvance.height();
+        size_t index = 0;
         bool addToolTips = mToolTipRects.empty();
         for (uintptr_t opCounter = mAddress; opCounter < (mAddress + mSize); ++opCounter)
         {
@@ -71,8 +73,8 @@ QSize S2Plugin::WidgetMemoryView::sizeHint() const
 
 QSize S2Plugin::WidgetMemoryView::minimumSizeHint() const
 {
-    auto totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * 16) + (gsMarginHor * 2) - mSpaceAdvance;
-    auto totalHeight = (mTextAdvance.height() * static_cast<uint32_t>(std::ceil(static_cast<double>(mSize) / 16.))) + (gsMarginVer * 2) + mTextAdvance.height();
+    int totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * 16) + (gsMarginHor * 2) - mSpaceAdvance;
+    int totalHeight = (mTextAdvance.height() * static_cast<int>(std::ceil(static_cast<double>(mSize) / 16.))) + (gsMarginVer * 2) + mTextAdvance.height();
     return QSize(totalWidth, totalHeight);
 }
 

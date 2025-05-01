@@ -6,10 +6,10 @@
 #include "pluginmain.h"
 #include <QString>
 
-S2Plugin::ViewStdList::ViewStdList(uintptr_t addr, const std::string& valueType, bool oldType, QWidget* parent) : mListAddress(addr), mOldType(oldType), AbstractContainerView(parent)
+S2Plugin::ViewStdList::ViewStdList(uintptr_t address, const std::string& valueTypeName, bool oldType, QWidget* parent) : AbstractContainerView(parent), mListAddress(address), mOldType(oldType)
 {
-    mValueField = Configuration::get()->nameToMemoryField(valueType);
-    setWindowTitle(QString("std::list<%1>").arg(QString::fromStdString(valueType)));
+    mValueField = Configuration::get()->nameToMemoryField(valueTypeName);
+    setWindowTitle(QString("std::list<%1>").arg(QString::fromStdString(valueTypeName)));
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment).disable(gsColMemoryAddressDelta);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 145);
@@ -40,7 +40,7 @@ void S2Plugin::ViewStdList::reloadContainer()
         }
         // had to make up some solution for pagination since the old list does not have an easy way to get the size
         size_t perPage = mPagination->recordsPerPage();
-        auto currentPageIndex = mPagination->getCurrentPage() - 1;
+        size_t currentPageIndex = mPagination->getCurrentPage() - 1;
         size_t thisPageEnd = currentPageIndex * perPage + perPage;
         size_t x = 0;
         auto cur = theList.begin();

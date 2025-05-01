@@ -1,12 +1,14 @@
 #include "QtHelpers/DialogEditSimpleValue.h"
-#include "Configuration.h"
+
 #include "QtHelpers/LongLongSpinBox.h"
 #include "QtPlugin.h"
 #include "read_helpers.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
+#include <QSpinBox>
 #include <QVBoxLayout>
 #include <iomanip>
 #include <sstream>
@@ -108,7 +110,7 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
         {
             auto spinBox = new ULongLongSpinBox(this);
             QObject::connect(spinBox, &ULongLongSpinBox::valueChanged, this, &DialogEditSimpleValue::decValueChanged);
-            // spinBox->setRange(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+            // spinBox->setRange(std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
             auto v = Read<uint64_t>(mMemoryAddress);
             spinBox->setValue(v);
             mSpinBox = spinBox;
@@ -116,26 +118,26 @@ S2Plugin::DialogEditSimpleValue::DialogEditSimpleValue(const QString& fieldName,
         }
         case MemoryFieldType::Float:
         {
-            auto spinbox = new QDoubleSpinBox(this);
-            spinbox->setDecimals(6);
-            spinbox->setRange(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
-            QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
+            auto spinBox = new QDoubleSpinBox(this);
+            spinBox->setDecimals(6);
+            spinBox->setRange(-std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+            QObject::connect(spinBox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
             uint32_t tmp = Script::Memory::ReadDword(mMemoryAddress);
             auto v = reinterpret_cast<float&>(tmp);
-            spinbox->setValue(v);
-            mSpinBox = spinbox;
+            spinBox->setValue(v);
+            mSpinBox = spinBox;
             break;
         }
         case MemoryFieldType::Double:
         {
-            auto spinbox = new QDoubleSpinBox(this);
-            spinbox->setDecimals(15);
-            spinbox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-            QObject::connect(spinbox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
+            auto spinBox = new QDoubleSpinBox(this);
+            spinBox->setDecimals(15);
+            spinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+            QObject::connect(spinBox, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::valueChanged), this, &DialogEditSimpleValue::decValueChanged);
             size_t tmp = Script::Memory::ReadQword(mMemoryAddress);
             double v = reinterpret_cast<double&>(tmp);
-            spinbox->setValue(v);
-            mSpinBox = spinbox;
+            spinBox->setValue(v);
+            mSpinBox = spinBox;
             break;
         }
     }
@@ -221,10 +223,10 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
         case MemoryFieldType::UnsignedDword:
         case MemoryFieldType::StringsTableID:
         {
-            int v = 0;
+            uint32_t v = 0;
             auto obj = qobject_cast<ULongLongSpinBox*>(mSpinBox);
             if (obj) // probably not needed but just in case
-                v = obj->value();
+                v = static_cast<uint32_t>(obj->value());
 
             Script::Memory::WriteDword(mMemoryAddress, v);
             break;
@@ -275,72 +277,72 @@ void S2Plugin::DialogEditSimpleValue::changeBtnClicked()
 
 void S2Plugin::DialogEditSimpleValue::decValueChanged(const QString& text)
 {
-    std::stringstream ss;
+    QString result;
     switch (mFieldType)
     {
         case MemoryFieldType::Byte:
         {
-            int8_t v = text.toInt();
-            ss << QString::asprintf("0x%02x", static_cast<uint8_t>(v)).toStdString();
+            int8_t v = static_cast<int8_t>(text.toShort()); // there is no conversion to 8bit
+            result = QString::asprintf("0x%02X", static_cast<uint8_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedByte:
         {
-            uint8_t v = text.toInt();
-            ss << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<uint32_t>(v);
+            uint8_t v = static_cast<uint8_t>(text.toUShort());
+            result = QString::asprintf("0x%02X", v);
             break;
         }
         case MemoryFieldType::Word:
         {
             int16_t v = text.toShort();
-            ss << "0x" << std::hex << std::setw(4) << std::setfill('0') << v;
+            result = QString::asprintf("0x%04X", static_cast<uint16_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedWord:
         {
             uint16_t v = text.toUShort();
-            ss << "0x" << std::hex << std::setw(4) << std::setfill('0') << v;
+            result = QString::asprintf("0x%04X", v);
             break;
         }
         case MemoryFieldType::Dword:
         {
             int32_t v = text.toLong();
-            ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << v;
+            result = QString::asprintf("0x%08X", static_cast<uint32_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedDword:
         case MemoryFieldType::StringsTableID:
         {
             uint32_t v = text.toULong();
-            ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << v;
+            result = QString::asprintf("0x%08X", v);
             break;
         }
         case MemoryFieldType::Qword:
         {
             int64_t v = text.toLongLong();
-            ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << v;
+            result = QString::asprintf("0x%016llX", static_cast<uint64_t>(v));
             break;
         }
         case MemoryFieldType::UnsignedQword:
         {
             uint64_t v = text.toULongLong();
-            ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << v;
+            result = QString::asprintf("0x%016llX", v);
             break;
         }
         case MemoryFieldType::Float:
         {
             float v = QLocale::system().toFloat(text);
             uint32_t tmp = reinterpret_cast<uint32_t&>(v);
-            ss << "0x" << std::hex << std::setw(8) << std::setfill('0') << tmp;
+            result = QString::asprintf("0x%08X", tmp);
             break;
         }
         case MemoryFieldType::Double:
         {
             double v = QLocale::system().toDouble(text);
-            size_t tmp = reinterpret_cast<size_t&>(v);
-            ss << "0x" << std::hex << std::setw(16) << std::setfill('0') << tmp;
+            uint64_t tmp = reinterpret_cast<uint64_t&>(v);
+            result = QString::asprintf("0x%016llX", tmp);
             break;
         }
     }
-    mLineEditHexValue->setText(QString::fromStdString(ss.str()));
+    mLineEditHexValue->setText(result);
 }

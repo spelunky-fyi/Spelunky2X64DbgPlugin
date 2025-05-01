@@ -4,25 +4,27 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetPagination.h"
 #include "pluginmain.h"
+#include <QModelIndex>
+#include <QStandardItem>
 #include <QString>
 
-S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent)
-    : mMapAddress(address), AbstractContainerView(parent)
+S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName, QWidget* parent)
+    : AbstractContainerView(parent), mMapAddress(address)
 {
     auto config = Configuration::get();
 
-    mKeyField = config->nameToMemoryField(keytypeName);
-    mValueField = config->nameToMemoryField(valuetypeName);
+    mKeyField = config->nameToMemoryField(keyTypeName);
+    mValueField = config->nameToMemoryField(valueTypeName);
 
-    if (valuetypeName.empty())
-        mMapAlignment = config->getAlingment(mKeyField);
+    if (valueTypeName.empty())
+        mMapAlignment = config->getAlignment(mKeyField);
     else
-        mMapAlignment = std::max(config->getAlingment(mKeyField), config->getAlingment(mValueField));
+        mMapAlignment = std::max(config->getAlignment(mKeyField), config->getAlignment(mValueField));
 
-    if (valuetypeName.empty())
-        setWindowTitle(QString("std::unordered_set<%1>").arg(QString::fromStdString(keytypeName)));
+    if (valueTypeName.empty())
+        setWindowTitle(QString("std::unordered_set<%1>").arg(QString::fromStdString(keyTypeName)));
     else
-        setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(keytypeName), QString::fromStdString(valuetypeName)));
+        setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(keyTypeName), QString::fromStdString(valueTypeName)));
 
     mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
@@ -66,7 +68,7 @@ void S2Plugin::ViewStdUnorderedMap::reloadContainer()
     auto _cur = the_map.begin();
     MemoryField parent_field;
     parent_field.type = MemoryFieldType::Dummy;
-    for (int x = 0; _cur != _end && x < range.second; ++x, ++_cur)
+    for (size_t x = 0; _cur != _end && x < range.second; ++x, ++_cur)
     {
         if (x < range.first)
             continue;

@@ -9,6 +9,7 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QString>
+#include <QTableWidget>
 #include <QVBoxLayout>
 #include <cstdint>
 
@@ -49,7 +50,7 @@ S2Plugin::ViewSaveStates::ViewSaveStates(QWidget* parent) : QWidget(parent)
     mMainTable->setRowCount(gsSaveStates);
     auto HTMLDelegate = new StyledItemDelegateHTML(this);
     mMainTable->setItemDelegate(HTMLDelegate);
-    mMainTable->setHorizontalHeaderLabels({"In Use", "Heap Base", "State", "LevelGen", "Liquid Phisics", "SaveGame"});
+    mMainTable->setHorizontalHeaderLabels({"In Use", "Heap Base", "State", "LevelGen", "Liquid Physics", "SaveGame"});
     mMainTable->setColumnWidth(Columns::InUse, 60);
     mMainTable->setColumnWidth(Columns::HeapBase, 130);
     mMainTable->setColumnWidth(Columns::State, 130);
@@ -100,7 +101,7 @@ void S2Plugin::ViewSaveStates::refreshSlots()
         if (i >= emptySlots)
             mMainTable->setItem(i, Columns::InUse, new QTableWidgetItem("<font color='green'><b>Yes</b></font>"));
         else
-            mMainTable->setItem(i, Columns::InUse, new QTableWidgetItem("<font color='#aaa'>No</font>"));
+            mMainTable->setItem(i, Columns::InUse, new QTableWidgetItem("<font color='#AAA'>No</font>"));
 
         updateItem(i, Columns::HeapBase, statePtr);
         updateItem(i, Columns::State, statePtr + Spelunky2::GAME_OFFSET::STATE);
@@ -151,9 +152,9 @@ void S2Plugin::ViewSaveStates::cellClicked(int row, int column)
         }
         case Columns::LiquidPhysics:
         {
-            auto liquidPhisicsPtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
-            if (liquidPhisicsPtr != 0)
-                getToolbar()->showLiquidPhysics(liquidPhisicsPtr);
+            auto liquidPhysicsPtr = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+            if (liquidPhysicsPtr != 0)
+                getToolbar()->showLiquidPhysics(liquidPhysicsPtr);
             break;
         }
         case Columns::SaveGame:

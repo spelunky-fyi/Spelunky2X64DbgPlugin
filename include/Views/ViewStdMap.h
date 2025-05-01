@@ -2,7 +2,6 @@
 
 #include "Configuration.h"
 #include "QtHelpers/AbstractContainerView.h"
-#include <QWidget>
 #include <cstdint>
 #include <string>
 
@@ -12,7 +11,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewStdMap(uintptr_t address, const std::string& keytypeName, const std::string& valuetypeName, QWidget* parent = nullptr);
+        ViewStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName, QWidget* parent = nullptr);
 
       protected:
         void reloadContainer() override;

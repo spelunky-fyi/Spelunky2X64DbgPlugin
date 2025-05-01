@@ -9,6 +9,7 @@ namespace S2Plugin
 {
     class StyledItemDelegateColorPicker : public QStyledItemDelegate
     {
+        Q_OBJECT
         using QStyledItemDelegate::QStyledItemDelegate;
 
       protected:
