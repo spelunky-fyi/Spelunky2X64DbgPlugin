@@ -880,9 +880,9 @@
         "type": "EntityUID",
         "comment": "set to -1 to decouple emitter position from entity position (and move it around freely)"
       },
-      { "field": "unknown46", "type": "Float" },
-      { "field": "unknown47", "type": "Float" },
-      { "field": "unknown48", "type": "Float" },
+      { "field": "red", "type": "Float", "comment": "used by some particles, but not all" },
+      { "field": "green", "type": "Float", "comment": "used by some particles, but not all" },
+      { "field": "blue", "type": "Float", "comment": "used by some particles, but not all" },
       { "field": "unknown49", "type": "Float" },
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
@@ -897,7 +897,10 @@
       { "field": "total_particles", "type": "UnsignedDword" },
       { "field": "unknown58", "type": "UnsignedDword" },
       { "field": "max_particles", "type": "UnsignedDword" },
-      { "field": "unknown60", "type": "UnsignedDword" }
+      { "field": "unknown60", "type": "Flags8", "flags": { "1": "pause", "2": "autokill?"} },
+      { "field": "unknown61", "type": "UnsignedByte" },
+      { "field": "unknown62", "type": "UnsignedByte" },
+      { "field": "unknown63", "type": "UnsignedByte" }
     ],
     "ParticleDB": [
       { "field": "id", "type": "ParticleDBID" },
