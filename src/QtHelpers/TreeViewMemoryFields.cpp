@@ -45,6 +45,7 @@ S2Plugin::TreeViewMemoryFields::TreeViewMemoryFields(QWidget* parent) : QTreeVie
     setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
     setDragEnabled(true);
     setAcceptDrops(true);
+    setMouseTracking(true);
 
     setStyleSheet(R"(
 QTreeView::branch:has-siblings:!adjoins-item {
@@ -2250,19 +2251,25 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         case MemoryFieldType::EntitySubclass:
         {
             // can't be a pointer
-            if (isExpanded(itemField->index()))
-                itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
-            else
-                itemValue->setData("<font color='#AAA'><u>[Expand]</u></font>", Qt::DisplayRole);
-
-            if (comparisonActive)
-                itemComparisonValue->setData(itemValue->data(Qt::DisplayRole), Qt::DisplayRole);
-
-            if (shouldUpdateChildren)
+            if (itemField->hasChildren())
             {
-                for (int x = 0; x < itemField->rowCount(); ++x)
-                    updateRow(x, newAddr, newAddrComparison, itemField);
+                if (isExpanded(itemField->index()))
+                    itemValue->setData("<font color='darkMagenta'><u>[Collapse]</u></font>", Qt::DisplayRole);
+                else
+                    itemValue->setData("<font color='#AAA'><u>[Expand]</u></font>", Qt::DisplayRole);
+
+                if (comparisonActive)
+                    itemComparisonValue->setData(itemValue->data(Qt::DisplayRole), Qt::DisplayRole);
+
+                if (shouldUpdateChildren)
+                {
+                    for (int x = 0; x < itemField->rowCount(); ++x)
+                        updateRow(x, newAddr, newAddrComparison, itemField);
+                }
             }
+            else
+                itemValue->setData({}, Qt::DisplayRole);
+
             break;
         }
         case MemoryFieldType::Array:
@@ -2686,7 +2693,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (isExpanded(fieldIndex))
                         collapse(fieldIndex);
                     else
-                        expand(index.sibling(index.row(), gsColField));
+                        expand(fieldIndex);
 
                     break;
                 }
@@ -3234,4 +3241,125 @@ void S2Plugin::TreeViewMemoryFields::drawBranches(QPainter* painter, const QRect
     }
 
     QTreeView::drawBranches(painter, rect, index);
+}
+
+bool S2Plugin::TreeViewMemoryFields::isItemClickable(const QModelIndex& index) const
+{
+    auto column = index.column();
+    auto type = index.sibling(index.row(), gsColField).data(gsRoleType).value<MemoryFieldType>();
+
+    if (column == gsColMemoryAddress)
+        return index.data(gsRoleRawValue).toULongLong() != 0;
+
+    if (column == gsColValueHex || column == gsColComparisonValueHex)
+    {
+        if (index.data(gsRoleRawValue).toULongLong() == 0)
+            return false;
+
+        if (index.sibling(index.row(), gsColField).data(gsRoleIsPointer).toBool())
+            return true;
+
+        switch (type)
+        {
+            case MemoryFieldType::CodePointer:
+            case MemoryFieldType::DataPointer:
+                return true;
+        }
+        return false;
+    }
+
+    if (column == gsColValue || column == gsColComparisonValue)
+    {
+        if (type == MemoryFieldType::EntitySubclass)
+            return mModel->hasChildren(index.sibling(index.row(), gsColField));
+
+        if (type == MemoryFieldType::Flag)
+            return index.parent().data(gsRoleMemoryAddress).toULongLong() != 0;
+
+        if (index.data(gsRoleMemoryAddress).toULongLong() == 0)
+            return false;
+
+        switch (type)
+        {
+            case MemoryFieldType::EntityDBID:
+                return index.data(gsRoleRawValue).toUInt() != 0;
+            case MemoryFieldType::EntityUID:
+                return index.data(gsRoleRawValue).toInt() != -1;
+
+            case MemoryFieldType::CodePointer:
+            case MemoryFieldType::DataPointer:
+            case MemoryFieldType::OnHeapPointer:
+            case MemoryFieldType::Byte:
+            case MemoryFieldType::UnsignedByte:
+            case MemoryFieldType::Word:
+            case MemoryFieldType::UnsignedWord:
+            case MemoryFieldType::Dword:
+            case MemoryFieldType::UnsignedDword:
+            case MemoryFieldType::Qword:
+            case MemoryFieldType::UnsignedQword:
+            case MemoryFieldType::Float:
+            case MemoryFieldType::Bool:
+            // case MemoryFieldType::Flag:
+            case MemoryFieldType::State8:
+            case MemoryFieldType::State16:
+            case MemoryFieldType::State32:
+            case MemoryFieldType::LiquidPhysicsPointer:
+            case MemoryFieldType::EntityPointer:
+            case MemoryFieldType::EntityDBPointer:
+            case MemoryFieldType::ParticleDBID:
+            case MemoryFieldType::ParticleDBPointer:
+            case MemoryFieldType::TextureDBID:
+            case MemoryFieldType::TextureDBPointer:
+            case MemoryFieldType::StdVector:
+            case MemoryFieldType::StdMap:
+            case MemoryFieldType::ConstCharPointer:
+            case MemoryFieldType::ConstCharPointerPointer:
+            case MemoryFieldType::StdString:
+            case MemoryFieldType::StdWstring:
+            case MemoryFieldType::DefaultStructType:
+            case MemoryFieldType::LevelGenRoomsPointer:
+            case MemoryFieldType::LevelGenRoomsMetaPointer:
+            case MemoryFieldType::JournalPagePointer:
+            case MemoryFieldType::LevelGenPointer:
+            case MemoryFieldType::UTF16Char:
+            case MemoryFieldType::UTF16StringFixedSize:
+            case MemoryFieldType::UTF8StringFixedSize:
+            case MemoryFieldType::StringsTableID:
+            case MemoryFieldType::CharacterDBID:
+            case MemoryFieldType::VirtualFunctionTable:
+            case MemoryFieldType::Double:
+            case MemoryFieldType::Array:
+            case MemoryFieldType::Matrix:
+            case MemoryFieldType::EntityList:
+            case MemoryFieldType::OldStdList:
+            case MemoryFieldType::StdList:
+            case MemoryFieldType::StdUnorderedMap:
+                return true;
+
+            case MemoryFieldType::Flags32:
+            case MemoryFieldType::Flags16:
+            case MemoryFieldType::Flags8:
+            case MemoryFieldType::None:
+            case MemoryFieldType::Dummy:
+            case MemoryFieldType::Skip:
+            case MemoryFieldType::IPv4Address:
+            case MemoryFieldType::UndeterminedThemeInfoPointer:
+            case MemoryFieldType::COThemeInfoPointer:
+            default:
+                return false;
+        }
+    }
+    return false;
+}
+
+void S2Plugin::TreeViewMemoryFields::mouseMoveEvent(QMouseEvent* event)
+{
+    QModelIndex index = indexAt(event->pos());
+
+    if (index.isValid() && isItemClickable(index))
+        setCursor(Qt::PointingHandCursor);
+    else
+        setCursor(Qt::ArrowCursor);
+
+    QTreeView::mouseMoveEvent(event);
 }

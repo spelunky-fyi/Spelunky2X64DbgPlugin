@@ -85,10 +85,14 @@ namespace S2Plugin
         void dropEvent(QDropEvent* event) override;
         void startDrag(Qt::DropActions supportedActions) override;
         void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
+        void mouseMoveEvent(QMouseEvent* event) override;
       signals:
         void memoryFieldValueUpdated(int row, QStandardItem* parent);
         void levelGenRoomsPointerClicked();
         void offsetDropped(uintptr_t offset);
+
+      private:
+        bool isItemClickable(const QModelIndex& index) const;
 
       public:
         ColumnFilter activeColumns;
