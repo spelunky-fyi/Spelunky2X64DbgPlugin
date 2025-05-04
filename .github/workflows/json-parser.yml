@@ -13,7 +13,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - id: set-matrix
         run: echo "::set-output name=matrix::$(ls resources/*.json | jq -R -s -c 'split("\n")[:-1]')"
 
@@ -24,7 +24,7 @@ jobs:
         matrix:
             json: ${{ fromJson(needs.list-json-files.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v2  
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v2  
       - name: Checking file ${{ matrix.json }}
         run: python resources/json_validator.py ${{ matrix.json }}

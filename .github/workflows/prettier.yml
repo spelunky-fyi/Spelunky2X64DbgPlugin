@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: creyD/prettier_action@v4.3
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.do_formatting != 'true' }}
         with:
@@ -26,3 +26,12 @@ jobs:
         with:
           prettier_options: --write resources/Spelunky2.json resources/Spelunky2Entities.json
           commit_message: "Automated prettier changes"
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ success() && (github.event_name != 'workflow_dispatch' || github.event.inputs.do_formatting == 'true') }}
+        with:
+          name: json
+          path: |
+              resources/Spelunky2.json
+              resources/Spelunky2Entities.json
+          retention-days: 1

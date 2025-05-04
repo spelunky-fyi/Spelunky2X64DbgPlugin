@@ -6,24 +6,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  prettier:
     name: Automated prettier
+    uses: ./.github/workflows/prettier.yml
+    secrets: inherit
 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4.1.1
-      - uses: creyD/prettier_action@v4.3
-        with:
-          prettier_options: --write resources/Spelunky2.json resources/Spelunky2Entities.json
-          commit_message: "Automated prettier changes"
-
-  notify:
-    needs: build
+  build:
+    needs: prettier
     name: Autobuild
 
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
             submodules: true
       - uses: actions/setup-python@v2
@@ -49,6 +43,13 @@ jobs:
         with:
           path: C:\Qt
           key: ${{ runner.os }}-Qt563
+
+      - name: Get prettier result
+        uses: actions/download-artifact@v4
+        with:
+          name: json
+          path: resources
+        continue-on-error: true
 
       - name: Build
         run: |
