@@ -10,7 +10,7 @@ S2Plugin::ViewStdList::ViewStdList(uintptr_t address, const std::string& valueTy
 {
     mValueField = Configuration::get()->nameToMemoryField(valueTypeName);
     setWindowTitle(QString("std::list<%1>").arg(QString::fromStdString(valueTypeName)));
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment).disable(gsColMemoryAddressDelta);
+    mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment).disable(gsColMemoryAddressDelta);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);

@@ -80,7 +80,7 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
 
         mMainTreeView = new TreeViewMemoryFields(this);
         tabLookup->layout()->addWidget(mMainTreeView);
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader(false);
         mMainTreeView->setEnableChangeHighlighting(false);
         mMainTreeView->setColumnWidth(gsColField, 125);

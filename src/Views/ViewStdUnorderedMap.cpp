@@ -26,7 +26,7 @@ S2Plugin::ViewStdUnorderedMap::ViewStdUnorderedMap(uintptr_t address, const std:
     else
         setWindowTitle(QString("std::unordered_map<%1, %2>").arg(QString::fromStdString(keyTypeName), QString::fromStdString(valueTypeName)));
 
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
+    mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setEnableTopBranchDrawing(false);
     mMainTreeView->setColumnWidth(gsColField, 145);

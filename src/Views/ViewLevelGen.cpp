@@ -46,7 +46,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
 
     // TAB DATA
     {
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader(false);
         mMainTreeView->setColumnWidth(gsColValue, 160);
         mMainTreeView->setColumnWidth(gsColField, 200);

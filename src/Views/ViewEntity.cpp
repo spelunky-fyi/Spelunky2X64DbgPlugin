@@ -109,7 +109,7 @@ void S2Plugin::ViewEntity::initializeUI()
 
     // TAB FIELDS
     {
-        mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+        mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
         mMainTreeView->updateTableHeader(false);
         mMainTreeView->setColumnWidth(gsColValue, 250);
         mMainTreeView->setColumnWidth(gsColField, 175);

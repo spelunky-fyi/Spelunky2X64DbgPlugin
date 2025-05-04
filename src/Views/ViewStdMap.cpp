@@ -22,7 +22,7 @@ S2Plugin::ViewStdMap::ViewStdMap(uintptr_t address, const std::string& keyTypeNa
     else
         setWindowTitle(QString("std::map<%1, %2>").arg(QString::fromStdString(keyTypeName), QString::fromStdString(valueTypeName)));
 
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
+    mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColMemoryAddressDelta).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setEnableTopBranchDrawing(false);
     mMainTreeView->setColumnWidth(gsColField, 145);

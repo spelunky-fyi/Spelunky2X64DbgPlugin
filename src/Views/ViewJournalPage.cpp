@@ -41,7 +41,7 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
 
     mMainTreeView = new TreeViewMemoryFields(this);
     mainLayout->addWidget(mMainTreeView);
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
+    mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColValue, 250);
     mMainTreeView->setColumnWidth(gsColField, 125);

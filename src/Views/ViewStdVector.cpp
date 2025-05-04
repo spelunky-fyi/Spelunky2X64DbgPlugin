@@ -10,7 +10,7 @@ S2Plugin::ViewStdVector::ViewStdVector(uintptr_t address, const std::string& val
     mValueField = Configuration::get()->nameToMemoryField(valueTypeName);
 
     setWindowTitle(QString("std::vector<%1>").arg(QString::fromStdString(valueTypeName)));
-    mMainTreeView->activeColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
+    mMainTreeView->mActiveColumns.disable(gsColComparisonValue).disable(gsColComparisonValueHex).disable(gsColComment);
     mMainTreeView->updateTableHeader(false);
     mMainTreeView->setColumnWidth(gsColField, 145);
     mMainTreeView->setColumnWidth(gsColValueHex, 125);

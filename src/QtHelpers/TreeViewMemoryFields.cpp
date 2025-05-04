@@ -450,15 +450,15 @@ void S2Plugin::TreeViewMemoryFields::updateTableHeader(bool restoreColumnWidths)
 {
     mModel->setHorizontalHeaderLabels({"Field", "Value", "Value (hex)", "Comparison value", "Comparison value (hex)", "Memory Address", "Δ", "Type", "Comment"});
 
-    setColumnHidden(gsColField, !activeColumns.test(gsColField));
-    setColumnHidden(gsColValue, !activeColumns.test(gsColValue));
-    setColumnHidden(gsColValueHex, !activeColumns.test(gsColValueHex));
-    setColumnHidden(gsColComparisonValue, !activeColumns.test(gsColComparisonValue));
-    setColumnHidden(gsColComparisonValueHex, !activeColumns.test(gsColComparisonValueHex));
-    setColumnHidden(gsColMemoryAddress, !activeColumns.test(gsColMemoryAddress));
-    setColumnHidden(gsColMemoryAddressDelta, !activeColumns.test(gsColMemoryAddressDelta));
-    setColumnHidden(gsColType, !activeColumns.test(gsColType));
-    setColumnHidden(gsColComment, !activeColumns.test(gsColComment));
+    setColumnHidden(gsColField, !mActiveColumns.test(gsColField));
+    setColumnHidden(gsColValue, !mActiveColumns.test(gsColValue));
+    setColumnHidden(gsColValueHex, !mActiveColumns.test(gsColValueHex));
+    setColumnHidden(gsColComparisonValue, !mActiveColumns.test(gsColComparisonValue));
+    setColumnHidden(gsColComparisonValueHex, !mActiveColumns.test(gsColComparisonValueHex));
+    setColumnHidden(gsColMemoryAddress, !mActiveColumns.test(gsColMemoryAddress));
+    setColumnHidden(gsColMemoryAddressDelta, !mActiveColumns.test(gsColMemoryAddressDelta));
+    setColumnHidden(gsColType, !mActiveColumns.test(gsColType));
+    setColumnHidden(gsColComment, !mActiveColumns.test(gsColComment));
 
     if (restoreColumnWidths)
     {
@@ -624,7 +624,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
 
     bool pointerUpdate = false;
     bool comparisonPointerUpdate = false;
-    bool comparisonActive = activeColumns.test(gsColComparisonValue) || activeColumns.test(gsColComparisonValueHex);
+    bool comparisonActive = mActiveColumns.test(gsColComparisonValue) || mActiveColumns.test(gsColComparisonValueHex);
     uintptr_t valueMemoryOffset = memoryOffset;                     // 0, memory offset or pointer value (no bad values)
     uintptr_t valueComparisonMemoryOffset = comparisonMemoryOffset; // 0, memory offset or pointer value (no bad values)
 
@@ -3024,7 +3024,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
         if (addr == 0) // just in case some bad id's
             return;
 
-        activeColumns.enable(gsColComparisonValue).enable(gsColComparisonValueHex);
+        mActiveColumns.enable(gsColComparisonValue).enable(gsColComparisonValueHex);
         setColumnHidden(gsColComparisonValue, false);
         setColumnHidden(gsColComparisonValueHex, false);
         updateTree(0, addr);
@@ -3230,7 +3230,7 @@ void S2Plugin::TreeViewMemoryFields::drawBranches(QPainter* painter, const QRect
         return pixmap.scaled(24, 17, Qt::AspectRatioMode::IgnoreAspectRatio, Qt::TransformationMode::SmoothTransformation);
     }();
 
-    if (!drawTopBranch && index.parent() == QModelIndex())
+    if (!mDrawTopBranch && index.parent() == QModelIndex())
     {
         bool isLastChild = (index.row() == mModel->rowCount(index.parent()) - 1);
         if (isLastChild)

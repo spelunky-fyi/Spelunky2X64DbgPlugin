@@ -22,23 +22,28 @@ namespace S2Plugin
 
     struct ColumnFilter
     {
-        constexpr ColumnFilter& enable(uint8_t h)
+        explicit constexpr ColumnFilter(uint16_t a) : mActiveColumns(a){};
+        explicit constexpr ColumnFilter(){};
+        constexpr ColumnFilter& enable(uint8_t h) noexcept
         {
-            activeColumns = activeColumns | (1U << h);
+            mActiveColumns = mActiveColumns | (1U << h);
             return *this;
         }
-        constexpr ColumnFilter& disable(uint8_t h)
+        constexpr ColumnFilter& disable(uint8_t h) noexcept
         {
-            activeColumns = activeColumns & ~(1U << h);
+            mActiveColumns = mActiveColumns & ~(1U << h);
             return *this;
         }
-        constexpr bool test(uint8_t h) const
+        constexpr bool test(uint8_t h) const noexcept
         {
-            return (activeColumns & (1U << h)) != 0;
+            return (mActiveColumns & (1U << h)) != 0;
         }
 
       private:
-        uint16_t activeColumns{0xFFFF};
+        uint16_t mActiveColumns{0xFFFF};
+        ColumnFilter(const ColumnFilter&) = delete;
+        ColumnFilter& operator=(const ColumnFilter&) = delete;
+        ColumnFilter& operator=(const ColumnFilter&&) = delete;
     };
 
     class TreeViewMemoryFields : public QTreeView
@@ -59,7 +64,7 @@ namespace S2Plugin
         }
         void setEnableTopBranchDrawing(bool b) noexcept
         {
-            drawTopBranch = b;
+            mDrawTopBranch = b;
         }
         void updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr = 0, bool initial = false);
         void updateRow(int row, std::optional<uintptr_t> newAddr = std::nullopt, std::optional<uintptr_t> newAddrComparison = std::nullopt, QStandardItem* parent = nullptr,
@@ -95,11 +100,11 @@ namespace S2Plugin
         bool isItemClickable(const QModelIndex& index) const;
 
       public:
-        ColumnFilter activeColumns;
+        ColumnFilter mActiveColumns;
 
       private:
         bool mEnableChangeHighlighting = true;
-        bool drawTopBranch = true;
+        bool mDrawTopBranch = true;
         std::array<int, 9> mSavedColumnWidths = {};
         QStandardItemModel* mModel;
     };
