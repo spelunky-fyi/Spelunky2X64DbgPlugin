@@ -18,70 +18,56 @@ namespace S2Plugin
       public:
         struct Data
         {
+            MemoryFieldType type;
             std::string_view display_name;
             std::string_view cpp_type_name;
+            std::string_view j_name;
             uint32_t size;
-            bool isPointer{false};
+            bool isPointer;
         };
+        using map_type = std::unordered_map<MemoryFieldType, const Data&>;
 
-        using map_type = std::unordered_map<MemoryFieldType, Data>;
-
-        MemoryFieldData(std::initializer_list<std::tuple<MemoryFieldType, const char*, const char*, const char*, uint32_t, bool>> init)
+        template <size_t S>
+        MemoryFieldData(const std::array<Data, S>& dataTable)
         {
-            // MemoryFieldType type, const char* d_name, const char* cpp_type, const char* j_name, uint32_t size
-            for (auto& val : init)
+            for (const auto& data : dataTable)
             {
-                auto it = fields.emplace(std::get<0>(val), Data{std::get<1>(val), std::get<2>(val), std::get<4>(val), std::get<5>(val)});
-                if (it.second)
-                {
-                    auto size = strlen(std::get<3>(val));
-                    if (size != 0)
-                    {
-                        json_names_map.emplace(std::string_view(std::get<3>(val), size), it.first);
-                    }
-                }
+                fields.emplace(data.type, data);
+
+                if (!data.j_name.empty())
+                    json_names_map.emplace(data.j_name, data);
             }
         };
-
         map_type::const_iterator find(const MemoryFieldType key) const
         {
             return fields.find(key);
-        }
+        };
         map_type::const_iterator end() const
         {
             return fields.end();
-        }
+        };
         map_type::const_iterator begin() const
         {
             return fields.begin();
-        }
+        };
         const Data& at(const MemoryFieldType key) const
         {
             return fields.at(key);
-        }
+        };
         const Data& at(const std::string_view key) const
         {
-            return json_names_map.at(key)->second;
-        }
-        bool contains(const MemoryFieldType key) const
-        {
-            return fields.count(key) != 0;
-        }
-        bool contains(const std::string_view key) const
-        {
-            return json_names_map.count(key) != 0;
-        }
+            return json_names_map.at(key);
+        };
 
         map_type fields;
-        std::unordered_map<std::string_view, map_type::const_iterator> json_names_map;
+        std::unordered_map<std::string_view, const Data&> json_names_map;
     };
-
-    const MemoryFieldData gsMemoryFieldType = {
+    static constexpr const std::array<MemoryFieldData::Data, 70> gsMemoryFieldTypeData = {{
         // MemoryFieldEnum, Name for display, c++ type name, name in json, size (if 0 will be determinate from json struct), is pointer
 
         // Basic types
-        {MemoryFieldType::CodePointer, "Code pointer", "size_t*", "CodePointer", 8, true},
-        {MemoryFieldType::DataPointer, "Data pointer", "size_t*", "DataPointer", 8, true},
+        {MemoryFieldType::CodePointer, "Code pointer", "void*", "CodePointer", 8, true},
+        {MemoryFieldType::DataPointer, "Data pointer", "void*", "DataPointer", 8, true},
         {MemoryFieldType::Byte, "8-bit", "int8_t", "Byte", 1, false},
         {MemoryFieldType::UnsignedByte, "8-bit unsigned", "uint8_t", "UnsignedByte", 1, false},
         {MemoryFieldType::Word, "16-bit", "int16_t", "Word", 2, false},
@@ -156,6 +142,9 @@ namespace S2Plugin
         //{MemoryFieldType::DefaultStructType, "", "", "", 0},
         {MemoryFieldType::Flag, "Flag", "", "", 0, false},
         {MemoryFieldType::Dummy, " ", "", "", 0, false},
+    }};
+
+    static const MemoryFieldData gsMemoryFieldType(gsMemoryFieldTypeData);
     };
 } // namespace S2Plugin
 
@@ -258,7 +247,7 @@ S2Plugin::Configuration::Configuration()
 }
 
 template <class T>
-inline T value_or(const nlohmann::ordered_json& j, const std::string name, T value_if_not_found)
+inline T value_or(const nlohmann::ordered_json& j, const std::string& name, T value_if_not_found)
 {
     return j.contains(name) ? j[name].get<T>() : value_if_not_found;
 }
@@ -282,8 +271,8 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     // check if it's pre-defined type
     if (auto it = gsMemoryFieldType.json_names_map.find(fieldTypeStr); it != gsMemoryFieldType.json_names_map.end())
     {
-        memField.type = it->second->first;
-        memField.size = it->second->second.size;
+        memField.type = it->second.type;
+        memField.size = it->second.size;
     }
 
     if (field.contains("offset"))
@@ -655,7 +644,7 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
         auto it = gsMemoryFieldType.json_names_map.find(key);
         if (it != gsMemoryFieldType.json_names_map.end())
         {
-            mTypeFieldsMain.emplace(it->second->first, std::move(vec));
+            mTypeFieldsMain.emplace(it->second.type, std::move(vec));
         }
         else
         {
@@ -728,19 +717,13 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfE
     return it->second;
 }
 
-bool S2Plugin::Configuration::isEntitySubclass(const std::string& type) const
-{
-    // TODO: does not count (type == "Entity") as ent subclass, is that correct?
-    return (mTypeFieldsEntitySubclasses.count(type) > 0);
-}
-
 S2Plugin::MemoryFieldType S2Plugin::Configuration::getBuiltInType(const std::string& type)
 {
     auto it = gsMemoryFieldType.json_names_map.find(type);
     if (it == gsMemoryFieldType.json_names_map.end())
         return MemoryFieldType::None;
 
-    return it->second->first;
+    return it->second.type;
 }
 
 std::string S2Plugin::Configuration::flagTitle(const std::string& fieldName, uint8_t flagNumber) const
@@ -789,13 +772,7 @@ const std::vector<std::pair<int64_t, std::string>>& S2Plugin::Configuration::ref
 
 std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctionsOfType(const std::string& type) const
 {
-    bool isKnownEntitySubclass = false;
-    if (type == "Entity")
-        isKnownEntitySubclass = true;
-    else
-        isKnownEntitySubclass = mEntityClassHierarchy.count(type) != 0;
-
-    if (isKnownEntitySubclass)
+    if (isEntitySubclass(type))
     {
         std::vector<S2Plugin::VirtualFunction> functions;
         std::string currentType = type;
@@ -944,10 +921,10 @@ size_t S2Plugin::Configuration::getTypeSize(const std::string& typeName, bool en
         auto json_it = gsMemoryFieldType.json_names_map.find(typeName);
         if (json_it != gsMemoryFieldType.json_names_map.end())
         {
-            size_t new_size = json_it->second->second.size;
+            size_t new_size = json_it->second.size;
             if (new_size == 0)
             {
-                for (auto& field : Configuration::get()->typeFields(json_it->second->first))
+                for (auto& field : Configuration::get()->typeFields(json_it->second.type))
                     new_size += field.get_size();
             }
             return new_size;
@@ -1142,7 +1119,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::nameToMemoryField(const std::stri
     {
         if (!isJsonStruct(name))
         {
-            dprintf("unknown type name requested in nameToMemoryField(%s)", name.c_str());
+            dprintf("unknown type name requested in nameToMemoryField(%s)\n", name.c_str());
             return field;
         }
         field.type = MemoryFieldType::DefaultStructType;

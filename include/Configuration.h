@@ -245,7 +245,10 @@ namespace S2Plugin
         const std::vector<MemoryField>& typeFieldsOfDefaultStruct(const std::string& type) const;
         std::vector<VirtualFunction> virtualFunctionsOfType(const std::string& field) const;
 
-        bool isEntitySubclass(const std::string& type) const;
+        bool isEntitySubclass(const std::string& type) const
+        {
+            return mTypeFieldsEntitySubclasses.find(type) != mTypeFieldsEntitySubclasses.end();
+        }
 
         static MemoryFieldType getBuiltInType(const std::string& type);
         static std::string_view getCPPTypeName(MemoryFieldType type);
