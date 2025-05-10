@@ -178,7 +178,7 @@ namespace S2Plugin
         bool operator==(const MemoryField& other) const
         {
             return name == other.name;
-        }
+        };
         void setNumColumns(size_t num)
         {
             columns = num;

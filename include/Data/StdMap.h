@@ -260,7 +260,7 @@ namespace S2Plugin
         }
         bool contains(Key k) const
         {
-            Node f = find(v);
+            Node f = find(k);
             if (f == end())
                 return false;
             else

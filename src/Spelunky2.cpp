@@ -50,12 +50,12 @@ S2Plugin::Spelunky2* S2Plugin::Spelunky2::get()
         if (Spelunky2CodeSectionStart == 0 && Spelunky2CodeSectionSize == 0)
         {
             displayError("Could not locate the .text section in the loaded spel2.exe image");
-            return false;
+            return nullptr;
         }
 
         Spelunky2AfterBundle = getAfterBundle(Spelunky2CodeSectionStart, Spelunky2CodeSectionSize);
         if (Spelunky2AfterBundle == 0)
-            return false;
+            return nullptr;
 
         auto addr = new Spelunky2{};
         addr->codeSectionStart = Spelunky2CodeSectionStart;

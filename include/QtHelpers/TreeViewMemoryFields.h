@@ -14,11 +14,11 @@ class QStandardItem;
 
 namespace S2Plugin
 {
-    constexpr char* gsDragDropMemoryField_UID = "uid";
-    constexpr char* gsDragDropMemoryField_Address = "addr";
-    constexpr char* gsDragDropMemoryField_Type = "type";
-    constexpr char* gsDragDropMemoryField_IsPointer = "pointer";
-    constexpr char* gsDragDropMemoryField_RefName = "ref";
+    constexpr const char* gsDragDropMemoryField_UID = "uid";
+    constexpr const char* gsDragDropMemoryField_Address = "addr";
+    constexpr const char* gsDragDropMemoryField_Type = "type";
+    constexpr const char* gsDragDropMemoryField_IsPointer = "pointer";
+    constexpr const char* gsDragDropMemoryField_RefName = "ref";
 
     struct ColumnFilter
     {
