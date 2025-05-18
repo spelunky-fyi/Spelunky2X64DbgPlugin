@@ -2547,7 +2547,11 @@
       }
     ],
     "CatMummy": [
-      { "field": "jump_height_multiplier", "type": "UnsignedByte" },
+      {
+        "field": "jump_height_multiplier",
+        "type": "UnsignedByte",
+        "comment": "Set in process_input when jump is triggered to be used when applying velocity for the jump"
+      },
       { "field": "attack_timer", "type": "UnsignedByte" }
     ],
     "Sorceress": [
