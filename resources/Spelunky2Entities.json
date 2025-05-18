@@ -5058,7 +5058,7 @@
       { "field": "unk12", "type": "Float" },
       { "field": "unk13", "type": "Float" },
       { "field": "elapsed_move_time", "type": "UnsignedByte" },
-      { "field": "move_timer", "type": "UnsignedByte" },
+      { "field": "move_duration", "type": "UnsignedByte" },
       { "field": "flip_vertical", "type": "Bool" }
     ],
     "LogicalConveyorbeltSound": [
