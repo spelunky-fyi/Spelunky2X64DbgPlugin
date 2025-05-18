@@ -5266,7 +5266,7 @@
         "comment": "does don't actually exist, added for compatibility with OL API"
       }
     ],
-    "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }]
+    "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }],
     "Whip": [{ "field": "flaming", "type": "Bool" }]
   }
 }
