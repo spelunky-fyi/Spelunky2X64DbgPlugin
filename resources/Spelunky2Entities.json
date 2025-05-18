@@ -2215,7 +2215,7 @@
       },
       {
         "field": "hit_wall_direction",
-        "type": "byte",
+        "type": "Byte",
         "comment": "set when in apply_movement to 1 when colliding with a hard wall to the left, -1 if to the right, 0 if no collision."
       },
       { "field": "unknown_timer", "type": "UnsignedByte" },
