@@ -2658,7 +2658,7 @@
       },
       { "field": "left_hand_uid", "type": "EntityUID" },
       { "field": "moving_left", "type": "Bool" },
-      { "field": "oscillation_position", "type": "UnsignedByte" },
+      { "field": "oscillation_phase", "type": "UnsignedByte" },
       { "field": "invincibility_timer", "type": "UnsignedByte" }
     ],
     "OsirisHand": [
