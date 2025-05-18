@@ -2886,8 +2886,8 @@
         "type": "Float",
         "comment": "is it? i seen it in the code compared as a bit with 1, but not sure when it happens"
       },
+      { "field": "drop", "type": "Bool" },
       { "field": "rotation_direction", "type": "Bool", "comment": "Counter-clockwise if true" },
-      { "field": "unknown3", "type": "Bool" },
       {
         "field": "wall_collision_cooldown",
         "type": "UnsignedByte",
@@ -2895,9 +2895,9 @@
       },
       { "field": "padding1", "type": "UnsignedByte" },
       {
-        "field": "rotation_direction_timer",
+        "field": "rotation_timer",
         "type": "UnsignedWord",
-        "comment": "switch between clockwise/counter-clockwise"
+        "comment": "randomly picks whether to crawl clockwise/counter-clockwise, and picks another angle"
       },
       {
         "field": "walk_pause_timer",
