@@ -1364,11 +1364,11 @@
       {
         "field": "dont_damage_owner_timer",
         "type": "UnsignedByte",
-        "comment": "When > 0, will not deal damage to the owner_uid, so that throwing an object does not harm yourself."
+        "comment": "When > 0, will not deal damage to the last_owner_uid, so that throwing an object does not harm yourself."
       },
       { "field": "knockback_invincibility_timer", "type": "UnsignedByte" },
       {
-        "field": "damage_owner_timer",
+        "field": "reset_owner_timer",
         "type": "UnsignedByte",
         "comment": "timer for resetting owner_uid"
       },
