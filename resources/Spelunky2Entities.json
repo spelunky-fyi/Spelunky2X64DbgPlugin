@@ -2202,7 +2202,7 @@
 	  {
         "field": "prev_move_state",
         "type": "UnsignedByte",
-        "comment": "used to return to the correct state when landing after falling when activated"
+        "comment": "Used to return to the correct state when landing after falling and running into a wall when activated."
       }
     ],
     "Quillback": [
