@@ -1380,7 +1380,7 @@
       {
         "field": "exit_gold_invincibility_timer",
         "type": "UnsignedByte",
-        "comment": "timer, after layer change?"
+        "comment": "Player will not pick up gold/gems that overlap a door entity while this is > 0. Usually set when exiting a layer door."
       },
       { "field": "b127", "type": "UnsignedByte" }
     ],
