@@ -2216,7 +2216,7 @@
       {
         "field": "post_hit_wall_direction",
         "type": "Byte",
-        "comment": "set in can_break_block during apply_movement to 1 when colliding with an indesctructible wall to the left, -1 if to the right, 0 if no collision. Used later in apply_movement to change Quillback's facing direction."
+        "comment": "Set in can_break_block during apply_movement to 1 when colliding with an indesctructible wall to the left, -1 if to the right, 0 if no collision. Used later in apply_movement to change Quillback's facing direction."
       },
       { "field": "unknown_timer", "type": "UnsignedByte" },
       { "field": "seen_player", "type": "Bool" }
