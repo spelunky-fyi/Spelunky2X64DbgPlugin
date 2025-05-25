@@ -2209,14 +2209,14 @@
       { "field": "sound", "type": "SoundMeta" },
       { "field": "particle", "type": "ParticleEmitterInfoPointer" },
       {
-        "field": "unknown_state",
-        "type": "Flags8",
-        "comment": "accessed as byte and word, so, flags?, changed mostly when breaking floors"
+        "field": "broke_block",
+        "type": "Bool",
+        "comment": "Set to true in break_block, then set back to false in apply_movement after running some logic (eg, playing a sound)."
       },
       {
-        "field": "hit_wall_direction",
+        "field": "post_hit_wall_direction",
         "type": "Byte",
-        "comment": "set when in apply_movement to 1 when colliding with a hard wall to the left, -1 if to the right, 0 if no collision."
+        "comment": "set in can_break_block during apply_movement to 1 when colliding with an indesctructible wall to the left, -1 if to the right, 0 if no collision. Used later in apply_movement to change Quillback's facing direction."
       },
       { "field": "unknown_timer", "type": "UnsignedByte" },
       { "field": "seen_player", "type": "Bool" }
