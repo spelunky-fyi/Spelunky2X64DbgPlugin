@@ -272,6 +272,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                 QString realFlagName = QString::fromStdString(flagName.empty() ? config->flagTitle("unknown", x) : flagName); // TODO: don't show unknown unless it was chosen in settings
 
                 flagsParent->child(x - 1, gsColValue)->setData(realFlagName, Qt::DisplayRole);
+                flagsParent->child(x - 1, gsColComparisonValue)->setData(realFlagName, Qt::DisplayRole);
             }
             returnField = flagsParent;
             break;
@@ -2602,6 +2603,9 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                 {
                     auto flagIndex = getDataFrom(index, gsColField, gsRoleFlagIndex).toUInt();
                     auto offset = clickedItem->parent()->data(gsRoleMemoryAddress).toULongLong();
+                    if (index.column() == gsColComparisonValue)
+                        offset = getDataFrom(index.parent(), gsColComparisonValue, gsRoleMemoryAddress).toULongLong();
+
                     if (offset != 0)
                     {
                         auto currentValue = Script::Memory::ReadDword(offset);
