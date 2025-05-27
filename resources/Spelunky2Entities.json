@@ -344,7 +344,8 @@
     "Present": "Purchasable",
     "Web": "Movable",
     "CrushElevator": "Movable",
-    "Scepter": "Movable"
+    "Scepter": "Movable",
+    "Whip": "Movable"
   },
   // a mapping of a regular expression or full name of an entity to its type
   "default_entity_types": {
@@ -497,6 +498,7 @@
     "ITEM_ROCK": "Purchasable",
     "ITEM_SKULL": "Purchasable",
     "ITEM_MACHETE": "Purchasable",
+    "ITEM_WHIP": "Whip",
     "ITEM_WHIP_FLAME": "FlameSize",
     "ITEM_BOMB": "Bomb",
     "ITEM_PASTEBOMB": "Bomb",
@@ -1308,7 +1310,7 @@
         "field": "cutscene_logic",
         "type": "CutsceneBehavior",
         "pointer": true,
-        "comment": "seams to be the same structs used in state.logic ? or similar at least"
+        "comment": "seems to be the same structs used in state.logic ? or similar at least"
       },
       { "field": "movex", "type": "Float" },
       { "field": "movey", "type": "Float" },
@@ -1359,12 +1361,16 @@
         "comment": "blinks the entity"
       },
       { "field": "frozen_timer", "type": "UnsignedByte" },
-      { "field": "unknown_damage_counter_a", "type": "UnsignedByte" },
-      { "field": "unknown_damage_counter_b", "type": "UnsignedByte" },
       {
-        "field": "i120a",
+        "field": "dont_damage_owner_timer",
         "type": "UnsignedByte",
-        "comment": "timer, damage related"
+        "comment": "When > 0, will not deal damage to the last_owner_uid, so that throwing an object does not harm yourself."
+      },
+      { "field": "knockback_invincibility_timer", "type": "UnsignedByte" },
+      {
+        "field": "reset_owner_timer",
+        "type": "UnsignedByte",
+        "comment": "timer for resetting owner_uid"
       },
       { "field": "i120b", "type": "UnsignedByte", "comment": "timer" },
       { "field": "throw_damage_immunity_timer", "type": "UnsignedByte" },
@@ -1372,9 +1378,9 @@
       { "field": "b124", "type": "UnsignedByte" },
       { "field": "falling_timer", "type": "UnsignedByte" },
       {
-        "field": "b126",
+        "field": "exit_gold_invincibility_timer",
         "type": "UnsignedByte",
-        "comment": "timer, after layer change?"
+        "comment": "Player will not pick up gold/gems while overlapping a door entity or at a pipe exit while this is > 0. Usually set when exiting a layer door or pipe."
       },
       { "field": "b127", "type": "UnsignedByte" }
     ],
@@ -1993,8 +1999,8 @@
         "type": "Word",
         "comment": "counts up to 400 (6.6 sec); when 0 the pet yells out"
       },
-      { "field": "unknown1", "type": "UnsignedWord" },
-      { "field": "unknown2", "type": "UnsignedWord" },
+      { "field": "sit_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
+      { "field": "sit_cooldown_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
       {
         "field": "func_timer",
         "type": "Word",
@@ -2192,15 +2198,25 @@
     ],
     "Robot": [
       { "field": "sound", "type": "SoundMeta" },
-      { "field": "emitted_light_explosion", "type": "IlluminationPointer" }
+      { "field": "emitted_light_explosion", "type": "IlluminationPointer" },
+	  {
+        "field": "prev_move_state",
+        "type": "UnsignedByte",
+        "comment": "Used to return to the correct state when landing after falling and running into a wall when activated."
+      }
     ],
     "Quillback": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "particle", "type": "ParticleEmitterInfoPointer" },
       {
-        "field": "unknown_state",
-        "type": "Flags16",
-        "comment": "accessed as byte and word, so, flags?, changed mostly when breaking floors"
+        "field": "broke_block",
+        "type": "Bool",
+        "comment": "Set to true in break_block, then set back to false in apply_movement after running some logic (eg, playing a sound)."
+      },
+      {
+        "field": "post_hit_wall_direction",
+        "type": "Byte",
+        "comment": "Set in can_break_block during apply_movement to 1 when colliding with an indesctructible wall to the left, -1 if to the right, 0 if no collision. Used later in apply_movement to change Quillback's facing direction."
       },
       { "field": "unknown_timer", "type": "UnsignedByte" },
       { "field": "seen_player", "type": "Bool" }
@@ -2232,7 +2248,7 @@
         "comment": "amount of gold he picked up, will be dropped on death"
       },
       { "field": "timer_after_humping", "type": "UnsignedByte" },
-      { "field": "unknown", "type": "UnsignedByte" },
+      { "field": "jump_trigger", "type": "Bool", "comment": "triggers a jump on the next frame" },
       { "field": "padding", "type": "UnsignedWord" },
       {
         "field": "collected_treasure",
@@ -2531,7 +2547,11 @@
       }
     ],
     "CatMummy": [
-      { "field": "ai_state", "type": "UnsignedByte" },
+      {
+        "field": "jump_height_multiplier",
+        "type": "UnsignedByte",
+        "comment": "Set in process_input when jump is triggered to be used when applying velocity for the jump"
+      },
       { "field": "attack_timer", "type": "UnsignedByte" }
     ],
     "Sorceress": [
@@ -2638,7 +2658,7 @@
       },
       { "field": "left_hand_uid", "type": "EntityUID" },
       { "field": "moving_left", "type": "Bool" },
-      { "field": "targeting_timer?", "type": "UnsignedByte" },
+      { "field": "oscillation_phase", "type": "UnsignedByte" },
       { "field": "invincibility_timer", "type": "UnsignedByte" }
     ],
     "OsirisHand": [
@@ -2650,12 +2670,8 @@
         "type": "UnsignedWord",
         "comment": "when 0 it jumps"
       },
-      { "field": "unknown1", "type": "UnsignedByte" },
-      {
-        "field": "unknown2",
-        "type": "UnsignedByte",
-        "comment": "seen timer here once maybe? it's accessed right as he jumps from the UFO"
-      }
+      { "field": "shudder_timer", "type": "UnsignedByte" },
+      { "field": "leg_shake_timer", "type": "UnsignedByte" }
     ],
     "UFO": [
       { "field": "sound", "type": "SoundMeta" },
@@ -2665,21 +2681,13 @@
         "comment": "pos = right, neg = left"
       },
       { "field": "attack_cooldown_timer", "type": "UnsignedByte" },
-      {
-        "field": "is_falling",
-        "type": "Bool",
-        "comment": "read only, manually setting this true has no effect"
-      }
+      { "field": "is_rising", "type": "Bool" }
     ],
     "Lahamu": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "eyeball", "type": "EntityPointer" },
       { "field": "attack_cooldown_timer", "type": "UnsignedWord" },
-      {
-        "field": "unknown_proximity_related",
-        "type": "Bool",
-        "comment": "gets set to true when you get close to Lahamu"
-      }
+      { "field": "has_logged_to_journal", "type": "Bool" }
     ],
     "YetiQueen": [
       {
@@ -2775,9 +2783,9 @@
       },
       { "field": "attack_angle", "type": "Float" },
       {
-        "field": "unknown_state",
-        "type": "UnsignedByte",
-        "comment": "bool: is flying when attacking?"
+        "field": "was_flying",
+        "type": "Bool",
+        "comment": "Lets lamassu know what state to go to after finishing an attack"
       }
     ],
     "Olmite": [
@@ -2879,17 +2887,17 @@
         "comment": "is it? i seen it in the code compared as a bit with 1, but not sure when it happens"
       },
       { "field": "drop", "type": "Bool" },
-      { "field": "unknown3", "type": "Bool" },
+      { "field": "rotation_direction", "type": "Bool", "comment": "Counter-clockwise if true" },
       {
-        "field": "looking_for_new_direction_timer",
+        "field": "wall_collision_cooldown",
         "type": "UnsignedByte",
         "comment": "used when he touches floor/wall/ceiling"
       },
       { "field": "padding1", "type": "UnsignedByte" },
       {
-        "field": "unknown6_timer",
+        "field": "rotation_timer",
         "type": "UnsignedWord",
-        "comment": "paused when not moving"
+        "comment": "randomly picks whether to crawl clockwise/counter-clockwise, and picks another angle"
       },
       {
         "field": "walk_pause_timer",
@@ -3069,9 +3077,9 @@
         "comment": "defaults to true, when toggled to false, a new carried item spawns"
       },
       {
-        "field": "unknown",
-        "type": "UnsignedByte",
-        "comment": "sometimes i see 1 here, didn't get anything with break-point"
+        "field": "moving_up",
+        "type": "Bool",
+        "comment": "when climbing a pole"
       }
     ],
     "Necromancer": [
@@ -3079,7 +3087,7 @@
       { "field": "red_skeleton_spawn_x", "type": "Float" },
       { "field": "red_skeleton_spawn_y", "type": "Float" },
       { "field": "resurrection_uid", "type": "EntityUID" },
-      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "target_layer", "type": "UnsignedByte" },
       { "field": "resurrection_timer", "type": "UnsignedByte" }
     ],
     "ProtoShopkeeper": [
@@ -4204,7 +4212,7 @@
       {
         "field": "unknown",
         "type": "Float",
-        "comment": "seams to be distance between camera_anchor and telescope, but it's off by a little"
+        "comment": "seems to be distance between camera_anchor and telescope, but it's off by a little"
       }
     ],
     "Torch": [
@@ -4830,7 +4838,7 @@
       {
         "field": "attack_angle2",
         "type": "Float",
-        "comment": "seams to be exactly the same as above"
+        "comment": "seems to be exactly the same as above"
       },
       { "field": "unknown", "type": "Bool" }
     ],
@@ -5013,7 +5021,7 @@
       {
         "field": "zoomin_level",
         "type": "Float",
-        "comment": "can be set to negative, seams to trigger the warp at some value"
+        "comment": "can be set to negative, seems to trigger the warp at some value"
       }
     ],
     "CinematicAnchor": [
@@ -5040,20 +5048,17 @@
       { "field": "y_pos", "type": "Float" },
       { "field": "hand/feet_x_offset", "type": "Float" },
       { "field": "hand/feet_y_offset", "type": "Float" },
-      {
-        "field": "x_unk5",
-        "type": "Float",
-        "comment": "all of those are offsets/positions of different joints, i'm too lazy to document thme all"
-      },
-      { "field": "y_unk6", "type": "Float" },
-      { "field": "x_unk7", "type": "Float" },
-      { "field": "y_unk8", "type": "Float" },
-      { "field": "x_unk9", "type": "Float" },
-      { "field": "y_unk10", "type": "Float" },
+      { "field": "anchor_x", "type": "Float" },
+      { "field": "anchor_y", "type": "Float" },
+      { "field": "move_origin_x", "type": "Float" },
+      { "field": "move_origin_y", "type": "Float" },
+      { "field": "move_destination_x", "type": "Float" },
+      { "field": "move_destination_y", "type": "Float" },
       { "field": "unk11", "type": "Float" },
       { "field": "unk12", "type": "Float" },
       { "field": "unk13", "type": "Float" },
-      { "field": "move_timer", "type": "UnsignedWord" },
+      { "field": "elapsed_move_time", "type": "UnsignedByte" },
+      { "field": "move_duration", "type": "UnsignedByte" },
       { "field": "flip_vertical", "type": "Bool" }
     ],
     "LogicalConveyorbeltSound": [
@@ -5096,7 +5101,7 @@
         "type": "Dword",
         "comment": "can be set negative for longer time period, spawns boulder at 150, setting it higher with count to overflow"
       },
-      { "field": "padding?", "type": "Dword" },
+      { "field": "owner_uid", "type": "EntityUID" },
       { "field": "sound", "type": "SoundMeta" }
     ],
     "PipeTravelerSound": [
@@ -5261,6 +5266,7 @@
         "comment": "does don't actually exist, added for compatibility with OL API"
       }
     ],
-    "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }]
+    "Scepter": [{ "field": "cooldown", "type": "UnsignedByte" }],
+    "Whip": [{ "field": "flaming", "type": "Bool" }]
   }
 }
