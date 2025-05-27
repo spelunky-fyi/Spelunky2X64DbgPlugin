@@ -98,6 +98,7 @@ namespace S2Plugin
         LevelGen,
         LiquidPhysics,
         LiquidPhysicsPointer,
+        DebugSettings,
         EntityDB,
         EntityPointer,
         EntityDBPointer,

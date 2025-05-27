@@ -6,6 +6,7 @@
 #include <QString>
 #include <fstream>
 #include <regex>
+#include <stack>
 
 using nlohmann::ordered_json;
 
@@ -62,7 +63,7 @@ namespace S2Plugin
         map_type fields;
         std::unordered_map<std::string_view, const Data&> json_names_map;
     };
-    static constexpr const std::array<MemoryFieldData::Data, 70> gsMemoryFieldTypeData = {{
+    static constexpr const std::array<MemoryFieldData::Data, 71> gsMemoryFieldTypeData = {{
         // MemoryFieldEnum, Name for display, c++ type name, name in json, size (if 0 will be determinate from json struct), is pointer
 
         // Basic types
@@ -111,6 +112,7 @@ namespace S2Plugin
         {MemoryFieldType::Hud, "Hud", "", "Hud", 0, false},
         {MemoryFieldType::EntityFactory, "EntityFactory", "", "EntityFactory", 0, false},
         {MemoryFieldType::LiquidPhysics, "LiquidPhysics", "", "LiquidPhysics", 0, false},
+        {MemoryFieldType::DebugSettings, "DebugSettings", "", "DebugSettings", 0, false},
         // Special Types
         {MemoryFieldType::OnHeapPointer, "OnHeap Pointer", "OnHeapPointer<T>", "OnHeapPointer", 8, false}, // not pointer since it's more of a offset
         {MemoryFieldType::EntityPointer, "Entity pointer", "Entity*", "EntityPointer", 8, true},
@@ -145,6 +147,98 @@ namespace S2Plugin
     }};
 
     static const MemoryFieldData gsMemoryFieldType(gsMemoryFieldTypeData);
+
+    struct Verifier
+    {
+        void clearAll()
+        {
+            mRefs.clear();
+            mStructs.clear();
+        }
+        void refUsed(const std::string& name, std::string path)
+        {
+            mRefs[name].first |= Verifier::USED;
+            mRefs[name].second = std::move(path);
+        }
+        void structUsed(const std::string& name, std::string path)
+        {
+            mStructs[name].first |= Verifier::USED;
+            mStructs[name].second = std::move(path);
+        }
+        void refInitialised(const std::string& name)
+        {
+            mRefs[name].first |= Verifier::INITIALISED;
+        }
+        void structInitialised(const std::string& name)
+        {
+            mStructs[name].first |= Verifier::INITIALISED;
+        }
+        void verifyAll()
+        {
+            for (const auto& itr : mRefs)
+                if (itr.second.first == INITIALISED)
+                    dprintf("Reference (%s) never used (declared in \"refs\")\n", itr.first.c_str());
+                else if (itr.second.first == USED)
+                    throw std::runtime_error("Missing declaration of reference (" + itr.first + "), last seen in (" + itr.second.second + ")\n ");
+
+            for (const auto& itr : mStructs)
+                if (itr.second.first == INITIALISED)
+                    dprintf("Struct (%s) never used\n", itr.first.c_str());
+                else if (itr.second.first == USED)
+                    throw std::runtime_error("Missing declaration of struct (" + itr.first + "), last seen in (" + itr.second.second + ")\n ");
+        }
+
+      private:
+        enum
+        {
+            INITIALISED = 1,
+            USED = 2,
+        };
+        std::unordered_map<std::string, std::pair<uint8_t, std::string>> mRefs;
+        std::unordered_map<std::string, std::pair<uint8_t, std::string>> mStructs;
+    };
+
+    static Verifier gsVerifier;
+
+    template <class S = std::string, class T = std::vector<S>>
+    struct StringStack : std::stack<S, T>
+    {
+        S str(char delimiter = 0)
+        {
+            S buffer{};
+            buffer.resize(delimiter == 0 ? totalLength : totalLength + size() - 1);
+            size_t rIndex = buffer.size();
+            while (!empty())
+            {
+                buffer.replace(rIndex - top().size(), top().size(), top());
+                rIndex -= top().size();
+                pop();
+
+                if (delimiter != 0 && !empty() && rIndex != 0)
+                {
+                    rIndex--;
+                    buffer[rIndex] = delimiter;
+                }
+            }
+            return buffer;
+        };
+        void push(S e)
+        {
+            totalLength += e.size();
+            std::stack<S, T>::push(e);
+        };
+        void pop() noexcept(noexcept(std::stack<S, T>::pop()))
+        {
+            totalLength -= top().size();
+            std::stack<S, T>::pop();
+        };
+        size_t length() const noexcept
+        {
+            return totalLength;
+        };
+
+      private:
+        size_t totalLength{};
     };
 } // namespace S2Plugin
 
@@ -203,18 +297,57 @@ S2Plugin::Configuration::Configuration()
 
     try
     {
+        std::stack<std::vector<std::string>, std::vector<std::vector<std::string>>> keysStack;
+        StringStack nameStack;
+        std::string lastInserted;
+        ordered_json::parser_callback_t check_duplicate_keys = [&keysStack, &nameStack, &lastInserted](int /* depth */, ordered_json::parse_event_t event, ordered_json& parsed)
+        {
+            switch (event)
+            {
+                case ordered_json::parse_event_t::object_start:
+                {
+                    keysStack.push(std::vector<std::string>());
+                    nameStack.push(lastInserted);
+                    break;
+                }
+                case ordered_json::parse_event_t::object_end:
+                {
+                    keysStack.pop();
+                    nameStack.pop();
+                    break;
+                }
+                case ordered_json::parse_event_t::key:
+                {
+                    lastInserted = parsed.get<std::string>();
+                    if (std::find(keysStack.top().begin(), keysStack.top().end(), lastInserted) != keysStack.top().end())
+                        throw std::runtime_error("Duplicated key name (" + lastInserted + ") trace: `" + nameStack.str('.') + "`");
+
+                    keysStack.top().push_back(lastInserted);
+                    break;
+                }
+                default:
+                    break;
+            }
+            return true;
+        };
+
+        gsVerifier.clearAll();
+
         std::ifstream fpRC(pathRC.toStdString());
-        auto jRC = ordered_json::parse(fpRC, nullptr, true, true);
+        auto jRC = ordered_json::parse(fpRC, check_duplicate_keys, true, true);
+        lastInserted.clear();
         processRoomCodesJSON(jRC);
         fpRC.close();
 
         std::ifstream fp(path.toStdString());
-        auto j = ordered_json::parse(fp, nullptr, true, true);
+        auto j = ordered_json::parse(fp, check_duplicate_keys, true, true);
+        lastInserted.clear();
         processJSON(j);
         fp.close();
 
         std::ifstream fpENT(pathENT.toStdString());
-        auto jENT = ordered_json::parse(fpENT, nullptr, true, true);
+        auto jENT = ordered_json::parse(fpENT, check_duplicate_keys, true, true);
+        lastInserted.clear();
         processEntitiesJSON(jENT);
 
         static std::vector<std::pair<int64_t, std::string>> unknown_flags = {
@@ -224,6 +357,8 @@ S2Plugin::Configuration::Configuration()
             {25, "unknown_25"}, {26, "unknown_26"}, {27, "unknown_27"}, {28, "unknown_28"}, {29, "unknown_29"}, {30, "unknown_30"}, {31, "unknown_31"}, {32, "unknown_32"}};
 
         mRefs.emplace("unknown", unknown_flags);
+
+        gsVerifier.verifyAll();
     }
     catch (const ordered_json::exception& e)
     {
@@ -285,35 +420,42 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         if (field.contains("keytype"))
         {
             memField.firstParameterType = field["keytype"].get<std::string>();
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.firstParameterType = "UnsignedQword";
-            dprintf("no keytype specified for StdMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no keytype specified for StdMap (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
         if (field.contains("valuetype"))
         {
             memField.secondParameterType = field["valuetype"].get<std::string>();
+            if (getBuiltInType(memField.secondParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.secondParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.secondParameterType = "UnsignedQword";
-            dprintf("no valuetype specified for StdMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no valuetype specified for StdMap (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
     }
     else if (fieldTypeStr == "StdSet")
     {
+        gsVerifier.structUsed("StdSet", struct_name + '.' + memField.name);
         memField.type = MemoryFieldType::StdMap;
         if (field.contains("keytype"))
         {
             memField.firstParameterType = field["keytype"].get<std::string>();
             memField.secondParameterType = "";
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.firstParameterType = "UnsignedQword";
             memField.secondParameterType = "";
-            dprintf("no keytype specified for StdSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no keytype specified for StdSet (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
     }
     else if (fieldTypeStr == "StdUnorderedMap")
@@ -322,35 +464,42 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         if (field.contains("keytype"))
         {
             memField.firstParameterType = field["keytype"].get<std::string>();
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.firstParameterType = "UnsignedQword";
-            dprintf("no keytype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no keytype specified for StdUnorderedMap (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
         if (field.contains("valuetype"))
         {
             memField.secondParameterType = field["valuetype"].get<std::string>();
+            if (getBuiltInType(memField.secondParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.secondParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.secondParameterType = "UnsignedQword";
-            dprintf("no valuetype specified for StdUnorderedMap (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no valuetype specified for StdUnorderedMap (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
     }
     else if (fieldTypeStr == "StdUnorderedSet")
     {
+        gsVerifier.structUsed("StdUnorderedSet", struct_name + '.' + memField.name);
         memField.type = MemoryFieldType::StdUnorderedMap;
         if (field.contains("keytype"))
         {
             memField.firstParameterType = field["keytype"].get<std::string>();
             memField.secondParameterType = "";
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
         }
         else
         {
             memField.firstParameterType = "UnsignedQword";
             memField.secondParameterType = "";
-            dprintf("no keytype specified for StdUnorderedSet (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            dprintf("no keytype specified for StdUnorderedSet (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
         }
     }
     switch (memField.type)
@@ -369,11 +518,13 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             if (field.contains("valuetype"))
             {
                 memField.firstParameterType = field["valuetype"].get<std::string>();
+                if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                    gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
             }
             else
             {
                 memField.firstParameterType = "UnsignedQword";
-                dprintf("no valuetype specified for StdVector (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+                dprintf("no valuetype specified for StdVector (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
             }
             break;
         }
@@ -383,11 +534,13 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             if (field.contains("valuetype"))
             {
                 memField.firstParameterType = field["valuetype"].get<std::string>();
+                if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                    gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
             }
             else
             {
                 memField.firstParameterType = "UnsignedQword";
-                dprintf("no valuetype specified for StdList (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+                dprintf("no valuetype specified for StdList (%s.%s). UnsignedQword assumed\n", struct_name.c_str(), memField.name.c_str());
             }
             break;
         }
@@ -398,6 +551,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             if (field.contains("ref"))
             {
                 memField.firstParameterType = field["ref"].get<std::string>(); // using first param to hold the ref name
+                gsVerifier.refUsed(memField.firstParameterType, struct_name + '.' + memField.name);
             }
             else if (field.contains("flags"))
             {
@@ -424,6 +578,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             if (field.contains("ref"))
             {
                 memField.firstParameterType = field["ref"].get<std::string>(); // using first param to hold the ref name
+                gsVerifier.refUsed(memField.firstParameterType, struct_name + '.' + memField.name);
             }
             else if (field.contains("states"))
             {
@@ -455,8 +610,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                     std::string name = value_or(func, "name", "unnamed function"s);
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
-                    std::string type = struct_name;
-                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), std::move(type));
+                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), struct_name);
                 }
             }
             break;
@@ -504,6 +658,8 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             else
                 throw std::runtime_error("Missing `arraytype` parameter for Array (" + struct_name + "." + memField.name + ")");
 
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
             break;
         }
         case MemoryFieldType::Matrix:
@@ -512,6 +668,9 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 memField.firstParameterType = field["matrixtype"].get<std::string>();
             else
                 throw std::runtime_error("Missing `matrixtype` parameter for Matrix (" + struct_name + "." + memField.name + ")");
+
+            if (getBuiltInType(memField.firstParameterType) == MemoryFieldType::None)
+                gsVerifier.structUsed(memField.firstParameterType, struct_name + '.' + memField.name);
 
             if (field.contains("row"))
             {
@@ -537,12 +696,16 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             if (field.contains("pointertype"))
             {
                 memField.jsonName = field["pointertype"].get<std::string_view>();
+                gsVerifier.structUsed(memField.jsonName, struct_name + '.' + memField.name);
             }
             break;
         }
         case MemoryFieldType::DefaultStructType:
+        {
             memField.jsonName = fieldTypeStr;
+            gsVerifier.structUsed(memField.jsonName, struct_name + '.' + memField.name);
             break;
+        }
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             memField.jsonName = "ThemeInfoPointer";
@@ -561,18 +724,32 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 
     for (const auto& [key, jsonValue] : j["entity_class_hierarchy"].items())
     {
-        auto value = jsonValue.get<std::string_view>();
-        if (key != value)
-        {
-            mEntityClassHierarchy[key] = value;
-        }
+        auto value = jsonValue.get<std::string>();
+        if (key == value)
+            throw std::runtime_error("Invalid assignment in `entity_class_hierarchy` (\"" + key + "\": \"" + value + "\")");
+
+        if (!j["fields"].contains(key))
+            throw std::runtime_error("Type (" + key + ") declared in `entity_class_hierarchy` not found in `fields` (\"" + key + "\": \"" + value + "\")");
+
+        if (!j["fields"].contains(value))
+            throw std::runtime_error("Type (" + value + ") declared in `entity_class_hierarchy` not found in `fields` (\"" + key + "\": \"" + value + "\")");
+
+        mEntityClassHierarchy.emplace(key, std::move(value));
     }
     for (const auto& [key, jsonValue] : j["default_entity_types"].items())
     {
-        mDefaultEntityClassTypes.emplace_back(key, jsonValue.get<std::string>());
+        auto value = jsonValue.get<std::string>();
+
+        if (!j["fields"].contains(value))
+            throw std::runtime_error("Type (" + value + ") declared in `default_entity_types` not found in `fields` (\"" + key + "\": \"" + value + "\")");
+
+        mDefaultEntityClassTypes.emplace_back(key, std::move(value));
     }
     for (const auto& [key, jsonArray] : j["fields"].items())
     {
+        if (mEntityClassHierarchy.find(key) == mEntityClassHierarchy.end() && key != "Entity")
+            dprintf("Subclass (%s) not found in `entity_class_hierarchy`, will be unusable\n", key.c_str());
+
         std::vector<MemoryField> vec;
         vec.reserve(jsonArray.size());
         for (const auto& field : jsonArray)
@@ -584,39 +761,80 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
                 for (const auto& [funcIndex, func] : field["vftablefunctions"].items())
                 {
                     size_t index = std::stoull(funcIndex);
-                    std::string name = value_or(func, "name", "unnamed function"s);
+                    std::string name = value_or(func, "name", "unnamed_function" + std::to_string(index));
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
-                    std::string type = key;
-                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), std::move(type));
+                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), key);
                 }
                 continue;
             }
             MemoryField memField = populateMemoryField(field, key);
             if (std::find(vec.begin(), vec.end(), memField) != vec.end())
-                throw std::runtime_error("Struct (" + key + ") contains duplicate field name: (" + memField.name + ")");
+                throw std::runtime_error("Subclass (" + key + ") contains duplicate field name: (" + memField.name + ")");
 
             vec.emplace_back(std::move(memField));
         }
         mTypeFieldsEntitySubclasses[key] = std::move(vec);
+    }
+
+    // verify vtable indexes
+    for (const auto& [subclass, base] : mEntityClassHierarchy)
+    {
+        auto itSub = mVirtualFunctions.find(subclass);
+        if (itSub == mVirtualFunctions.end())
+            continue;
+
+        auto itBase = mVirtualFunctions.find(base);
+        if (itBase == mVirtualFunctions.end())
+            continue;
+
+        size_t min{}, max{};
+        for (const auto& idx : itBase->second)
+        {
+            min = std::min(min, idx.index);
+            max = std::max(max, idx.index);
+        }
+        for (const auto& idx : itSub->second)
+        {
+            if (idx.index <= max && idx.index >= min)
+                throw std::runtime_error("Found virtual function index overlap in (" + subclass + ") with parent class (" + base + "), function (" + idx.name + ")");
+        }
     }
 }
 
 void S2Plugin::Configuration::processJSON(ordered_json& j)
 {
     for (const auto& t : j["pointer_types"])
-        mPointerTypes.emplace_back(t.get<std::string>());
+    {
+        auto type = t.get<std::string>();
+        if (!j["fields"].contains(type))
+            throw std::runtime_error("Type (" + type + ") declared in `pointer_types` not found in `fields`");
+
+        if (std::find(mPointerTypes.begin(), mPointerTypes.end(), type) != mPointerTypes.end())
+            dprintf("Duplicated value in `pointer_types`(%s)\n", type.c_str());
+        else
+            mPointerTypes.emplace_back(std::move(type));
+    }
 
     for (const auto& t : j["journal_pages"])
-        mJournalPages.emplace_back(t.get<std::string>());
+    {
+        auto type = t.get<std::string>();
+        if (!j["fields"].contains(type))
+            throw std::runtime_error("Type (" + type + ") declared in `journal_pages` not found in `fields`");
+
+        if (std::find(mJournalPages.begin(), mJournalPages.end(), type) != mJournalPages.end())
+            dprintf("Duplicated value in `journal_pages` (%s)\n", type.c_str());
+        else
+            mJournalPages.emplace_back(std::move(type));
+    }
 
     for (const auto& [key, jsonValue] : j["struct_alignments"].items())
     {
         uint8_t val = jsonValue.get<uint8_t>();
         if (val > 8)
-            throw std::runtime_error("Wrong value provided in [struct_alignments], name: (" + key + ") value (" + jsonValue.get<std::string>() + "). Allowed range: 0-8");
+            throw std::runtime_error("Wrong value provided in `struct_alignments`, name: (" + key + ") value (" + std::to_string(val) + "). Allowed range: 0-8");
 
-        mAlignments.insert({key, val});
+        mAlignments.emplace(key, val);
     }
     for (const auto& [key, jsonArray] : j["refs"].items())
     {
@@ -626,7 +844,8 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
         {
             vec.emplace_back(std::stoll(value), name);
         }
-        mRefs[key] = std::move(vec);
+        auto result = mRefs.emplace(key, std::move(vec));
+        gsVerifier.refInitialised((*result.first).first);
     }
     for (const auto& [key, jsonArray] : j["fields"].items())
     {
@@ -648,10 +867,12 @@ void S2Plugin::Configuration::processJSON(ordered_json& j)
         }
         else
         {
-            mTypeFieldsStructs.try_emplace(key, std::move(vec));
+            mTypeFieldsStructs.emplace(key, std::move(vec));
+
+            if (std::find(mJournalPages.begin(), mJournalPages.end(), key) == mJournalPages.end())
+                gsVerifier.structInitialised(key);
         }
     }
-    // TODO: maybe add check for unused structs?
 }
 
 std::vector<std::string> S2Plugin::Configuration::classHierarchyOfEntity(const std::string& entityName) const

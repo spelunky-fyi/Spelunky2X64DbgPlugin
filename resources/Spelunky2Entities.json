@@ -5208,7 +5208,7 @@
     "Bow": [
       {
         "vftablefunctions": {
-          "93": {
+          "94": {
             "name": "get_arrow_special_offset",
             "return": "float",
             "comment": "When laying on the ground"

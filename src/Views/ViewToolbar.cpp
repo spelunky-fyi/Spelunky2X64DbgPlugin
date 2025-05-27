@@ -442,7 +442,7 @@ void S2Plugin::ViewToolbar::showDebugSettings()
         auto ptr = Spelunky2::get()->get_DebugSettingsPtr();
         if (ptr != 0)
         {
-            auto w = new ViewStruct(ptr, Configuration::get()->typeFieldsOfDefaultStruct("DebugSettings"), "Debug Settings");
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::DebugSettings), "Debug Settings");
             auto win = mMDIArea->addSubWindow(w);
             win->setVisible(true);
             win->setAttribute(Qt::WA_DeleteOnClose);
