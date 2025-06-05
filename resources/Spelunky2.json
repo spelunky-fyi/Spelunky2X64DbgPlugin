@@ -1317,7 +1317,7 @@
       {
         "field": "DIST_PLAYER",
         "type": "Float",
-        "comment": "seams to be always here, even you you get nil in lua"
+        "comment": "seams to be always here, even if you get nil from FMOD"
       },
       { "field": "SUBMERGED", "type": "Float" },
       { "field": "LIQUID_STREAM", "type": "Float" },
