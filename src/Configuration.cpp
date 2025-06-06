@@ -379,6 +379,7 @@ S2Plugin::Configuration::Configuration()
         return;
     }
     initializedCorrectly = true;
+    dprintf("Successfully loaded json configuration\n");
 }
 
 template <class T>
@@ -390,9 +391,15 @@ inline T value_or(const nlohmann::ordered_json& j, const std::string& name, T va
 S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohmann::ordered_json& field, const std::string& struct_name)
 {
     using namespace std::string_literals;
+    const auto varNameCheck = std::regex("[_a-zA-Z][\\w]*");
+    const auto funNameCheck = std::regex("[_a-zA-Z~][\\w]*");
 
     MemoryField memField;
     memField.name = field["field"].get<std::string>();
+
+    if (!std::regex_match(memField.name, varNameCheck) && !(struct_name.rfind("SaveGame", 0) == 0 && struct_name.length() > 8)) // exception for `SaveGame*` structs
+        throw std::runtime_error("unsupported character in name (" + struct_name + "." + memField.name + ")");
+
     memField.comment = value_or(field, "comment", ""s);
     memField.type = MemoryFieldType::DefaultStructType; // just initial
     std::string_view fieldTypeStr = field["type"].get<std::string_view>();
@@ -408,6 +415,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     {
         memField.type = it->second.type;
         memField.size = it->second.size;
+        memField.isPointer = it->second.isPointer;
     }
 
     if (field.contains("offset"))
@@ -608,6 +616,9 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
                 {
                     size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed function"s);
+                    if (!std::regex_match(name, funNameCheck))
+                        throw std::runtime_error("unsupported character in function name (" + struct_name + "." + name + ")");
+
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
                     vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), struct_name);
@@ -712,15 +723,13 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             break;
         }
     }
-    if (isPointerType(memField.type))
-        memField.isPointer = true;
-
     return memField;
 }
 
 void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 {
     using namespace std::string_literals;
+    const auto funNameCheck = std::regex("[_a-zA-Z~][\\w]*");
 
     for (const auto& [key, jsonValue] : j["entity_class_hierarchy"].items())
     {
@@ -762,6 +771,9 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
                 {
                     size_t index = std::stoull(funcIndex);
                     std::string name = value_or(func, "name", "unnamed_function" + std::to_string(index));
+                    if (!std::regex_match(name, funNameCheck))
+                        throw std::runtime_error("unsupported character in function name (" + key + "." + name + ")");
+
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
                     vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), key);
@@ -913,7 +925,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfD
     return it->second;
 }
 
-const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFields(const MemoryFieldType& type) const
+const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFields(const MemoryFieldType type) const
 {
     auto it = mTypeFieldsMain.find(type);
     if (it == mTypeFieldsMain.end())
@@ -1003,16 +1015,29 @@ std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctions
                 functions.insert(functions.end(), it->second.begin(), it->second.end());
 
             if (currentType == "Entity")
+                break;
+
+            auto it = mEntityClassHierarchy.find(currentType);
+            if (it != mEntityClassHierarchy.end())
+                currentType = it->second;
+            else
             {
+                dprintf("unknown type requested in Configuration::virtualFunctionsOfType() (%s)\n", currentType.c_str());
                 break;
             }
-            currentType = mEntityClassHierarchy.at(currentType);
         }
         return functions;
     }
     else
     {
-        return mVirtualFunctions.at(type);
+        auto it = mVirtualFunctions.find(type);
+        if (it != mVirtualFunctions.end())
+            return it->second;
+        else
+        {
+            dprintf("unknown type requested in Configuration::virtualFunctionsOfType() (%s)\n", type.c_str());
+            return {};
+        }
     }
 }
 
@@ -1068,7 +1093,7 @@ uint8_t S2Plugin::Configuration::getAlignment(MemoryFieldType type) const
     {
         case MemoryFieldType::Skip:
         {
-            dprintf("cannot determinate alignment of (Skip) type!\n");
+            dprintf("cannot determinate alignment Configuration::getAlignment() (Skip)\n");
             return sizeof(uintptr_t);
         }
         case MemoryFieldType::Byte:

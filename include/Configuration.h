@@ -241,14 +241,18 @@ namespace S2Plugin
         //
         std::vector<std::string> classHierarchyOfEntity(const std::string& entityName) const;
 
-        const std::vector<MemoryField>& typeFields(const MemoryFieldType& type) const;
+        const std::vector<MemoryField>& typeFields(const MemoryFieldType type) const;
         const std::vector<MemoryField>& typeFieldsOfEntitySubclass(const std::string& type) const;
         const std::vector<MemoryField>& typeFieldsOfDefaultStruct(const std::string& type) const;
         std::vector<VirtualFunction> virtualFunctionsOfType(const std::string& field) const;
 
+        // "Entity" returns true, even though it's base class
         bool isEntitySubclass(const std::string& type) const
         {
-            return mTypeFieldsEntitySubclasses.find(type) != mTypeFieldsEntitySubclasses.end();
+            if (type == "Entity")
+                return true;
+
+            return mEntityClassHierarchy.find(type) != mEntityClassHierarchy.end();
         }
 
         static MemoryFieldType getBuiltInType(const std::string& type);
@@ -263,9 +267,12 @@ namespace S2Plugin
 
         // equivalent to alignof operator
         uint8_t getAlignment(const std::string& type) const;
-        uint8_t getAlignment(MemoryFieldType type) const;
         uint8_t getAlignment(const MemoryField& type) const;
 
+      private:
+        uint8_t getAlignment(MemoryFieldType type) const;
+
+      public:
         std::string flagTitle(const std::string& fieldName, uint8_t flagNumber) const;
         std::string stateTitle(const std::string& fieldName, int64_t state) const;
         const std::vector<std::pair<int64_t, std::string>>& refTitlesOfField(const std::string& fieldName) const;

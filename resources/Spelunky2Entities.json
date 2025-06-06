@@ -1060,7 +1060,7 @@
             "comment": "for player it calculates stomp damages as that's the only damage that the player entity can deal, the 'normal' damage is done by the whip"
           },
           "44": {
-            "name": "get_stomp_damage?",
+            "name": "get_stomp_damage",
             "return": "int8_t",
             "comment": "calls get_damage except for mech which always returns 3, dunno what's the difference between this and get_damage"
           },
@@ -1451,7 +1451,7 @@
         "type": "SoundMeta",
         "comment": "For Lise System walking and looking up sounds"
       },
-      { "field": "y_pos?", "type": "Float" },
+      { "field": "y_pos", "type": "Float", "comment": "unsure?" },
       {
         "field": "jump_lock_timer",
         "type": "UnsignedByte",
@@ -1633,15 +1633,6 @@
       { "field": "on_breaking", "type": "Bool" }
     ],
     "Cape": [
-      {
-        "vftablefunctions": {
-          "100": {
-            "name": "100",
-            "params": "",
-            "return": ""
-          }
-        }
-      },
       { "field": "floating_down", "type": "Bool" },
       { "field": "unused1", "type": "UnsignedByte" },
       { "field": "unused2", "type": "UnsignedWord" },
@@ -2148,7 +2139,7 @@
         "type": "UnsignedWord",
         "comment": "jump pause when cool; runs continuously when hot"
       },
-      { "field": "lava_detection_timer?", "type": "UnsignedByte" },
+      { "field": "lava_detection_timer", "type": "UnsignedByte", "comment": "unsure?" },
       { "field": "is_hot", "type": "Bool" },
       {
         "field": "player_detect_state",
@@ -2491,7 +2482,7 @@
         "type": "UnsignedByte",
         "comment": "Excalibur wipes out immediately, bombs take off 11 points; when 0 vulnerable to whip"
       },
-      { "field": "player_seen_by_kingu?", "type": "Bool" }
+      { "field": "player_seen_by_kingu", "type": "Bool", "comment": "probably the 'logged to journal'" }
     ],
     "Anubis": [
       {
@@ -2544,7 +2535,7 @@
       },
       { "field": "fx_entity", "type": "EntityPointer" },
       { "field": "sound", "type": "SoundMeta" },
-      { "field": "hover_timer?", "type": "UnsignedByte" }
+      { "field": "hover_timer", "type": "UnsignedByte", "comment": "unsure?" }
     ],
     "MagmaMan": [
       { "field": "emitted_light", "type": "IlluminationPointer" },
@@ -2574,9 +2565,9 @@
       },
       { "field": "wobble_timer", "type": "UnsignedByte" },
       {
-        "field": "targeting_timer?",
+        "field": "targeting_timer",
         "type": "UnsignedByte",
-        "comment": "counts when bee takes off and hasn't spotted a target yet"
+        "comment": "unsure? counts when bee takes off and hasn't spotted a target yet"
       },
       {
         "field": "start_walking_time",
@@ -2638,7 +2629,7 @@
       },
       { "field": "left_hand_uid", "type": "EntityUID" },
       { "field": "moving_left", "type": "Bool" },
-      { "field": "targeting_timer?", "type": "UnsignedByte" },
+      { "field": "targeting_timer", "type": "UnsignedByte" },
       { "field": "invincibility_timer", "type": "UnsignedByte" }
     ],
     "OsirisHand": [
@@ -2959,11 +2950,11 @@
     ],
     "Hundun": [
       {
-        "field": "applied_hor_velocity?",
+        "field": "applied_hor_velocity",
         "type": "Float",
-        "comment": "during flight"
+        "comment": "unsure? during flight"
       },
-      { "field": "applied_ver_velocity?", "type": "Float" },
+      { "field": "applied_ver_velocity", "type": "Float", "comment": "unsure?" },
       { "field": "birdhead_entity_uid", "type": "EntityUID" },
       { "field": "snakehead_entity_uid", "type": "EntityUID" },
       { "field": "floor_level", "type": "Float" },
@@ -3411,7 +3402,7 @@
       },
       { "field": "fx", "type": "EntityPointer" },
       { "field": "sound", "type": "SoundMeta" },
-      { "field": "laser_bounce?", "type": "Float" },
+      { "field": "laser_bounce", "type": "Float", "comment": "unsure?" },
       {
         "field": "timer",
         "type": "UnsignedWord",
@@ -3432,7 +3423,7 @@
         "comment": "starts at timer 140"
       },
       { "field": "emitted_light", "type": "IlluminationPointer" },
-      { "field": "bounce_force?", "type": "Float", "comment": "max 1.0 ?" },
+      { "field": "bounce_force", "type": "Float", "comment": "max 1.0 ?" },
       {
         "field": "is_on",
         "type": "Bool",
@@ -3494,7 +3485,7 @@
         "comment": "for the start and retract"
       },
       {
-        "field": "speed_direction?",
+        "field": "speed_direction_maybe",
         "type": "UnsignedByte",
         "comment": "i have no clue what this is, goes 255 when detecting something, but when it hits the unbreakable tile it 255 for ever, changing it can teleport it up/down/change speed etc."
       }
@@ -3763,8 +3754,8 @@
         "comment": "normally FX_MAIN_EXIT_DOOR , but any value will block the door"
       },
       { "field": "sound", "type": "SoundMeta" },
-      { "field": "top_value?", "type": "Float" },
-      { "field": "value?", "type": "Float" }
+      { "field": "top_value", "type": "Float", "comment": "unsure" },
+      { "field": "value", "type": "Float", "comment": "unsure" }
     ],
     "EggShipDoor": [
       { "field": "unused1", "type": "UnsignedWord" },
@@ -3796,11 +3787,11 @@
       { "field": "unused1", "type": "UnsignedByte" },
       { "field": "unused2", "type": "UnsignedWord" },
       { "field": "unused3", "type": "UnsignedDword" },
-      { "field": "timer?", "type": "UnsignedByte" }
+      { "field": "timer", "type": "UnsignedByte" }
     ],
     "BigSpearTrap": [
       { "field": "spear_uid", "type": "EntityUID" },
-      { "field": "active?", "type": "UnsignedByte", "comment": "forced to 1" },
+      { "field": "active", "type": "UnsignedByte", "comment": "? forced to 1" },
       {
         "field": "left_part",
         "type": "Bool",
@@ -3829,7 +3820,7 @@
     "ConveyorBelt": [
       { "field": "unknown1", "type": "UnknownPointerGroup" },
       { "field": "timer", "type": "UnsignedByte", "comment": "0 to 15" },
-      { "field": "timer2?", "type": "UnsignedByte" }
+      { "field": "timer2", "type": "UnsignedByte", "comment": "unsure?" }
     ],
     "QuickSand": [
       { "field": "unknown_timer1", "type": "UnsignedByte" },
@@ -3964,11 +3955,11 @@
     "Liquid": [
       { "field": "fx_surface", "type": "EntityPointer" },
       {
-        "field": "x_pos?",
+        "field": "x_pos",
         "type": "Float",
         "comment": "for some reason accesses as Qword?, only updated when the position changes drastically"
       },
-      { "field": "y_pos?", "type": "Float" },
+      { "field": "y_pos", "type": "Float" },
       { "field": "liquid_id_list_pointer", "type": "StdListIteratorPointer" },
       { "field": "unknown2", "type": "UnsignedWord" },
       { "field": "unknown3", "type": "UnsignedWord" },
@@ -3992,7 +3983,7 @@
     "Coffin": [
       { "field": "inside", "type": "EntityDBID" },
       { "field": "timer", "type": "UnsignedByte" },
-      { "field": "shake_state?", "type": "Byte" },
+      { "field": "shake_state", "type": "Byte", "comment": "unsure?" },
       {
         "field": "player_respawn",
         "type": "Bool",
@@ -4080,7 +4071,7 @@
       { "field": "unused2", "type": "Word" },
       { "field": "spawn_y", "type": "Float" },
       {
-        "field": "float_timer?",
+        "field": "float_timer_maybe",
         "type": "Float",
         "comment": "probably distance_traveled, needs to be verified"
       }
@@ -4285,9 +4276,9 @@
       { "field": "timer", "type": "UnsignedWord" },
       { "field": "big_cloud", "type": "Bool" },
       {
-        "field": "expand?",
+        "field": "expand",
         "type": "Bool",
-        "comment": "when set true on start makes it go further"
+        "comment": "unsure? when set true on start makes it go further"
       }
     ],
     "PlayerBag": [
@@ -4390,8 +4381,8 @@
       {
         "vftablefunctions": {
           "94": {
-            "name": "pickup",
-            "params": "Entity* who, bool",
+            "name": "give_powerup",
+            "params": "Entity* who, bool play_sfx",
             "comment": "disable for item to be unpickable"
           }
         }
@@ -4416,7 +4407,7 @@
         "type": "Bool",
         "comment": "if you set only this one it will crash the game after a while, also won't add new parachute to inventory"
       },
-      { "field": "deploy2?", "type": "Bool" },
+      { "field": "deploy2", "type": "Bool", "comment": "unsure?" },
       {
         "field": "after_deploy",
         "type": "Bool",
@@ -4446,8 +4437,8 @@
       { "field": "trail", "type": "ParticleEmitterInfoPointer" },
       { "field": "distance", "type": "Float" },
       { "field": "rotation", "type": "Float" },
-      { "field": "wall_collision?", "type": "Float" },
-      { "field": "state?", "type": "UnsignedByte" },
+      { "field": "wall_collision", "type": "Float", "comment": "unsure?" },
+      { "field": "state", "type": "UnsignedByte", "comment": "unsure?" },
       { "field": "unused1", "type": "UnsignedByte" },
       { "field": "unused2", "type": "UnsignedWord" },
       {
@@ -4519,33 +4510,33 @@
       { "field": "padding1", "type": "Word" },
       { "field": "visibility", "type": "Float" },
       {
-        "field": "is_visible2?",
+        "field": "is_visible2",
         "type": "Bool",
-        "comment": "it's false for selldialog used in shops"
+        "comment": "unsure? it's false for selldialog used in shops"
       },
       {
-        "field": "player_trigger?",
+        "field": "player_trigger",
         "type": "Bool",
         "comment": "it's set true even if player does not see the button, like the drill or COG door"
       },
       { "field": "unknown4", "type": "Bool" },
       { "field": "padding2", "type": "Byte" },
       {
-        "field": "player1_on_screen_timer?",
+        "field": "player1_on_screen_timer",
         "type": "Dword",
         "comment": "a weird one, does not start at 0, sometimes accessed as byte, similar to the jetpack fly_counter, that is not per button, also some buttons use it, some not"
       },
       {
-        "field": "player2_on_screen_timer?",
+        "field": "player2_on_screen_timer",
         "type": "Dword",
         "comment": "they all are not even per player, as they run in sync"
       },
       {
-        "field": "player3_on_screen_timer?",
+        "field": "player3_on_screen_timer",
         "type": "Dword",
         "comment": "timers sometimes stay, sometimes are set back to -1"
       },
-      { "field": "player4_on_screen_timer?", "type": "Dword" },
+      { "field": "player4_on_screen_timer", "type": "Dword" },
       {
         "field": "seen",
         "type": "State8",
@@ -4597,17 +4588,17 @@
       { "field": "unknown2", "type": "Float", "comment": "fade in/fade out?" },
       { "field": "unknown3", "type": "Float" },
       {
-        "field": "speed?",
+        "field": "speed",
         "type": "Float",
         "comment": "increment value for unknown1"
       },
       {
-        "field": "timer?",
+        "field": "timer",
         "type": "Word",
         "comment": "affects the speed and fade away"
       },
-      { "field": "padding1?", "type": "Word" },
-      { "field": "padding2?", "type": "Dword" },
+      { "field": "padding1", "type": "Word" },
+      { "field": "padding2", "type": "Dword" },
       { "field": "particle", "type": "ParticleEmitterInfoPointer" }
     ],
     "Rubble": [
@@ -4853,7 +4844,7 @@
         "type": "Float",
         "comment": "a weird one, it gets values lower then 1.0, if you set 1.0 or bigger it will stop"
       },
-      { "field": "sine_angle?", "type": "Float" },
+      { "field": "sine_angle", "type": "Float", "comment": "unsure?" },
       { "field": "size", "type": "Float" }
     ],
     "FxAnkhBrokenPiece": [{ "field": "unknown", "type": "Float" }],
@@ -4862,10 +4853,10 @@
       { "field": "illumination2", "type": "IlluminationPointer" }
     ],
     "BGSurfaceStar": [
-      { "field": "blink_timer?", "type": "Dword", "comment": "why negative?" },
+      { "field": "blink_timer", "type": "Dword", "comment": "why negative?" },
       { "field": "relative_x", "type": "Float" },
       { "field": "relative_y", "type": "Float" },
-      { "field": "unknown_padding?", "type": "Dword" }
+      { "field": "unknown_padding", "type": "Dword" }
     ],
     "BGRelativeElement": [
       { "field": "relative_x", "type": "Float" },
@@ -4904,7 +4895,7 @@
         "comment": "gets smaller as the timer gets close to the max_timer"
       },
       {
-        "field": "light_size?",
+        "field": "light_size",
         "type": "Float",
         "comment": "if you make it the same as size it starts to flicker, making this bigger increases the size as well"
       }
@@ -4944,8 +4935,8 @@
       { "field": "unk6", "type": "Bool" }
     ],
     "LogicalStaticSound": [
-      { "field": "x_pos?", "type": "Float" },
-      { "field": "y_pos?", "type": "Float" }
+      { "field": "x_pos", "type": "Float", "comment": "unsure?" },
+      { "field": "y_pos", "type": "Float", "comment": "unsure?" }
     ],
     "LogicalLiquidStreamSound": [
       {
@@ -4969,16 +4960,16 @@
     ],
     "JungleTrapTrigger": [
       {
-        "field": "counter1?",
+        "field": "counter1",
         "type": "Dword",
         "comment": "one of those weird counters that counts all the traps, not only this single one"
       },
       {
-        "field": "counter2?",
+        "field": "counter2",
         "type": "Dword",
         "comment": "also there are 3 of them?"
       },
-      { "field": "counter3?", "type": "Dword" }
+      { "field": "counter3", "type": "Dword" }
     ],
     "WetEffect": [
       { "field": "particle", "type": "ParticleEmitterInfoPointer" }
@@ -5038,8 +5029,8 @@
     "LimbAnchor": [
       { "field": "x_pos", "type": "Float" },
       { "field": "y_pos", "type": "Float" },
-      { "field": "hand/feet_x_offset", "type": "Float" },
-      { "field": "hand/feet_y_offset", "type": "Float" },
+      { "field": "hand_feet_x_offset", "type": "Float" },
+      { "field": "hand_feet_y_offset", "type": "Float" },
       {
         "field": "x_unk5",
         "type": "Float",
@@ -5071,7 +5062,7 @@
     "MummyFliesSound": [
       { "field": "mummy_uid", "type": "EntityUID" },
       {
-        "field": "flies?",
+        "field": "flies",
         "type": "UnsignedByte",
         "comment": "numbers of flies spawned? need to take another look, very cool"
       },
@@ -5084,10 +5075,10 @@
       }
     ],
     "QuickSandSound": [
-      { "field": "counter?", "type": "Dword", "comment": "probably unsigned?" }
+      { "field": "counter", "type": "Dword", "comment": "probably unsigned?" }
     ],
     "IceSlidingSound": [
-      { "field": "counter?", "type": "Dword", "comment": "probably unsigned?" }
+      { "field": "counter", "type": "Dword", "comment": "probably unsigned?" }
     ],
     "FrostBreathEffect": [{ "field": "timer", "type": "UnsignedWord" }],
     "BoulderSpawner": [
@@ -5096,16 +5087,16 @@
         "type": "Dword",
         "comment": "can be set negative for longer time period, spawns boulder at 150, setting it higher with count to overflow"
       },
-      { "field": "padding?", "type": "Dword" },
+      { "field": "padding", "type": "Dword" },
       { "field": "sound", "type": "SoundMeta" }
     ],
     "PipeTravelerSound": [
       {
-        "field": "sound_speed?",
+        "field": "sound_speed",
         "type": "Float",
         "comment": "SoundMeta -> VALUE"
       },
-      { "field": "counter?", "type": "Dword", "comment": "probably unsigned?" },
+      { "field": "counter", "type": "Dword", "comment": "unsure? probably unsigned?" },
       {
         "field": "unknown1",
         "type": "Byte",
@@ -5177,14 +5168,14 @@
         "comment": "timer after self_destruct is triggered, modifies the size depending of the unknown1"
       },
       {
-        "field": "self_destruct?",
+        "field": "self_destruct_unknown",
         "type": "Bool",
         "comment": "have reverse effect of spawning in after the block is broken, unused in the game?"
       }
     ],
     "DestructibleBG": [
-      { "field": "attached_to_1?", "type": "EntityUID" },
-      { "field": "attached_to_2?", "type": "EntityUID" },
+      { "field": "attached_to_1", "type": "EntityUID", "comment": "unsure?" },
+      { "field": "attached_to_2", "type": "EntityUID", "comment": "unsure?" },
       { "field": "unknown1", "type": "Bool" },
       { "field": "unknown2", "type": "Bool" }
     ],
@@ -5220,7 +5211,7 @@
       {
         "vftablefunctions": {
           "93": {
-            "name": "acquire",
+            "name": "equip",
             "params": "Entity* who",
             "comment": "does not consume money"
           }

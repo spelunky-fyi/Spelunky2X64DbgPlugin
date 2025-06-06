@@ -1080,12 +1080,12 @@
         "pointer": true
       },
       {
-        "field": "unknown_screen_character_select?",
+        "field": "unknown_screen_character_select",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_team_select?",
+        "field": "unknown_screen_team_select",
         "type": "DataPointer",
         "comment": "available in State"
       },
@@ -1105,37 +1105,37 @@
         "comment": "in state there is also screen_transition which is complete (this one isn't)"
       },
       {
-        "field": "unknown_screen_death?",
+        "field": "unknown_screen_death",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_spaceship?",
+        "field": "unknown_screen_spaceship",
         "type": "DataPointer",
         "comment": "(also not!) available in State"
       },
       {
-        "field": "unknown_screen_win?",
+        "field": "unknown_screen_win",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_credits?",
+        "field": "unknown_screen_credits",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_scores?",
+        "field": "unknown_screen_scores",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_constellation?",
+        "field": "unknown_screen_constellation",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_recap?",
+        "field": "unknown_screen_recap",
         "type": "DataPointer",
         "comment": "available in State"
       },
@@ -1145,7 +1145,7 @@
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_arena_stages?",
+        "field": "unknown_screen_arena_stages",
         "type": "DataPointer",
         "comment": "available in State"
       },
@@ -1155,12 +1155,12 @@
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_arena_select?",
+        "field": "unknown_screen_arena_select",
         "type": "DataPointer",
         "comment": "available in State"
       },
       {
-        "field": "unknown_screen_arena_intro?",
+        "field": "unknown_screen_arena_intro",
         "type": "DataPointer",
         "comment": "available in State"
       },
@@ -1170,7 +1170,7 @@
         "comment": "also available in State, but it's a different object! this one only has a render_timer, no UI parts"
       },
       {
-        "field": "unknown_screen_arena_score?",
+        "field": "unknown_screen_arena_score",
         "type": "ScreenPointer",
         "comment": "available in State"
       },
@@ -1472,7 +1472,7 @@
       { "field": "padding_probably1", "type": "Byte" },
       { "field": "padding_probably2", "type": "Word" },
       { "field": "next_player_entrance", "type": "Dword" },
-      { "field": "leader player slot?", "type": "Byte" },
+      { "field": "leader_player_slot", "type": "Byte", "comment": "unsure?" },
       { "field": "unknown24", "type": "Byte" },
       { "field": "padding_probably3", "type": "Word" },
       { "field": "unknown25a", "type": "Dword" },
@@ -1517,7 +1517,7 @@
     "MenuInsert": [
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
-      { "field": "text_disappearance_speed?", "type": "Float" },
+      { "field": "text_disappearance_speed", "type": "Float", "comment": "unsure?" },
       { "field": "text_spacing", "type": "Float" },
       { "field": "unknown5", "type": "Float" },
       { "field": "unknown6", "type": "UnsignedDword" },
@@ -2287,7 +2287,7 @@
         "type": "ParticleEmitterInfoPointer"
       },
       { "field": "unknown7", "type": "UnsignedByte" },
-      { "field": "-", "type": "Skip", "offset": 3 },
+      { "field": "padding", "type": "Skip", "offset": 3 },
       { "field": "brightness", "type": "Float" },
       { "field": "background_music", "type": "SoundMeta" },
       { "field": "fire_sound", "type": "SoundMeta" }
@@ -2304,7 +2304,7 @@
       { "field": "y_position", "type": "Float" },
       { "field": "brightness", "type": "Float" },
       { "field": "enabled", "type": "Bool" },
-      { "field": "-", "type": "Skip", "offset": 3 },
+      { "field": "padding", "type": "Skip", "offset": 3 },
       {
         "field": "select",
         "type": "CodePointer",
@@ -2554,7 +2554,7 @@
       { "field": "toggle_woodpanel_slidein_animation", "type": "Bool" },
       { "field": "capitalize_top_woodpanel", "type": "Bool" },
       {
-        "field": "state?",
+        "field": "state",
         "type": "State32",
         "states": {
           "0": "none",
@@ -2881,7 +2881,7 @@
       { "field": "unknown15", "type": "Float" },
       { "field": "unknown16", "type": "Float" },
       { "field": "unknown17", "type": "Float" },
-      { "field": "blurred_border_animation_frame?", "type": "UnsignedDword" },
+      { "field": "blurred_border_animation_frame", "type": "UnsignedDword", "comment": "unsure?" },
       { "field": "unknown19", "type": "UnsignedByte" },
       { "field": "unknown20", "type": "UnsignedByte" },
       { "field": "unknown21", "type": "UnsignedByte" },
@@ -2935,7 +2935,7 @@
       { "field": "unknown54", "type": "Float" },
       { "field": "unknown55", "type": "Float" },
       {
-        "field": "player_walk_timer?",
+        "field": "player_walk_timer",
         "type": "Float",
         "comment": "faster timer to make them walk fast when selecting a different character?"
       },
@@ -3000,7 +3000,7 @@
       },
       { "field": "amount_of_mine_entrances_activated", "type": "UnsignedByte" },
       { "field": "probably_padding2", "type": "UnsignedByte" },
-      { "field": "reset_func?", "type": "CodePointer" },
+      { "field": "reset_func", "type": "CodePointer", "comment": "unsure?" },
       {
         "field": "some_state",
         "type": "Flags32",
@@ -3043,7 +3043,7 @@
       { "field": "blackout_transparency", "type": "Float" },
       { "field": "start_pressed", "type": "Bool" },
       { "field": "transition_to_game_started", "type": "Bool" },
-      { "field": "disable_buttons?", "type": "Bool" },
+      { "field": "disable_buttons", "type": "Bool", "comment": "unsure?" },
       { "field": "disable_controls", "type": "Bool" },
       { "field": "unknown72", "type": "UnsignedDword" },
       {
@@ -3266,7 +3266,7 @@
       { "field": "unknown3", "type": "Float" },
       { "field": "unknown4", "type": "Float" },
       { "field": "unknown5", "type": "Float" },
-      { "field": "image?", "type": "UnsignedDword" },
+      { "field": "image", "type": "UnsignedDword", "comment": "unsure?" },
       { "field": "unknown6", "type": "UnsignedDword" },
       { "field": "zoom_timer", "type": "Float" },
       { "field": "zoom_target", "type": "Float" }
@@ -3764,7 +3764,7 @@
         "comment": "there is extra 8 bytes, but i get nothing with breakpoint"
       },
       {
-        "field": "unknown_screen_spaceship?",
+        "field": "unknown_screen_spaceship",
         "type": "UnsignedQword",
         "comment": "potentially ScreenSpaceship, but is nullptr (there is no UI rendering on spaceship anyway)"
       },
@@ -3797,12 +3797,12 @@
         "type": "ScreenArenaScorePointer"
       },
       {
-        "field": "unknown_screen_online_loading?",
+        "field": "unknown_screen_online_loading",
         "type": "UnsignedQword",
         "comment": "potentially ScreenOnlineLoading, but this was moved to GameManager"
       },
       {
-        "field": "unknown_screen_online_lobby?",
+        "field": "unknown_screen_online_lobby",
         "type": "UnsignedQword",
         "comment": "potentially ScreenOnlineLobby, but this was moved to GameManager"
       },
@@ -4676,7 +4676,7 @@
         "comment": "array byte* game allocates 0x2F9E8 bytes for it ((126 * 3) * (86 * 3) * 2 : y, x, liquid_type)."
       },
       {
-        "field": "total_liquid_spawned2?",
+        "field": "total_liquid_spawned2",
         "type": "UnsignedDword",
         "comment": "same as total_liquid_spawned?"
       },
@@ -4721,7 +4721,7 @@
     ],
     "LiquidPhysicsParams": [
       {
-        "field": "shader_type?",
+        "field": "shader_type",
         "type": "State32",
         "states": {
           "1": "water",
@@ -4739,7 +4739,7 @@
       { "field": "padding3", "type": "UnsignedByte" },
       { "field": "unknown3", "type": "Float" },
       {
-        "field": "cohesion?",
+        "field": "cohesion",
         "type": "Float",
         "comment": "negative number makes the liquid balls come apart more easily?"
       },
@@ -4778,7 +4778,7 @@
     ],
     "LiquidTileSpawnData": [
       {
-        "field": "liquid_flags?",
+        "field": "liquid_flags",
         "type": "Flags32",
         "flags": {
           "1": "",
@@ -5475,8 +5475,8 @@
         "type": "TextureRenderingInfo",
         "comment": "seams to fix"
       },
-      { "field": "some_x?", "type": "Float" },
-      { "field": "some_y?", "type": "Float" },
+      { "field": "some_unknown_x", "type": "Float" },
+      { "field": "some_unknown_y", "type": "Float" },
       { "field": "unknown4", "type": "Float" },
       { "field": "unknown5", "type": "Float" },
       { "field": "unknown6", "type": "Float" },
@@ -5544,7 +5544,7 @@
       { "field": "victory_jump_y_pos", "type": "Float" },
       { "field": "victory_jump_velocity", "type": "Float" },
       { "field": "unknown35", "type": "Float" },
-      { "field": "animation_frame?", "type": "UnsignedDword" },
+      { "field": "animation_frame", "type": "UnsignedDword", "comment": "unsure?" },
       { "field": "unknown37", "type": "Bool" },
       { "field": "squash_and_celebrate", "type": "Bool" },
       { "field": "player_1_ready", "type": "Bool" },
@@ -5596,12 +5596,6 @@
         "type": "Array",
         "length": 80,
         "arraytype": "ScreenArenaScoreUnknown"
-      },
-      { "field": "padding?", "type": "UnsignedDword" },
-      {
-        "field": "end?",
-        "type": "UnsignedQword",
-        "comment": "this is just allocator thing, not actual value"
       }
     ],
     "ScreenControls": [
@@ -5719,7 +5713,7 @@
       { "field": "unknown3", "type": "UnsignedDword" },
       { "field": "get_ready", "type": "TextureRenderingInfo" },
       {
-        "field": "get_ready_backdrop?",
+        "field": "get_ready_backdrop",
         "type": "TextureRenderingInfo",
         "comment": "flies by too fast to see..."
       },
@@ -6956,8 +6950,8 @@
       },
       { "field": "unknown48", "type": "Bool" },
       { "field": "unknown49", "type": "UnsignedByte" },
-      { "field": "padding1?", "type": "UnsignedWord" },
-      { "field": "padding2?", "type": "UnsignedDword" },
+      { "field": "padding1", "type": "UnsignedWord" },
+      { "field": "padding2", "type": "UnsignedDword" },
       { "field": "unknown50", "type": "UnsignedQword" }
     ],
     "LevelGenDataPointer": [
@@ -7642,7 +7636,7 @@
     ],
     "StdUnorderedMap": [
       { "field": "max_load_factor", "type": "Float" },
-      { "field": "-", "type": "Skip", "offset": 4 },
+      { "field": "padding", "type": "Skip", "offset": 4 },
       {
         "field": "end",
         "type": "UnorderedMapEndBucketPointer",
@@ -7692,7 +7686,7 @@
         "type": "UnorderedMapBucketPointer"
       },
       {
-        "field": "key/value",
+        "field": "key_value",
         "type": "Qword",
         "comment": "even thou this memory is not used, it's still allocated as this is identical to normal bucket"
       }
@@ -7978,7 +7972,7 @@
       { "field": "unknown_player2", "type": "Bool" },
       { "field": "unknown_player3", "type": "Bool" },
       { "field": "unknown_player4", "type": "Bool" },
-      { "field": "padding?", "type": "Dword" },
+      { "field": "padding_maybe", "type": "Dword" },
       { "field": "player1", "type": "EntityPointer" },
       { "field": "player2", "type": "EntityPointer" },
       { "field": "player3", "type": "EntityPointer" },
@@ -8093,8 +8087,9 @@
             "comment": "fade_out - set's the play_ending_sequence"
           },
           "2": {
-            "name": "get_name?",
-            "params": "void* buffer, uint32_t size"
+            "name": "get_name",
+            "params": "void* buffer, uint32_t size",
+            "comment": "unsure?"
           },
           "3": { "name": "~SoundMeta" },
           "4": {
@@ -8112,7 +8107,7 @@
         "comment": "param to FMOD::Studio::EventInstance::SetParameterByID (this ptr + 0x30)"
       },
       {
-        "field": "fmod_param_id?",
+        "field": "fmod_param_id",
         "type": "UnsignedQword",
         "comment": "param to FMOD::Studio::EventInstance::SetParameterByID"
       },
@@ -8595,9 +8590,9 @@
         "comment": "will have a chance to change rooms to beehive if true"
       },
       { "field": "allow_leprechaun", "type": "Bool" },
-      { "field": "padding1?", "type": "UnsignedByte" },
-      { "field": "padding2?", "type": "UnsignedByte" },
-      { "field": "padding3?", "type": "UnsignedDword" },
+      { "field": "padding1", "type": "UnsignedByte" },
+      { "field": "padding2", "type": "UnsignedByte" },
+      { "field": "padding3", "type": "UnsignedDword" },
       {
         "field": "sub_theme",
         "type": "COThemeInfoPointer",
@@ -8640,10 +8635,10 @@
     ],
     "LiquidPhysicsEngine": [
       { "field": "pause_physics", "type": "Bool" },
-      { "field": "padding1?", "type": "Byte" },
-      { "field": "padding2?", "type": "Byte" },
-      { "field": "padding3?", "type": "Byte" },
-      { "field": "physics_tick_timer?", "type": "Dword" },
+      { "field": "padding1", "type": "Byte" },
+      { "field": "padding2", "type": "Byte" },
+      { "field": "padding3", "type": "Byte" },
+      { "field": "physics_tick_timer", "type": "Dword", "comment": "unsure?" },
       { "field": "unknown1", "type": "Dword" },
       { "field": "unknown2", "type": "Dword" },
       { "field": "unknown3", "type": "Byte" },
@@ -8741,8 +8736,8 @@
       { "field": "unknown70", "type": "SomeUnknownArray", "comment": "array?" },
       { "field": "unknown72", "type": "DataPointer" },
       { "field": "unknown73", "type": "DataPointer" },
-      { "field": "entity_count_again?", "type": "Dword" },
-      { "field": "allocated_size_again?", "type": "Dword" },
+      { "field": "entity_count_again", "type": "Dword", "comment": "unsure what for?" },
+      { "field": "allocated_size_again", "type": "Dword", "comment": "unsure what for?" },
       { "field": "unknown75", "type": "DataPointer" },
       { "field": "unknown76", "type": "DataPointer" },
       {
@@ -9037,7 +9032,7 @@
     "SomeUnknownArray": [
       { "field": "array_pointer", "type": "DataPointer" },
       { "field": "unknown1", "type": "Dword", "comment": "resizing related" },
-      { "field": "padding?", "type": "Dword" }
+      { "field": "padding", "type": "Dword" }
     ],
     "XY": [
       { "field": "x", "type": "Float" },
@@ -9097,7 +9092,7 @@
         "type": "DataPointer",
         "comment": "array of targets? (uids)"
       },
-      { "field": "button_sequence?", "type": "DataPointer" },
+      { "field": "button_sequence_maybe", "type": "DataPointer" },
       { "field": "self_pointer", "type": "EntityPointer" },
       { "field": "unknown7", "type": "DataPointer" },
       { "field": "target", "type": "EntityPointer" },
@@ -9636,7 +9631,7 @@
       { "field": "padding_probably1", "type": "UnsignedWord" },
       { "field": "padding_probably2", "type": "UnsignedDword" },
       {
-        "field": "shaders?",
+        "field": "shaders",
         "type": "Array",
         "length": 99,
         "arraytype": "DxShader",
@@ -9955,7 +9950,7 @@
       { "field": "timer", "type": "HudElement" },
       { "field": "level", "type": "HudElement" },
       {
-        "field": "hud_elements?",
+        "field": "hud_elements",
         "type": "StdVector",
         "valuetype": "DataPointer",
         "comment": "Just pointers to the HUD elements"
@@ -10112,7 +10107,7 @@
         "comment": "some weird render filter?"
       },
       { "field": "unknown10", "type": "Bool" },
-      { "field": "render_lava_glow?", "type": "Bool" },
+      { "field": "render_lava_glow", "type": "Bool", "comment": "unsure" },
       { "field": "render_liquid_highlights", "type": "Bool" },
 
       { "field": "render_liquids", "type": "Bool" },
