@@ -280,7 +280,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
-            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfoPointer"), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
+            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfo"), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             break;
         }
         case MemoryFieldType::OldStdList:

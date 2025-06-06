@@ -719,7 +719,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         }
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
-            memField.jsonName = "ThemeInfoPointer";
+            memField.jsonName = "ThemeInfo";
             break;
         }
     }
