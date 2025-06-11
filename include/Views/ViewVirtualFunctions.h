@@ -6,7 +6,6 @@
 
 class QLineEdit;
 class QModelIndex;
-class QTableView;
 
 namespace S2Plugin
 {
@@ -26,8 +25,6 @@ namespace S2Plugin
 
       private:
         uintptr_t mMemoryAddress;
-
         QLineEdit* mJumpToLineEdit;
-        QTableView* mFunctionsTable;
     };
 } // namespace S2Plugin

@@ -621,7 +621,24 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
 
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
-                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), struct_name);
+
+                    std::string comment;
+                    if (func.contains("comment"))
+                    {
+                        if (func["comment"].type() == ordered_json::value_t::array)
+                        {
+                            for (const auto& c : func["comment"])
+                            {
+                                comment += c.get<std::string_view>();
+                                comment += '\n';
+                            }
+                            comment.erase(comment.size() - 1);
+                        }
+                        else
+                            comment = value_or(func, "comment", ""s);
+                    }
+                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), struct_name, std::move(comment));
+                    std::sort(vector.begin(), vector.end()); // just in case
                 }
             }
             break;
@@ -776,7 +793,22 @@ void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 
                     std::string params = value_or(func, "params", ""s);
                     std::string returnValue = value_or(func, "return", "void"s);
-                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), key);
+                    std::string comment;
+                    if (func.contains("comment"))
+                    {
+                        if (func["comment"].type() == ordered_json::value_t::array)
+                        {
+                            for (const auto& c : func["comment"])
+                            {
+                                comment += c.get<std::string_view>();
+                                comment += '\n';
+                            }
+                        }
+                        else
+                            comment = value_or(func, "comment", ""s);
+                    }
+                    vector.emplace_back(index, std::move(name), std::move(params), std::move(returnValue), key, std::move(comment));
+                    std::sort(vector.begin(), vector.end()); // just in case
                 }
                 continue;
             }
@@ -1003,42 +1035,17 @@ const std::vector<std::pair<int64_t, std::string>>& S2Plugin::Configuration::ref
     return it->second;
 }
 
-std::vector<S2Plugin::VirtualFunction> S2Plugin::Configuration::virtualFunctionsOfType(const std::string& type) const
+const std::vector<S2Plugin::VirtualFunction>& S2Plugin::Configuration::virtualFunctionsOfType(const std::string& type) const
 {
-    if (isEntitySubclass(type))
-    {
-        std::vector<S2Plugin::VirtualFunction> functions;
-        std::string currentType = type;
-        while (true)
-        {
-            if (auto it = mVirtualFunctions.find(currentType); it != mVirtualFunctions.end())
-                functions.insert(functions.end(), it->second.begin(), it->second.end());
+    static std::vector<S2Plugin::VirtualFunction> empty;
 
-            if (currentType == "Entity")
-                break;
-
-            auto it = mEntityClassHierarchy.find(currentType);
-            if (it != mEntityClassHierarchy.end())
-                currentType = it->second;
-            else
-            {
-                dprintf("unknown type requested in Configuration::virtualFunctionsOfType() (%s)\n", currentType.c_str());
-                break;
-            }
-        }
-        return functions;
-    }
+    auto it = mVirtualFunctions.find(type);
+    if (it != mVirtualFunctions.end())
+        return it->second;
     else
-    {
-        auto it = mVirtualFunctions.find(type);
-        if (it != mVirtualFunctions.end())
-            return it->second;
-        else
-        {
-            dprintf("unknown type requested in Configuration::virtualFunctionsOfType() (%s)\n", type.c_str());
-            return {};
-        }
-    }
+        dprintf("unknown type requested in Configuration::virtualFunctionsOfType() (%s)\n", type.c_str());
+
+    return empty;
 }
 
 uint8_t S2Plugin::Configuration::getAlignment(const std::string& typeName) const

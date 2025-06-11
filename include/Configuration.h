@@ -149,8 +149,13 @@ namespace S2Plugin
         std::string params;
         std::string returnValue;
         std::string type;
+        std::string comment;
 
-        VirtualFunction(size_t i, std::string n, std::string p, std::string r, std::string t) : index(i), name(n), params(p), returnValue(r), type(t){};
+        VirtualFunction(size_t i, std::string n, std::string p, std::string r, std::string t, std::string c) : index(i), name(n), params(p), returnValue(r), type(t), comment(c){};
+        bool operator<(const VirtualFunction& other) const
+        {
+            return index < other.index;
+        }
     };
 
     struct MemoryField // TODO this got big over time, consider size optimizations
@@ -244,7 +249,7 @@ namespace S2Plugin
         const std::vector<MemoryField>& typeFields(const MemoryFieldType type) const;
         const std::vector<MemoryField>& typeFieldsOfEntitySubclass(const std::string& type) const;
         const std::vector<MemoryField>& typeFieldsOfDefaultStruct(const std::string& type) const;
-        std::vector<VirtualFunction> virtualFunctionsOfType(const std::string& field) const;
+        const std::vector<VirtualFunction>& virtualFunctionsOfType(const std::string& field) const;
 
         // "Entity" returns true, even though it's base class
         bool isEntitySubclass(const std::string& type) const
@@ -330,5 +335,7 @@ namespace S2Plugin
         ~Configuration(){};
         Configuration(const Configuration&) = delete;
         Configuration& operator=(const Configuration&) = delete;
+
+        friend class ItemModelVirtualFunctions;
     };
 } // namespace S2Plugin

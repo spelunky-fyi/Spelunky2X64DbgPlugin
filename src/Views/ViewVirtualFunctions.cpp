@@ -4,7 +4,7 @@
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "pluginmain.h"
-#include <QHeaderView>
+#include <QHeaderView> // for horizontalHeader
 #include <QLabel>
 #include <QLineEdit>
 #include <QModelIndex>
@@ -37,23 +37,21 @@ S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, const st
     auto HTMLDelegate = new StyledItemDelegateHTML(this);
     HTMLDelegate->setCenterVertically(true);
 
-    auto model = new ItemModelVirtualFunctions(typeName, mMemoryAddress, this);
-    auto sortFilterProxy = new SortFilterProxyModelVirtualFunctions(this);
-    sortFilterProxy->setSourceModel(model);
+    auto functionsTable = new QTableView(this);
+    auto model = new ItemModelVirtualFunctions(typeName, mMemoryAddress, functionsTable);
+    functionsTable->setModel(model);
+    functionsTable->setAlternatingRowColors(true);
+    functionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    functionsTable->horizontalHeader()->setStretchLastSection(true);
+    functionsTable->setItemDelegate(HTMLDelegate);
+    functionsTable->setColumnWidth(ItemModelVirtualFunctions::Index, 30);
+    functionsTable->setColumnWidth(ItemModelVirtualFunctions::Offset, 50);
+    functionsTable->setColumnWidth(ItemModelVirtualFunctions::TableAddress, 130);
+    functionsTable->setColumnWidth(ItemModelVirtualFunctions::FunctionAddress, 130);
+    functionsTable->setColumnWidth(ItemModelVirtualFunctions::Signature, 300);
+    mainLayout->addWidget(functionsTable);
 
-    mFunctionsTable = new QTableView(this);
-    mFunctionsTable->setModel(sortFilterProxy);
-    mFunctionsTable->setAlternatingRowColors(true);
-    mFunctionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    mFunctionsTable->horizontalHeader()->setStretchLastSection(true);
-    mFunctionsTable->setItemDelegate(HTMLDelegate);
-    mFunctionsTable->setColumnWidth(gsColFunctionIndex, 50);
-    mFunctionsTable->setColumnWidth(gsColFunctionTableAddress, 130);
-    mFunctionsTable->setColumnWidth(gsColFunctionFunctionAddress, 130);
-    sortFilterProxy->sort(0);
-    mainLayout->addWidget(mFunctionsTable);
-
-    QObject::connect(mFunctionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);
+    QObject::connect(functionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);
 }
 
 QSize S2Plugin::ViewVirtualFunctions::sizeHint() const
@@ -68,23 +66,24 @@ QSize S2Plugin::ViewVirtualFunctions::minimumSizeHint() const
 
 void S2Plugin::ViewVirtualFunctions::tableEntryClicked(const QModelIndex& index)
 {
-    auto model = mFunctionsTable->model();
     switch (index.column())
     {
-        case gsColFunctionIndex:
-        case gsColFunctionSignature:
+        case ItemModelVirtualFunctions::Index:
+        case ItemModelVirtualFunctions::Signature:
+        case ItemModelVirtualFunctions::Comment:
+        case ItemModelVirtualFunctions::Offset:
             // nop
             break;
-        case gsColFunctionFunctionAddress:
+        case ItemModelVirtualFunctions::FunctionAddress:
         {
-            auto address = model->data(index, gsRoleFunctionFunctionAddress).value<size_t>();
+            auto address = index.data(gsRoleFunctionFunctionAddress).toULongLong();
             GuiDisasmAt(address, GetContextData(UE_CIP));
             GuiShowCpu();
             break;
         }
-        case gsColFunctionTableAddress:
+        case ItemModelVirtualFunctions::TableAddress:
         {
-            auto address = model->data(index, gsRoleFunctionTableAddress).value<size_t>();
+            auto address = index.data(gsRoleFunctionTableAddress).toULongLong();
             GuiDumpAt(address);
             GuiShowCpu();
             break;
