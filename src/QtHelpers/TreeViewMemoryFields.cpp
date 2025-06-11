@@ -2668,7 +2668,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                         auto rows = mainField.data(gsRoleSize).toULongLong();
                         auto columns = mainField.data(gsRoleColumns).toULongLong();
 
-                        getToolbar()->showMatrix(rawValue, mainField.data(Qt::DisplayRole).toString().toStdString(), typeName, rows, columns);
+                        getToolbar()->showMatrix(rawValue, std::move(mainField.data(Qt::DisplayRole).toString().toStdString()), std::move(typeName), rows, columns);
                         break;
                     }
                     [[fallthrough]]; // can't just fall into DefaultStructType, but it shouldn't matter as array will do the same check and fall further anyway
@@ -2684,7 +2684,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
 
                         auto typeName = qvariant_cast<std::string>(mainField.data(gsRoleStdContainerFirstParameterType));
 
-                        getToolbar()->showArray(rawValue, mainField.data(Qt::DisplayRole).toString().toStdString(), typeName, mainField.data(gsRoleSize).toULongLong());
+                        getToolbar()->showArray(rawValue, std::move(mainField.data(Qt::DisplayRole).toString().toStdString()), std::move(typeName), mainField.data(gsRoleSize).toULongLong());
                         break;
                     }
                     [[fallthrough]];
@@ -2771,7 +2771,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (address != 0)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
-                        getToolbar()->showStdList(address, typeName, true);
+                        getToolbar()->showStdList(address, std::move(typeName), true);
                     }
                     break;
                 }
@@ -2781,7 +2781,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     if (address != 0)
                     {
                         auto typeName = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleStdContainerFirstParameterType));
-                        getToolbar()->showStdList(address, typeName);
+                        getToolbar()->showStdList(address, std::move(typeName));
                     }
                     break;
                 }

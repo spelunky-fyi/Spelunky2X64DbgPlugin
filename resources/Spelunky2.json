@@ -5472,7 +5472,7 @@
       {
         "field": "unknown1",
         "type": "TextureRenderingInfo",
-        "comment": "seams to fix"
+        "comment": "seams to fit"
       },
       { "field": "some_unknown_x", "type": "Float" },
       { "field": "some_unknown_y", "type": "Float" },
@@ -7820,10 +7820,9 @@
     "LayerPointer": [
       { "field": "is_back_layer", "type": "Bool" },
       {
-        "field": "skip1",
+        "field": "padding",
         "type": "Skip",
-        "offset": 7,
-        "comment": "skip padding"
+        "offset": 7
       },
       { "field": "all_entities", "type": "EntityList" },
       {
@@ -7891,7 +7890,7 @@
         "row": 126,
         "col": 86,
         "matrixtype": "EntityList",
-        "comment": "126*86*EntityList (minus the Qword above)"
+        "comment": "126*86*EntityList"
       },
       { "field": "unknown_entities2", "type": "EntityList" },
       {
@@ -8141,7 +8140,7 @@
           },
           "2": {
             "name": "update",
-            "params": "math, basically always runs before render"
+            "comment": "math, basically always runs before render"
           },
           "3": {
             "name": "render",
@@ -9404,8 +9403,7 @@
           "55": { "name": "v55" },
           "56": { "name": "v56" },
           "57": { "name": "v57" },
-          "58": { "name": "v58" },
-          "59": { "name": "v59" }
+          "58": { "name": "v58", "comment": "last? next is nullpointer?" }
         }
       },
       {

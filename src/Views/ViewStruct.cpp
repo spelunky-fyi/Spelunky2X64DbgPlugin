@@ -45,6 +45,16 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     autoRefresh->toggleAutoRefresh(true);
 }
 
+QSize S2Plugin::ViewStruct::sizeHint() const
+{
+    return QSize(750, 1050);
+}
+
+QSize S2Plugin::ViewStruct::minimumSizeHint() const
+{
+    return QSize(150, 150);
+}
+
 S2Plugin::ViewArray::ViewArray(uintptr_t address, std::string arrayTypeName, size_t num, std::string name, QWidget* parent)
     : ViewStruct(0, {}, arrayTypeName + " " + name + '[' + std::to_string(num) + ']', parent), mArrayAddress(address)
 {
@@ -98,14 +108,4 @@ void S2Plugin::ViewMatrix::pageListUpdate()
     mMatrix.secondParameterType = std::to_string(range.first);
     mMatrix.rows = range.second;
     mMainTreeView->addMemoryField(mMatrix, {}, mMatrixAddress, 0);
-}
-
-QSize S2Plugin::ViewStruct::sizeHint() const
-{
-    return QSize(750, 1050);
-}
-
-QSize S2Plugin::ViewStruct::minimumSizeHint() const
-{
-    return QSize(150, 150);
 }

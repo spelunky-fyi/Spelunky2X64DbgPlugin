@@ -415,7 +415,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     {
         memField.type = it->second.type;
         memField.size = it->second.size;
-        memField.isPointer = it->second.isPointer;
+        memField.isPointer |= it->second.isPointer;
     }
 
     if (field.contains("offset"))
@@ -950,7 +950,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfD
     auto it = mTypeFieldsStructs.find(type);
     if (it == mTypeFieldsStructs.end())
     {
-        dprintf("unknown key requested in Configuration::typeFieldsOfDefaultStruct() (t=%s)\n", type.c_str());
+        dprintf("unknown key requested in Configuration::typeFieldsOfDefaultStruct() (%s)\n", type.c_str());
         static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
     }
@@ -975,7 +975,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfE
     auto it = mTypeFieldsEntitySubclasses.find(type);
     if (it == mTypeFieldsEntitySubclasses.end())
     {
-        dprintf("unknown key requested in Configuration::typeFieldsOfEntitySubclass() (t=%s)\n", type.c_str());
+        dprintf("unknown key requested in Configuration::typeFieldsOfEntitySubclass() (%s)\n", type.c_str());
         static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
     }
