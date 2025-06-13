@@ -1999,8 +1999,16 @@
         "type": "Word",
         "comment": "counts up to 400 (6.6 sec); when 0 the pet yells out"
       },
-      { "field": "sit_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
-      { "field": "sit_cooldown_timer", "type": "UnsignedWord", "comment": "when colliding with a player in the camp" },
+      {
+        "field": "sit_timer",
+        "type": "UnsignedWord",
+        "comment": "when colliding with a player in the camp"
+      },
+      {
+        "field": "sit_cooldown_timer",
+        "type": "UnsignedWord",
+        "comment": "when colliding with a player in the camp"
+      },
       {
         "field": "func_timer",
         "type": "Word",
@@ -2199,7 +2207,7 @@
     "Robot": [
       { "field": "sound", "type": "SoundMeta" },
       { "field": "emitted_light_explosion", "type": "IlluminationPointer" },
-	  {
+      {
         "field": "prev_move_state",
         "type": "UnsignedByte",
         "comment": "Used to return to the correct state when landing after falling and running into a wall when activated."
@@ -2248,7 +2256,11 @@
         "comment": "amount of gold he picked up, will be dropped on death"
       },
       { "field": "timer_after_humping", "type": "UnsignedByte" },
-      { "field": "jump_trigger", "type": "Bool", "comment": "triggers a jump on the next frame" },
+      {
+        "field": "jump_trigger",
+        "type": "Bool",
+        "comment": "triggers a jump on the next frame"
+      },
       { "field": "padding", "type": "UnsignedWord" },
       {
         "field": "collected_treasure",
@@ -2887,7 +2899,11 @@
         "comment": "is it? i seen it in the code compared as a bit with 1, but not sure when it happens"
       },
       { "field": "drop", "type": "Bool" },
-      { "field": "rotation_direction", "type": "Bool", "comment": "Counter-clockwise if true" },
+      {
+        "field": "rotation_direction",
+        "type": "Bool",
+        "comment": "Counter-clockwise if true"
+      },
       {
         "field": "wall_collision_cooldown",
         "type": "UnsignedByte",
