@@ -24,6 +24,8 @@
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
+#include <QHeaderView>
+#include <QMenu>
 #include <QMimeData>
 #include <QModelIndex>
 #include <QPainter>
@@ -69,6 +71,8 @@ QTreeView::branch:open:has-children:has-siblings  {
 })");
 
     QObject::connect(this, &QTreeView::clicked, this, &TreeViewMemoryFields::cellClicked);
+    header()->setSectionsClickable(true);
+    QObject::connect(header(), &QHeaderView::sectionClicked, this, &TreeViewMemoryFields::headerClicked);
 }
 
 void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta, uint8_t deltaPrefixCount,
@@ -3366,4 +3370,18 @@ void S2Plugin::TreeViewMemoryFields::mouseMoveEvent(QMouseEvent* event)
         setCursor(Qt::ArrowCursor);
 
     QTreeView::mouseMoveEvent(event);
+}
+
+void S2Plugin::TreeViewMemoryFields::headerClicked()
+{
+    QMenu contextMenu(this);
+    auto headerCount = header()->count();
+    for (uint8_t idx = 0; idx < headerCount; idx++)
+    {
+        auto action = contextMenu.addAction(mModel->headerData(idx, Qt::Orientation::Horizontal, Qt::DisplayRole).toString());
+        action->setCheckable(true);
+        action->setChecked(mActiveColumns.test(idx));
+        QObject::connect(action, &QAction::triggered, &contextMenu, [idx, this]() { setColumnHidden(idx, !mActiveColumns.flip(idx).test(idx)); });
+    }
+    contextMenu.exec(cursor().pos());
 }

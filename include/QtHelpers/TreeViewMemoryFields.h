@@ -38,6 +38,11 @@ namespace S2Plugin
         {
             return (mActiveColumns & (1U << h)) != 0;
         }
+        constexpr ColumnFilter& flip(uint8_t h)
+        {
+            mActiveColumns = mActiveColumns ^ (1U << h);
+            return *this;
+        }
 
       private:
         uint16_t mActiveColumns{0xFFFF};
@@ -83,6 +88,7 @@ namespace S2Plugin
         }
       private slots:
         void cellClicked(const QModelIndex& index);
+        void headerClicked(/* int logicalIndex */);
 
       protected:
         void dragEnterEvent(QDragEnterEvent* event) override;
