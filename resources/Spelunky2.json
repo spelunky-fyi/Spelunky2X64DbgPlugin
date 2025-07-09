@@ -1516,7 +1516,11 @@
     "MenuInsert": [
       { "field": "x", "type": "Float" },
       { "field": "y", "type": "Float" },
-      { "field": "text_disappearance_speed", "type": "Float", "comment": "unsure?" },
+      {
+        "field": "text_disappearance_speed",
+        "type": "Float",
+        "comment": "unsure?"
+      },
       { "field": "text_spacing", "type": "Float" },
       { "field": "unknown5", "type": "Float" },
       { "field": "unknown6", "type": "UnsignedDword" },
@@ -2880,7 +2884,11 @@
       { "field": "unknown15", "type": "Float" },
       { "field": "unknown16", "type": "Float" },
       { "field": "unknown17", "type": "Float" },
-      { "field": "blurred_border_animation_frame", "type": "UnsignedDword", "comment": "unsure?" },
+      {
+        "field": "blurred_border_animation_frame",
+        "type": "UnsignedDword",
+        "comment": "unsure?"
+      },
       { "field": "unknown19", "type": "UnsignedByte" },
       { "field": "unknown20", "type": "UnsignedByte" },
       { "field": "unknown21", "type": "UnsignedByte" },
@@ -5543,7 +5551,11 @@
       { "field": "victory_jump_y_pos", "type": "Float" },
       { "field": "victory_jump_velocity", "type": "Float" },
       { "field": "unknown35", "type": "Float" },
-      { "field": "animation_frame", "type": "UnsignedDword", "comment": "unsure?" },
+      {
+        "field": "animation_frame",
+        "type": "UnsignedDword",
+        "comment": "unsure?"
+      },
       { "field": "unknown37", "type": "Bool" },
       { "field": "squash_and_celebrate", "type": "Bool" },
       { "field": "player_1_ready", "type": "Bool" },
@@ -8734,8 +8746,16 @@
       { "field": "unknown70", "type": "SomeUnknownArray", "comment": "array?" },
       { "field": "unknown72", "type": "DataPointer" },
       { "field": "unknown73", "type": "DataPointer" },
-      { "field": "entity_count_again", "type": "Dword", "comment": "unsure what for?" },
-      { "field": "allocated_size_again", "type": "Dword", "comment": "unsure what for?" },
+      {
+        "field": "entity_count_again",
+        "type": "Dword",
+        "comment": "unsure what for?"
+      },
+      {
+        "field": "allocated_size_again",
+        "type": "Dword",
+        "comment": "unsure what for?"
+      },
       { "field": "unknown75", "type": "DataPointer" },
       { "field": "unknown76", "type": "DataPointer" },
       {

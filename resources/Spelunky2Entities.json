@@ -2153,7 +2153,11 @@
         "type": "UnsignedWord",
         "comment": "jump pause when cool; runs continuously when hot"
       },
-      { "field": "lava_detection_timer", "type": "UnsignedByte", "comment": "unsure?" },
+      {
+        "field": "lava_detection_timer",
+        "type": "UnsignedByte",
+        "comment": "unsure?"
+      },
       { "field": "is_hot", "type": "Bool" },
       {
         "field": "player_detect_state",
@@ -2510,7 +2514,11 @@
         "type": "UnsignedByte",
         "comment": "Excalibur wipes out immediately, bombs take off 11 points; when 0 vulnerable to whip"
       },
-      { "field": "player_seen_by_kingu", "type": "Bool", "comment": "probably the 'logged to journal'" }
+      {
+        "field": "player_seen_by_kingu",
+        "type": "Bool",
+        "comment": "probably the 'logged to journal'"
+      }
     ],
     "Anubis": [
       {
@@ -2978,7 +2986,11 @@
         "type": "Float",
         "comment": "unsure? during flight"
       },
-      { "field": "applied_ver_velocity", "type": "Float", "comment": "unsure?" },
+      {
+        "field": "applied_ver_velocity",
+        "type": "Float",
+        "comment": "unsure?"
+      },
       { "field": "birdhead_entity_uid", "type": "EntityUID" },
       { "field": "snakehead_entity_uid", "type": "EntityUID" },
       { "field": "floor_level", "type": "Float" },
@@ -5117,7 +5129,11 @@
         "type": "Float",
         "comment": "SoundMeta -> VALUE"
       },
-      { "field": "counter", "type": "Dword", "comment": "unsure? probably unsigned?" },
+      {
+        "field": "counter",
+        "type": "Dword",
+        "comment": "unsure? probably unsigned?"
+      },
       {
         "field": "unknown1",
         "type": "Byte",
