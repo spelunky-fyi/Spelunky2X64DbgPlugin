@@ -12,6 +12,7 @@ namespace S2Plugin
     class ViewVirtualTable;
     class ViewTextureDB;
     class ViewCharacterDB;
+    class ViewCpp;
 
     class ViewToolbar : public QDockWidget
     {
@@ -32,6 +33,7 @@ namespace S2Plugin
         void showEntityList(uintptr_t address);
         void showStdList(uintptr_t address, std::string typeName, bool oldType = false);
         void showSaveGame(uintptr_t address);
+        ViewCpp* showCode(const std::string& typeName);
 
       public slots:
         ViewEntityDB* showEntityDB();

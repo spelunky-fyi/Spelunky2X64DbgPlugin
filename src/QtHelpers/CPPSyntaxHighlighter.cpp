@@ -8,7 +8,7 @@ S2Plugin::CPPSyntaxHighlighter::CPPSyntaxHighlighter(QTextDocument* parent) : QS
     mFormatComments.setForeground(QColor("#6A9955"));
     mFormatText.setForeground(QColor("#FFFFFF"));
     mFormatNumber.setForeground(QColor("#B5CEA8"));
-
+    mFormatFunction.setForeground(QColor("#DCDCAA"));
     clearRules();
 }
 
@@ -16,44 +16,83 @@ void S2Plugin::CPPSyntaxHighlighter::addRule(const QString& pattern, HighlightCo
 {
     switch (color)
     {
-        case HighlightColor::ReservedKeyword:
-            mRules.append({QRegularExpression(pattern), mFormatReservedKeywords});
-            break;
         case HighlightColor::Variable:
             if (!mSeenVariables.contains(pattern))
             {
-                mRules.append({QRegularExpression(pattern), mFormatVariables});
+                mRules.emplace_back(QRegularExpression(pattern), color);
                 mSeenVariables.insert(pattern);
             }
             break;
         case HighlightColor::Type:
             if (!mSeenTypes.contains(pattern))
             {
-                mRules.append({QRegularExpression(pattern), mFormatTypes});
+                mRules.emplace_back(QRegularExpression(pattern), color);
                 mSeenTypes.insert(pattern);
             }
             break;
-        case HighlightColor::Comment:
-            mRules.append({QRegularExpression(pattern), mFormatComments});
-            break;
-        case HighlightColor::Text:
-            mRules.append({QRegularExpression(pattern), mFormatText});
-            break;
-        case HighlightColor::Number:
-            mRules.append({QRegularExpression(pattern), mFormatNumber});
-            break;
+        default:
+            mRules.emplace_back(QRegularExpression(pattern), color);
     }
 }
 
 void S2Plugin::CPPSyntaxHighlighter::highlightBlock(const QString& text)
 {
-    for (const auto& rule : mRules)
+
+    auto space = text.lastIndexOf(" ");
+    for (const auto& [expr, color] : mRules)
     {
-        QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
+        QRegularExpressionMatchIterator matchIterator = expr.globalMatch(text);
         while (matchIterator.hasNext())
         {
             QRegularExpressionMatch match = matchIterator.next();
-            setFormat(match.capturedStart(), match.capturedLength(), rule.format);
+            switch (color)
+            {
+                case HighlightColor::ReservedKeyword:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatReservedKeywords);
+                    break;
+                case HighlightColor::Variable:
+                {
+                    if (space < match.capturedStart())
+                        setFormat(match.capturedStart(), match.capturedLength(), mFormatVariables);
+                    break;
+                }
+                case HighlightColor::Type:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatTypes);
+                    break;
+                case HighlightColor::Comment:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatComments);
+                    break;
+                case HighlightColor::Text:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatText);
+                    break;
+                case HighlightColor::Number:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatNumber);
+                    break;
+                case HighlightColor::Function:
+                    setFormat(match.capturedStart(), match.capturedLength(), mFormatFunction);
+                    break;
+            }
+        }
+    }
+    static const std::pair<QRegularExpression, QTextCharFormat> lastRules[10] = {
+        {QRegularExpression("\\b[0-9]+\\b"), mFormatNumber},
+        {QRegularExpression(R"(\bvoid\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bbool\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bfloat\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bdouble\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bconst\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bchar\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bchar16_t\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\bvirtual\b)"), mFormatReservedKeywords},
+        {QRegularExpression(R"(\/\/.*?$)"), mFormatComments},
+    };
+    for (const auto& [expr, format] : lastRules)
+    {
+        QRegularExpressionMatchIterator matchIterator = expr.globalMatch(text);
+        while (matchIterator.hasNext())
+        {
+            QRegularExpressionMatch match = matchIterator.next();
+            setFormat(match.capturedStart(), match.capturedLength(), format);
         }
     }
 }
@@ -65,13 +104,5 @@ void S2Plugin::CPPSyntaxHighlighter::clearRules()
     mSeenVariables.clear();
     addRule(R"(\bclass\b)", HighlightColor::ReservedKeyword);
     addRule(R"(\bpublic\b)", HighlightColor::ReservedKeyword);
-}
-
-void S2Plugin::CPPSyntaxHighlighter::finalCustomRuleAdded()
-{
-    addRule(";", HighlightColor::Text);
-    addRule("\\[[0-9]+\\]", HighlightColor::Number);
-    addRule("\\[", HighlightColor::Text);
-    addRule("\\]", HighlightColor::Text);
-    addRule(R"(\/\/.*?$)", HighlightColor::Comment);
+    addRule(R"(\bstruct\b)", HighlightColor::ReservedKeyword);
 }

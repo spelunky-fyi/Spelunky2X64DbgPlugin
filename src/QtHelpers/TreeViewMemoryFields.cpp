@@ -3374,7 +3374,7 @@ void S2Plugin::TreeViewMemoryFields::mouseMoveEvent(QMouseEvent* event)
 
 void S2Plugin::TreeViewMemoryFields::headerClicked()
 {
-    QMenu contextMenu(this);
+    QMenu contextMenu;
     auto headerCount = header()->count();
     for (uint8_t idx = 0; idx < headerCount; idx++)
     {
@@ -3384,4 +3384,18 @@ void S2Plugin::TreeViewMemoryFields::headerClicked()
         QObject::connect(action, &QAction::triggered, &contextMenu, [idx, this]() { setColumnHidden(idx, !mActiveColumns.flip(idx).test(idx)); });
     }
     contextMenu.exec(cursor().pos());
+}
+
+void S2Plugin::TreeViewMemoryFields::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::RightButton)
+    {
+        QMenu contextMenu;
+        emit onContextMenu(&contextMenu);
+
+        if (!contextMenu.isEmpty())
+            contextMenu.exec(cursor().pos());
+    }
+
+    QTreeView::mousePressEvent(event);
 }

@@ -97,10 +97,12 @@ namespace S2Plugin
         void startDrag(Qt::DropActions supportedActions) override;
         void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
         void mouseMoveEvent(QMouseEvent* event) override;
+        void mousePressEvent(QMouseEvent* event) override;
       signals:
         void memoryFieldValueUpdated(int row, QStandardItem* parent);
         void levelGenRoomsPointerClicked();
         void offsetDropped(uintptr_t offset);
+        void onContextMenu(QMenu* menu);
 
       private:
         bool isItemClickable(const QModelIndex& index) const;

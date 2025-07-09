@@ -8,6 +8,7 @@ class QScrollArea;
 class QString;
 class QTabWidget;
 class QTextEdit;
+class QMenu;
 
 namespace S2Plugin
 {
@@ -31,7 +32,7 @@ namespace S2Plugin
         void interpretAsChanged(const QString& text);
         void label();
         void entityOffsetDropped(uintptr_t entityOffset);
-        void tabChanged();
+        void viewContextMenu(QMenu* menu);
 
       private:
         QTabWidget* mMainTabWidget;
@@ -54,10 +55,6 @@ namespace S2Plugin
 
         // TAB LEVEL
         WidgetSpelunkyLevel* mSpelunkyLevel;
-
-        // TAB CPP
-        QTextEdit* mCPPTextEdit;
-        CPPSyntaxHighlighter* mCPPSyntaxHighlighter;
 
         void initializeUI();
         void updateMemoryViewOffsetAndSize();

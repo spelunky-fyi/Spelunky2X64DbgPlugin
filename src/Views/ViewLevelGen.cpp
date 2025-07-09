@@ -5,10 +5,12 @@
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetSpelunkyRooms.h"
 #include "QtPlugin.h"
+#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QVBoxLayout>
@@ -56,6 +58,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
         mMainTreeView->setColumnWidth(gsColType, 100);
         mMainTreeView->addMemoryFields(Configuration::get()->typeFields(MemoryFieldType::LevelGen), "LevelGen", mLevelGenPtr);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::levelGenRoomsPointerClicked, this, &ViewLevelGen::levelGenRoomsPointerClicked);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::onContextMenu, this, &ViewLevelGen::viewContextMenu);
     }
 
     // TAB ROOMS
@@ -120,4 +123,9 @@ void S2Plugin::ViewLevelGen::label()
 void S2Plugin::ViewLevelGen::levelGenRoomsPointerClicked()
 {
     mMainTabWidget->setCurrentIndex(1);
+}
+void S2Plugin::ViewLevelGen::viewContextMenu(QMenu* menu)
+{
+    auto action = menu->addAction("View Code");
+    QObject::connect(action, &QAction::triggered, menu, [this]() { getToolbar()->showCode("LevelGen"); });
 }

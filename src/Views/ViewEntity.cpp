@@ -1,29 +1,26 @@
 #include "Views/ViewEntity.h"
 
 #include "Configuration.h"
-#include "Data/CPPGenerator.h"
 #include "Data/Entity.h"
-#include "QtHelpers/CPPSyntaxHighlighter.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetMemoryView.h"
 #include "QtHelpers/WidgetSpelunkyLevel.h"
 #include "QtPlugin.h"
-#include "pluginmain.h"
-#include <QAbstractItemView>
+#include "Views/ViewToolbar.h"
+#include "pluginmain.h" // for dprintf
+#include <QAction>
 #include <QColor>
 #include <QComboBox>
-#include <QFont>
-#include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QStandardItemModel>
 #include <QString>
 #include <QTabWidget>
-#include <QTextEdit>
 #include <QVBoxLayout>
 #include <string>
 #include <vector>
@@ -33,7 +30,6 @@ enum TABS
     FIELDS = 0,
     MEMORY = 1,
     LEVEL = 2,
-    CPP = 3,
 };
 
 S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget(parent), mEntityPtr(entityOffset)
@@ -91,13 +87,11 @@ void S2Plugin::ViewEntity::initializeUI()
     // TABS
     mMainTabWidget = new QTabWidget(this);
     mMainTabWidget->setDocumentMode(false);
-    QObject::connect(mMainTabWidget, &QTabWidget::currentChanged, this, &ViewEntity::tabChanged);
     mainLayout->addWidget(mMainTabWidget);
 
     mMainTreeView = new TreeViewMemoryFields();
     auto tabMemory = new QWidget();
     auto tabLevel = new QScrollArea();
-    mCPPTextEdit = new QTextEdit();
 
     tabMemory->setLayout(new QHBoxLayout());
     tabMemory->layout()->setMargin(0);
@@ -105,7 +99,6 @@ void S2Plugin::ViewEntity::initializeUI()
     mMainTabWidget->addTab(mMainTreeView, "Fields");
     mMainTabWidget->addTab(tabMemory, "Memory");
     mMainTabWidget->addTab(tabLevel, "Level");
-    mMainTabWidget->addTab(mCPPTextEdit, "C++");
 
     // TAB FIELDS
     {
@@ -118,6 +111,7 @@ void S2Plugin::ViewEntity::initializeUI()
         mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
         mMainTreeView->setColumnWidth(gsColType, 100);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::offsetDropped, this, &ViewEntity::entityOffsetDropped);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::onContextMenu, this, &ViewEntity::viewContextMenu);
     }
     // TAB MEMORY
     {
@@ -150,23 +144,6 @@ void S2Plugin::ViewEntity::initializeUI()
         mSpelunkyLevel->paintEntityMask(0x80, QColor(85, 170, 170)); // active floors
         tabLevel->setStyleSheet("background-color: #FFF;");
         tabLevel->setWidget(mSpelunkyLevel);
-    }
-    // TAB CPP
-    {
-        mCPPTextEdit->setReadOnly(true);
-        auto font = QFont("Courier", 10);
-        font.setFixedPitch(true);
-        font.setStyleHint(QFont::Monospace);
-        auto fontMetrics = QFontMetrics(font);
-        mCPPTextEdit->setFont(font);
-        mCPPTextEdit->setTabStopWidth(4 * fontMetrics.width(' '));
-        mCPPTextEdit->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
-        QPalette palette = mCPPTextEdit->palette();
-        palette.setColor(QPalette::Base, QColor("#1E1E1E"));
-        palette.setColor(QPalette::Text, QColor("#D4D4D4"));
-        mCPPTextEdit->setPalette(palette);
-        mCPPTextEdit->document()->setDocumentMargin(10);
-        mCPPSyntaxHighlighter = new CPPSyntaxHighlighter(mCPPTextEdit->document());
     }
     autoRefresh->toggleAutoRefresh(true);
 }
@@ -327,24 +304,19 @@ void S2Plugin::ViewEntity::updateComparedMemoryViewHighlights()
     // update last element
     int size = static_cast<int>(Configuration::getBuiltInTypeSize(type));
     if (size != 0)
-    {
         mMemoryComparisonView->addHighlightedField(std::move(fieldName), mComparisonEntityPtr + offset, size, std::move(color));
-    }
 }
 
 void S2Plugin::ViewEntity::label()
 {
-    std::stringstream ss;
-    ss << "[Entity uid:" << Entity{mEntityPtr}.uid() << "]";
-    mMainTreeView->labelAll(ss.str());
+    std::string ss("[Entity uid:" + std::to_string(Entity{mEntityPtr}.uid()) + "]");
+    mMainTreeView->labelAll(ss);
 }
 
 void S2Plugin::ViewEntity::entityOffsetDropped(uintptr_t entityOffset)
 {
     if (mComparisonEntityPtr != 0)
-    {
         mSpelunkyLevel->clearPaintedEntity(mComparisonEntityPtr);
-    }
 
     mComparisonEntityPtr = entityOffset;
     mSpelunkyLevel->paintEntity(entityOffset, QColor(232, 134, 30));
@@ -353,14 +325,13 @@ void S2Plugin::ViewEntity::entityOffsetDropped(uintptr_t entityOffset)
     mMemoryScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
-void S2Plugin::ViewEntity::tabChanged()
+void S2Plugin::ViewEntity::viewContextMenu(QMenu* menu)
 {
-    if (mMainTabWidget->currentIndex() == TABS::CPP)
-    {
-        mCPPSyntaxHighlighter->clearRules();
-        CPPGenerator g{};
-        g.generate(mInterpretAsComboBox->currentText().toStdString(), mCPPSyntaxHighlighter);
-        mCPPSyntaxHighlighter->finalCustomRuleAdded();
-        mCPPTextEdit->setText(QString::fromStdString(g.result()));
-    }
+    auto action = menu->addAction("View Code");
+    QObject::connect(action, &QAction::triggered, menu,
+                     [this]()
+                     {
+                         auto type = mInterpretAsComboBox->currentText().toStdString();
+                         getToolbar()->showCode(type);
+                     });
 }

@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 class QTabWidget;
+class QMenu;
 
 namespace S2Plugin
 {
@@ -26,6 +27,7 @@ namespace S2Plugin
         void refreshLevelGen();
         void label();
         void levelGenRoomsPointerClicked();
+        void viewContextMenu(QMenu* menu);
 
       private:
         QTabWidget* mMainTabWidget;

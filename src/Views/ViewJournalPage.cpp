@@ -4,9 +4,12 @@
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtPlugin.h"
+#include "Views/ViewCpp.h"
+#include "Views/ViewToolbar.h"
 #include <QComboBox>
 #include <QHeaderView>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -30,14 +33,14 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     refreshLayout->addWidget(labelButton);
     refreshLayout->addWidget(new QLabel("Interpret as:", this));
 
-    auto interpretAsComboBox = new QComboBox(this);
+    mInterpretAsComboBox = new QComboBox(this);
 
     auto config = Configuration::get();
     for (auto& pageName : config->getJournalPageNames())
-        interpretAsComboBox->addItem(QString::fromStdString(pageName));
+        mInterpretAsComboBox->addItem(QString::fromStdString(pageName));
 
-    QObject::connect(interpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
-    refreshLayout->addWidget(interpretAsComboBox);
+    QObject::connect(mInterpretAsComboBox, &QComboBox::currentTextChanged, this, &ViewJournalPage::interpretAsChanged);
+    refreshLayout->addWidget(mInterpretAsComboBox);
 
     mMainTreeView = new TreeViewMemoryFields(this);
     mainLayout->addWidget(mMainTreeView);
@@ -49,10 +52,10 @@ S2Plugin::ViewJournalPage::ViewJournalPage(uintptr_t address, QWidget* parent) :
     mMainTreeView->setColumnWidth(gsColMemoryAddress, 120);
     mMainTreeView->setColumnWidth(gsColMemoryAddressDelta, 75);
     mMainTreeView->setColumnWidth(gsColType, 100);
-
     mMainTreeView->addMemoryFields(config->typeFieldsOfDefaultStruct("JournalPage"), "JournalPage", mPageAddress);
     mMainTreeView->updateTree(0, 0, true);
     autoRefresh->toggleAutoRefresh(true);
+    QObject::connect(mMainTreeView, &TreeViewMemoryFields::onContextMenu, this, &ViewJournalPage::viewContextMenu);
 }
 
 void S2Plugin::ViewJournalPage::refreshJournalPage()
@@ -104,4 +107,17 @@ void S2Plugin::ViewJournalPage::interpretAsChanged(const QString& text)
         mMainTreeView->updateTableHeader();
         mMainTreeView->updateTree(0, 0, true);
     }
+}
+
+void S2Plugin::ViewJournalPage::viewContextMenu(QMenu* menu)
+{
+    auto action = menu->addAction("View Code");
+    QObject::connect(action, &QAction::triggered, menu,
+                     [this]()
+                     {
+                         auto type = mInterpretAsComboBox->currentText().toStdString();
+                         auto codeWindow = getToolbar()->showCode(type);
+                         if (type != "JournalPage")
+                             codeWindow->addDependency("JournalPage");
+                     });
 }

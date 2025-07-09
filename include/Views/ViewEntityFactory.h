@@ -11,7 +11,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        explicit ViewEntityFactory(QWidget* parent = nullptr) : ViewStruct(0, {}, "Entity Factory", parent)
+        explicit ViewEntityFactory(QWidget* parent = nullptr) : ViewStruct(0, {}, "EntityFactory", parent)
         {
             auto config = Configuration::get();
             MemoryField dummy;

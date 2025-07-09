@@ -4,12 +4,14 @@
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
 #include "QtPlugin.h"
+#include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QHash>
 #include <QHeaderView>
+#include <QMenu>
 #include <QModelIndex>
 #include <QPushButton>
 #include <QStandardItem>
@@ -17,6 +19,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+#include <QVector>
 
 namespace std
 {
@@ -93,6 +96,17 @@ S2Plugin::AbstractDatabaseView::AbstractDatabaseView(MemoryFieldType type, QWidg
         mMainTreeView->addMemoryFields(config->typeFields(type), std::string(config->getTypeDisplayName(type)), 0);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::memoryFieldValueUpdated, this, &AbstractDatabaseView::fieldUpdated);
         QObject::connect(mMainTreeView, &TreeViewMemoryFields::expanded, this, &AbstractDatabaseView::fieldExpanded);
+        QObject::connect(mMainTreeView, &TreeViewMemoryFields::onContextMenu, this,
+                         [type, this](QMenu* menu)
+                         {
+                             auto action = menu->addAction("View Code");
+                             QObject::connect(action, &QAction::triggered, menu,
+                                              [type]()
+                                              {
+                                                  auto typeName = Configuration::get()->getCPPTypeName(type);
+                                                  getToolbar()->showCode(std::string(typeName));
+                                              });
+                         });
     }
 
     // COMPARE

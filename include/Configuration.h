@@ -243,13 +243,17 @@ namespace S2Plugin
         {
             return mJournalPages;
         }
+        bool isJournalPage(const std::string& typeName) const
+        {
+            return std::find(mJournalPages.begin(), mJournalPages.end(), typeName) != mJournalPages.end();
+        }
         //
         std::vector<std::string> classHierarchyOfEntity(const std::string& entityName) const;
 
         const std::vector<MemoryField>& typeFields(const MemoryFieldType type) const;
         const std::vector<MemoryField>& typeFieldsOfEntitySubclass(const std::string& type) const;
         const std::vector<MemoryField>& typeFieldsOfDefaultStruct(const std::string& type) const;
-        const std::vector<VirtualFunction>& virtualFunctionsOfType(const std::string& field) const;
+        const std::vector<VirtualFunction>& virtualFunctionsOfType(const std::string& field, bool quiet = false) const;
 
         // "Entity" returns true, even though it's base class
         bool isEntitySubclass(const std::string& type) const

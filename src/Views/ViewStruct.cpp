@@ -5,8 +5,10 @@
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetPagination.h"
 #include "QtPlugin.h"
+#include "Views/ViewToolbar.h"
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -42,6 +44,15 @@ S2Plugin::ViewStruct::ViewStruct(uintptr_t address, const std::vector<MemoryFiel
     mMainTreeView->setColumnWidth(gsColType, 100);
     mMainTreeView->addMemoryFields(fields, name, address);
     mMainTreeView->updateTree(0, 0, true);
+
+    std::string nameCopy = name;
+    QObject::connect(mMainTreeView, &TreeViewMemoryFields::onContextMenu, this,
+                     [nameCopy, this](QMenu* menu)
+                     {
+                         auto action = menu->addAction("View Code");
+                         QObject::connect(action, &QAction::triggered, menu, [nameCopy]() { getToolbar()->showCode(nameCopy); });
+                     });
+
     autoRefresh->toggleAutoRefresh(true);
 }
 

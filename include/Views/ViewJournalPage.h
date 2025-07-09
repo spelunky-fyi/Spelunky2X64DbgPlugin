@@ -4,6 +4,8 @@
 #include <cstdint>
 
 class QString;
+class QComboBox;
+class QMenu;
 
 namespace S2Plugin
 {
@@ -23,9 +25,11 @@ namespace S2Plugin
         void refreshJournalPage();
         void label();
         void interpretAsChanged(const QString& text);
+        void viewContextMenu(QMenu* menu);
 
       private:
         uintptr_t mPageAddress;
         TreeViewMemoryFields* mMainTreeView;
+        QComboBox* mInterpretAsComboBox;
     };
 } // namespace S2Plugin

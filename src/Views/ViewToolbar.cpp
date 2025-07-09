@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "Spelunky2.h"
 #include "Views/ViewCharacterDB.h"
+#include "Views/ViewCpp.h"
 #include "Views/ViewEntities.h"
 #include "Views/ViewEntity.h"
 #include "Views/ViewEntityDB.h"
@@ -244,6 +245,15 @@ void S2Plugin::ViewToolbar::showSaveGame(uintptr_t address)
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
+S2Plugin::ViewCpp* S2Plugin::ViewToolbar::showCode(const std::string& typeName)
+{
+    auto w = new ViewCpp(typeName);
+    auto win = mMDIArea->addSubWindow(w);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+    return w;
+}
+
 //
 // slots:
 //
@@ -442,7 +452,7 @@ void S2Plugin::ViewToolbar::showDebugSettings()
         auto ptr = Spelunky2::get()->get_DebugSettingsPtr();
         if (ptr != 0)
         {
-            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::DebugSettings), "Debug Settings");
+            auto w = new ViewStruct(ptr, Configuration::get()->typeFields(MemoryFieldType::DebugSettings), "DebugSettings");
             auto win = mMDIArea->addSubWindow(w);
             win->setVisible(true);
             win->setAttribute(Qt::WA_DeleteOnClose);
