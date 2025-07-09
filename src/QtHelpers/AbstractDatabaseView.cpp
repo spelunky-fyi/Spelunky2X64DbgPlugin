@@ -21,18 +21,6 @@
 #include <QVBoxLayout>
 #include <QVector>
 
-namespace std
-{
-    template <> // to be able to use QString as a key in unordered map
-    struct hash<QString>
-    {
-        std::size_t operator()(const QString& s) const noexcept
-        {
-            return qHash(s);
-        }
-    };
-} // namespace std
-
 struct ComparisonField
 {
     S2Plugin::MemoryFieldType type{S2Plugin::MemoryFieldType::None};
@@ -330,8 +318,8 @@ void S2Plugin::AbstractDatabaseView::populateComparisonTreeWidget(const QVariant
 {
     mCompareTreeWidget->setSortingEnabled(false);
 
-    std::unordered_map<QString, QVariant> rootValues;
-    std::unordered_map<QString, std::vector<ID_type>> groupedValues; // valueString -> vector<id's>
+    QHash<QString, QVariant> rootValues;
+    QHash<QString, QVector<ID_type>> groupedValues; // valueString -> vector<id's>
     for (ID_type x = 0; x <= highestRecordID(); ++x)
     {
         if (!isValidRecordID(x))
@@ -341,21 +329,16 @@ void S2Plugin::AbstractDatabaseView::populateComparisonTreeWidget(const QVariant
         rootValues[caption] = value;
 
         if (auto it = groupedValues.find(caption); it != groupedValues.end())
-        {
-            it->second.push_back(x);
-        }
+            it.value().push_back(x);
         else
-        {
             groupedValues[caption] = {x};
-        }
     }
-
-    for (const auto& [groupString, IDList] : groupedValues)
+    for (auto it = groupedValues.begin(); it != groupedValues.end(); ++it)
     {
-        auto rootItem = new TreeWidgetItemNumeric(mCompareTreeWidget, QStringList(groupString));
-        rootItem->setData(0, Qt::UserRole, rootValues.at(groupString));
+        auto rootItem = new TreeWidgetItemNumeric(mCompareTreeWidget, QStringList(it.key()));
+        rootItem->setData(0, Qt::UserRole, rootValues.value(it.key()));
         mCompareTreeWidget->insertTopLevelItem(0, rootItem);
-        for (const auto& recordID : IDList)
+        for (const auto recordID : it.value())
         {
             auto name = recordNameForID(recordID);
             auto caption = QString("<font color='blue'><u>%1</u></font>").arg(name);
@@ -523,5 +506,5 @@ std::pair<QString, QVariant> S2Plugin::AbstractDatabaseView::valueForField(const
             return std::make_pair(isFlagSet ? "True" : "False", QVariant::fromValue(isFlagSet));
         }
     }
-    return std::make_pair("unknown", 0);
+    return std::make_pair("unknown", QVariant{});
 }
