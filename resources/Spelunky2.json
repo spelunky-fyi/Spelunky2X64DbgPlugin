@@ -8257,7 +8257,7 @@
       {
         "field": "texture_names",
         "type": "Array",
-        "arraytype": "ConstCharPointerPointer",
+        "arraytype": "Resource",
         "length": 7
       },
       { "field": "texture_num", "type": "UnsignedDword" },
@@ -9566,63 +9566,63 @@
       {
         "field": "unknown64a",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer"
+        "valuetype": "Resource"
       },
       {
         "field": "unknown64b",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer"
+        "valuetype": "Resource"
       },
       {
         "field": "unknown65",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "splash 0,1,2"
       },
       {
         "field": "unknown66",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "fonts, basecamp, pet"
       },
       {
         "field": "unknown67",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "fonts and menu textures + characters (character select screen textures?)"
       },
       {
         "field": "unknown68",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "main menu background textures?"
       },
       {
         "field": "unknown69",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer"
+        "valuetype": "Resource"
       },
       {
         "field": "unknown70",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "menu textures?"
       },
       {
         "field": "unknown71",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer",
+        "valuetype": "Resource",
         "comment": "only the ai.dds?"
       },
       {
         "field": "unknown72",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer"
+        "valuetype": "Resource"
       },
       {
         "field": "unknown73",
         "type": "StdVector",
-        "valuetype": "ConstCharPointerPointer"
+        "valuetype": "Resource"
       },
       { "field": "unknown74", "type": "UnsignedQword" },
       { "field": "unknown75", "type": "UnsignedQword" },

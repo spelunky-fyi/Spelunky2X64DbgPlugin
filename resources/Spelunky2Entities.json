@@ -5065,8 +5065,8 @@
     "LimbAnchor": [
       { "field": "x_pos", "type": "Float" },
       { "field": "y_pos", "type": "Float" },
-      { "field": "hand/feet_x_offset", "type": "Float" },
-      { "field": "hand/feet_y_offset", "type": "Float" },
+      { "field": "hand_feet_x_offset", "type": "Float" },
+      { "field": "hand_feet_y_offset", "type": "Float" },
       { "field": "anchor_x", "type": "Float" },
       { "field": "anchor_y", "type": "Float" },
       { "field": "move_origin_x", "type": "Float" },

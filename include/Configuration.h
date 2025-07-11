@@ -113,7 +113,6 @@ namespace S2Plugin
         StdVector,
         StdMap,
         ConstCharPointer,
-        ConstCharPointerPointer,
         StdString,
         StdWstring,
         EntitySubclass,               // a subclass of an entity defined in json

@@ -213,7 +213,6 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::CharacterDBID:
         case MemoryFieldType::LevelGenPointer:
         case MemoryFieldType::ParticleDBPointer:
-        case MemoryFieldType::ConstCharPointerPointer:
         case MemoryFieldType::ConstCharPointer:
         case MemoryFieldType::LevelGenRoomsPointer:
         case MemoryFieldType::LevelGenRoomsMetaPointer:
@@ -1713,17 +1712,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
             }
             break;
-        }
-        case MemoryFieldType::ConstCharPointerPointer:
-        {
-            // TODO: probably delete? it's actually a struct not just a pointer?
-            if (valueMemoryOffset != 0)
-                valueMemoryOffset = Script::Memory::ReadQword(valueMemoryOffset);
-
-            if (valueComparisonMemoryOffset != 0)
-                valueComparisonMemoryOffset = Script::Memory::ReadQword(valueComparisonMemoryOffset);
-
-            [[fallthrough]];
         }
         case MemoryFieldType::ConstCharPointer:
         {
@@ -3321,7 +3309,6 @@ bool S2Plugin::TreeViewMemoryFields::isItemClickable(const QModelIndex& index) c
             case MemoryFieldType::StdVector:
             case MemoryFieldType::StdMap:
             case MemoryFieldType::ConstCharPointer:
-            case MemoryFieldType::ConstCharPointerPointer:
             case MemoryFieldType::StdString:
             case MemoryFieldType::StdWstring:
             case MemoryFieldType::DefaultStructType:

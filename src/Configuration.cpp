@@ -63,7 +63,7 @@ namespace S2Plugin
         map_type fields;
         std::unordered_map<std::string_view, const Data&> json_names_map;
     };
-    static constexpr const std::array<MemoryFieldData::Data, 71> gsMemoryFieldTypeData = {{
+    static constexpr const std::array<MemoryFieldData::Data, 70> gsMemoryFieldTypeData = {{
         // MemoryFieldEnum, Name for display, c++ type name, name in json, size (if 0 will be determinate from json struct), is pointer
 
         // Basic types
@@ -123,8 +123,7 @@ namespace S2Plugin
         {MemoryFieldType::ParticleDBPointer, "ParticleDB pointer", "ParticleDB", "ParticleDBPointer", 8, true},
         {MemoryFieldType::TextureDBID, "TextureDB ID", "int32_t", "TextureDBID", 4, false},
         {MemoryFieldType::TextureDBPointer, "TextureDB pointer", "TextureDB", "TextureDBPointer", 8, true},
-        {MemoryFieldType::ConstCharPointer, "Const char*", "const char", "ConstCharPointer", 8, true},
-        {MemoryFieldType::ConstCharPointerPointer, "Const char**", "const char**", "ConstCharPointerPointer", 8, true},                        // there is more then just pointer to pointer?
+        {MemoryFieldType::ConstCharPointer, "Const char*", "const char", "ConstCharPointer", 8, true},                                         // there is more then just pointer to pointer?
         {MemoryFieldType::UndeterminedThemeInfoPointer, "UndeterminedThemeInfoPointer", "ThemeInfo", "UndeterminedThemeInfoPointer", 8, true}, // display theme name and add ThemeInfo fields
         {MemoryFieldType::COThemeInfoPointer, "COThemeInfoPointer", "ThemeInfo", "COThemeInfoPointer", 8, true},                               // just theme name
         {MemoryFieldType::LevelGenRoomsPointer, "LevelGenRoomsPointer", "void", "LevelGenRoomsPointer", 8, true},
