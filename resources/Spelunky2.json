@@ -613,8 +613,16 @@
   // a list of all the fields within the types
   "fields": {
     "EntityDB": [
-      { "field": "create_func", "type": "CodePointer", "signature": "Entity*()" },
-      { "field": "destroy_func", "type": "CodePointer", "signature": "void(Entity*)" },
+      {
+        "field": "create_func",
+        "type": "CodePointer",
+        "signature": "Entity*()"
+      },
+      {
+        "field": "destroy_func",
+        "type": "CodePointer",
+        "signature": "void(Entity*)"
+      },
       {
         "field": "memory_size",
         "type": "UnsignedDword",
@@ -989,8 +997,16 @@
       { "field": "blue", "type": "UnsignedByte" },
       { "field": "unknown28", "type": "UnsignedByte" },
       { "field": "texture", "type": "TextureDBPointer" },
-      { "field": "create_particle", "type": "CodePointer", "signature": "void(EmittedParticlesInfo*, int particle_idx)" },
-      { "field": "update_particle", "type": "CodePointer", "signature": "void(EmittedParticlesInfo*, int particle_idx)" },
+      {
+        "field": "create_particle",
+        "type": "CodePointer",
+        "signature": "void(EmittedParticlesInfo*, int particle_idx)"
+      },
+      {
+        "field": "update_particle",
+        "type": "CodePointer",
+        "signature": "void(EmittedParticlesInfo*, int particle_idx)"
+      },
       { "field": "unknown31a", "type": "UnsignedByte" },
       { "field": "unknown31b", "type": "UnsignedByte" },
       { "field": "unknown31c", "type": "UnsignedByte" },
@@ -1534,7 +1550,12 @@
         "valuetype": "DataPointer"
       },
       { "field": "unknown12", "type": "DataPointer" },
-      { "field": "unknown13", "type": "CodePointer", "signature": "void(void*, int)", "comment": "first param is unknown12, second some form of index(?)" },
+      {
+        "field": "unknown13",
+        "type": "CodePointer",
+        "signature": "void(void*, int)",
+        "comment": "first param is unknown12, second some form of index(?)"
+      },
       { "field": "selected_menu_index", "type": "UnsignedDword" },
       { "field": "loop", "type": "Bool" },
       { "field": "unknown16", "type": "Bool" },
@@ -2374,7 +2395,11 @@
       { "field": "cthulhu_disc_split_progress", "type": "Float" },
       { "field": "cthulhu_disc_y", "type": "Float" },
       { "field": "cthulhu_timer", "type": "Float" },
-      { "field": "screen_transition", "type": "CodePointer", "signature": "void()" },
+      {
+        "field": "screen_transition",
+        "type": "CodePointer",
+        "signature": "void()"
+      },
       {
         "field": "menu_tree",
         "type": "StdVector",
@@ -3007,7 +3032,12 @@
       },
       { "field": "amount_of_mine_entrances_activated", "type": "UnsignedByte" },
       { "field": "probably_padding2", "type": "UnsignedByte" },
-      { "field": "reset_func", "type": "CodePointer", "signature": "void()" ,"comment": "unsure, set when hiting the back key, called after the zoom out of the screen" },
+      {
+        "field": "reset_func",
+        "type": "CodePointer",
+        "signature": "void()",
+        "comment": "unsure, set when hiting the back key, called after the zoom out of the screen"
+      },
       {
         "field": "some_state",
         "type": "Flags32",
