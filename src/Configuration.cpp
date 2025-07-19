@@ -738,6 +738,26 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
             memField.jsonName = "ThemeInfo";
             break;
         }
+        case MemoryFieldType::CodePointer:
+        {
+            if (field.contains("signature"))
+            {
+                const std::regex reg("^((?:[a-zA-Z_][a-zA-Z0-9_]*::)*[a-zA-Z_][a-zA-Z0-9_<>, *&]*)\\(([^()]*)\\)$");
+                auto signature = field["signature"].get<std::string_view>();
+                std::match_results<std::string_view::const_iterator> matchResults{};
+                auto rangeToView = [](std::string_view::const_iterator first, std::string_view::const_iterator last)
+                { return first != last ? std::string_view(first.operator->(), static_cast<size_t>(last - first)) : std::string_view(); };
+
+                if (std::regex_match(signature.cbegin(), signature.cend(), matchResults, reg))
+                {
+                    memField.firstParameterType = rangeToView(matchResults[1].first, matchResults[1].second);
+                    memField.secondParameterType = rangeToView(matchResults[2].first, matchResults[2].second);
+                }
+                else
+                    dprintf("function signature unrecognised, correct format: 'return(parameters optional)' (%s.%s)\n", struct_name.c_str(), memField.name.c_str());
+            }
+            break;
+        }
     }
     return memField;
 }
@@ -745,7 +765,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
 void S2Plugin::Configuration::processEntitiesJSON(ordered_json& j)
 {
     using namespace std::string_literals;
-    const auto funNameCheck = std::regex("[_a-zA-Z~][\\w]*");
+    const std::regex funNameCheck("[_a-zA-Z~][\\w]*");
 
     for (const auto& [key, jsonValue] : j["entity_class_hierarchy"].items())
     {

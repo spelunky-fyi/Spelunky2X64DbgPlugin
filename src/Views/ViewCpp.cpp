@@ -91,7 +91,7 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
                 if (config->isPointerType(type))
                     return std::string(config->getCPPTypeName(type)) + '*';
 
-                return std::string(config->getCPPTypeName(type)); // TODO if it's pointer, also if the json struct is pointer
+                return std::string(config->getCPPTypeName(type));
             }
         }
     };
@@ -315,6 +315,16 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
                 mCPPSyntaxHighlighter->addRule("\\bpair\\b", HighlightColor::Type);
                 break;
             }
+            case MemoryFieldType::CodePointer:
+            {
+                if (!field.firstParameterType.empty())
+                {
+                    // return (*name)(params);
+                    outputStream << '\t' << field.firstParameterType << " (";
+                    break;
+                }
+                [[fallthrough]];
+            }
             default:
             {
                 outputStream << '\t' << variableType;
@@ -325,12 +335,18 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
         if (field.isPointer)
             outputStream << '*';
 
-        outputStream << ' ' << field.name;
+        if (!(field.type == MemoryFieldType::CodePointer && !field.firstParameterType.empty()))
+            outputStream << ' ';
+
+        outputStream << field.name;
 
         if (field.type == MemoryFieldType::Skip)
             outputStream << '[' << field.get_size() << ']';
         else if (field.type == MemoryFieldType::Matrix)
             outputStream << '[' << field.rows << "][" << field.getNumColumns() << ']';
+        else if (field.type == MemoryFieldType::CodePointer)
+            if (!field.firstParameterType.empty())
+                outputStream << ")(" << field.secondParameterType << ')';
 
         outputStream << ";\n";
 
