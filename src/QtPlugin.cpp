@@ -17,11 +17,14 @@ QPixmap gsCavemanIcon;
 static HANDLE hSetupEvent;
 static HANDLE hStopEvent;
 
-enum
+namespace QtPlugin
 {
-    MENU_DISASM_LOOKUP_IN_VIRTUAL_TABLE
-};
-
+    enum
+    {
+        MENU_DISASM_LOOKUP_IN_VIRTUAL_TABLE,
+        MENU_PLUGIN_SHOW_TAB,
+    };
+}
 static QByteArray getResourceBytes(const char* path)
 {
     QByteArray b;
@@ -62,6 +65,9 @@ void QtPlugin::Setup()
     ICONDATA icon{cavemanBytes.data(), (duint)(cavemanBytes.size())};
     _plugin_menuseticon(S2Plugin::hMenuDisasm, &icon);
     _plugin_menuaddentry(S2Plugin::hMenuDisasm, MENU_DISASM_LOOKUP_IN_VIRTUAL_TABLE, "Lookup in virtual table");
+
+    _plugin_menuseticon(S2Plugin::hMenu, &icon);
+    _plugin_menuaddentry(S2Plugin::hMenu, MENU_PLUGIN_SHOW_TAB, "Show tab");
 
     SetEvent(hSetupEvent);
 }
@@ -144,8 +150,14 @@ void QtPlugin::MenuEntry(int hEntry)
             {
                 window->showLookupAddress(functionStart);
             }
+            break;
         }
-        break;
+        case MENU_PLUGIN_SHOW_TAB:
+        {
+            if (!gsSpelunky2MainWindow->isVisible())
+                GuiAddQWidgetTab(gsSpelunky2MainWindow);
+            break;
+        }
     }
 }
 
