@@ -32,182 +32,584 @@
     "sparrow": { "r": 242, "g": 219, "b": 255, "a": 255 }
   },
   "roomcodes": {
-    "00": { "name": "Empty/unassigned", "enum": "SIDE", "color": "transparent" },
-    "01": { "name": "Standard path room (horizontal exit)", "enum": "PATH_NORMAL", "color": "path" },
-    "02": { "name": "Path to exit (vertical exit)", "enum": "PATH_DROP", "color": "path" },
-    "03": { "name": "Path to exit (horizontal exit)", "enum": "PATH_NOTOP", "color": "path" },
-    "04": { "name": "Path to exit (vertical exit)", "enum": "PATH_DROP_NOTOP", "color": "path" },
-    "05": { "name": "Player start (horizontal exit)", "enum": "ENTRANCE", "color": "green" },
-    "06": { "name": "Player start (vertical exit)", "enum": "ENTRANCE_DROP", "color": "green" },
-    "07": { "name": "Exit door (horizontal entrance)", "enum": "EXIT", "color": "red" },
-    "08": { "name": "Exit door (vertical entrance)", "enum": "EXIT_NOTOP", "color": "red" },
-    "09": { "name": "Backlayer empty/border", "enum": "EMPTY_BACKLAYER", "color": "transparent" },
+    "00": {
+      "name": "Empty/unassigned",
+      "enum": "SIDE",
+      "color": "transparent"
+    },
+    "01": {
+      "name": "Standard path room (horizontal exit)",
+      "enum": "PATH_NORMAL",
+      "color": "path"
+    },
+    "02": {
+      "name": "Path to exit (vertical exit)",
+      "enum": "PATH_DROP",
+      "color": "path"
+    },
+    "03": {
+      "name": "Path to exit (horizontal exit)",
+      "enum": "PATH_NOTOP",
+      "color": "path"
+    },
+    "04": {
+      "name": "Path to exit (vertical exit)",
+      "enum": "PATH_DROP_NOTOP",
+      "color": "path"
+    },
+    "05": {
+      "name": "Player start (horizontal exit)",
+      "enum": "ENTRANCE",
+      "color": "green"
+    },
+    "06": {
+      "name": "Player start (vertical exit)",
+      "enum": "ENTRANCE_DROP",
+      "color": "green"
+    },
+    "07": {
+      "name": "Exit door (horizontal entrance)",
+      "enum": "EXIT",
+      "color": "red"
+    },
+    "08": {
+      "name": "Exit door (vertical entrance)",
+      "enum": "EXIT_NOTOP",
+      "color": "red"
+    },
+    "09": {
+      "name": "Backlayer empty/border",
+      "enum": "EMPTY_BACKLAYER",
+      "color": "transparent"
+    },
     "0a": { "name": "Backlayer room", "enum": "ROOM2", "color": "gray" },
     "0b": { "name": "Backlayer room", "enum": "PASSAGE_HORZ", "color": "gray" },
-    "0c": { "name": "Backlayer room (north-south)", "enum": "PASSAGE_VERT", "color": "gray" },
+    "0c": {
+      "name": "Backlayer room (north-south)",
+      "enum": "PASSAGE_VERT",
+      "color": "gray"
+    },
     "0d": { "name": "Backlayer room", "enum": "PASSAGE_TURN", "color": "gray" },
     "0e": { "name": "Cache", "enum": "CACHE", "color": "gray" },
     "0f": { "name": "Ghist room", "enum": "GHISTROOM", "color": "gray" },
     "10": { "name": "Chunk Ground", "enum": "CHUNK_GROUND", "color": "gray" },
     "11": { "name": "Chunk Air", "enum": "CHUNK_AIR", "color": "gray" },
     "12": { "name": "Chunk Door", "enum": "CHUNK_DOOR", "color": "gray" },
-    
+
     "15": {
       "name": "Completely filled (e.g. between jungle and black market, volcana drill)",
-      "enum": "SOLID", "color": "darkgray"
+      "enum": "SOLID",
+      "color": "darkgray"
     },
-    "16": { "name": "Quillback related", "enum": "BOSS_ARENA", "color": "gray" },
+    "16": {
+      "name": "Quillback related",
+      "enum": "BOSS_ARENA",
+      "color": "gray"
+    },
     "17": { "name": "Shopkeeper vault", "enum": "VAULT", "color": "vault" },
     "18": { "name": "Shopkeeper Outpost", "enum": "POSSE", "color": "vault" },
-    "19": { "name": "Coffin player", "enum": "COFFIN_PLAYER", "color": "coffin" },
-    "1a": { "name": "Coffin player (Vertical)", "enum": "COFFIN_PLAYER_VERTICAL", "color": "coffin" },
-    "1b": { "name": "Coffin (vine/ladder west)", "enum": "COFFIN_UNLOCKABLE", "color": "coffin" },
-    "1c": { "name": "Coffin (vine/ladder east)", "enum": "COFFIN_UNLOCKABLE_LEFT", "color": "coffin" },
-    "1d": { "name": "Udjat eye door/bottom", "enum": "UDJATENTRANCE", "color": "udyat" },
-    "1e": { "name": "Udjat eye top (backlayer)", "enum": "UDJATTOP", "color": "udyat" },
+    "19": {
+      "name": "Coffin player",
+      "enum": "COFFIN_PLAYER",
+      "color": "coffin"
+    },
+    "1a": {
+      "name": "Coffin player (Vertical)",
+      "enum": "COFFIN_PLAYER_VERTICAL",
+      "color": "coffin"
+    },
+    "1b": {
+      "name": "Coffin (vine/ladder west)",
+      "enum": "COFFIN_UNLOCKABLE",
+      "color": "coffin"
+    },
+    "1c": {
+      "name": "Coffin (vine/ladder east)",
+      "enum": "COFFIN_UNLOCKABLE_LEFT",
+      "color": "coffin"
+    },
+    "1d": {
+      "name": "Udjat eye door/bottom",
+      "enum": "UDJATENTRANCE",
+      "color": "udyat"
+    },
+    "1e": {
+      "name": "Udjat eye top (backlayer)",
+      "enum": "UDJATTOP",
+      "color": "udyat"
+    },
     "1f": { "name": "Bee hive", "enum": "BEEHIVE", "color": "bee" },
-    "20": { "name": "Bee hive with door", "enum": "BEEHIVE_ENTRANCE", "color": "bee" },
-    "21": { "name": "Black market entry", "enum": "BLACKMARKET_ENTRANCE", "color": "blackmarket" },
-    "22": { "name": "Black market coffin", "enum": "BLACKMARKET_COFFIN", "color": "coffin" },
-    "23": { "name": "Black market bottom/exit door", "enum": "BLACKMARKET_EXIT", "color": "blackmarket" },
+    "20": {
+      "name": "Bee hive with door",
+      "enum": "BEEHIVE_ENTRANCE",
+      "color": "bee"
+    },
+    "21": {
+      "name": "Black market entry",
+      "enum": "BLACKMARKET_ENTRANCE",
+      "color": "blackmarket"
+    },
+    "22": {
+      "name": "Black market coffin",
+      "enum": "BLACKMARKET_COFFIN",
+      "color": "coffin"
+    },
+    "23": {
+      "name": "Black market bottom/exit door",
+      "enum": "BLACKMARKET_EXIT",
+      "color": "blackmarket"
+    },
     "24": {
       "name": "Tide pool front layer hidden door entrance to one way door",
-      "enum": "LAKEOFFIRE_BACK_ENTRANCE", "color": "gray"
+      "enum": "LAKEOFFIRE_BACK_ENTRANCE",
+      "color": "gray"
     },
-    "25": { "name": "Tide pool one-way door", "enum": "LAKEOFFIRE_BACK_EXIT", "color": "gray" },
+    "25": {
+      "name": "Tide pool one-way door",
+      "enum": "LAKEOFFIRE_BACK_EXIT",
+      "color": "gray"
+    },
     "26": { "name": "Anubis throne", "enum": "ANUBIS_ROOM", "color": "anubis" },
-    "27": { "name": "Eggplant child room in ice caves", "enum": "MOAI", "color": "eggplant" },
-    "28": { "name": "Mothership entrance door", "enum": "MOTHERSHIP_ENTRANCE", "color": "mothership" },
-    "29": { "name": "Mothership coffin", "enum": "MOTHERSHIP_COFFIN", "color": "mothership" },
-    "2a": { "name": "Tiamat top Tun area", "enum": "OLMECSHIP_ROOM", "color": "challenge" },
-    "2b": { "name": "Mother statue", "enum": "MOTHERSTATUE_ROOM", "color": "eggplant" },
-    "2c": { "name": "Shop jail backlayer", "enum": "SHOP_JAIL_BACKLAYER", "color": "shop" },
+    "27": {
+      "name": "Eggplant child room in ice caves",
+      "enum": "MOAI",
+      "color": "eggplant"
+    },
+    "28": {
+      "name": "Mothership entrance door",
+      "enum": "MOTHERSHIP_ENTRANCE",
+      "color": "mothership"
+    },
+    "29": {
+      "name": "Mothership coffin",
+      "enum": "MOTHERSHIP_COFFIN",
+      "color": "mothership"
+    },
+    "2a": {
+      "name": "Tiamat top Tun area",
+      "enum": "OLMECSHIP_ROOM",
+      "color": "challenge"
+    },
+    "2b": {
+      "name": "Mother statue",
+      "enum": "MOTHERSTATUE_ROOM",
+      "color": "eggplant"
+    },
+    "2c": {
+      "name": "Shop jail backlayer",
+      "enum": "SHOP_JAIL_BACKLAYER",
+      "color": "shop"
+    },
     "2d": { "name": "Yang turkey pen", "enum": "PEN_ROOM", "color": "yang" },
-    "2e": { "name": "Jungle sister", "enum": "SISTERS_ROOM", "color": "junglesister" },
+    "2e": {
+      "name": "Jungle sister",
+      "enum": "SISTERS_ROOM",
+      "color": "junglesister"
+    },
     "2f": {
       "name": "Tusk treasure room (note/idol) (west entrance)",
-      "enum": "TUSKFRONTDICESHOP", "color": "tusk"
+      "enum": "TUSKFRONTDICESHOP",
+      "color": "tusk"
     },
     "30": {
       "name": "Tusk treasure room (note/idol) (east entrance)",
-      "enum": "TUSKFRONTDICESHOP_LEFT", "color": "tusk"
+      "enum": "TUSKFRONTDICESHOP_LEFT",
+      "color": "tusk"
     },
     "31": {
       "name": "Tusk pleasure palace ooba room (sister)",
-      "enum": "PALACEOFPLEASURE_0_0", "color": "tusk"
+      "enum": "PALACEOFPLEASURE_0_0",
+      "color": "tusk"
     },
     "32": {
       "name": "Tusk pleasure palace painting",
-      "enum": "PALACEOFPLEASURE_0_1", "color": "tusk"
+      "enum": "PALACEOFPLEASURE_0_1",
+      "color": "tusk"
     },
     "33": {
       "name": "Tusk pleasure palace turkeys/royal jelly",
-      "enum": "PALACEOFPLEASURE_0_2", "color": "tusk"
+      "enum": "PALACEOFPLEASURE_0_2",
+      "color": "tusk"
     },
     "34": {
       "name": "Tusk pleasure palace idol head",
-      "enum": "PALACEOFPLEASURE_1_0", "color": "tusk"
+      "enum": "PALACEOFPLEASURE_1_0",
+      "color": "tusk"
     },
-    "35": { "name": "Tusk pleasure palace entrance", "enum": "PALACEOFPLEASURE_1_1", "color": "tusk" },
-    "36": { "name": "Tusk pleasure palace clover", "enum": "PALACEOFPLEASURE_1_2", "color": "tusk" },
-    "37": { "name": "Tusk pleasure palace left ladder down", "enum": "PALACEOFPLEASURE_2_0", "color": "tusk" },
-    "38": { "name": "Tusk pleasure palace altar", "enum": "PALACEOFPLEASURE_2_1", "color": "tusk" },
-    "39": { "name": "Tusk pleasure palace cursed pot", "enum": "PALACEOFPLEASURE_2_2", "color": "tusk" },
-    "3a": { "name": "Tusk pleasure palace treasure chests", "enum": "PALACEOFPLEASURE_3_0", "color": "tusk" },
+    "35": {
+      "name": "Tusk pleasure palace entrance",
+      "enum": "PALACEOFPLEASURE_1_1",
+      "color": "tusk"
+    },
+    "36": {
+      "name": "Tusk pleasure palace clover",
+      "enum": "PALACEOFPLEASURE_1_2",
+      "color": "tusk"
+    },
+    "37": {
+      "name": "Tusk pleasure palace left ladder down",
+      "enum": "PALACEOFPLEASURE_2_0",
+      "color": "tusk"
+    },
+    "38": {
+      "name": "Tusk pleasure palace altar",
+      "enum": "PALACEOFPLEASURE_2_1",
+      "color": "tusk"
+    },
+    "39": {
+      "name": "Tusk pleasure palace cursed pot",
+      "enum": "PALACEOFPLEASURE_2_2",
+      "color": "tusk"
+    },
+    "3a": {
+      "name": "Tusk pleasure palace treasure chests",
+      "enum": "PALACEOFPLEASURE_3_0",
+      "color": "tusk"
+    },
     "3b": {
       "name": "Tusk pleasure palace triple laser basement",
-      "enum": "PALACEOFPLEASURE_3_1", "color": "tusk"
+      "enum": "PALACEOFPLEASURE_3_1",
+      "color": "tusk"
     },
-    "3c": { "name": "Tusk pleasure palace backdoor entrance", "enum": "PALACEOFPLEASURE_3_2", "color": "tusk" },
-    "3d": { "name": "Olmec ship crash entrance", "enum": "CRASHEDSHIP_ENTRANCE", "color": "gray" },
-    "3e": { "name": "Olmec ship crash entrance", "enum": "CRASHEDSHIP_ENTRANCE_NOTOP", "color": "gray" },
+    "3c": {
+      "name": "Tusk pleasure palace backdoor entrance",
+      "enum": "PALACEOFPLEASURE_3_2",
+      "color": "tusk"
+    },
+    "3d": {
+      "name": "Olmec ship crash entrance",
+      "enum": "CRASHEDSHIP_ENTRANCE",
+      "color": "gray"
+    },
+    "3e": {
+      "name": "Olmec ship crash entrance",
+      "enum": "CRASHEDSHIP_ENTRANCE_NOTOP",
+      "color": "gray"
+    },
     "41": { "name": "Shop (east entrance)", "enum": "SHOP", "color": "shop" },
-    "42": { "name": "Shop (west entrance)", "enum": "SHOP_LEFT", "color": "shop" },
-    "43": { "name": "Shop (east entrance with north jail)", "enum": "SHOP_ENTRANCE_UP", "color": "shop" },
-    "44": { "name": "Shop (west entrance with north jail)", "enum": "SHOP_ENTRANCE_UP_LEFT", "color": "shop" },
-    "45": { "name": "Shop (east entrance with south jail)", "enum": "SHOP_ENTRANCE_DOWN", "color": "shop" },
-    "46": { "name": "Shop (west entrance with south jail)", "enum": "SHOP_ENTRANCE_DOWN_LEFT", "color": "shop" },
-    "47": { "name": "Jail north of shop (east ladder)", "enum": "SHOP_ATTIC", "color": "shop" },
-    "48": { "name": "Jail north of shop (west ladder)", "enum": "SHOP_ATTIC_LEFT", "color": "shop" },
-    "49": { "name": "Jail south of shop (east ladder)", "enum": "SHOP_BASEMENT", "color": "shop" },
-    "4a": { "name": "Jail south of shop (west ladder)", "enum": "SHOP_BASEMENT_LEFT", "color": "shop" },
-    "4b": { "name": "Dice shop (east entrance)", "enum": "DICESHOP", "color": "shop" },
-    "4c": { "name": "Dice shop (west entrance)", "enum": "DICESHOP_LEFT", "color": "shop" },
-    "4d": { "name": "Tun shop (east entrance)", "enum": "CURIOSHOP", "color": "shop" },
-    "4e": { "name": "Tun shop (west entrance)", "enum": "CURIOSHOP_LEFT", "color": "shop" },
-    "4f": { "name": "Caveman shop (east entrance)", "enum": "CAVEMANSHOP", "color": "shop" },
-    "50": { "name": "Caveman shop (west entrance)", "enum": "CAVEMANSHOP_LEFT", "color": "shop" },
-    "51": { "name": "Tun challenge (east entrance)", "enum": "CHALLENGE_ENTRANCE", "color": "challenge" },
-    "52": { "name": "Tun challenge (west entrance)", "enum": "CHALLENGE_ENTRANCE_LEFT", "color": "challenge" },
-    "53": { "name": "Tusk dice shop (east entrance)", "enum": "TUSKDICESHOP", "color": "tusk" },
-    "54": { "name": "Tusk dice shop (west entrance)", "enum": "TUSKDICESHOP_LEFT", "color": "tusk" },
+    "42": {
+      "name": "Shop (west entrance)",
+      "enum": "SHOP_LEFT",
+      "color": "shop"
+    },
+    "43": {
+      "name": "Shop (east entrance with north jail)",
+      "enum": "SHOP_ENTRANCE_UP",
+      "color": "shop"
+    },
+    "44": {
+      "name": "Shop (west entrance with north jail)",
+      "enum": "SHOP_ENTRANCE_UP_LEFT",
+      "color": "shop"
+    },
+    "45": {
+      "name": "Shop (east entrance with south jail)",
+      "enum": "SHOP_ENTRANCE_DOWN",
+      "color": "shop"
+    },
+    "46": {
+      "name": "Shop (west entrance with south jail)",
+      "enum": "SHOP_ENTRANCE_DOWN_LEFT",
+      "color": "shop"
+    },
+    "47": {
+      "name": "Jail north of shop (east ladder)",
+      "enum": "SHOP_ATTIC",
+      "color": "shop"
+    },
+    "48": {
+      "name": "Jail north of shop (west ladder)",
+      "enum": "SHOP_ATTIC_LEFT",
+      "color": "shop"
+    },
+    "49": {
+      "name": "Jail south of shop (east ladder)",
+      "enum": "SHOP_BASEMENT",
+      "color": "shop"
+    },
+    "4a": {
+      "name": "Jail south of shop (west ladder)",
+      "enum": "SHOP_BASEMENT_LEFT",
+      "color": "shop"
+    },
+    "4b": {
+      "name": "Dice shop (east entrance)",
+      "enum": "DICESHOP",
+      "color": "shop"
+    },
+    "4c": {
+      "name": "Dice shop (west entrance)",
+      "enum": "DICESHOP_LEFT",
+      "color": "shop"
+    },
+    "4d": {
+      "name": "Tun shop (east entrance)",
+      "enum": "CURIOSHOP",
+      "color": "shop"
+    },
+    "4e": {
+      "name": "Tun shop (west entrance)",
+      "enum": "CURIOSHOP_LEFT",
+      "color": "shop"
+    },
+    "4f": {
+      "name": "Caveman shop (east entrance)",
+      "enum": "CAVEMANSHOP",
+      "color": "shop"
+    },
+    "50": {
+      "name": "Caveman shop (west entrance)",
+      "enum": "CAVEMANSHOP_LEFT",
+      "color": "shop"
+    },
+    "51": {
+      "name": "Tun challenge (east entrance)",
+      "enum": "CHALLENGE_ENTRANCE",
+      "color": "challenge"
+    },
+    "52": {
+      "name": "Tun challenge (west entrance)",
+      "enum": "CHALLENGE_ENTRANCE_LEFT",
+      "color": "challenge"
+    },
+    "53": {
+      "name": "Tusk dice shop (east entrance)",
+      "enum": "TUSKDICESHOP",
+      "color": "tusk"
+    },
+    "54": {
+      "name": "Tusk dice shop (west entrance)",
+      "enum": "TUSKDICESHOP_LEFT",
+      "color": "tusk"
+    },
     "56": { "name": "Waddler", "enum": "WADDLER", "color": "waddler" },
-    "57": { "name": "Ghist shop", "enum": "GHISTSHOP_BACKLAYER", "color": "shop" },
+    "57": {
+      "name": "Ghist shop",
+      "enum": "GHISTSHOP_BACKLAYER",
+      "color": "shop"
+    },
     "5a": {
       "name": "Tun challenge (back layer entrance)",
-      "enum": "CHALLANGE_ENTRANCE_BACKLAYER", "color": "challenge"
+      "enum": "CHALLANGE_ENTRANCE_BACKLAYER",
+      "color": "challenge"
     },
     "5b": {
       "name": "Moon challenge (back layer bottom)",
-      "enum": "CHALLENGE_BOTTOM", "color": "challenge"
+      "enum": "CHALLENGE_BOTTOM",
+      "color": "challenge"
     },
-    "5c": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_0_0", "color": "challenge" },
-    "5d": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_0_1", "color": "challenge" },
-    "5e": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_0_2", "color": "challenge" },
-    "5f": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_0_3", "color": "challenge" },
-    "60": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_1_0", "color": "challenge" },
-    "61": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_1_1", "color": "challenge" },
-    "62": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_1_2", "color": "challenge" },
-    "63": { "name": "Tun challenge (back layer)", "enum": "CHALLENGE_1_3", "color": "challenge" },
+    "5c": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_0_0",
+      "color": "challenge"
+    },
+    "5d": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_0_1",
+      "color": "challenge"
+    },
+    "5e": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_0_2",
+      "color": "challenge"
+    },
+    "5f": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_0_3",
+      "color": "challenge"
+    },
+    "60": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_1_0",
+      "color": "challenge"
+    },
+    "61": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_1_1",
+      "color": "challenge"
+    },
+    "62": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_1_2",
+      "color": "challenge"
+    },
+    "63": {
+      "name": "Tun challenge (back layer)",
+      "enum": "CHALLENGE_1_3",
+      "color": "challenge"
+    },
     "64": {
       "name": "Moon challenge Houyi bow (back layer)",
-      "enum": "CHALLENGE_SPECIAL", "color": "challenge"
+      "enum": "CHALLENGE_SPECIAL",
+      "color": "challenge"
     },
-    "66": { "name": "Horizontal and vertical double room", "enum": "MACHINE_BIGROOM_PATH", "color": "gray" },
-    "67": { "name": "Horizontal and vertical double room", "enum": "MACHINE_BIGROOM_SIDE", "color": "gray" },
-    "68": { "name": "Volcana trash room", "enum": "FEELING_FACTORY", "color": "gray" },
-    "69": { "name": "Horizontal and vertical double room", "enum": "FEELING_PRISON", "color": "gray" },
-    "6a": { "name": "Dead are Restless Bigroom", "enum": "FEELING_TOMB", "color": "gray" },
-    "6b": { "name": "Horizontal double room", "enum": "MACHINE_WIDEROOM_PATH", "color": "path" },
-    "6c": { "name": "Horizontal double room", "enum": "MACHINE_WIDEROOM_SIDE", "color": "gray" },
-    "6d": { "name": "Vertical double room", "enum": "MACHINE_TALLROOM_PATH", "color": "path" },
-    "6e": { "name": "Vertical double room", "enum": "MACHINE_TALLROOM_SIDE", "color": "gray" },
+    "66": {
+      "name": "Horizontal and vertical double room",
+      "enum": "MACHINE_BIGROOM_PATH",
+      "color": "gray"
+    },
+    "67": {
+      "name": "Horizontal and vertical double room",
+      "enum": "MACHINE_BIGROOM_SIDE",
+      "color": "gray"
+    },
+    "68": {
+      "name": "Volcana trash room",
+      "enum": "FEELING_FACTORY",
+      "color": "gray"
+    },
+    "69": {
+      "name": "Horizontal and vertical double room",
+      "enum": "FEELING_PRISON",
+      "color": "gray"
+    },
+    "6a": {
+      "name": "Dead are Restless Bigroom",
+      "enum": "FEELING_TOMB",
+      "color": "gray"
+    },
+    "6b": {
+      "name": "Horizontal double room",
+      "enum": "MACHINE_WIDEROOM_PATH",
+      "color": "path"
+    },
+    "6c": {
+      "name": "Horizontal double room",
+      "enum": "MACHINE_WIDEROOM_SIDE",
+      "color": "gray"
+    },
+    "6d": {
+      "name": "Vertical double room",
+      "enum": "MACHINE_TALLROOM_PATH",
+      "color": "path"
+    },
+    "6e": {
+      "name": "Vertical double room",
+      "enum": "MACHINE_TALLROOM_SIDE",
+      "color": "gray"
+    },
     "6f": { "name": "Coffin Frog", "enum": "COFFIN_FROG", "color": "gray" },
     "71": { "name": "Key room", "enum": "MACHINE_KEYROOM", "color": "key" },
-    "72": { "name": "Locked room", "enum": "MACHINE_REWARDROOM", "color": "key" },
+    "72": {
+      "name": "Locked room",
+      "enum": "MACHINE_REWARDROOM",
+      "color": "key"
+    },
     "73": { "name": "Kali altar", "enum": "ALTAR", "color": "kali" },
     "74": { "name": "Idol treasure", "enum": "IDOL", "color": "idol" },
     "75": { "name": "Wooden log trap", "enum": "IDOL_TOP", "color": "logtrap" },
-    "76": { "name": "Waddler entrance", "enum": "STORAGE_ROOM", "color": "waddler" },
+    "76": {
+      "name": "Waddler entrance",
+      "enum": "STORAGE_ROOM",
+      "color": "waddler"
+    },
     "77": { "name": "Black Market", "enum": "BLACKMARKET", "color": "waddler" },
     "78": { "name": "Volcana drill", "enum": "VLAD_DRILL", "color": "drill" },
-    "79": { "name": "Vlad's castle entrance door", "enum": "VLAD_ENTRANCE", "color": "vlad" },
-    "7a": { "name": "Volcana drill bottom layer room", "enum": "VLAD_BOTTOM_TUNNEL", "color": "gray" },
-    "7b": { "name": "Vlad's castle ascension path", "enum": "VLAD_BOTTOM_EXIT", "color": "vlad" },
-    "7c": { "name": "Vlad's castle tunnel", "enum": "VLAD_TUNNEL", "color": "vlad" },
-    "7d": { "name": "City of gold room above altar", "enum": "COG_ALTAR_TOP", "color": "kali" },
-    "7e": { "name": "Mothership room", "enum": "MOTHERSHIP_ROOM", "color": "kali" },
-    "7f": { "name": "Mothership exit door", "enum": "MOTHERSHIP_EXIT", "color": "mothership" },
-    "80": { "name": "Apep path of destruction", "enum": "APEP", "color": "gray" },
+    "79": {
+      "name": "Vlad's castle entrance door",
+      "enum": "VLAD_ENTRANCE",
+      "color": "vlad"
+    },
+    "7a": {
+      "name": "Volcana drill bottom layer room",
+      "enum": "VLAD_BOTTOM_TUNNEL",
+      "color": "gray"
+    },
+    "7b": {
+      "name": "Vlad's castle ascension path",
+      "enum": "VLAD_BOTTOM_EXIT",
+      "color": "vlad"
+    },
+    "7c": {
+      "name": "Vlad's castle tunnel",
+      "enum": "VLAD_TUNNEL",
+      "color": "vlad"
+    },
+    "7d": {
+      "name": "City of gold room above altar",
+      "enum": "COG_ALTAR_TOP",
+      "color": "kali"
+    },
+    "7e": {
+      "name": "Mothership room",
+      "enum": "MOTHERSHIP_ROOM",
+      "color": "kali"
+    },
+    "7f": {
+      "name": "Mothership exit door",
+      "enum": "MOTHERSHIP_EXIT",
+      "color": "mothership"
+    },
+    "80": {
+      "name": "Apep path of destruction",
+      "enum": "APEP",
+      "color": "gray"
+    },
     "81": {
       "name": "Tide pool 4-2 hidden room 4-3 exit door room",
-      "enum": "LAKE_EXIT", "color": "water"
+      "enum": "LAKE_EXIT",
+      "color": "water"
     },
     "82": {
       "name": "Tide pool 4-2 big fish water 4-3 above lava",
-      "enum": "LAKE_NORMAL", "color": "water"
+      "enum": "LAKE_NORMAL",
+      "color": "water"
     },
-    "83": { "name": "Tide pool 4-3 leftmost above lava", "enum": "LAKE_NOTOP", "color": "water" },
-    "84": { "name": "Kingu hidden room to ascend", "enum": "ABZU_BACKDOOR", "color": "gray" },
-    "85": { "name": "Ushabti door", "enum": "USHABTI_ENTRANCE", "color": "ushabti" },
-    "86": { "name": "Ushabti backlayer", "enum": "USHABTI_ROOM", "color": "ushabti" },
-    "87": { "name": "Eggplant world ghist entrance", "enum": "GHISTSHOP", "color": "eggplant" },
-    "88": { "name": "Eggplant world empress grave", "enum": "EMPRESS_GRAVE", "color": "eggplant" },
-    "89": { "name": "Van Horsing key room", "enum": "OLDHUNTER_KEYROOM", "color": "vanhorsing" },
-    "8a": { "name": "Van Horsing jail", "enum": "OLDHUNTER_REWARDROOM", "color": "vanhorsing" },
-    "8b": { "name": "Van Horsing temple room", "enum": "OLDHUNTER_CURSEDROOM", "color": "vanhorsing" },
-    "8c": { "name": "Sparrow first hideout", "enum": "QUEST_THIEF1", "color": "sparrow" },
-    "8d": { "name": "Sparrow NeoBab hideout", "enum": "QUEST_THIEF2", "color": "sparrow" },
+    "83": {
+      "name": "Tide pool 4-3 leftmost above lava",
+      "enum": "LAKE_NOTOP",
+      "color": "water"
+    },
+    "84": {
+      "name": "Kingu hidden room to ascend",
+      "enum": "ABZU_BACKDOOR",
+      "color": "gray"
+    },
+    "85": {
+      "name": "Ushabti door",
+      "enum": "USHABTI_ENTRANCE",
+      "color": "ushabti"
+    },
+    "86": {
+      "name": "Ushabti backlayer",
+      "enum": "USHABTI_ROOM",
+      "color": "ushabti"
+    },
+    "87": {
+      "name": "Eggplant world ghist entrance",
+      "enum": "GHISTSHOP",
+      "color": "eggplant"
+    },
+    "88": {
+      "name": "Eggplant world empress grave",
+      "enum": "EMPRESS_GRAVE",
+      "color": "eggplant"
+    },
+    "89": {
+      "name": "Van Horsing key room",
+      "enum": "OLDHUNTER_KEYROOM",
+      "color": "vanhorsing"
+    },
+    "8a": {
+      "name": "Van Horsing jail",
+      "enum": "OLDHUNTER_REWARDROOM",
+      "color": "vanhorsing"
+    },
+    "8b": {
+      "name": "Van Horsing temple room",
+      "enum": "OLDHUNTER_CURSEDROOM",
+      "color": "vanhorsing"
+    },
+    "8c": {
+      "name": "Sparrow first hideout",
+      "enum": "QUEST_THIEF1",
+      "color": "sparrow"
+    },
+    "8d": {
+      "name": "Sparrow NeoBab hideout",
+      "enum": "QUEST_THIEF2",
+      "color": "sparrow"
+    },
     "8e": { "name": "Setroom", "enum": "SETROOM*_*", "color": "eggplant" }
   }
 }
