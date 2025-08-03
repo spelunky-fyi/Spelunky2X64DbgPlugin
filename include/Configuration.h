@@ -204,8 +204,9 @@ namespace S2Plugin
     {
         uint16_t id;
         std::string name;
+        std::string enumName;
         QColor color;
-        RoomCode(uint16_t _id, std::string _name, QColor _color) : id(_id), name(_name), color(_color){};
+        RoomCode(uint16_t _id, std::string _name, std::string _enum, QColor _color) : id(_id), name(_name), enumName(_enum), color(_color){};
     };
 
     Q_DECLARE_METATYPE(S2Plugin::MemoryFieldType);
@@ -287,7 +288,7 @@ namespace S2Plugin
 
         size_t getTypeSize(const std::string& typeName, bool entitySubclass = false);
 
-        RoomCode roomCodeForID(uint16_t code) const;
+        const RoomCode& roomCodeForID(uint16_t code) const;
         std::string getEntityName(uint32_t type) const;
 
         bool isPermanentPointer(const std::string& type) const

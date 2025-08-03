@@ -1278,7 +1278,7 @@ void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
     using namespace std::string_literals;
     std::unordered_map<std::string, QColor> colors;
 
-    auto getColor = [&colors](std::string colorName) -> QColor
+    auto getColor = [&colors](const std::string& colorName) -> QColor
     {
         if (auto it = colors.find(colorName); it != colors.end())
         {
@@ -1298,19 +1298,19 @@ void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
     }
     for (const auto& [roomCodeStr, roomDetails] : j["roomcodes"].items())
     {
-        auto id = static_cast<uint16_t>(std::stoul(roomCodeStr, 0, 16));
+        auto id = static_cast<uint16_t>(std::stol(roomCodeStr, nullptr, 16));
         QColor color = roomDetails.contains("color") ? getColor(roomDetails["color"].get<std::string>()) : QColor(Qt::lightGray);
-        mRoomCodes.emplace(id, RoomCode(id, value_or(roomDetails, "name", "Unnamed room code"s), std::move(color)));
+        mRoomCodes.emplace(id, RoomCode(id, roomDetails["name"].get<std::string>(), roomDetails["enum"].get<std::string>(), std::move(color)));
     }
 }
 
-S2Plugin::RoomCode S2Plugin::Configuration::roomCodeForID(uint16_t code) const
+const S2Plugin::RoomCode& S2Plugin::Configuration::roomCodeForID(uint16_t code) const
 {
     if (auto it = mRoomCodes.find(code); it != mRoomCodes.end())
-    {
         return it->second;
-    }
-    return RoomCode(code, "Unknown room code", QColor(Qt::lightGray));
+
+    static auto unknownRoomCode = RoomCode(code, "Unknown room code", "", QColor(Qt::lightGray));
+    return unknownRoomCode;
 }
 
 std::string S2Plugin::Configuration::getEntityName(uint32_t type) const

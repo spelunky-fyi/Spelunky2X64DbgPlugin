@@ -20,7 +20,14 @@ namespace S2Plugin
         QSize sizeHint() const override;
 
         void setOffset(size_t offset);
-        void setIsMetaData();
+        void setIsMetaData()
+        {
+            mIsMetaData = true;
+        }
+        void setNameSwitch(bool* b)
+        {
+            useEnum = b;
+        }
 
       protected:
         void paintEvent(QPaintEvent* event) override;
@@ -29,10 +36,11 @@ namespace S2Plugin
       private:
         size_t mCurrentToolTip{0};
         QString mFieldName;
-        bool mIsMetaData = false;
         size_t mOffset{0};
         QSize mTextAdvance;
         int mSpaceAdvance;
+        bool mIsMetaData = false;
         std::vector<ToolTipRect> mToolTipRects;
+        bool* useEnum{nullptr};
     };
 } // namespace S2Plugin

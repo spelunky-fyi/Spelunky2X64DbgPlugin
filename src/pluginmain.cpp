@@ -84,7 +84,7 @@ void displayError(std::string message)
     msgBox.setText(message.c_str());
     msgBox.setWindowTitle("Spelunky2");
     msgBox.exec();
-    message.append("[Spelunky2] ");
+    message.insert(0, "[Spelunky2] ");
     message += '\n';
     _plugin_logprint(message.c_str());
 }

@@ -53,6 +53,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
     {
         auto bufferSize = mIsMetaData ? gsHalfBufferSize : gsBufferSize;
         auto buffer = std::array<uint8_t, gsBufferSize>();
+        const uint8_t cutoff = mIsMetaData ? 8 : 16;
         Script::Memory::Read(mOffset, buffer.data(), bufferSize, nullptr);
 
         for (size_t counter = 0; counter < bufferSize; ++counter)
@@ -72,36 +73,33 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
             }
             else
             {
-                RoomCode currentRoomCode{0, "", QColor{}};
                 if (counter % 2 == 0)
                 {
-                    currentRoomCode = config->roomCodeForID(buffer.at(counter));
+                    auto& currentRoomCode = config->roomCodeForID(buffer.at(counter));
                     painter.setPen(Qt::transparent);
                     auto rect = QRect(x, y - mTextAdvance.height() + 5, 2 * mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() - 2);
                     painter.setBrush(currentRoomCode.color);
                     painter.drawRoundedRect(rect, 4.0, 4.0);
-                    mToolTipRects.emplace_back(ToolTipRect{rect, QString::fromStdString(currentRoomCode.name)});
-                }
+                    QString name;
+                    if (useEnum && *useEnum)
+                        name = QString::fromStdString(currentRoomCode.enumName);
+                    else
+                        name = QString::fromStdString(currentRoomCode.name);
 
-                if (currentRoomCode.id == 0 || currentRoomCode.id == 9)
-                {
-                    painter.setPen(QPen(Qt::lightGray, 1));
+                    mToolTipRects.emplace_back(ToolTipRect{rect, name});
+
+                    if (currentRoomCode.id == 0 || currentRoomCode.id == 9)
+                        painter.setPen(QPen(Qt::lightGray, 1));
+                    else
+                        painter.setPen(QPen(Qt::black, 1));
                 }
                 else
-                {
-                    painter.setPen(QPen(Qt::black, 1));
-                }
+                    painter.setPen(QPen(Qt::lightGray, 1));
             }
 
             auto str = QString("%1").arg(buffer.at(counter), 2, 16, QChar('0'));
             painter.drawText(x, y, str);
             x += mTextAdvance.width() + mSpaceAdvance;
-
-            auto cutoff = 16;
-            if (mIsMetaData)
-            {
-                cutoff = 8;
-            }
 
             if ((counter + 1) % cutoff == 0)
             {
@@ -119,17 +117,9 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
             int levelHeight = static_cast<int>(Script::Memory::ReadDword(offsetHeight));
             int borderX = gsMarginHor;
             int borderY = (2 * gsMarginVer) + mTextAdvance.height() + 4;
-            int borderWidth, borderHeight;
-            if (mIsMetaData)
-            {
-                borderWidth = (levelWidth * (mTextAdvance.width() + mSpaceAdvance)) - mSpaceAdvance;
-                borderHeight = levelHeight * mTextAdvance.height();
-            }
-            else
-            {
-                borderWidth = (levelWidth * (2 * (mTextAdvance.width() + mSpaceAdvance))) - mSpaceAdvance;
-                borderHeight = levelHeight * mTextAdvance.height();
-            }
+            uint8_t byteSize = mIsMetaData ? 1 : 2;
+            int borderWidth = (levelWidth * (byteSize * (mTextAdvance.width() + mSpaceAdvance))) - mSpaceAdvance;
+            int borderHeight = levelHeight * mTextAdvance.height();
             auto border = QRect(borderX, borderY, borderWidth, borderHeight);
             border.adjust(-2, -2, +2, +2);
             painter.setPen(QPen(Qt::blue, 1));
@@ -147,11 +137,7 @@ QSize S2Plugin::WidgetSpelunkyRooms::sizeHint() const
 QSize S2Plugin::WidgetSpelunkyRooms::minimumSizeHint() const
 {
     auto bufferSize = mIsMetaData ? gsHalfBufferSize : gsBufferSize;
-    auto cutoff = 16;
-    if (mIsMetaData)
-    {
-        cutoff = 8;
-    }
+    const uint8_t cutoff = mIsMetaData ? 8 : 16;
 
     int totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * cutoff) + (gsMarginHor * 2) - mSpaceAdvance;
     int totalHeight = gsMarginVer + mTextAdvance.height() + (mTextAdvance.height() * static_cast<int>(std::ceil(static_cast<double>(bufferSize) / static_cast<double>(cutoff)))) + (gsMarginVer * 2) +
@@ -186,9 +172,4 @@ void S2Plugin::WidgetSpelunkyRooms::mouseMoveEvent(QMouseEvent* event)
         }
         ++idx;
     }
-}
-
-void S2Plugin::WidgetSpelunkyRooms::setIsMetaData()
-{
-    mIsMetaData = true;
 }

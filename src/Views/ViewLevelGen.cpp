@@ -7,6 +7,7 @@
 #include "QtPlugin.h"
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -67,6 +68,15 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
         auto containerWidget = new QWidget(this);
         tabRooms->setWidget(containerWidget);
         auto containerLayout = new QVBoxLayout(containerWidget);
+        auto enumCheckBox = new QCheckBox("Enum names");
+        QObject::connect(enumCheckBox, &QCheckBox::stateChanged, this,
+                         [this, enumCheckBox, containerWidget]
+                         {
+                             mUseEnumNames = enumCheckBox->isChecked();
+                             containerWidget->update();
+                         });
+
+        containerLayout->addWidget(enumCheckBox);
 
         for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
         {
@@ -74,9 +84,10 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
             {
                 auto roomWidget = new WidgetSpelunkyRooms(field.name, this);
                 if (field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
-                {
                     roomWidget->setIsMetaData();
-                }
+                else
+                    roomWidget->setNameSwitch(&mUseEnumNames);
+
                 mRoomsWidgets[field.name] = roomWidget;
                 containerLayout->addWidget(roomWidget);
             }
