@@ -39,5 +39,6 @@ namespace S2Plugin
         // TAB LEVEL
         std::unordered_map<std::string, WidgetSpelunkyRooms*> mRoomsWidgets; // field_name -> widget*
         bool mUseEnumNames{false};
+        bool mShowPath{false};
     };
 } // namespace S2Plugin

@@ -39,7 +39,6 @@ namespace S2Plugin
         };
         uintptr_t get_LevelGenPtr(bool quiet)
         {
-
             if (auto base = get_HeapBase(quiet); base != 0)
                 return base + GAME_OFFSET::LEVEL_GEN;
 

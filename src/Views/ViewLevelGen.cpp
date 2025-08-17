@@ -68,6 +68,7 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
         auto containerWidget = new QWidget(this);
         tabRooms->setWidget(containerWidget);
         auto containerLayout = new QVBoxLayout(containerWidget);
+        auto checkBoxLayout = new QHBoxLayout();
         auto enumCheckBox = new QCheckBox("Enum names");
         QObject::connect(enumCheckBox, &QCheckBox::stateChanged, this,
                          [this, enumCheckBox, containerWidget]
@@ -76,8 +77,18 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
                              containerWidget->update();
                          });
 
-        containerLayout->addWidget(enumCheckBox);
+        checkBoxLayout->addWidget(enumCheckBox);
+        auto pathCheckBox = new QCheckBox("Show Path");
+        QObject::connect(pathCheckBox, &QCheckBox::stateChanged, this,
+                         [this, pathCheckBox, containerWidget]
+                         {
+                             mShowPath = pathCheckBox->isChecked();
+                             containerWidget->update();
+                         });
+        checkBoxLayout->addWidget(pathCheckBox);
+        containerLayout->addLayout(checkBoxLayout);
 
+        bool once = false;
         for (const auto& field : Configuration::get()->typeFields(MemoryFieldType::LevelGen))
         {
             if (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
@@ -86,7 +97,14 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
                 if (field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
                     roomWidget->setIsMetaData();
                 else
+                {
                     roomWidget->setNameSwitch(&mUseEnumNames);
+                    if (!once)
+                    {
+                        roomWidget->setPathVisible(&mShowPath);
+                        once = true;
+                    }
+                }
 
                 mRoomsWidgets[field.name] = roomWidget;
                 containerLayout->addWidget(roomWidget);

@@ -26,7 +26,11 @@ namespace S2Plugin
         }
         void setNameSwitch(bool* b)
         {
-            useEnum = b;
+            mUseEnum = b;
+        }
+        void setPathVisible(bool* b)
+        {
+            mShowPath = b;
         }
 
       protected:
@@ -41,6 +45,7 @@ namespace S2Plugin
         int mSpaceAdvance;
         bool mIsMetaData = false;
         std::vector<ToolTipRect> mToolTipRects;
-        bool* useEnum{nullptr};
+        bool* mUseEnum{nullptr};
+        bool* mShowPath{nullptr};
     };
 } // namespace S2Plugin
