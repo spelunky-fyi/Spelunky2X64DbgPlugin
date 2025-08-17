@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <cstdint>
 
 class QTableWidget;
 
@@ -22,5 +23,6 @@ namespace S2Plugin
 
       private:
         QTableWidget* mMainTable;
+        uintptr_t mSaveGameOffset{0};
     };
 } // namespace S2Plugin
