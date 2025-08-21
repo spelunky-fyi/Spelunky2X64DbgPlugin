@@ -60,7 +60,6 @@
     "UnorderedMapBucketPointer",
     "UnorderedMapBucketPointer2",
     "StdVectorPointerIllumination",
-    "StdVectorPointerParticleEmitterInfo",
     "SpecialLevelGeneration",
     "LevelGenDataPointer",
     "SaveGameDataPointer",
@@ -95,7 +94,8 @@
     "MovableBehavior",
     "Resource",
     "DxResource",
-    "DxBuffer"
+    "DxBuffer",
+    "RoomTileCodes"
   ],
   // Struct alignments needed to calculate the padding in map/set node
   // it's just the biggest standard type in a struct, range: 0-8
@@ -878,7 +878,7 @@
         "comment": "values are shown for just one particle"
       },
       {
-        "field": "emitted_particles_back_layer",
+        "field": "emitted_particles_backlayer",
         "type": "EmittedParticlesInfo"
       },
       {
@@ -3861,7 +3861,9 @@
       { "field": "liquid_physics", "type": "LiquidPhysicsPointer" },
       {
         "field": "particle_emitters",
-        "type": "StdVectorPointerParticleEmitterInfo"
+        "type": "StdVector",
+        "valuetype": "ParticleEmitterInfoPointer",
+        "pointer": true
       },
       { "field": "lightsources", "type": "StdVectorPointerIllumination" },
       { "field": "EntityLookup", "type": "EntityLookupPointer" },
@@ -6891,6 +6893,9 @@
       { "field": "padding1", "type": "UnsignedByte" },
       { "field": "padding2", "type": "UnsignedByte" }
     ],
+    "RoomTileCodes": [
+      { "field": "tiles", "type": "Array", "arraytype": "UnsignedDword", "length": 81, "comment": "tilecode ids" }
+    ],
     "LevelGen": [
       { "field": "data", "type": "LevelGenDataPointer" },
       { "field": "unknown2", "type": "UnsignedQword" },
@@ -6917,17 +6922,17 @@
       { "field": "leprechaun_gen", "type": "SpecialLevelGeneration" },
       { "field": "rooms_frontlayer", "type": "LevelGenRoomsPointer" },
       { "field": "rooms_backlayer", "type": "LevelGenRoomsPointer" },
-      { "field": "flipped_rooms", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "rooms_meta_27", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "set_room_front_layer", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "set_room_back_layer", "type": "LevelGenRoomsMetaPointer" },
+      { "field": "flipped_rooms_frontlayer", "type": "LevelGenRoomsMetaPointer" },
+      { "field": "flipped_rooms_backlayer", "type": "LevelGenRoomsMetaPointer" },
+      { "field": "set_room_frontlayer", "type": "LevelGenRoomsMetaPointer" },
+      { "field": "set_room_backlayer", "type": "LevelGenRoomsMetaPointer" },
       {
         "field": "backlayer_room_exists",
         "type": "LevelGenRoomsMetaPointer"
       },
       { "field": "machine_room_origin", "type": "LevelGenRoomsMetaPointer" },
       { "field": "dual_room", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "rooms_meta_33", "type": "LevelGenRoomsMetaPointer" },
+      { "field": "backlayerrooms_tilecodes", "type": "Array", "arraytype": "RoomTileCodes", "length": 120, "pointer": true, "comment": "Special rooms, maybe placed here to be replaced with what was initially generated? empty during gameplay"},
       { "field": "rooms_meta_34", "type": "LevelGenRoomsMetaPointer" },
       { "field": "spawn_room_x", "type": "UnsignedDword" },
       { "field": "spawn_room_y", "type": "UnsignedDword" },
@@ -6980,7 +6985,7 @@
           "8": "unknown"
         }
       },
-      { "field": "shop_type", "type": "State8", "ref": "shop_types" },
+      { "field": "frontlayer_shop_type", "type": "State8", "ref": "shop_types" },
       { "field": "backlayer_shop_type", "type": "State8", "ref": "shop_types" },
       { "field": "frontlayer_shop_music", "type": "UnsignedByte" },
       { "field": "backlayer_shop_music", "type": "UnsignedByte" },
@@ -6992,8 +6997,7 @@
       { "field": "unknown48", "type": "Bool" },
       { "field": "unknown49", "type": "UnsignedByte" },
       { "field": "padding1", "type": "UnsignedWord" },
-      { "field": "padding2", "type": "UnsignedDword" },
-      { "field": "unknown50", "type": "UnsignedQword" }
+      { "field": "padding2", "type": "UnsignedDword" }
     ],
     "LevelGenDataPointer": [
       { "field": "back_room_chance", "type": "UnsignedDword" },
@@ -7089,7 +7093,8 @@
         "keytype": "UnsignedDword",
         "valuetype": "LevelChanceDef",
         "comment": "unordered_map<uint16_t, RoomTemplateData>"
-      }
+      },
+      { "field": "unknown2", "type": "Bool" }
     ],
     "ShortTileCodeDef": [
       { "field": "tilecode", "type": "UnsignedDword" },
@@ -7139,57 +7144,7 @@
             "comment": "For bees, spawns bees and honey, For leprechauns, spawns leprechaun, pot of gold, and rainbow"
           }
         }
-      },
-      { "field": "unknown1", "type": "UnsignedByte" },
-      { "field": "unknown2", "type": "UnsignedByte" },
-      { "field": "unknown3", "type": "UnsignedByte" },
-      { "field": "unknown4", "type": "UnsignedByte" },
-      { "field": "unknown5", "type": "UnsignedByte" },
-      { "field": "unknown6", "type": "UnsignedByte" },
-      { "field": "unknown7", "type": "UnsignedByte" },
-      { "field": "unknown8", "type": "UnsignedByte" },
-      { "field": "unknown9", "type": "UnsignedByte" },
-      { "field": "unknown10", "type": "UnsignedByte" },
-      { "field": "unknown11", "type": "UnsignedByte" },
-      { "field": "unknown12", "type": "UnsignedByte" },
-      { "field": "unknown13", "type": "UnsignedByte" },
-      { "field": "unknown14", "type": "UnsignedByte" },
-      { "field": "unknown15", "type": "UnsignedByte" },
-      { "field": "unknown16", "type": "UnsignedByte" },
-      { "field": "unknown17", "type": "UnsignedByte" },
-      { "field": "unknown18", "type": "UnsignedByte" },
-      { "field": "unknown19", "type": "UnsignedByte" },
-      { "field": "unknown20", "type": "UnsignedByte" },
-      { "field": "unknown21", "type": "UnsignedByte" },
-      { "field": "unknown22", "type": "UnsignedByte" },
-      { "field": "unknown23", "type": "UnsignedByte" },
-      { "field": "unknown24", "type": "UnsignedByte" },
-      { "field": "unknown25", "type": "UnsignedByte" },
-      { "field": "unknown26", "type": "UnsignedByte" },
-      { "field": "unknown27", "type": "UnsignedByte" },
-      { "field": "unknown28", "type": "UnsignedByte" },
-      { "field": "unknown29", "type": "UnsignedByte" },
-      { "field": "unknown30", "type": "UnsignedByte" },
-      { "field": "unknown31", "type": "UnsignedByte" },
-      { "field": "unknown32", "type": "UnsignedByte" },
-      { "field": "unknown33", "type": "UnsignedByte" },
-      { "field": "unknown34", "type": "UnsignedByte" },
-      { "field": "unknown35", "type": "UnsignedByte" },
-      { "field": "unknown36", "type": "UnsignedByte" },
-      { "field": "unknown37", "type": "UnsignedByte" },
-      { "field": "unknown38", "type": "UnsignedByte" },
-      { "field": "unknown39", "type": "UnsignedByte" },
-      { "field": "unknown40", "type": "UnsignedByte" },
-      { "field": "unknown41", "type": "UnsignedByte" },
-      { "field": "unknown42", "type": "UnsignedByte" },
-      { "field": "unknown43", "type": "UnsignedByte" },
-      { "field": "unknown44", "type": "UnsignedByte" },
-      { "field": "unknown45", "type": "UnsignedByte" },
-      { "field": "unknown46", "type": "UnsignedByte" },
-      { "field": "unknown47", "type": "UnsignedByte" },
-      { "field": "unknown48", "type": "UnsignedByte" },
-      { "field": "unknown49", "type": "UnsignedDword" },
-      { "field": "unknown50", "type": "UnsignedDword" }
+      }
     ],
     "Online": [
       {
@@ -7772,13 +7727,6 @@
         "comment": "Value from the map, obviously type dependent (UnsignedDword just for visualization purposes in plugin)"
       }
     ],
-    "StdVectorPointerParticleEmitterInfo": [
-      {
-        "field": "vector",
-        "type": "StdVector",
-        "valuetype": "ParticleEmitterInfoPointer"
-      }
-    ],
     "StdVectorPointerIllumination": [
       {
         "field": "vector",
@@ -7786,7 +7734,8 @@
         "valuetype": "IlluminationPointer"
       },
       { "field": "unknown1", "type": "UnsignedDword" },
-      { "field": "unknown2", "type": "UnsignedDword" }
+      { "field": "unknown2", "type": "UnsignedByte" },
+      { "field": "padding", "type": "Skip", "offset": 3 }
     ],
     "DxResource": [
       {
@@ -7860,7 +7809,7 @@
       { "field": "end_capacity", "type": "DataPointer" }
     ],
     "LayerPointer": [
-      { "field": "is_back_layer", "type": "Bool" },
+      { "field": "is_backlayer", "type": "Bool" },
       {
         "field": "padding",
         "type": "Skip",
