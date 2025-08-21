@@ -1,7 +1,7 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
 
 #include "Configuration.h"
-#include "QtHelpers/WidgetMemoryView.h" // for ToolTipRect
+#include "QtHelpers/DialogEditState.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QEvent>
@@ -16,8 +16,6 @@
 
 constexpr const int gsMarginHor = 10;
 constexpr const int gsMarginVer = 5;
-constexpr const size_t gsBufferSize = 8 * 16 * 2;     // 8x16 rooms * 2 bytes per room
-constexpr const size_t gsHalfBufferSize = 8 * 16 * 1; // 8x16 rooms * 1 byte/bool per room
 
 S2Plugin::WidgetSpelunkyRooms::WidgetSpelunkyRooms(const std::string& fieldName, QWidget* parent) : QWidget(parent), mFieldName(QString::fromStdString(fieldName))
 {
@@ -88,6 +86,7 @@ inline PATH_THROUGH& operator^=(PATH_THROUGH& x, const PATH_THROUGH y)
 void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
 {
     const static auto font = QFont("Courier", 11);
+    const static auto hoverBrush = QBrush({0, 0, 0, 25}, Qt::Dense2Pattern);
     auto config = Configuration::get();
     QPainter painter(this);
     painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -99,13 +98,12 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
         painter.setPen(QPen(Qt::darkGray, 1));
         painter.drawRect(rect);
     }
-    mToolTipRects.clear();
     painter.setBrush(Qt::black);
     int x = gsMarginHor;
     int y = gsMarginVer + mTextAdvance.height();
 
     painter.drawText(x, y, mFieldName);
-    y += mTextAdvance.height() + gsMarginVer;
+    y += gsMarginVer;
     if (mOffset != 0)
     {
         auto bufferSize = mIsMetaData ? gsHalfBufferSize : gsBufferSize;
@@ -119,11 +117,18 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
             ROOM_TEMPLATES roomID = SIDE; // 0
             if (mIsMetaData)
             {
-                if (buffer.at(counter) == 1)
+                mRoomRects[counter].rect = QRect(x, y + 5, mTextAdvance.width(), mTextAdvance.height() - 2);
+                painter.setPen(Qt::transparent);
+                if (mHoverOverIndex == counter)
                 {
-                    painter.setPen(QPen(Qt::white, 1));
+                    painter.setBrush(hoverBrush);
+                    painter.drawRect(QRect(x - mSpaceAdvance / 2, y + 2, mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() + gsMarginVer));
+                }
+                if (buffer.at(counter) != 0)
+                {
                     painter.setBrush(Qt::black);
-                    painter.drawRect(QRect(x, y - mTextAdvance.height() + 5, mTextAdvance.width(), mTextAdvance.height() - 2));
+                    painter.drawRect(mRoomRects[counter].rect);
+                    painter.setPen(QPen(Qt::white, 1));
                 }
                 else
                     painter.setPen(QPen(Qt::black, 1));
@@ -132,20 +137,21 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
             {
                 if (counter % 2 == 0)
                 {
+                    auto idx = counter / 2;
                     auto& currentRoomCode = config->roomCodeForID(buffer.at(counter));
                     roomID = (ROOM_TEMPLATES)currentRoomCode.id;
                     painter.setPen(Qt::transparent);
-                    auto rect = QRect(x, y - mTextAdvance.height() + 5, 2 * mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() - 2);
+                    if (mHoverOverIndex == idx)
+                    {
+                        painter.setBrush(hoverBrush);
+                        painter.drawRect(x - mSpaceAdvance / 2, y + 2, 2 * (mTextAdvance.width() + mSpaceAdvance), mTextAdvance.height() + gsMarginVer);
+                    }
                     painter.setBrush(currentRoomCode.color);
-                    painter.drawRoundedRect(rect, 4.0, 4.0);
+                    mRoomRects[idx].rect = QRect(x, y + 5, 2 * mTextAdvance.width() + mSpaceAdvance, mTextAdvance.height() - 2);
+                    painter.drawRoundedRect(mRoomRects[idx].rect, 4.0, 4.0);
 
-                    QString name;
-                    if (mUseEnum && *mUseEnum)
-                        name = QString::fromStdString(currentRoomCode.enumName);
-                    else
-                        name = QString::fromStdString(currentRoomCode.name);
-
-                    mToolTipRects.emplace_back(ToolTipRect{rect, name});
+                    const std::string& strName = (mUseEnum && *mUseEnum) ? currentRoomCode.enumName : currentRoomCode.name;
+                    mRoomRects[idx].tooltip = QString::fromStdString(strName);
 
                     if (currentRoomCode.id == 0 || currentRoomCode.id == 9)
                         painter.setPen(QPen(Qt::lightGray, 1));
@@ -163,16 +169,16 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
             }
 
             auto str = QString("%1").arg(buffer.at(counter), 2, 16, QChar('0'));
-            painter.drawText(x, y, str);
+            painter.drawText(x, y + mTextAdvance.height(), str);
 
             if (roomID != SIDE && mShowPath && *mShowPath)
             {
                 painter.setPen(Qt::transparent);
                 painter.setBrush(Qt::GlobalColor::magenta);
-                QRect horizontalLine = QRect(x - mSpaceAdvance / 2, y - mTextAdvance.height() + 5, 2 * (mTextAdvance.width() + mSpaceAdvance), mTextAdvance.height() - 2);
+                QRect horizontalLine(x - mSpaceAdvance / 2, y + 5, 2 * (mTextAdvance.width() + mSpaceAdvance), mTextAdvance.height() - 2);
                 horizontalLine.adjust(0, mTextAdvance.width() / 3, 0, -mTextAdvance.width() / 3);
 
-                QRect verticalLine = QRect(x + mTextAdvance.width() + mSpaceAdvance / 2 - horizontalLine.height() / 2, y - mTextAdvance.height() + 4, horizontalLine.height(), mTextAdvance.height());
+                QRect verticalLine(x + mTextAdvance.width() + mSpaceAdvance / 2 - horizontalLine.height() / 2, y + 4, horizontalLine.height(), mTextAdvance.height());
 
                 PATH_THROUGH path = PATH_THROUGH::NONE;
                 uint8_t themeNumber = Script::Memory::ReadByte(config->offsetForField(config->typeFields(MemoryFieldType::State), "theme", statePtr));
@@ -187,7 +193,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
                     case OLDHUNTER_KEYROOM:
                     case OLDHUNTER_REWARDROOM:
                     case PEN_ROOM:
-                        // case SISTERS_ROOM: // I thoght i got it once on path?
+                        // case SISTERS_ROOM: // I thought i got it once on path?
                         painter.setBrush(QColor{245, 140, 2});
                         [[fallthrough]];
                     case PATH_NORMAL:
@@ -302,13 +308,12 @@ QSize S2Plugin::WidgetSpelunkyRooms::sizeHint() const
 
 QSize S2Plugin::WidgetSpelunkyRooms::minimumSizeHint() const
 {
+    static_assert(gsHalfBufferSize % 8 == 0 && gsBufferSize % 16 == 0);
     auto bufferSize = mIsMetaData ? gsHalfBufferSize : gsBufferSize;
     const uint8_t cutoff = mIsMetaData ? 8 : 16;
 
     int totalWidth = ((mTextAdvance.width() + mSpaceAdvance) * cutoff) + (gsMarginHor * 2) - mSpaceAdvance;
-    int totalHeight = gsMarginVer + mTextAdvance.height() + (mTextAdvance.height() * static_cast<int>(std::ceil(static_cast<double>(bufferSize) / static_cast<double>(cutoff)))) + (gsMarginVer * 2) +
-                      mTextAdvance.height();
-
+    int totalHeight = static_cast<int>(gsMarginVer + mTextAdvance.height() + (mTextAdvance.height() * (bufferSize / cutoff)) + (gsMarginVer * 2) + mTextAdvance.height());
     return QSize(totalWidth, totalHeight);
 }
 
@@ -323,19 +328,53 @@ void S2Plugin::WidgetSpelunkyRooms::setOffset(size_t offset)
 void S2Plugin::WidgetSpelunkyRooms::mouseMoveEvent(QMouseEvent* event)
 {
     auto pos = event->pos();
-    uint32_t idx = 0;
-    for (const auto& ttr : mToolTipRects)
+    bool overlapping = false;
+    for (uint8_t idx = 0; idx < mRoomRects.size(); ++idx)
     {
-        if (ttr.rect.contains(pos))
+        if (!mRoomRects[idx].rect.contains(pos))
+            continue;
+
+        if (mHoverOverIndex != idx)
         {
-            if (idx != mCurrentToolTip)
-            {
-                mCurrentToolTip = idx;
-                QToolTip::showText({}, {});
-            }
-            QToolTip::showText(mapToGlobal(pos), ttr.tooltip);
-            return;
+            overlapping = true;
+            mHoverOverIndex = idx;
+            update();
         }
-        ++idx;
+        if (mIsMetaData)
+            return;
+
+        if (idx != mCurrentToolTip)
+        {
+            mCurrentToolTip = idx;
+            QToolTip::showText({}, {});
+        }
+        QToolTip::showText(mapToGlobal(pos), mRoomRects[idx].tooltip);
+        return;
+    }
+    if (!overlapping)
+        resetHover();
+}
+
+void S2Plugin::WidgetSpelunkyRooms::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    auto pos = event->pos();
+    for (uint8_t idx = 0; idx < mRoomRects.size(); ++idx)
+    {
+        if (!mRoomRects[idx].rect.contains(pos))
+            continue;
+
+        if (mIsMetaData)
+        {
+            auto value = Script::Memory::ReadByte(mOffset + idx);
+            Script::Memory::WriteByte(mOffset + idx, value == 0 ? 1 : 0);
+            update();
+        }
+        else
+        {
+            const char* ref = (mUseEnum && *mUseEnum) ? "&roomcodesEnum" : "&roomcodesNames";
+            auto dialog = new DialogEditState("Room", ref, mOffset + idx * 2, MemoryFieldType::State16, this);
+            dialog->exec();
+        }
+        return;
     }
 }

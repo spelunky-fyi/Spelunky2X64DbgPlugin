@@ -1296,11 +1296,15 @@ void S2Plugin::Configuration::processRoomCodesJSON(nlohmann::ordered_json& j)
         c.setAlpha(colorDetails["a"].get<uint8_t>());
         colors[colorName] = c;
     }
+    auto& roomCodeRefs = mRefs["&roomcodesNames"];
+    auto& roomCodeRefsEnums = mRefs["&roomcodesEnum"];
     for (const auto& [roomCodeStr, roomDetails] : j["roomcodes"].items())
     {
         auto id = static_cast<uint16_t>(std::stol(roomCodeStr, nullptr, 16));
         QColor color = roomDetails.contains("color") ? getColor(roomDetails["color"].get<std::string>()) : QColor(Qt::lightGray);
-        mRoomCodes.emplace(id, RoomCode(id, roomDetails["name"].get<std::string>(), roomDetails["enum"].get<std::string>(), std::move(color)));
+        auto result = mRoomCodes.emplace(id, RoomCode(id, roomDetails["name"].get<std::string>(), roomDetails["enum"].get<std::string>(), std::move(color)));
+        roomCodeRefs.emplace_back(id, (*result.first).second.name);
+        roomCodeRefsEnums.emplace_back(id, (*result.first).second.enumName);
     }
 }
 

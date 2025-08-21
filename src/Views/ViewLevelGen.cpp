@@ -14,6 +14,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QScrollBar>
 #include <QVBoxLayout>
 
 S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidget(parent), mLevelGenPtr(address)
@@ -94,8 +95,9 @@ S2Plugin::ViewLevelGen::ViewLevelGen(uintptr_t address, QWidget* parent) : QWidg
             if (field.type == MemoryFieldType::LevelGenRoomsPointer || field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
             {
                 auto roomWidget = new WidgetSpelunkyRooms(field.name, this);
+                QObject::connect(tabRooms->verticalScrollBar(), &QScrollBar::valueChanged, roomWidget, &WidgetSpelunkyRooms::resetHover);
                 if (field.type == MemoryFieldType::LevelGenRoomsMetaPointer)
-                    roomWidget->setIsMetaData();
+                    roomWidget->setAsMetaData();
                 else
                 {
                     roomWidget->setNameSwitch(&mUseEnumNames);
