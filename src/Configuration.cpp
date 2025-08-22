@@ -63,7 +63,7 @@ namespace S2Plugin
         map_type fields;
         std::unordered_map<std::string_view, const Data&> json_names_map;
     };
-    static constexpr const std::array<MemoryFieldData::Data, 70> gsMemoryFieldTypeData = {{
+    static constexpr const std::array<MemoryFieldData::Data, 71> gsMemoryFieldTypeData = {{
         // MemoryFieldEnum, Name for display, c++ type name, name in json, size (if 0 will be determinate from json struct), is pointer
 
         // Basic types
@@ -86,6 +86,7 @@ namespace S2Plugin
         {MemoryFieldType::State8, "8-bit state", "int8_t", "State8", 1, false},
         {MemoryFieldType::State16, "16-bit state", "int16_t", "State16", 2, false},
         {MemoryFieldType::State32, "32-bit state", "int32_t", "State32", 4, false},
+        {MemoryFieldType::UTF8Char, "UTF8Char", "char", "UTF8Char", 1, false},
         {MemoryFieldType::UTF16Char, "UTF16Char", "char16_t", "UTF16Char", 2, false},
         {MemoryFieldType::UTF16StringFixedSize, "UTF16StringFixedSize", "char16_t", "UTF16StringFixedSize", 0, false},
         {MemoryFieldType::UTF8StringFixedSize, "UTF8StringFixedSize", "char", "UTF8StringFixedSize", 0, false},
@@ -1129,6 +1130,7 @@ uint8_t S2Plugin::Configuration::getAlignment(MemoryFieldType type) const
         case MemoryFieldType::State8:
         case MemoryFieldType::CharacterDBID:
         case MemoryFieldType::UTF8StringFixedSize:
+        case MemoryFieldType::UTF8Char:
             return sizeof(char);
         case MemoryFieldType::Word:
         case MemoryFieldType::UnsignedWord:

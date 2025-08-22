@@ -70,6 +70,12 @@ void S2Plugin::DialogEditString::changeBtnClicked()
 {
     switch (mFieldType)
     {
+        case MemoryFieldType::UTF8Char:
+        {
+            char v = mLineEdit->text().isEmpty() ? 0 : mLineEdit->text().toStdString()[0];
+            Script::Memory::WriteByte(mMemoryAddress, static_cast<unsigned char>(v));
+            break;
+        }
         case MemoryFieldType::UTF16Char:
         {
             ushort v = mLineEdit->text().isEmpty() ? 0u : mLineEdit->text()[0].unicode();

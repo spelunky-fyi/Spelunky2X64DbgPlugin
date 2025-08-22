@@ -218,6 +218,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::LevelGenRoomsMetaPointer:
         case MemoryFieldType::JournalPagePointer:
         case MemoryFieldType::COThemeInfoPointer:
+        case MemoryFieldType::UTF8Char:
         case MemoryFieldType::UTF16Char:
         case MemoryFieldType::IPv4Address:
         {
@@ -1164,6 +1165,26 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     auto stateTitle = QString::fromStdString(std::to_string(comparisonValue.value()) + ": " + config->stateTitle(stateRef, comparisonValue.value()));
                     itemComparisonValue->setData(stateTitle, Qt::DisplayRole);
                 }
+
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                if (isPointer == false)
+                    itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+            break;
+        }
+        case MemoryFieldType::UTF8Char:
+        {
+            std::optional<char> value;
+            value = updateField<char>(itemField, valueMemoryOffset, itemValue, nullptr, itemValueHex, isPointer, "0x%02X", true, !pointerUpdate, highlightColor);
+            if (value.has_value())
+                itemValue->setData(QString("'<b>%1</b>' (%2)").arg(QString(QChar(value.value())).toHtmlEscaped()).arg(value.value()), Qt::DisplayRole);
+
+            if (comparisonActive)
+            {
+                std::optional<char> comparisonValue;
+                comparisonValue = updateField<char>(itemField, valueComparisonMemoryOffset, itemComparisonValue, nullptr, itemComparisonValueHex, isPointer, "0x%02X", false, false, highlightColor);
+                if (comparisonValue.has_value())
+                    itemComparisonValue->setData(QString("'<b>%1</b>' (%2)").arg(QString(QChar(comparisonValue.value())).toHtmlEscaped()).arg(comparisonValue.value()), Qt::DisplayRole);
 
                 itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
                 if (isPointer == false)
@@ -2693,6 +2714,18 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
 
                     break;
                 }
+                case MemoryFieldType::UTF8Char:
+                {
+                    auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
+                    if (address != 0)
+                    {
+                        auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
+                        QChar c = static_cast<char>(clickedItem->data(gsRoleRawValue).toUInt());
+                        auto dialog = new DialogEditString(fieldName, c, address, 1, dataType, this);
+                        dialog->exec();
+                    }
+                    break;
+                }
                 case MemoryFieldType::UTF16Char:
                 {
                     auto address = clickedItem->data(gsRoleMemoryAddress).toULongLong();
@@ -3316,6 +3349,7 @@ bool S2Plugin::TreeViewMemoryFields::isItemClickable(const QModelIndex& index) c
             case MemoryFieldType::LevelGenRoomsMetaPointer:
             case MemoryFieldType::JournalPagePointer:
             case MemoryFieldType::LevelGenPointer:
+            case MemoryFieldType::UTF8Char:
             case MemoryFieldType::UTF16Char:
             case MemoryFieldType::UTF16StringFixedSize:
             case MemoryFieldType::UTF8StringFixedSize:

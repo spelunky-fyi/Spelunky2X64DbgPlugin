@@ -7028,7 +7028,7 @@
       {
         "field": "short_tile_codes",
         "type": "StdUnorderedMap",
-        "keytype": "UnsignedByte",
+        "keytype": "UTF8Char",
         "valuetype": "ShortTileCodeDef",
         "comment": "unordered_map<uint8_t, ShortTileCodeDef>"
       },

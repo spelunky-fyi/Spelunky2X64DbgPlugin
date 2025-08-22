@@ -123,6 +123,7 @@ namespace S2Plugin
         LevelGenRoomsMetaPointer,     // used to make the level gen rooms title clickable
         JournalPagePointer,           // used to make journal page in vector clickable
         LevelGenPointer,
+        UTF8Char,
         UTF16Char,
         UTF16StringFixedSize,
         UTF8StringFixedSize,
