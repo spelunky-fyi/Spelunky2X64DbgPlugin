@@ -6894,7 +6894,13 @@
       { "field": "padding2", "type": "UnsignedByte" }
     ],
     "RoomTileCodes": [
-      { "field": "tiles", "type": "Array", "arraytype": "UnsignedDword", "length": 81, "comment": "tilecode ids" }
+      {
+        "field": "tiles",
+        "type": "Array",
+        "arraytype": "UnsignedDword",
+        "length": 81,
+        "comment": "tilecode ids"
+      }
     ],
     "LevelGen": [
       { "field": "data", "type": "LevelGenDataPointer" },
@@ -6922,8 +6928,14 @@
       { "field": "leprechaun_gen", "type": "SpecialLevelGeneration" },
       { "field": "rooms_frontlayer", "type": "LevelGenRoomsPointer" },
       { "field": "rooms_backlayer", "type": "LevelGenRoomsPointer" },
-      { "field": "flipped_rooms_frontlayer", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "flipped_rooms_backlayer", "type": "LevelGenRoomsMetaPointer" },
+      {
+        "field": "flipped_rooms_frontlayer",
+        "type": "LevelGenRoomsMetaPointer"
+      },
+      {
+        "field": "flipped_rooms_backlayer",
+        "type": "LevelGenRoomsMetaPointer"
+      },
       { "field": "set_room_frontlayer", "type": "LevelGenRoomsMetaPointer" },
       { "field": "set_room_backlayer", "type": "LevelGenRoomsMetaPointer" },
       {
@@ -6932,7 +6944,14 @@
       },
       { "field": "machine_room_origin", "type": "LevelGenRoomsMetaPointer" },
       { "field": "dual_room", "type": "LevelGenRoomsMetaPointer" },
-      { "field": "backlayerrooms_tilecodes", "type": "Array", "arraytype": "RoomTileCodes", "length": 120, "pointer": true, "comment": "Special rooms, maybe placed here to be replaced with what was initially generated? empty during gameplay"},
+      {
+        "field": "backlayerrooms_tilecodes",
+        "type": "Array",
+        "arraytype": "RoomTileCodes",
+        "length": 120,
+        "pointer": true,
+        "comment": "Special rooms, maybe placed here to be replaced with what was initially generated? empty during gameplay"
+      },
       { "field": "rooms_meta_34", "type": "LevelGenRoomsMetaPointer" },
       { "field": "spawn_room_x", "type": "UnsignedDword" },
       { "field": "spawn_room_y", "type": "UnsignedDword" },
@@ -6985,7 +7004,11 @@
           "8": "unknown"
         }
       },
-      { "field": "frontlayer_shop_type", "type": "State8", "ref": "shop_types" },
+      {
+        "field": "frontlayer_shop_type",
+        "type": "State8",
+        "ref": "shop_types"
+      },
       { "field": "backlayer_shop_type", "type": "State8", "ref": "shop_types" },
       { "field": "frontlayer_shop_music", "type": "UnsignedByte" },
       { "field": "backlayer_shop_music", "type": "UnsignedByte" },
