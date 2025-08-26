@@ -8609,9 +8609,7 @@
         "field": "sub_theme",
         "type": "COThemeInfoPointer",
         "comment": "for cosmic ocean"
-      },
-      { "field": "unknown3", "type": "UnsignedDword" },
-      { "field": "unknown4", "type": "UnsignedDword" }
+      }
     ],
     "UnknownPointerGroup": [
       { "field": "unknown_uid1", "type": "EntityUID", "pointer": true },
