@@ -508,10 +508,11 @@ void S2Plugin::TreeViewMemoryFields::updateTableHeader(bool restoreColumnWidths)
 
 void S2Plugin::TreeViewMemoryFields::updateTree(uintptr_t newAddr, uintptr_t newComparisonAddr, bool initial)
 {
+    std::optional<uintptr_t> newAddress = newAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newAddr);
+    std::optional<uintptr_t> newComparisonAddress = newComparisonAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newComparisonAddr);
+
     for (int row = 0; row < mModel->invisibleRootItem()->rowCount(); ++row)
-    {
-        updateRow(row, newAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newAddr), newComparisonAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newComparisonAddr), nullptr, initial);
-    }
+        updateRow(row, newAddress, newComparisonAddress, nullptr, initial);
 }
 
 // this would be much better as lambda function, but lambda with templates is C++20 thing
@@ -2856,9 +2857,7 @@ void S2Plugin::TreeViewMemoryFields::dragEnterEvent(QDragEnterEvent* event)
 void S2Plugin::TreeViewMemoryFields::dragMoveEvent(QDragMoveEvent* event)
 {
     if (event->mimeData()->property(gsDragDropMemoryField_Address).isValid())
-    {
         event->accept();
-    }
 }
 
 void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
@@ -3392,6 +3391,19 @@ void S2Plugin::TreeViewMemoryFields::mouseMoveEvent(QMouseEvent* event)
         setCursor(Qt::ArrowCursor);
 
     QTreeView::mouseMoveEvent(event);
+}
+
+void S2Plugin::TreeViewMemoryFields::scrollContentsBy(int x, int y)
+{
+    QTreeView::scrollContentsBy(x, y);
+
+    auto pos = mapFromGlobal(QCursor::pos());
+    pos -= {0, header()->height()};
+    QModelIndex index = indexAt(pos);
+    if (index.isValid() && isItemClickable(index))
+        setCursor(Qt::PointingHandCursor);
+    else
+        setCursor(Qt::ArrowCursor);
 }
 
 void S2Plugin::TreeViewMemoryFields::headerClicked()

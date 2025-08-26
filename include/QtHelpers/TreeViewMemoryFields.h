@@ -98,6 +98,7 @@ namespace S2Plugin
         void drawBranches(QPainter* painter, const QRect& rect, const QModelIndex& index) const override;
         void mouseMoveEvent(QMouseEvent* event) override;
         void mousePressEvent(QMouseEvent* event) override;
+        void scrollContentsBy(int dx, int dy) override;
       signals:
         void memoryFieldValueUpdated(int row, QStandardItem* parent);
         void levelGenRoomsPointerClicked();
