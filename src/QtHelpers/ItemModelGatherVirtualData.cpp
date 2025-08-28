@@ -422,7 +422,7 @@ void S2Plugin::ItemModelGatherVirtualData::parseJSON()
 
     char buffer[MAX_PATH] = {0};
     GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-    auto pathQStr = QFileInfo(QString(buffer)).dir().filePath(QString::fromStdString("plugins/Spelunky2VirtualTableData.json"));
+    auto pathQStr = QFileInfo(QString(buffer)).dir().filePath(QString::fromStdString("plugins/spel2/VirtualTableData.json"));
     if (QFile(pathQStr).exists())
     {
         try
@@ -449,15 +449,15 @@ void S2Plugin::ItemModelGatherVirtualData::parseJSON()
         }
         catch (const ordered_json::exception& e)
         {
-            displayError(("Exception while parsing Spelunky2VirtualTableData.json: " + std::string(e.what())).c_str());
+            displayError(("Exception while parsing VirtualTableData.json: " + std::string(e.what())).c_str());
         }
         catch (const std::exception& e)
         {
-            displayError(("Exception while parsing Spelunky2VirtualTableData.json: " + std::string(e.what())).c_str());
+            displayError(("Exception while parsing VirtualTableData.json: " + std::string(e.what())).c_str());
         }
         catch (...)
         {
-            displayError("Unknown exception while parsing Spelunky2VirtualTableData.json");
+            displayError("Unknown exception while parsing VirtualTableData.json");
         }
 
         std::sort(mEntries.begin(), mEntries.end(), [](const GatheredDataEntry& a, const GatheredDataEntry& b) { return a.id < b.id; });

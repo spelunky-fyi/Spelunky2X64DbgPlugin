@@ -393,7 +393,7 @@ void S2Plugin::ViewVirtualTable::updateGatherProgress()
 
 void S2Plugin::ViewVirtualTable::exportGatheredData()
 {
-    auto fileName = QFileDialog::getSaveFileName(this, "Save gathered data", "Spelunky2VirtualTableData.json", "JSON files (*.json)");
+    auto fileName = QFileDialog::getSaveFileName(this, "Save gathered data", "VirtualTableData.json", "JSON files (*.json)");
     if (!fileName.isEmpty())
     {
         try

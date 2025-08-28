@@ -5,14 +5,14 @@
 - Download [x64dbg](https://github.com/x64dbg/x64dbg/releases) and extract.
 - In the extracted folder, go to release/x64 and launch x64dbg.exe, this will initialize the application and create a bunch of folders.
 - Close the application.
-- An (empty) plugins folder has been created. Put all the files from lastes release in it
-  - Spelunky2.dp64 (the actual plugin)
-  - Spelunky2.json (the definition of the fields and classes)
-  - Spelunky2Entities.json (the definitions of entity and it's sub-classes)
-  - Spelunky2Entities.txt (the list of all the entity names with type ids)
-  - Spelunky2ParticleEmitters.txt (the list of all the particle emitters types with ids)
-  - Spelunky2RoomCodes.json (the list of the room codes for level generation)
-  - (optional) Spelunky2VirtualTableData.json (gathered data about vtables and offsets)
+- An (empty) plugins folder has been created. Put all the files from latest release in it
+  - /Spelunky2.dp64 (the actual plugin)
+  - /spel2/Structs.json (the definition of the fields and classes)
+  - /spel2/EntitySubclasses.json (the definitions of entity and it's sub-classes)
+  - /spel2/Entities.txt (the list of all the entity names with type ids)
+  - /spel2/ParticleEmitters.txt (the list of all the particle emitters types with ids)
+  - /spel2/RoomCodes.json (the list of the room codes for level generation)
+  - (optional) /spel2/VirtualTableData.json (gathered data about vtables and offsets)
 - Launch x64dbg.exe again, and you should see a tab at the top right of the window called "Spelunky 2"
 
 By default, x64dbg enables a couple of standard/system breakpoints, which means that Spelunky will pause automatically when these breakpoints are hit. To disable these, open the Options > Preferences menu and uncheck "System Breakpoint", "Entry Breakpoint" and "TLS Callbacks".
@@ -67,7 +67,7 @@ Shows a list of all the textures in the game.
 
 ![LevelGen](/resources/docs_levelgen.png)
 
-The 'Rooms' tab shows how the different rooms are laid out in the level during level generation. Hover over the room code to see a description.
+The 'Rooms' tab shows how the different rooms are laid out in the level during level generation. Hover over the room code to see a description. Double click to edit the value
 
 ![LevelGen](/resources/docs_levelgen_rooms.png)
 
@@ -86,11 +86,6 @@ The detail screen of an entity allows you to not only see the fields, but also i
 Hover over the field to see the name on the tooltip.
 
 ![Entity Level](/resources/docs_entity_level.png)
-
-The C++ tab gives you a copy-pasteable C++ header for use in e.g. Overlunky.
-
-![Entity c++ header](/resources/docs_entity_cpp.png)
-
 
 You can compare two entities by first opening an entity window, and then dragging another entity from the 'Entities' window on top of the original entity window. Two more columns will appear in the fields table. The fields with an orange background differ from the original entity.
 
@@ -140,7 +135,10 @@ A plot of the data is also available:
 
 ## Advanced usage
 
-The Spelunky2.json file contains all the field definitions of the known structs and classes. Just add another entry, and specify the correct field types. Entity subclasses should be added in Spelunky2Entities.json, don't forget to add the new entity name to the `entity_class_hierarchy` list so the correct inheritance can be determined, and to `default_entity_types` so that when you click on the entity, it will immediately cast it to the correct type. You can use a regex to match multiple entity names at once.
+In almost every memory view you can right click and use the "View Code" option to see the C++ representation of given struct
+
+The `Structs.json` file contains all the definitions of the known structs and classes. Just add another entry, and specify the correct field types.
+Entity subclasses should be added in `EntitySubclasses.json`, don't forget to add the new entity name to the `entity_class_hierarchy` list so the correct inheritance can be determined, and to `default_entity_types` so that when you click on the entity, it will immediately cast it to the correct type. You can use a regex to match multiple entity names at once.
 
 If you want to define struct as pointer, you can add `"pointer": true` when assigning field with the struct name as type, if you need this struct to be used in some container type, add it to `pointer_types` list instead.
 

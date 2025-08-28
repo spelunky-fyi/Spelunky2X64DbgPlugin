@@ -2,7 +2,6 @@
 
 #include "QtHelpers/ItemModelStates.h"
 #include "QtPlugin.h"
-#include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QComboBox>
 #include <QGridLayout>
@@ -20,11 +19,8 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
     setWindowIcon(getCavemanIcon());
     auto layout = new QVBoxLayout(this);
 
-    // STATES
     auto gridLayout = new QGridLayout(this);
-
     gridLayout->addWidget(new QLabel(QString("Change value of %1").arg(fieldName), this), 0, 0, 1, 2);
-
     gridLayout->addWidget(new QLabel("New state:", this), 1, 0);
 
     // look up current state in memory
@@ -57,9 +53,8 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
     mStatesSortProxy->sort(0);
     auto i = mStatesComboBox->findData(currentState);
     if (i != -1)
-    {
         mStatesComboBox->setCurrentIndex(i);
-    }
+
     QObject::connect(mStatesComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &DialogEditState::stateComboBoxChanged);
     gridLayout->addWidget(mStatesComboBox, 1, 1);
 
@@ -89,7 +84,6 @@ S2Plugin::DialogEditState::DialogEditState(const QString& fieldName, const std::
 
 QSize S2Plugin::DialogEditState::minimumSizeHint() const
 {
-
     return QSize(350, 150);
 }
 
@@ -112,9 +106,8 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             bool success = false;
             int8_t v = static_cast<int8_t>(mStateLineEdit->text().toShort(&success));
             if (success)
-            {
                 Script::Memory::WriteByte(mMemoryAddress, static_cast<uint8_t>(v));
-            }
+
             break;
         }
         case MemoryFieldType::State16:
@@ -122,9 +115,8 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             bool success = false;
             int16_t v = mStateLineEdit->text().toShort(&success);
             if (success)
-            {
                 Script::Memory::WriteWord(mMemoryAddress, static_cast<uint16_t>(v));
-            }
+
             break;
         }
         case MemoryFieldType::State32:
@@ -132,9 +124,8 @@ void S2Plugin::DialogEditState::changeBtnClicked()
             bool success = false;
             int32_t v = mStateLineEdit->text().toInt(&success);
             if (success)
-            {
                 Script::Memory::WriteDword(mMemoryAddress, static_cast<uint32_t>(v));
-            }
+
             break;
         }
     }
