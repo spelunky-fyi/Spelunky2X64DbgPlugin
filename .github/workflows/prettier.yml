@@ -19,12 +19,12 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.do_formatting != 'true' }}
         with:
           dry: True
-          prettier_options: --check resources/Spelunky2.json resources/Spelunky2Entities.json resources/Spelunky2RoomCodes.json
+          prettier_options: --check resources/Structs.json resources/EntitySubclasses.json resources/RoomCodes.json
 
       - uses: creyD/prettier_action@v4.3
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.do_formatting == 'true' }}
         with:
-          prettier_options: --write resources/Spelunky2.json resources/Spelunky2Entities.json resources/Spelunky2RoomCodes.json
+          prettier_options: --write resources/Structs.json resources/EntitySubclasses.json resources/RoomCodes.json
           commit_message: "Automated prettier changes"
 
       - uses: actions/upload-artifact@v4
@@ -32,7 +32,7 @@ jobs:
         with:
           name: json
           path: |
-              resources/Spelunky2.json
-              resources/Spelunky2Entities.json
-              resources/Spelunky2RoomCodes.json
+              resources/Structs.json
+              resources/EntitySubclasses.json
+              resources/RoomCodes.json
           retention-days: 1

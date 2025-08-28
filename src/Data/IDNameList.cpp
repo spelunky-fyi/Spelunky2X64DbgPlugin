@@ -23,9 +23,8 @@ S2Plugin::IDNameList::IDNameList(const std::string& relFilePath, const std::rege
     {
         std::string line;
         if (!std::getline(fp, line))
-        {
             break;
-        }
+
         std::smatch m;
         if (std::regex_match(line, m, regex))
         {
@@ -51,16 +50,15 @@ uint32_t S2Plugin::IDNameList::idForName(const std::string& searchName) const
 std::string S2Plugin::IDNameList::nameForID(uint32_t id) const
 {
     if (auto it = mEntries.find(id); it != mEntries.end())
-    {
         return it->second;
-    }
+
     return "UNKNOWN ID: " + std::to_string(id);
 }
 
 static const std::regex regexEntityLine("^([0-9]+): ENT_TYPE_(.*?)$", std::regex_constants::ECMAScript);
 
-S2Plugin::EntityNamesList::EntityNamesList() : IDNameList("plugins/Spelunky2Entities.txt", regexEntityLine) {}
+S2Plugin::EntityNamesList::EntityNamesList() : IDNameList("plugins/spel2/Entities.txt", regexEntityLine) {}
 
 static const std::regex regexParticleLine("^([0-9]+): PARTICLEEMITTER_(.*?)$", std::regex_constants::ECMAScript);
 
-S2Plugin::ParticleEmittersList::ParticleEmittersList() : IDNameList("plugins/Spelunky2ParticleEmitters.txt", regexParticleLine) {}
+S2Plugin::ParticleEmittersList::ParticleEmittersList() : IDNameList("plugins/spel2/ParticleEmitters.txt", regexParticleLine) {}

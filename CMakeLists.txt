@@ -185,31 +185,35 @@ endif()
 # Copy .json files to the x64dbg plugins folder
 add_custom_target(deploy-auxfiles)
 add_custom_command(	TARGET deploy-auxfiles 
-					POST_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2.json" ${X64DBG_PLUGINS_ROOT})
+					PRE_BUILD
+					COMMAND  ${CMAKE_COMMAND} -E "make_directory" "${X64DBG_PLUGINS_ROOT}/spel2")
 
 add_custom_command(	TARGET deploy-auxfiles 
-					POST_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2Entities.json" ${X64DBG_PLUGINS_ROOT})
+					PRE_BUILD
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Structs.json" "${X64DBG_PLUGINS_ROOT}/spel2/")
+
+add_custom_command(	TARGET deploy-auxfiles 
+					PRE_BUILD
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/EntitySubclasses.json" "${X64DBG_PLUGINS_ROOT}/spel2/")
 
 # Copy Spelunky2Entities.txt to the x64dbg plugins folder
 add_custom_command(	TARGET deploy-auxfiles
 					PRE_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2Entities.txt" ${X64DBG_PLUGINS_ROOT})
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Entities.txt" "${X64DBG_PLUGINS_ROOT}/spel2/")
 
 # Copy Spelunky2ParticleEmitters.txt to the x64dbg plugins folder
 add_custom_command(	TARGET deploy-auxfiles
 					PRE_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2ParticleEmitters.txt" ${X64DBG_PLUGINS_ROOT})
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/ParticleEmitters.txt" "${X64DBG_PLUGINS_ROOT}/spel2/")
 
 # Copy Spelunky2RoomCodes.json to the x64dbg plugins folder
 add_custom_command(	TARGET deploy-auxfiles
 					PRE_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2RoomCodes.json" ${X64DBG_PLUGINS_ROOT})
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/RoomCodes.json" "${X64DBG_PLUGINS_ROOT}/spel2/")
 
 # Copy Spelunky2VirtualTableData.json to the x64dbg plugins folder
 add_custom_command(	TARGET deploy-auxfiles
 					PRE_BUILD
-					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/Spelunky2VirtualTableData.json" ${X64DBG_PLUGINS_ROOT})
+					COMMAND  ${CMAKE_COMMAND} -E "copy" "${CMAKE_CURRENT_SOURCE_DIR}/resources/VirtualTableData.json" "${X64DBG_PLUGINS_ROOT}/spel2/")
 
 add_dependencies(${PROJECT_NAME} deploy-auxfiles)

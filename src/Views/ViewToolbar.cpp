@@ -128,7 +128,7 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     mainLayout->addWidget(btnClearLabels);
     QObject::connect(btnClearLabels, &QPushButton::clicked, this, &ViewToolbar::clearLabels);
     auto btnReloadConfig = new QPushButton("Reload JSON", this);
-    btnReloadConfig->setToolTip("Reload config from Spelunky2.json and Spelunky2Entities.json");
+    btnReloadConfig->setToolTip("Reload config from Structs.json, EntitySubclasses.json and RoomCodes.json");
     mainLayout->addWidget(btnReloadConfig);
     QObject::connect(btnReloadConfig, &QPushButton::clicked, this, &ViewToolbar::reloadConfig);
 }

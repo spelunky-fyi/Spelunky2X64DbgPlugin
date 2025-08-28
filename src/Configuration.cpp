@@ -273,9 +273,9 @@ S2Plugin::Configuration::Configuration()
 {
     char buffer[MAX_PATH + 1] = {0};
     GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-    static const auto path = QFileInfo(QString(buffer)).dir().filePath("plugins/Spelunky2.json");
-    static const auto pathENT = QFileInfo(QString(buffer)).dir().filePath("plugins/Spelunky2Entities.json");
-    static const auto pathRC = QFileInfo(QString(buffer)).dir().filePath("plugins/Spelunky2RoomCodes.json");
+    static const auto path = QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/Structs.json");
+    static const auto pathENT = QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/EntitySubclasses.json");
+    static const auto pathRC = QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/RoomCodes.json");
     if (!QFile(path).exists())
     {
         displayError("Could not find " + path.toStdString());

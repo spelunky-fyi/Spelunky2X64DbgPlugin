@@ -56,12 +56,12 @@ namespace S2Plugin
     // new types need to be added to
     // - the MemoryFieldType enum
     // - gsMemoryFieldType in Configuration.cpp
-    // - optionally in Spelunky2.json if they have static structure
+    // - optionally in Structs.json if they have static structure
     // - handling of the json is done in populateMemoryField in Configuration.cpp
     // - displaying the data and handling the click event is done in TreeViewMemoryFields.cpp
     // - if it's common use/basic type, you may also want to add it in getAlignment function
     // - there are some specific conditions for comparison in database handled in DatabaseHelper.cpp
-    // new subclasses of Entity can just be added to the class hierarchy in Spelunky2Entities.json
+    // new subclasses of Entity can just be added to the class hierarchy in EntitySubclasses.json
     // and have its fields defined there
 
     enum class MemoryFieldType
