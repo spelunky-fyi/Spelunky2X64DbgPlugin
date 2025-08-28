@@ -156,6 +156,8 @@ void QtPlugin::MenuEntry(int hEntry)
         {
             if (!gsSpelunky2MainWindow->isVisible())
                 GuiAddQWidgetTab(gsSpelunky2MainWindow);
+
+            ShowTab();
             break;
         }
     }
