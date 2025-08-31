@@ -1,8 +1,9 @@
 #include "QtHelpers/ItemModelVirtualFunctions.h"
 
+#include "JsonNameDefinitions.h"
 #include "pluginmain.h"
 
-S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, QObject* parent)
+S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(std::string_view typeName, uintptr_t memoryAddress, QObject* parent)
     : QAbstractItemModel(parent), mTypeName(typeName), mMemoryAddress(memoryAddress)
 {
     auto config = Configuration::get();
@@ -16,7 +17,7 @@ S2Plugin::ItemModelVirtualFunctions::ItemModelVirtualFunctions(const std::string
             if (auto it = config->mVirtualFunctions.find(currentType); it != config->mVirtualFunctions.end())
                 reverseOrderFunctions.emplace_back(&it->second);
 
-            if (currentType == "Entity")
+            if (currentType == JsonName::Entity)
                 break;
 
             if (auto it = hierarchy.find(currentType); it != hierarchy.end())

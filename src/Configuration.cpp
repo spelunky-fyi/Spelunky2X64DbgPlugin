@@ -1,5 +1,6 @@
 #include "Configuration.h"
 
+#include "JsonNameDefinitions.h"
 #include "pluginmain.h"
 #include <QDir>
 #include <QFileInfo>
@@ -736,7 +737,7 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
         }
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
-            memField.jsonName = "ThemeInfo";
+            memField.jsonName = JsonName::ThemeInfo;
             break;
         }
         case MemoryFieldType::CodePointer:
@@ -955,13 +956,13 @@ std::vector<std::string> S2Plugin::Configuration::classHierarchyOfEntity(const s
     if (!entityClass.empty())
     {
         std::string p = std::move(entityClass);
-        while (p != "Entity" && !p.empty())
+        while (p != JsonName::Entity && !p.empty())
         {
             returnVec.emplace_back(p);
             p = mEntityClassHierarchy.at(p); // TODO: (at) will throw exception if the element is not found
         }
     }
-    returnVec.emplace_back("Entity");
+    returnVec.emplace_back(JsonName::Entity);
     return returnVec;
 }
 
@@ -971,7 +972,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfD
     if (it == mTypeFieldsStructs.end())
     {
         dprintf("unknown key requested in Configuration::typeFieldsOfDefaultStruct() (%s)\n", type.c_str());
-        static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
+        static const std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
     }
     return it->second;
@@ -984,7 +985,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFields(co
     {
         // no error since we can use this to check if type is a struct (have fields)
         // dprintf("unknown key requested in Configuration::typeFields() (t=%s id=%d)\n", gsMemoryFieldType.at(type).display_name.data(), type);
-        static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
+        static const std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
     }
     return it->second;
@@ -996,7 +997,7 @@ const std::vector<S2Plugin::MemoryField>& S2Plugin::Configuration::typeFieldsOfE
     if (it == mTypeFieldsEntitySubclasses.end())
     {
         dprintf("unknown key requested in Configuration::typeFieldsOfEntitySubclass() (%s)\n", type.c_str());
-        static std::vector<S2Plugin::MemoryField> empty; // just to return valid object
+        static const std::vector<S2Plugin::MemoryField> empty; // just to return valid object
         return empty;
     }
     return it->second;
@@ -1049,7 +1050,7 @@ const std::vector<std::pair<int64_t, std::string>>& S2Plugin::Configuration::ref
     if (it == mRefs.end())
     {
         dprintf("unknown ref requested in Configuration::refTitlesOfField() (%s)\n", fieldName.c_str());
-        static std::vector<std::pair<int64_t, std::string>> empty;
+        static const std::vector<std::pair<int64_t, std::string>> empty;
         return empty;
     }
     return it->second;
@@ -1057,7 +1058,7 @@ const std::vector<std::pair<int64_t, std::string>>& S2Plugin::Configuration::ref
 
 const std::vector<S2Plugin::VirtualFunction>& S2Plugin::Configuration::virtualFunctionsOfType(const std::string& type, bool quiet) const
 {
-    static std::vector<S2Plugin::VirtualFunction> empty;
+    static const std::vector<S2Plugin::VirtualFunction> empty;
 
     auto it = mVirtualFunctions.find(type);
     if (it != mVirtualFunctions.end())
@@ -1411,4 +1412,12 @@ S2Plugin::MemoryField S2Plugin::Configuration::nameToMemoryField(const std::stri
         field.size = getBuiltInTypeSize(type);
     }
     return field;
+}
+
+bool S2Plugin::Configuration::isEntitySubclass(const std::string& type) const
+{
+    if (type == JsonName::Entity)
+        return true;
+
+    return mEntityClassHierarchy.find(type) != mEntityClassHierarchy.end();
 }

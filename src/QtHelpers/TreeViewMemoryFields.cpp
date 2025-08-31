@@ -5,9 +5,11 @@
 #include "Data/StdList.h"
 #include "Data/StdString.h"
 #include "Data/StdUnorderedMap.h"
+#include "JsonNameDefinitions.h"
 #include "QtHelpers/DialogEditSimpleValue.h"
 #include "QtHelpers/DialogEditState.h"
 #include "QtHelpers/DialogEditString.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "Spelunky2.h"
@@ -163,7 +165,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         else if (field.type == MemoryFieldType::StdUnorderedMap && field.secondParameterType.empty()) // exception
             typeName += "StdUnorderedSet";
         else if (auto str = Configuration::getTypeDisplayName(field.type); !str.empty())
-            typeName += QString::fromUtf8(str.data(), static_cast<int>(str.size()));
+            typeName += QStrFromStringView(str);
         else
             typeName += "Unknown field type";
 
@@ -284,7 +286,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
         case MemoryFieldType::UndeterminedThemeInfoPointer:
         {
             returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
-            addMemoryFields(config->typeFieldsOfDefaultStruct("ThemeInfo"), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
+            addMemoryFields(config->typeFieldsOfDefaultStruct(std::string(JsonName::ThemeInfo)), fieldNameOverride, 0, 0, deltaPrefixCount + 1u, returnField);
             break;
         }
         case MemoryFieldType::OldStdList:
@@ -2584,7 +2586,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     {
                         // maybe use the "entity interpret as" for vtable? (it's doable)
                         auto vftType = qvariant_cast<std::string>(getDataFrom(index, gsColField, gsRoleRefName));
-                        if (vftType == "Entity") // in case of Entity, we have to see what the entity is interpreted as, and show those functions
+                        if (vftType == JsonName::Entity) // in case of Entity, we have to see what the entity is interpreted as, and show those functions
                         {
                             // rare case, we need the address not the pointer value to get entity
                             uintptr_t ent;
@@ -2593,7 +2595,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                             else
                                 ent = getDataFrom(index, gsColField, gsRoleMemoryAddress).toULongLong();
 
-                            getToolbar()->showVirtualFunctions(rawValue, Entity{ent}.entityClassName());
+                            getToolbar()->showVirtualFunctions(rawValue, Entity(ent).entityClassName());
                         }
                         else
                         {
@@ -2909,7 +2911,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::EntityPointer:
             {
-                if (getThisTypeName() != "Entity")
+                if (getThisTypeName() != QStrFromStringView(JsonName::Entity))
                     return;
 
                 addr = dataAddr;
@@ -2917,7 +2919,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::EntityUID:
             {
-                if (getThisTypeName() != "Entity")
+                if (getThisTypeName() != QStrFromStringView(JsonName::Entity))
                     return;
 
                 auto uid = Script::Memory::ReadDword(dataAddr);
@@ -2930,14 +2932,14 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::EntitySubclass:
             {
-                if (getThisTypeName() != "Entity")
+                if (getThisTypeName() != QStrFromStringView(JsonName::Entity))
                     return;
 
                 break;
             }
             case MemoryFieldType::EntityDBPointer:
             {
-                if (getThisTypeName() != "EntityDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::EntityDB))
                     return;
 
                 addr = dataAddr;
@@ -2945,7 +2947,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::EntityDBID:
             {
-                if (getThisTypeName() != "EntityDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::EntityDB))
                     return;
 
                 auto id = Script::Memory::ReadDword(dataAddr);
@@ -2954,7 +2956,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::ParticleDBPointer:
             {
-                if (getThisTypeName() != "ParticleDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::ParticleDB))
                     return;
 
                 addr = dataAddr;
@@ -2962,7 +2964,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::ParticleDBID:
             {
-                if (getThisTypeName() != "ParticleDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::ParticleDB))
                     return;
 
                 auto id = Script::Memory::ReadDword(dataAddr);
@@ -2971,7 +2973,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::TextureDBPointer:
             {
-                if (getThisTypeName() != "TextureDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::TextureDB))
                     return;
 
                 addr = dataAddr;
@@ -2979,7 +2981,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::TextureDBID:
             {
-                if (getThisTypeName() != "TextureDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::TextureDB))
                     return;
 
                 auto id = Script::Memory::ReadDword(dataAddr);
@@ -2988,7 +2990,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::CharacterDBID:
             {
-                if (getThisTypeName() != "CharacterDB")
+                if (getThisTypeName() != QStrFromStringView(JsonName::CharacterDB))
                     return;
 
                 auto id = Script::Memory::ReadByte(dataAddr);
@@ -3013,7 +3015,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::JournalPagePointer:
             {
-                if (getThisTypeName() != "JournalPage")
+                if (getThisTypeName() != QStrFromStringView(JsonName::JournalPage))
                     return;
 
                 addr = dataAddr;
@@ -3021,7 +3023,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             }
             case MemoryFieldType::LevelGenPointer:
             {
-                if (getThisTypeName() != "LevelGen")
+                if (getThisTypeName() != QStrFromStringView(JsonName::LevelGen))
                     return;
 
                 addr = dataAddr;
@@ -3030,7 +3032,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             case MemoryFieldType::LevelGenRoomsMetaPointer:
             case MemoryFieldType::LevelGenRoomsPointer:
             {
-                if (getThisTypeName() != "LevelGen")
+                if (getThisTypeName() != QStrFromStringView(JsonName::LevelGen))
                     return;
 
                 break;
@@ -3038,7 +3040,7 @@ void S2Plugin::TreeViewMemoryFields::dropEvent(QDropEvent* event)
             case MemoryFieldType::COThemeInfoPointer:
             case MemoryFieldType::UndeterminedThemeInfoPointer:
             {
-                if (getThisTypeName() != "ThemeInfo")
+                if (getThisTypeName() != QStrFromStringView(JsonName::ThemeInfo))
                     return;
 
                 addr = dataAddr;
@@ -3124,7 +3126,7 @@ void S2Plugin::TreeViewMemoryFields::startDrag(Qt::DropActions)
                     return;
 
                 auto typeName = indexType.data(Qt::DisplayRole).toString();
-                if (typeName != "Entity")
+                if (typeName != QStrFromStringView(JsonName::Entity))
                 {
                     auto indexDelta = index.sibling(index.row(), gsColMemoryAddressDelta);
                     mimeData->setProperty(gsDragDropMemoryField_Address, index.data(gsRoleMemoryAddress).toULongLong() - indexDelta.data(gsRoleRawValue).toULongLong());

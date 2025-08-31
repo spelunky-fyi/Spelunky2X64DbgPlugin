@@ -1,6 +1,7 @@
 #include "Spelunky2.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "pluginmain.h"
 #include <QStringList>
 
@@ -124,7 +125,7 @@ const QString& S2Plugin::Spelunky2::themeNameOfOffset(uintptr_t offset)
 {
     auto config = Configuration::get();
     auto levelGenPtr = get_LevelGenPtr(true);
-    uintptr_t firstThemeOffset = config->offsetForField(MemoryFieldType::LevelGen, "theme_dwelling", levelGenPtr);
+    uintptr_t firstThemeOffset = config->offsetForField(MemoryFieldType::LevelGen, JsonName::ThemeDwelling, levelGenPtr);
 
     static const QStringList themeNames = {
         "DWELLING",     "JUNGLE",       "VOLCANA", "OLMEC", "TIDE POOL", "TEMPLE",         "ICE CAVES", "NEO BABYLON", "SUNKEN CITY",
@@ -210,7 +211,7 @@ uintptr_t S2Plugin::Spelunky2::findEntityByUID(uint32_t uid, uintptr_t statePtr)
         return 0;
 
     // [Known Issue]: Static value, have to restart program for size to update
-    static size_t mask_offset = Configuration::get()->offsetForField(MemoryFieldType::State, "uid_to_entity_mask");
+    static size_t mask_offset = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::UidToEntityMask);
 
     const uint32_t mask = Script::Memory::ReadDword(statePtr + mask_offset);
     const uint32_t target_uid_plus_one = lowbias32(uid + 1u);

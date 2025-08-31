@@ -1,6 +1,7 @@
 #include "Data/Entity.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "pluginmain.h"
 #include <regex>
 
@@ -9,7 +10,7 @@ std::string S2Plugin::Entity::entityTypeName() const
     return Configuration::get()->getEntityName(entityTypeID());
 }
 
-std::string S2Plugin::Entity::entityClassName() const
+std::string_view S2Plugin::Entity::entityClassName() const
 {
     auto entityName = entityTypeName();
     for (const auto& [regexStr, entityClassType] : Configuration::get()->defaultEntityClassTypes())
@@ -18,7 +19,7 @@ std::string S2Plugin::Entity::entityClassName() const
         if (std::regex_match(entityName, r))
             return entityClassType;
     }
-    return "Entity";
+    return JsonName::Entity;
 }
 
 uint32_t S2Plugin::Entity::entityTypeID() const
@@ -35,18 +36,17 @@ std::vector<std::string> S2Plugin::Entity::classHierarchy(std::string validClass
 {
     auto& ech = Configuration::get()->entityClassHierarchy();
     std::vector<std::string> hierarchy;
-    std::string t = validClassName;
-    while (t != "Entity")
+    while (validClassName != JsonName::Entity)
     {
-        hierarchy.push_back(t);
-        auto ech_it = ech.find(t);
+        hierarchy.push_back(validClassName);
+        auto ech_it = ech.find(validClassName);
         if (ech_it == ech.end())
         {
-            dprintf("unknown key requested in Entity::classHierarchy() (t=%s)\n", t.c_str());
+            dprintf("unknown key requested in Entity::classHierarchy() (t=%s)\n", validClassName.c_str());
         }
-        t = ech_it->second;
+        validClassName = ech_it->second;
     }
-    hierarchy.push_back("Entity");
+    hierarchy.emplace_back(JsonName::Entity);
     return hierarchy;
 }
 

@@ -3,6 +3,7 @@
 #include "Configuration.h"
 #include "Data/EntityList.h"
 #include "Data/StdMap.h"
+#include "JsonNameDefinitions.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QPainter>
@@ -10,12 +11,12 @@
 S2Plugin::WidgetSpelunkyLevel::WidgetSpelunkyLevel(uintptr_t main_entity, QWidget* parent) : QWidget(parent), mMainEntityAddr(main_entity)
 {
     auto statePtr = Spelunky2::get()->get_StatePtr(false);
-    mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.entities_by_mask", statePtr);
-    mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.entities_by_mask", statePtr);
-    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, "layer0.grid_entities", statePtr);
-    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, "layer1.grid_entities", statePtr);
+    mMaskMapAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::Layer0EntitiesByMask, statePtr);
+    mMaskMapAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::Layer1EntitiesByMask, statePtr);
+    mGridEntitiesAddr.first = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::Layer0GridEntities, statePtr);
+    mGridEntitiesAddr.second = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::Layer1GridEntities, statePtr);
 
-    // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, "level_width_rooms", statePtr);
+    // auto offset = Configuration::get()->offsetForField(MemoryFieldType::State, JsonName::LevelWidthRooms, statePtr);
     // mLevelWidth = Script::Memory::ReadDword(offset) * 10;
     // mLevelHeight = Script::Memory::ReadDword(offset + 4) * 8;
 
@@ -57,8 +58,8 @@ void S2Plugin::WidgetSpelunkyLevel::paintEvent(QPaintEvent*)
         painter.setBrush(mFloorColor);
         // y: 0-125, x: 0-85
         // note: the y = 125 is at the top of a level and the level is build from the top
-        for (uint8_t y = 0; y < msLevelMaxHeight + 1; ++y)
-            for (uint8_t x = 0; x <= msLevelMaxWidth + 1; ++x)
+        for (uint8_t y = 0; y <= msLevelMaxHeight; ++y)
+            for (uint8_t x = 0; x <= msLevelMaxWidth; ++x)
                 if (mLevelFloors[y][x] != 0)
                     painter.drawRect(QRectF(msMarginHor + x, msMarginVer + msLevelMaxHeight - y, 1.0, 1.0));
     }

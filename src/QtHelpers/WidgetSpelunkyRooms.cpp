@@ -1,6 +1,7 @@
 #include "QtHelpers/WidgetSpelunkyRooms.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "QtHelpers/DialogEditState.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
@@ -181,7 +182,7 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
                 QRect verticalLine(x + mTextAdvance.width() + mSpaceAdvance / 2 - horizontalLine.height() / 2, y + 4, horizontalLine.height(), mTextAdvance.height());
 
                 PATH_THROUGH path = PATH_THROUGH::NONE;
-                uint8_t themeNumber = Script::Memory::ReadByte(config->offsetForField(config->typeFields(MemoryFieldType::State), "theme", statePtr));
+                uint8_t themeNumber = Script::Memory::ReadByte(config->offsetForField(MemoryFieldType::State, JsonName::StateThemeField, statePtr));
                 bool invertPath = false;
                 if (themeNumber == 12 || // duat
                     themeNumber == 15 || // EW
@@ -283,8 +284,8 @@ void S2Plugin::WidgetSpelunkyRooms::paintEvent(QPaintEvent*)
         // draw level dimensions
         if (statePtr != 0)
         {
-            uintptr_t offsetWidth = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_width_rooms", statePtr);
-            uintptr_t offsetHeight = config->offsetForField(config->typeFields(MemoryFieldType::State), "level_height_rooms", statePtr);
+            uintptr_t offsetWidth = config->offsetForField(MemoryFieldType::State, JsonName::LevelWidthRooms, statePtr);
+            uintptr_t offsetHeight = config->offsetForField(MemoryFieldType::State, JsonName::LevelHeightRooms, statePtr);
             int levelWidth = static_cast<int>(Script::Memory::ReadDword(offsetWidth));
             int levelHeight = static_cast<int>(Script::Memory::ReadDword(offsetHeight));
             int borderX = gsMarginHor;

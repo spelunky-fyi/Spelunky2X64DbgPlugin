@@ -2,6 +2,8 @@
 
 #include "Configuration.h"
 #include "Data/TextureDB.h"
+#include "JsonNameDefinitions.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "Spelunky2.h"
 #include <QCompleter>
@@ -73,7 +75,7 @@ void S2Plugin::ViewTextureDB::label() const
     auto& textureDB = Spelunky2::get()->get_TextureDB();
     for (int idx = 0; idx < model->rowCount(); ++idx)
     {
-        if (model->data(model->index(idx, gsColField), Qt::DisplayRole).toString() == "id")
+        if (model->data(model->index(idx, gsColField), Qt::DisplayRole).toString() == QStrFromStringView(JsonName::EntityDBID))
         {
             auto id = model->data(model->index(idx, gsColValue), gsRoleRawValue).toUInt();
             name = '[' + textureDB.nameForID(id) + ']';

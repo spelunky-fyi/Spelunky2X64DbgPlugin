@@ -1,6 +1,8 @@
 #include "QtHelpers/ItemModelLoggerFields.h"
+
 #include "Configuration.h"
 #include "Data/Logger.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include "QtHelpers/TableViewLogger.h"
 
 QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int role) const
@@ -24,8 +26,7 @@ QVariant S2Plugin::ItemModelLoggerFields::data(const QModelIndex& index, int rol
             }
             case gsLogFieldColFieldType:
             {
-                auto str = Configuration::getTypeDisplayName(field.type);
-                return QString::fromUtf8(str.data(), static_cast<int>(str.size()));
+                return QStrFromStringView(Configuration::getTypeDisplayName(field.type));
             }
         }
     }

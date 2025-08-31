@@ -1,11 +1,13 @@
 #include "QtHelpers/ItemModelGatherVirtualData.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QString>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <sstream>
@@ -117,13 +119,13 @@ void S2Plugin::ItemModelGatherVirtualData::gatherEntities()
     };
 
     beginResetModel();
-    auto layer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", statePtr);
+    auto layer0Offset = config->offsetForField(MemoryFieldType::State, JsonName::Layer0, statePtr);
     auto layer0 = Script::Memory::ReadQword(layer0Offset);
     auto layer0Count = Script::Memory::ReadDword(layer0 + 28);
     auto layer0Entities = Script::Memory::ReadQword(layer0 + 8);
     processEntities(layer0Entities, layer0Count);
 
-    auto layer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", statePtr);
+    auto layer1Offset = config->offsetForField(MemoryFieldType::State, JsonName::Layer1, statePtr);
     auto layer1 = Script::Memory::ReadQword(layer1Offset);
     auto layer1Count = Script::Memory::ReadDword(layer1 + 28);
     auto layer1Entities = Script::Memory::ReadQword(layer1 + 8);
@@ -142,12 +144,13 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
 
     if (auto levelGenPtr = spel2->get_LevelGenPtr(false); levelGenPtr != 0)
     {
-        static const auto themes = {"theme_dwelling", "theme_jungle",     "theme_volcana",       "theme_olmec",       "theme_tidepool",     "theme_temple",
-                                    "theme_icecaves", "theme_neobabylon", "theme_sunkencity",    "theme_cosmicocean", "theme_city_of_gold", "theme_duat",
-                                    "theme_abzu",     "theme_tiamat",     "theme_eggplantworld", "theme_hundun",      "theme_basecamp",     "theme_arena"};
+        // names only used for GatheredDataEntry
+        static const auto themes = {"THEME_DWELLING", "THEME_JUNGLE",     "THEME_VOLCANA",       "THEME_OLMEC",       "THEME_TIDEPOOL",     "THEME_TEMPLE",
+                                    "THEME_ICECAVES", "THEME_NEOBABYLON", "THEME_SUNKENCITY",    "THEME_COSMICOCEAN", "THEME_CITY_OF_GOLD", "THEME_DUAT",
+                                    "THEME_ABZU",     "THEME_TIAMAT",     "THEME_EGGPLANTWORLD", "THEME_HUNDUN",      "THEME_BASECAMP",     "THEME_ARENA"};
         index = 1000;
-        auto firstThemeOffset = config->offsetForField(config->typeFields(MemoryFieldType::LevelGen), "theme_dwelling", levelGenPtr);
-        for (const auto& themeName : themes)
+        auto firstThemeOffset = config->offsetForField(config->typeFields(MemoryFieldType::LevelGen), JsonName::ThemeDwelling, levelGenPtr);
+        for (const auto themeName : themes)
         {
             auto themeAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(firstThemeOffset + counter * sizeof(uintptr_t)));
             auto tableOffset = (themeAddress - vtl.tableStartAddress()) / sizeof(size_t);
@@ -164,9 +167,7 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             {
                 auto g = GatheredDataEntry();
                 g.id = index;
-                std::string themeUpper = themeName;
-                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-                g.name = QString::fromStdString(themeUpper);
+                g.name = themeName;
                 g.virtualTableOffset = tableOffset;
                 g.collision1Present = false;
                 g.collision2Present = false;
@@ -188,7 +189,7 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             std::string logicTypeName;
             for (auto& field : stateFields)
             {
-                if (field.name == "logic")
+                if (field.name == JsonName::StateLogicFieldName)
                 {
                     logicTypeName = field.jsonName;
                     break;
@@ -229,9 +230,10 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             {
                 auto g = GatheredDataEntry();
                 g.id = index;
-                auto themeUpper = "LOGIC_" + logicName;
-                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-                g.name = QString::fromStdString(themeUpper);
+                std::string logicNameUpper = "LOGIC_";
+                logicNameUpper.resize(logicName.size() + 6);
+                std::transform(logicName.begin(), logicName.end(), logicNameUpper.begin() + 6, ::toupper);
+                g.name = QString::fromStdString(logicNameUpper);
                 g.virtualTableOffset = tableOffset;
                 g.collision1Present = false;
                 g.collision2Present = false;
@@ -243,12 +245,8 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
     }
     if (auto gameManagerPtr = spel2->get_GameManagerPtr(); gameManagerPtr != 0)
     {
-        auto screens_gamemanager = std::vector<std::string>{
-            "screen_logo",         "screen_intro",      "screen_prologue", "screen_title", "screen_menu",           "screen_options",      "screen_player_profile",
-            "screen_leaderboards", "screen_seed_input", "screen_camp",     "screen_level", "screen_online_loading", "screen_online_lobby",
-        };
         index = 3000;
-        for (const auto& screenName : screens_gamemanager)
+        for (const auto& screenName : JsonName::ScreensGamemanager)
         {
             auto offset = config->offsetForField(config->typeFields(MemoryFieldType::GameManager), screenName, gameManagerPtr);
             auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(offset));
@@ -273,9 +271,10 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             {
                 auto g = GatheredDataEntry();
                 g.id = index;
-                std::string themeUpper = screenName;
-                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-                g.name = QString::fromStdString(themeUpper);
+                std::string screenNameUpper;
+                screenNameUpper.resize(screenName.length());
+                std::transform(screenName.begin(), screenName.end(), screenNameUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(screenNameUpper);
                 g.virtualTableOffset = tableOffset;
                 g.collision1Present = false;
                 g.collision2Present = false;
@@ -286,25 +285,8 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
     }
     if (statePtr != 0)
     {
-        auto screens_state = std::vector<std::string>{
-            "screen_character_select",
-            "screen_team_select",
-            "screen_transition",
-            "screen_death",
-            "screen_win",
-            "screen_credits",
-            "screen_scores",
-            "screen_constellation",
-            "screen_recap",
-            "screen_arena_menu",
-            "screen_arena_stages_select1",
-            "screen_arena_items",
-            "screen_arena_intro",
-            "screen_arena_level",
-            "screen_arena_score",
-        };
         index = 3500;
-        for (const auto& screenName : screens_state)
+        for (const auto& screenName : JsonName::ScreensState)
         {
             auto screenAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), screenName, statePtr)));
             size_t tableOffset = 0;
@@ -328,9 +310,10 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             {
                 auto g = GatheredDataEntry();
                 g.id = index;
-                std::string themeUpper = screenName;
-                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-                g.name = QString::fromStdString(themeUpper);
+                std::string screenNameUpper;
+                screenNameUpper.resize(screenName.length());
+                std::transform(screenName.begin(), screenName.end(), screenNameUpper.begin(), ::toupper);
+                g.name = QString::fromStdString(screenNameUpper);
                 g.virtualTableOffset = tableOffset;
                 g.collision1Present = false;
                 g.collision2Present = false;
@@ -339,13 +322,10 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             index++;
         }
 
-        auto quests = std::vector<std::string>{
-            "yang", "jungle_sisters", "van_horsing", "sparrow", "madame_tusk", "beg",
-        };
         index = 4000;
-        for (const auto& questName : quests)
+        for (const auto& questName : JsonName::QuestNames)
         {
-            auto questAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), "quests." + questName, statePtr)));
+            auto questAddress = Script::Memory::ReadQword(Script::Memory::ReadQword(config->offsetForField(config->typeFields(MemoryFieldType::State), questName, statePtr)));
             size_t tableOffset = 0;
             if (questAddress != 0)
             {
@@ -367,9 +347,11 @@ void S2Plugin::ItemModelGatherVirtualData::gatherExtraObjects()
             {
                 auto g = GatheredDataEntry();
                 g.id = index;
-                auto themeUpper = "QUEST_" + questName;
-                std::transform(themeUpper.begin(), themeUpper.end(), themeUpper.begin(), ::toupper);
-                g.name = QString::fromStdString(themeUpper);
+                auto questNameSV = questName.substr(JsonName::Quests.size() + 1); // omit the "quests."
+                std::string questNameUpper;
+                questNameUpper.resize(questNameSV.length());
+                std::transform(questNameSV.begin(), questNameSV.end(), questNameUpper.begin(), ::toupper);
+                g.name = QString("QUEST_") + QString::fromStdString(questNameUpper);
                 g.virtualTableOffset = tableOffset;
                 g.collision1Present = false;
                 g.collision2Present = false;
@@ -572,7 +554,7 @@ void S2Plugin::ItemModelGatherVirtualData::gatherAvailableVirtuals()
             bool isMovable = false;
             for (const auto& c : entityClassHierarchy)
             {
-                if (c == "Movable")
+                if (c == JsonName::Movable)
                 {
                     isMovable = true;
                     break;

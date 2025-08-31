@@ -2,7 +2,7 @@
 
 #include <QWidget>
 #include <cstdint>
-#include <string>
+#include <string_view>
 
 class QLineEdit;
 class QModelIndex;
@@ -13,7 +13,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewVirtualFunctions(uintptr_t address, const std::string& typeName, QWidget* parent = nullptr);
+        ViewVirtualFunctions(uintptr_t address, std::string_view typeName, QWidget* parent = nullptr);
 
       protected:
         QSize sizeHint() const override;

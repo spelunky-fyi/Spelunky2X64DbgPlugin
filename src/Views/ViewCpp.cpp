@@ -1,7 +1,9 @@
 #include "Views/ViewCpp.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "QtHelpers/CPPSyntaxHighlighter.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include <QCheckBox>
 #include <QString>
 #include <QTextEdit>
@@ -10,19 +12,14 @@
 #include <regex>
 #include <sstream>
 
-inline QString qStrFromStringView(std::string_view sv)
-{
-    return QString::fromUtf8(sv.data(), static_cast<int>(sv.size()));
-}
-
-S2Plugin::ViewCpp::ViewCpp(const std::string& typeName, QWidget* parent) : QWidget(parent), mTypeName(typeName)
+S2Plugin::ViewCpp::ViewCpp(std::string_view typeName, QWidget* parent) : QWidget(parent), mTypeName(typeName)
 {
     auto config = Configuration::get();
-    auto type = config->getBuiltInType(typeName);
+    auto type = config->getBuiltInType(mTypeName);
     if (type == MemoryFieldType::None)
-        setWindowTitle(QString::fromStdString(typeName));
+        setWindowTitle(QStrFromStringView(typeName));
     else
-        setWindowTitle(qStrFromStringView(config->getTypeDisplayName(type)));
+        setWindowTitle(QStrFromStringView(config->getTypeDisplayName(type)));
 
     auto mainLayout = new QVBoxLayout(this);
 
@@ -106,7 +103,7 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
 
         typeNamex = typeNamex.substr(0, starPos);
 
-        QString qVariableType = "\\b" + QRegularExpression::escape(qStrFromStringView(typeNamex)) + "\\b";
+        QString qVariableType = "\\b" + QRegularExpression::escape(QStrFromStringView(typeNamex)) + "\\b";
         mCPPSyntaxHighlighter->addRule(qVariableType, HighlightColor::Type);
     };
 
@@ -135,8 +132,8 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
         if (config->isJournalPage(typeName))
         {
             asClass = true;
-            if (typeName != "JournalPage")
-                parentClassName = "JournalPage";
+            if (typeName != JsonName::JournalPage)
+                parentClassName = JsonName::JournalPage;
         }
         fields = &config->typeFieldsOfDefaultStruct(typeName);
     }
@@ -153,7 +150,7 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
         if (fields->empty())
         {
             std::string_view svTypeName = config->getCPPTypeName(type);
-            QString qtStringName = qStrFromStringView(svTypeName);
+            QString qtStringName = QStrFromStringView(svTypeName);
             mCPPTextEdit->moveCursor(QTextCursor::Start);
             mCPPTextEdit->insertPlainText(qtStringName + "\n\n");
 
@@ -168,7 +165,7 @@ void S2Plugin::ViewCpp::generate(std::string typeName)
 
     if (!parentClassName.empty())
     {
-        QString qClassName = QString("\\b" + QRegularExpression::escape(qStrFromStringView(parentClassName)) + "\\b");
+        QString qClassName = QString("\\b" + QRegularExpression::escape(QStrFromStringView(parentClassName)) + "\\b");
         mCPPSyntaxHighlighter->addRule(qClassName, HighlightColor::Type);
 
         outputStream << " : public " << parentClassName;

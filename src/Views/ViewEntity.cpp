@@ -2,6 +2,8 @@
 
 #include "Configuration.h"
 #include "Data/Entity.h"
+#include "JsonNameDefinitions.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetMemoryView.h"
@@ -42,10 +44,10 @@ S2Plugin::ViewEntity::ViewEntity(size_t entityOffset, QWidget* parent) : QWidget
 
     auto entityClassName = Entity{mEntityPtr}.entityClassName();
     // the comboBox is set as Entity by default, so we have to manually call interpretAsChanged
-    if (entityClassName == "Entity")
-        interpretAsChanged(QString::fromStdString(entityClassName));
+    if (entityClassName == JsonName::Entity)
+        interpretAsChanged(QStrFromStringView(entityClassName));
     else
-        mInterpretAsComboBox->setCurrentText(QString::fromStdString(entityClassName));
+        mInterpretAsComboBox->setCurrentText(QStrFromStringView(entityClassName));
 }
 
 void S2Plugin::ViewEntity::initializeUI()
@@ -69,7 +71,7 @@ void S2Plugin::ViewEntity::initializeUI()
     topLayout->addWidget(new QLabel("Interpret as:", this));
     mInterpretAsComboBox = new QComboBox(this);
     mInterpretAsComboBox->addItem("Reset");
-    mInterpretAsComboBox->addItem("Entity");
+    mInterpretAsComboBox->addItem(QStrFromStringView(JsonName::Entity));
     mInterpretAsComboBox->insertSeparator(2);
     std::vector<std::string> classNames;
     for (const auto& [classType, parentClassType] : Configuration::get()->entityClassHierarchy())
@@ -180,7 +182,7 @@ void S2Plugin::ViewEntity::interpretAsChanged(const QString& classType)
         Entity entity{mEntityPtr};
         if (classType == "Reset")
         {
-            mInterpretAsComboBox->setCurrentText(QString::fromStdString(entity.entityClassName()));
+            mInterpretAsComboBox->setCurrentText(QStrFromStringView(entity.entityClassName()));
             return;
         }
 

@@ -5,6 +5,7 @@
 #include <QSortFilterProxyModel>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace S2Plugin
@@ -17,7 +18,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        explicit ItemModelVirtualFunctions(const std::string& typeName, uintptr_t memoryAddress, QObject* parent = nullptr);
+        explicit ItemModelVirtualFunctions(std::string_view typeName, uintptr_t memoryAddress, QObject* parent = nullptr);
 
         Qt::ItemFlags flags(const QModelIndex&) const override
         {

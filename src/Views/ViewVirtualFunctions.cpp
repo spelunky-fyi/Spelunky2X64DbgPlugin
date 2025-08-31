@@ -1,6 +1,7 @@
 #include "Views/ViewVirtualFunctions.h"
 
 #include "QtHelpers/ItemModelVirtualFunctions.h"
+#include "QtHelpers/QStrFromStringView.h"
 #include "QtHelpers/StyledItemDelegateHTML.h"
 #include "QtPlugin.h"
 #include "pluginmain.h"
@@ -12,10 +13,10 @@
 #include <QTableView>
 #include <QVBoxLayout>
 
-S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, const std::string& typeName, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
+S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, std::string_view typeName, QWidget* parent) : QWidget(parent), mMemoryAddress(address)
 {
     setWindowIcon(getCavemanIcon());
-    setWindowTitle(QString("Virtual Functions of %1").arg(QString::fromStdString(typeName)));
+    setWindowTitle(QString("Virtual Functions of %1").arg(QStrFromStringView(typeName)));
 
     auto mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(5);

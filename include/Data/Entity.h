@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace S2Plugin
@@ -15,13 +16,13 @@ namespace S2Plugin
         explicit Entity(uintptr_t addr) : mEntityPtr(addr){};
         Entity() = delete;
 
-        std::string entityClassName() const;
+        std::string_view entityClassName() const;
         uint32_t entityTypeID() const;
         std::string entityTypeName() const;
         static std::vector<std::string> classHierarchy(std::string validClassName);
         std::vector<std::string> classHierarchy() const
         {
-            return classHierarchy(entityClassName());
+            return classHierarchy(std::move(std::string(entityClassName())));
         }
 
         uint8_t layer() const;

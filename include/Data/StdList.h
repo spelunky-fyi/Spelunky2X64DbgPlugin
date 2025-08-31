@@ -5,7 +5,7 @@
 
 namespace S2Plugin
 {
-    // this is the pre C++ 11 version standard
+    // this is the pre C++ 11 version standard (actually, it's probably LiquidFun list)
     class OldStdList
     {
       public:
@@ -107,7 +107,7 @@ namespace S2Plugin
         Node _end;
     };
 
-    // the current standard
+    // the current standard (probably wrong actually)
     class StdList
     {
       public:

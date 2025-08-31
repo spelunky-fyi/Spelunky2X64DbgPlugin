@@ -133,7 +133,7 @@ S2Plugin::ViewToolbar::ViewToolbar(QMdiArea* mdiArea, QWidget* parent) : QDockWi
     QObject::connect(btnReloadConfig, &QPushButton::clicked, this, &ViewToolbar::reloadConfig);
 }
 
-void S2Plugin::ViewToolbar::showVirtualFunctions(uintptr_t address, const std::string& typeName)
+void S2Plugin::ViewToolbar::showVirtualFunctions(uintptr_t address, std::string_view typeName)
 {
     auto w = new ViewVirtualFunctions(address, typeName);
     auto win = mMDIArea->addSubWindow(w);
@@ -245,7 +245,7 @@ void S2Plugin::ViewToolbar::showSaveGame(uintptr_t address)
     win->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-S2Plugin::ViewCpp* S2Plugin::ViewToolbar::showCode(const std::string& typeName)
+S2Plugin::ViewCpp* S2Plugin::ViewToolbar::showCode(std::string_view typeName)
 {
     auto w = new ViewCpp(typeName);
     auto win = mMDIArea->addSubWindow(w);

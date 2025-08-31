@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class QTextEdit;
@@ -14,11 +15,11 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewCpp(const std::string& typeName, QWidget* parent = nullptr);
+        ViewCpp(std::string_view typeName, QWidget* parent = nullptr);
         void addDependency(std::string_view typeName)
         {
             if (std::find(mDependencies.begin(), mDependencies.end(), typeName) == mDependencies.end())
-                mDependencies.emplace_back(std::move(std::string(typeName)));
+                mDependencies.emplace_back(typeName);
         }
 
       protected:

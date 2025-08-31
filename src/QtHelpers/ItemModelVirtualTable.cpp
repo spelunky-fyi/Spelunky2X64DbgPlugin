@@ -1,7 +1,9 @@
 #include "QtHelpers/ItemModelVirtualTable.h"
+
 #include "Configuration.h"
 #include "Data/Entity.h"
 #include "Data/VirtualTableLookup.h"
+#include "JsonNameDefinitions.h"
 #include "Spelunky2.h"
 #include "pluginmain.h"
 
@@ -72,8 +74,8 @@ void S2Plugin::ItemModelVirtualTable::detectEntities()
     if (mLayer0Offset == 0 || mLayer1Offset == 0)
     {
         auto config = Configuration::get();
-        mLayer0Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer0", 0);
-        mLayer1Offset = config->offsetForField(config->typeFields(MemoryFieldType::State), "layer1", 0);
+        mLayer0Offset = config->offsetForField(MemoryFieldType::State, JsonName::Layer0, 0);
+        mLayer1Offset = config->offsetForField(MemoryFieldType::State, JsonName::Layer1, 0);
     }
 
     auto processEntities = [&](size_t layerEntities, uint32_t count)

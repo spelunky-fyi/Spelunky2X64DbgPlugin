@@ -51,11 +51,11 @@ namespace S2Plugin
     constexpr uint16_t gsRoleStdContainerSecondParameterType = Qt::UserRole + 9;
     constexpr uint16_t gsRoleSize = Qt::UserRole + 10;
     constexpr uint16_t gsRoleColumns = Qt::UserRole + 11;       // for Matrix
-    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 12; // for entity uid to not look for the uid twice
+    constexpr uint16_t gsRoleEntityAddress = Qt::UserRole + 12; // for entity uid to not look for the uid twice and to open the right entity when clicked on uid
 
     // new types need to be added to
     // - the MemoryFieldType enum
-    // - gsMemoryFieldType in Configuration.cpp
+    // - gsMemoryFieldTypeData in Configuration.cpp
     // - optionally in Structs.json if they have static structure
     // - handling of the json is done in populateMemoryField in Configuration.cpp
     // - displaying the data and handling the click event is done in TreeViewMemoryFields.cpp
@@ -257,13 +257,7 @@ namespace S2Plugin
         const std::vector<VirtualFunction>& virtualFunctionsOfType(const std::string& field, bool quiet = false) const;
 
         // "Entity" returns true, even though it's base class
-        bool isEntitySubclass(const std::string& type) const
-        {
-            if (type == "Entity")
-                return true;
-
-            return mEntityClassHierarchy.find(type) != mEntityClassHierarchy.end();
-        }
+        bool isEntitySubclass(const std::string& type) const;
 
         static MemoryFieldType getBuiltInType(const std::string& type);
         static std::string_view getCPPTypeName(MemoryFieldType type);

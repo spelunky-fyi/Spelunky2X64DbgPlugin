@@ -1,6 +1,7 @@
 #include "Views/ViewLevelGen.h"
 
 #include "Configuration.h"
+#include "JsonNameDefinitions.h"
 #include "QtHelpers/TreeViewMemoryFields.h"
 #include "QtHelpers/WidgetAutorefresh.h"
 #include "QtHelpers/WidgetSpelunkyRooms.h"
@@ -158,5 +159,5 @@ void S2Plugin::ViewLevelGen::levelGenRoomsPointerClicked()
 void S2Plugin::ViewLevelGen::viewContextMenu(QMenu* menu)
 {
     auto action = menu->addAction("View Code");
-    QObject::connect(action, &QAction::triggered, menu, [this]() { getToolbar()->showCode("LevelGen"); });
+    QObject::connect(action, &QAction::triggered, menu, [this]() { getToolbar()->showCode(JsonName::LevelGen); });
 }

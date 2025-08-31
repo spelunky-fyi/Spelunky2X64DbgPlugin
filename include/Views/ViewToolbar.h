@@ -4,6 +4,7 @@
 #include <QMdiArea>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 namespace S2Plugin
 {
@@ -24,7 +25,7 @@ namespace S2Plugin
         void showStdVector(uintptr_t address, const std::string& typeName);
         void showStdMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName);
         void showStdUnorderedMap(uintptr_t address, const std::string& keyTypeName, const std::string& valueTypeName);
-        void showVirtualFunctions(uintptr_t address, const std::string& typeName);
+        void showVirtualFunctions(uintptr_t address, std::string_view typeName);
         void showJournalPage(uintptr_t address);
         void showLevelGen(uintptr_t address);
         void showLiquidPhysics(uintptr_t address);
@@ -33,7 +34,7 @@ namespace S2Plugin
         void showEntityList(uintptr_t address);
         void showStdList(uintptr_t address, std::string typeName, bool oldType = false);
         void showSaveGame(uintptr_t address);
-        ViewCpp* showCode(const std::string& typeName);
+        ViewCpp* showCode(std::string_view typeName);
 
       public slots:
         ViewEntityDB* showEntityDB();
