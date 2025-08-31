@@ -742,7 +742,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         {
             if (pointerUpdate)
             {
-                if (valueMemoryOffset == 0 && memoryOffset != 0)
+                if (valueMemoryOffset == 0 && itemValueHex->data(gsRoleRawValue).toULongLong() != 0)
                     itemValue->setData("<font color='#AAA'>bad ptr</font>", Qt::DisplayRole);
                 else
                     itemValue->setData(itemValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
@@ -752,7 +752,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 if (comparisonPointerUpdate)
                 {
-                    if (valueComparisonMemoryOffset == 0 && comparisonMemoryOffset != 0)
+                    if (valueComparisonMemoryOffset == 0 && itemComparisonValueHex->data(gsRoleRawValue).toULongLong() != 0)
                         itemComparisonValue->setData("<font color='#AAA'>bad ptr</font>", Qt::DisplayRole);
                     else
                         itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
