@@ -29,7 +29,7 @@ namespace S2Plugin
                              [this]()
                              {
                                  updateSpinBoxRange();
-                                 emit pageUpdate();
+                                 emit pageUpdate(getRange());
                              });
             layout->addStretch();
             mLeftEnd = new QPushButton("|<", this);
@@ -79,7 +79,7 @@ namespace S2Plugin
             mRight->setDisabled(page == count);
             mRightEnd->setDisabled(page == count);
             mSpinBox->setValue(static_cast<int>(page));
-            emit pageUpdate();
+            emit pageUpdate(getRange());
         }
         void setSize(size_t size)
         {
@@ -116,7 +116,7 @@ namespace S2Plugin
         }
 
       signals:
-        void pageUpdate();
+        void pageUpdate(std::pair<size_t, size_t> range);
 
       private:
         size_t pageCount() const

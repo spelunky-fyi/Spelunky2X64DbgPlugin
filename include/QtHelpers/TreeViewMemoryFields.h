@@ -86,8 +86,9 @@ namespace S2Plugin
         {
             updateTree(0, 0, false);
         }
-      private slots:
         void cellClicked(const QModelIndex& index);
+
+      private slots:
         void headerClicked(/* int logicalIndex */);
 
       protected:

@@ -5,16 +5,21 @@
 #include <cstdint>
 #include <vector>
 
+class QTabWidget;
+class QTableWidget;
+
 namespace S2Plugin
 {
     class TreeViewMemoryFields;
-    class WidgetPagination;
 
     class ViewStruct : public QWidget
     {
         Q_OBJECT
       public:
         ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string& name, QWidget* parent = nullptr);
+
+      protected slots:
+        virtual void updateData();
 
       protected:
         QSize sizeHint() const override;
@@ -29,10 +34,9 @@ namespace S2Plugin
       public:
         ViewArray(uintptr_t address, std::string arrayTypeName, size_t num, std::string name, QWidget* parent = nullptr);
       protected slots:
-        void pageListUpdate();
+        void pageListUpdate(std::pair<size_t, size_t> range);
 
       private:
-        WidgetPagination* mPagination;
         MemoryField mArray;
         uintptr_t mArrayAddress;
     };
@@ -43,11 +47,14 @@ namespace S2Plugin
         ViewMatrix(uintptr_t address, std::string arrayTypeName, size_t row, size_t col, std::string name, QWidget* parent = nullptr);
 
       protected slots:
-        void pageListUpdate();
+        void pageListUpdate(std::pair<size_t, size_t> range);
+        void updateData() override;
+        void indexClicked(int r, int c);
 
       private:
-        WidgetPagination* mPagination;
         MemoryField mMatrix;
         uintptr_t mMatrixAddress;
+        QTabWidget* mTabs;
+        QTableWidget* mTableWidget;
     };
 } // namespace S2Plugin
