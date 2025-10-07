@@ -177,6 +177,7 @@ void S2Plugin::ViewToolbar::showState(uintptr_t address)
 {
     auto w = new ViewStruct(address, Configuration::get()->typeFields(MemoryFieldType::State), "State");
     auto win = mMDIArea->addSubWindow(w);
+    w->setStorage(address, 0x13B8);
     win->setVisible(true);
     win->setAttribute(Qt::WA_DeleteOnClose);
 }

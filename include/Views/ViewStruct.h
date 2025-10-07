@@ -17,6 +17,7 @@ namespace S2Plugin
         Q_OBJECT
       public:
         ViewStruct(uintptr_t address, const std::vector<MemoryField>& fields, const std::string& name, QWidget* parent = nullptr);
+        void setStorage(uintptr_t address, size_t size);
 
       protected slots:
         virtual void updateData();

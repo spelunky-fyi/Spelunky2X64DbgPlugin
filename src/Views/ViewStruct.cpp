@@ -75,6 +75,11 @@ void S2Plugin::ViewStruct::updateData()
     mMainTreeView->updateTree();
 }
 
+void S2Plugin::ViewStruct::setStorage(uintptr_t addr, size_t s)
+{
+    mMainTreeView->setStorage(addr, s);
+}
+
 S2Plugin::ViewArray::ViewArray(uintptr_t address, std::string arrayTypeName, size_t num, std::string name, QWidget* parent)
     : ViewStruct(0, {}, arrayTypeName + " " + name + '[' + std::to_string(num) + ']', parent), mArrayAddress(address)
 {
@@ -84,6 +89,8 @@ S2Plugin::ViewArray::ViewArray(uintptr_t address, std::string arrayTypeName, siz
     mArray.firstParameterType = arrayTypeName;
     mArray.secondParameterType = '#'; // just to let it know it should put all the elements in, no array element
     mArray.numberOfElements = num;
+
+    mMainTreeView->setStorage(address, mArray.get_size());
 
     auto pagination = new WidgetPagination(this);
     layout()->addWidget(pagination);
@@ -110,6 +117,8 @@ S2Plugin::ViewMatrix::ViewMatrix(uintptr_t address, std::string arrayTypeName, s
     mMatrix.firstParameterType = arrayTypeName;
     mMatrix.rows = rows;
     mMatrix.setNumColumns(columns);
+
+    mMainTreeView->setStorage(address, mMatrix.get_size());
 
     // hack in tab widget
     mTabs = new QTabWidget(this);
@@ -169,7 +178,7 @@ void S2Plugin::ViewMatrix::updateData()
                 return false;
 
             auto textValue = tempIndex.data(Qt::DisplayRole).toString();
-            // Checking text insted of type so it inclueds all the other types that just display the Expand/Collapse text instead of value
+            // Checking text instead of type so it includes all the other types that just display the Expand/Collapse text instead of value
             if (textValue == "<font color='darkMagenta'><u>[Collapse]</u></font>" || textValue == "<font color='#AAA'><u>[Expand]</u></font>")
                 return true;
 

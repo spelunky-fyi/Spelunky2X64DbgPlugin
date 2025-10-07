@@ -10,21 +10,13 @@ namespace S2Plugin
     [[nodiscard]] inline T Read(uintptr_t addr)
     {
         if constexpr (sizeof(T) == 1)
-        {
             return static_cast<T>(Script::Memory::ReadByte(addr));
-        }
         else if constexpr (sizeof(T) == 2)
-        {
             return static_cast<T>(Script::Memory::ReadWord(addr));
-        }
         else if constexpr (sizeof(T) == 4)
-        {
             return static_cast<T>(Script::Memory::ReadDword(addr));
-        }
         else if constexpr (sizeof(T) == 8)
-        {
             return static_cast<T>(Script::Memory::ReadQword(addr));
-        }
         else
         {
             T x{};

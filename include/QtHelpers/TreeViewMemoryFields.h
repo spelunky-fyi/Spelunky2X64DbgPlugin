@@ -76,6 +76,11 @@ namespace S2Plugin
                        bool disableChangeHighlightingForField = false);
         void labelAll(std::string_view prefix);
         void expandLast();
+        void setStorage(uintptr_t address, size_t size)
+        {
+            int smallSize = size > static_cast<size_t>(std::numeric_limits<int>::max()) ? std::numeric_limits<int>::max() : static_cast<int>(size);
+            mStorage.reserve(address, smallSize);
+        }
 
       public slots:
         void labelAll() // for the slots so we don't corrupt the parameters
@@ -108,6 +113,12 @@ namespace S2Plugin
 
       private:
         bool isItemClickable(const QModelIndex& index) const;
+        template <class T>
+        T readMemory(uintptr_t address);
+        bool readMemory(uintptr_t addr, void* data, size_t size, size_t* sizeRead);
+        template <typename T>
+        inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryAddress, QStandardItem* itemValue, const char* valueFormat, QStandardItem* itemValueHex, bool doNotUpdateHex,
+                                            const char* hexFormat, bool updateBackground, bool resetBackgroundToTransparent, const QColor& background);
 
       public:
         ColumnFilter mActiveColumns;
@@ -117,5 +128,70 @@ namespace S2Plugin
         bool mDrawTopBranch = true;
         std::array<int, 9> mSavedColumnWidths = {};
         QStandardItemModel* mModel;
+        struct Storage
+        {
+            void reserve(uintptr_t addr, int size)
+            {
+                mAddress = addr;
+                mData.resize(size);
+            }
+            bool reserved() const
+            {
+                return mData.size() != 0;
+            }
+            char* begin()
+            {
+                return mData.data();
+            }
+            char* end()
+            {
+                return mData.data() + size();
+            }
+            int size() const
+            {
+                return mSizeRead;
+            }
+            char* data()
+            {
+                return mData.data();
+            }
+            char* at(size_t i)
+            {
+                if (i > static_cast<size_t>(size()))
+                    return nullptr;
+
+                return data() + i;
+            }
+            void updateAddress(uintptr_t addr)
+            {
+                mAddress = addr;
+            }
+            uintptr_t address() const
+            {
+                return mAddress;
+            }
+            int capacity() const
+            {
+                return mData.size();
+            }
+            void invalidate()
+            {
+                mSizeRead = 0;
+            }
+            void setSize(size_t newSize)
+            {
+                if (static_cast<size_t>(mData.size()) < newSize)
+                {
+                    mSizeRead = mData.size();
+                    return;
+                }
+                mSizeRead = static_cast<int>(newSize);
+            }
+
+          private:
+            QByteArray mData;
+            uintptr_t mAddress{0};
+            int mSizeRead{0};
+        } mStorage;
     };
 } // namespace S2Plugin

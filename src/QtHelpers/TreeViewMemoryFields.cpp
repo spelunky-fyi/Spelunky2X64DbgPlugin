@@ -513,15 +513,30 @@ void S2Plugin::TreeViewMemoryFields::updateTree(uintptr_t newAddr, uintptr_t new
     std::optional<uintptr_t> newAddress = newAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newAddr);
     std::optional<uintptr_t> newComparisonAddress = newComparisonAddr == 0 ? std::nullopt : std::optional<uintptr_t>(newComparisonAddr);
 
+    if (mStorage.reserved())
+    {
+        if (newAddr != 0)
+            mStorage.updateAddress(newAddr);
+
+        duint readSize;
+        duint sizeToRead = static_cast<duint>(mStorage.capacity());
+        Script::Memory::Read(mStorage.address(), mStorage.data(), sizeToRead, &readSize);
+        mStorage.setSize(readSize);
+
+        if (readSize != sizeToRead)
+            dprintf("Could not read the full (%d) bytes, got (%d) bytes instead. Address: %llu\n", sizeToRead, readSize, mStorage.address());
+    }
     for (int row = 0; row < mModel->invisibleRootItem()->rowCount(); ++row)
         updateRow(row, newAddress, newComparisonAddress, nullptr, initial);
+
+    mStorage.invalidate();
 }
 
 // this would be much better as lambda function, but lambda with templates is C++20 thing
 // hope that the compiler can inline and optimize all of this 🙏
 template <typename T>
-inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryAddress, QStandardItem* itemValue, const char* valueFormat, QStandardItem* itemValueHex, bool doNotUpdateHex,
-                                    const char* hexFormat, bool updateBackground, bool resetBackgroundToTransparent, const QColor& background)
+inline std::optional<T> S2Plugin::TreeViewMemoryFields::updateField(QStandardItem* itemField, uintptr_t memoryAddress, QStandardItem* itemValue, const char* valueFormat, QStandardItem* itemValueHex,
+                                                                    bool doNotUpdateHex, const char* hexFormat, bool updateBackground, bool resetBackgroundToTransparent, const QColor& background)
 {
     std::optional<T> value;
     if (memoryAddress == 0)
@@ -530,16 +545,16 @@ inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryAd
         if (!doNotUpdateHex)
             itemValueHex->setData({}, Qt::DisplayRole);
 
-        itemValue->setData({}, S2Plugin::gsRoleRawValue);
+        itemValue->setData({}, gsRoleRawValue);
         itemField->setBackground(Qt::transparent);
     }
     else
     {
-        T valueTmp = S2Plugin::Read<T>(memoryAddress);
+        T valueTmp = readMemory<T>(memoryAddress);
         value = valueTmp;
-        auto data = itemValue->data(S2Plugin::gsRoleRawValue);
-        T valueOld = data.value<T>();
-        if (!data.isValid() || value.value() != valueOld)
+        auto rawData = itemValue->data(gsRoleRawValue);
+        T valueOld = rawData.value<T>();
+        if (!rawData.isValid() || value.value() != valueOld)
         {
             if (updateBackground)
                 itemField->setBackground(background);
@@ -554,7 +569,7 @@ inline std::optional<T> updateField(QStandardItem* itemField, uintptr_t memoryAd
                 auto newHexValue = QString::asprintf(hexFormat, reinterpret_cast<unsignedT&>(value.value()));
                 itemValueHex->setData(newHexValue, Qt::DisplayRole);
             }
-            itemValue->setData(value.value(), S2Plugin::gsRoleRawValue);
+            itemValue->setData(value.value(), gsRoleRawValue);
         }
         else if (updateBackground && resetBackgroundToTransparent)
             itemField->setBackground(Qt::transparent);
@@ -675,7 +690,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             }
             return false;
         };
-        newPointer = Script::Memory::ReadQword(memoryOffset);
+        newPointer = readMemory<uintptr_t>(memoryOffset);
         valueMemoryOffset = newPointer;
         pointerUpdate = checkAndUpdatePointer(valueMemoryOffset, itemValueHex);
         itemValue->setData(valueMemoryOffset, gsRoleMemoryAddress);
@@ -687,7 +702,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
 
         if (comparisonActive)
         {
-            newComparisonPointer = Script::Memory::ReadQword(comparisonMemoryOffset);
+            newComparisonPointer = readMemory<uintptr_t>(comparisonMemoryOffset);
             valueComparisonMemoryOffset = newComparisonPointer;
             comparisonPointerUpdate = checkAndUpdatePointer(valueComparisonMemoryOffset, itemComparisonValueHex);
             itemComparisonValue->setData(valueComparisonMemoryOffset, gsRoleMemoryAddress);
@@ -1247,7 +1262,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 value = std::wstring();
                 value->resize(length);
-                Script::Memory::Read(valueMemoryOffset, value->data(), size, nullptr);
+                readMemory(valueMemoryOffset, value->data(), size, nullptr);
                 auto buffer_w = reinterpret_cast<const ushort*>(value->c_str());
                 auto valueString = ('\"' + QString::fromUtf16(buffer_w) + '\"').toHtmlEscaped();
 
@@ -1282,7 +1297,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 {
                     comparisonValue = std::wstring();
                     comparisonValue->resize(length);
-                    Script::Memory::Read(valueComparisonMemoryOffset, comparisonValue->data(), size, nullptr);
+                    readMemory(valueComparisonMemoryOffset, comparisonValue->data(), size, nullptr);
                     auto buffer_w = reinterpret_cast<const ushort*>(comparisonValue->c_str());
                     auto valueString = ('\"' + QString::fromUtf16(buffer_w) + '\"').toHtmlEscaped();
 
@@ -1322,7 +1337,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 value = std::string();
                 value->resize(size);
-                Script::Memory::Read(valueMemoryOffset, value->data(), size, nullptr);
+                readMemory(valueMemoryOffset, value->data(), size, nullptr);
                 auto valueString = ('\"' + QString::fromUtf8(value->c_str()) + '\"').toHtmlEscaped(); // using c_str and not fromStdString to ignore characters after null terminator
 
                 auto valueOld = itemValue->data(Qt::DisplayRole); // no need for gsRoleRawValue
@@ -1356,7 +1371,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 {
                     comparisonValue = std::string();
                     comparisonValue->resize(size);
-                    Script::Memory::Read(valueComparisonMemoryOffset, comparisonValue->data(), size, nullptr);
+                    readMemory(valueComparisonMemoryOffset, comparisonValue->data(), size, nullptr);
                     auto valueString = ('\"' + QString::fromUtf8(comparisonValue->c_str()) + '\"').toHtmlEscaped();
 
                     auto valueOld = itemComparisonValue->data(Qt::DisplayRole); // no need for gsRoleRawValue
@@ -1624,7 +1639,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 itemValue->setData(itemValueHex->data(Qt::DisplayRole), Qt::DisplayRole);
             else
             {
-                auto id = Script::Memory::ReadQword(valueMemoryOffset);
+                auto id = Script::Memory::ReadDword(valueMemoryOffset);
                 auto& textureName = Spelunky2::get()->get_TextureDB().nameForID(id);
                 itemValue->setData(QString::asprintf("<font color='blue'><u>TextureDB %d %s</u></font>", id, textureName.c_str()), Qt::DisplayRole);
             }
@@ -1634,7 +1649,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole));
                 else
                 {
-                    auto comparisonID = Script::Memory::ReadQword(valueComparisonMemoryOffset);
+                    auto comparisonID = Script::Memory::ReadDword(valueComparisonMemoryOffset);
                     auto& comparisonTextureName = Spelunky2::get()->get_TextureDB().nameForID(comparisonID);
                     itemComparisonValue->setData(QString::asprintf("<font color='blue'><u>TextureDB %d %s</u></font>", comparisonID, comparisonTextureName.c_str()), Qt::DisplayRole);
                 }
@@ -1694,7 +1709,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                     itemComparisonValue->setData(itemComparisonValueHex->data(Qt::DisplayRole));
                 else
                 {
-                    auto comparisonID = Script::Memory::ReadQword(valueComparisonMemoryOffset);
+                    auto comparisonID = Script::Memory::ReadDword(valueComparisonMemoryOffset);
                     auto comparisonParticleName = Configuration::get()->particleEmittersList().nameForID(comparisonID);
                     itemComparisonValue->setData(QString::asprintf("<font color='blue'><u>ParticleDB %d %s</u></font>", comparisonID, comparisonParticleName.c_str()), Qt::DisplayRole);
                 }
@@ -2008,7 +2023,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             value = updateField<uintptr_t>(itemField, valueMemoryOffset == 0 ? 0 : valueMemoryOffset + 0x8, itemValue, nullptr, nullptr, true, nullptr, true, !pointerUpdate, highlightColor);
             if (value.has_value())
             {
-                uintptr_t beginPointer = Script::Memory::ReadQword(valueMemoryOffset);
+                uintptr_t beginPointer = readMemory<uintptr_t>(valueMemoryOffset);
                 if (beginPointer == value.value())
                     itemValue->setData("<font color='#AAA'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
                 else
@@ -2024,7 +2039,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 comparisonValue = updateField<uintptr_t>(itemField, addr, itemComparisonValue, nullptr, nullptr, true, nullptr, false, false, highlightColor);
                 if (comparisonValue.has_value())
                 {
-                    uintptr_t beginPointer = Script::Memory::ReadQword(valueComparisonMemoryOffset);
+                    uintptr_t beginPointer = readMemory<uintptr_t>(valueComparisonMemoryOffset);
                     if (beginPointer == comparisonValue.value())
                         itemComparisonValue->setData("<font color='#AAA'><u>Show contents (empty)</u></font>", Qt::DisplayRole);
                     else
@@ -2100,7 +2115,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             {
                 value = {0};
                 value->resize(gsStdUnorderedMapSize);
-                Script::Memory::Read(valueMemoryOffset, value->data(), gsStdUnorderedMapSize, nullptr);
+                readMemory(valueMemoryOffset, value->data(), gsStdUnorderedMapSize, nullptr);
                 auto dataOld = itemValue->data(gsRoleRawValue);
                 auto valueOld = dataOld.value<QByteArray>();
                 if (!dataOld.isValid() || value.value() != valueOld)
@@ -2132,7 +2147,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 {
                     comparisonValue = {0};
                     comparisonValue->resize(gsStdUnorderedMapSize);
-                    Script::Memory::Read(valueComparisonMemoryOffset, comparisonValue->data(), gsStdUnorderedMapSize, nullptr);
+                    readMemory(valueComparisonMemoryOffset, comparisonValue->data(), gsStdUnorderedMapSize, nullptr);
                     auto dataOld = itemComparisonValue->data(gsRoleRawValue);
                     auto valueOld = dataOld.value<QByteArray>();
                     if (!dataOld.isValid() || comparisonValue.value() != valueOld)
@@ -2174,7 +2189,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
             else
             {
                 value = {0, 0};
-                Script::Memory::Read(valueMemoryOffset, &value.value(), 2 * sizeof(uintptr_t), nullptr);
+                readMemory(valueMemoryOffset, &value.value(), 2 * sizeof(uintptr_t), nullptr);
                 auto dataOld = itemValue->data(gsRoleRawValue);
                 auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
                 if (!dataOld.isValid() || value.value() != valueOld)
@@ -2207,7 +2222,7 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
                 else
                 {
                     comparisonValue = {0, 0};
-                    Script::Memory::Read(valueComparisonMemoryOffset, &comparisonValue.value(), 2 * sizeof(uintptr_t), nullptr);
+                    readMemory(valueComparisonMemoryOffset, &comparisonValue.value(), 2 * sizeof(uintptr_t), nullptr);
                     auto dataOld = itemComparisonValue->data(gsRoleRawValue);
                     auto valueOld = dataOld.value<QPair<uintptr_t, uintptr_t>>();
                     if (!dataOld.isValid() || comparisonValue.value() != valueOld)
@@ -3421,4 +3436,26 @@ void S2Plugin::TreeViewMemoryFields::mousePressEvent(QMouseEvent* event)
     }
 
     QTreeView::mousePressEvent(event);
+}
+
+template <class T>
+T S2Plugin::TreeViewMemoryFields::readMemory(uintptr_t address)
+{
+    static_assert(sizeof(T) != 0, "Trying to read 0 bytes");
+
+    if (address >= mStorage.address() && address + sizeof(T) <= mStorage.address() + mStorage.size())
+        return *reinterpret_cast<T*>(mStorage.at(address - mStorage.address()));
+    else
+        return Read<T>(address);
+}
+
+bool S2Plugin::TreeViewMemoryFields::readMemory(uintptr_t addr, void* dest, size_t size, size_t* sizeRead)
+{
+    if (addr >= mStorage.address() && addr + size <= mStorage.address() + mStorage.size())
+    {
+        std::memcpy(dest, mStorage.at(addr - mStorage.address()), size);
+        if (sizeRead != nullptr)
+            *sizeRead = size;
+    }
+    return Script::Memory::Read(addr, dest, size, sizeRead);
 }
