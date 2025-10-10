@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QMainWindow>
 #include <QMdiArea>
+#include <QMdiSubWindow>
 #include <QWidget>
 
 QMainWindow* gsSpelunky2MainWindow;
@@ -56,7 +57,7 @@ void QtPlugin::Setup()
     gsSpelunky2MainWindow->setCentralWidget(gsMDIArea);
     gsSpelunky2MainWindow->setWindowTitle("Spelunky 2");
 
-    gsViewToolbar = new S2Plugin::ViewToolbar(gsMDIArea, parent);
+    gsViewToolbar = new S2Plugin::ViewToolbar(parent);
     gsSpelunky2MainWindow->addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, gsViewToolbar);
 
     GuiAddQWidgetTab(gsSpelunky2MainWindow);
@@ -95,18 +96,10 @@ void QtPlugin::ShowTab()
     GuiShowQWidgetTab(gsSpelunky2MainWindow);
 }
 
-struct S2Plugin::QtPluginStruct
-{
-    void static inline resetSpelunky2Data()
-    {
-        gsViewToolbar->mMDIArea->closeAllSubWindows();
-        S2Plugin::Spelunky2::reset();
-    };
-};
-
 void QtPlugin::Detach()
 {
-    S2Plugin::QtPluginStruct::resetSpelunky2Data();
+    gsMDIArea->closeAllSubWindows();
+    S2Plugin::Spelunky2::reset();
 }
 
 void QtPlugin::MenuPrepare([[maybe_unused]] int hMenu) {}
@@ -171,4 +164,17 @@ QIcon S2Plugin::getCavemanIcon()
 S2Plugin::ViewToolbar* S2Plugin::getToolbar()
 {
     return gsViewToolbar;
+}
+
+QMdiSubWindow* S2Plugin::openSubWindow(QWidget* widget)
+{
+    auto win = gsMDIArea->addSubWindow(widget);
+    win->setVisible(true);
+    win->setAttribute(Qt::WA_DeleteOnClose);
+    return win;
+}
+
+void S2Plugin::closeAllSubWindows()
+{
+    gsMDIArea->closeAllSubWindows();
 }

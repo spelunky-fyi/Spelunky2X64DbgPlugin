@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDockWidget>
-#include <QMdiArea>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -19,7 +18,7 @@ namespace S2Plugin
     {
         Q_OBJECT
       public:
-        ViewToolbar(QMdiArea* mdiArea, QWidget* parent = nullptr);
+        ViewToolbar(QWidget* parent = nullptr);
         void showEntity(uintptr_t address);
         void showState(uintptr_t statePtr);
         void showStdVector(uintptr_t address, const std::string& typeName);
@@ -60,9 +59,5 @@ namespace S2Plugin
       private slots:
         void clearLabels();
         void reloadConfig();
-
-      private:
-        QMdiArea* mMDIArea;
-        friend struct QtPluginStruct;
     };
 } // namespace S2Plugin

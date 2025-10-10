@@ -2,6 +2,9 @@
 
 #include <QIcon>
 
+class QWidget;
+class QMdiSubWindow;
+
 namespace QtPlugin
 {
     void Init();
@@ -21,4 +24,6 @@ namespace S2Plugin
 
     QIcon getCavemanIcon();
     ViewToolbar* getToolbar();
+    QMdiSubWindow* openSubWindow(QWidget*);
+    void closeAllSubWindows();
 } // namespace S2Plugin
