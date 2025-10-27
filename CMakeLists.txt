@@ -71,6 +71,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	include/Views/ViewEntityList.h
 	include/Views/ViewEntityFactory.h
 	include/Views/ViewCpp.h
+	include/Views/ViewSettings.h
 	include/QtHelpers/StyledItemDelegateHTML.h
 	include/QtHelpers/StyledItemDelegateColorPicker.h
 	include/QtHelpers/TreeViewMemoryFields.h
@@ -132,6 +133,7 @@ x64dbg_plugin(${PROJECT_NAME}
 	src/Views/ViewSaveStates.cpp
 	src/Views/ViewEntityList.cpp
 	src/Views/ViewCpp.cpp
+	src/Views/ViewSettings.cpp
 	src/QtHelpers/StyledItemDelegateHTML.cpp
 	src/QtHelpers/TreeViewMemoryFields.cpp
 	src/QtHelpers/WidgetMemoryView.cpp

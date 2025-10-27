@@ -17,6 +17,7 @@
 #include "Views/ViewEntity.h"
 #include "Views/ViewEntityDB.h"
 #include "Views/ViewParticleDB.h"
+#include "Views/ViewSettings.h" // for Settings
 #include "Views/ViewTextureDB.h"
 #include "Views/ViewToolbar.h"
 #include "make_unsigned_integer.h"
@@ -263,6 +264,7 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             MemoryField flagField;
             flagField.type = MemoryFieldType::Flag;
+            auto settings = Settings::get();
             for (uint8_t x = 1; x <= flags; ++x)
             {
                 flagField.name = "flag_" + std::to_string(x);
@@ -272,13 +274,21 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
                     delta += x == 1 ? 0 : 1;
                     showDelta = true;
                 }
+
+                auto flagName = config->flagTitle(field.firstParameterType, x);
+                if (flagName.empty() && !settings->checkB(Settings::DEVELOPER_MODE))
+                    continue;
+
+                QString realFlagName;
+                if (flagName.empty())
+                    realFlagName = QString::fromStdString(config->flagTitle("unknown", x));
+                else
+                    realFlagName = QString::fromStdString(flagName);
+
                 auto flagFieldItem = createAndInsertItem(flagField, fieldNameOverride + "." + flagField.name, flagsParent, 0, showDelta);
                 flagFieldItem->setData(x, gsRoleFlagIndex);
-                auto flagName = config->flagTitle(field.firstParameterType, x);
-                QString realFlagName = QString::fromStdString(flagName.empty() ? config->flagTitle("unknown", x) : flagName); // TODO: don't show unknown unless it was chosen in settings
-
-                flagsParent->child(x - 1, gsColValue)->setData(realFlagName, Qt::DisplayRole);
-                flagsParent->child(x - 1, gsColComparisonValue)->setData(realFlagName, Qt::DisplayRole);
+                flagsParent->child(flagFieldItem->row(), gsColValue)->setData(realFlagName, Qt::DisplayRole);
+                flagsParent->child(flagFieldItem->row(), gsColComparisonValue)->setData(realFlagName, Qt::DisplayRole);
             }
             returnField = flagsParent;
             break;
@@ -2777,7 +2787,7 @@ void S2Plugin::TreeViewMemoryFields::cellClicked(const QModelIndex& index)
                     {
                         auto fieldName = getDataFrom(index, gsColField, gsRoleUID).toString();
                         auto s = QString::fromStdString(ReadConstString(address));
-                        // [Known Issue]: Now way to safely determinate allowed length, so we just allow as much characters as there is already
+                        // [Known Issue]: No way to safely determinate allowed length, so we just allow as much characters as there are already
                         auto dialog = new DialogEditString(fieldName, s, address, s.length(), dataType, this);
                         dialog->exec();
                     }

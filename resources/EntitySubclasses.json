@@ -814,7 +814,7 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": { "name": "~Entity", "params": "", "return": "" },
+          "0": { "name": "~Entity" },
           "1": {
             "name": "create_rendering_info"
           },
@@ -1149,7 +1149,6 @@
           "62": {
             "name": "on_thrown_by",
             "params": "Entity* thrower",
-            "return": "",
             "comment": "implemented for special cases like hired hand (player with ai_func), horned lizard..."
           },
           "63": {
@@ -1624,13 +1623,7 @@
         "type": "Flags8",
         "flags": {
           "1": "Hasn't Stomped (Phase 2, set when spawning UFOs, cleared when stomping first time)",
-          "2": "Has Broken Layer (Phase 1, cleared when floaters broken, set when breaking the first layer)",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": ""
+          "2": "Has Broken Layer (Phase 1, cleared when floaters broken, set when breaking the first layer)"
         }
       }
     ],
@@ -3119,10 +3112,8 @@
           "2": "Walking",
           "3": "Headpulse/explosion related",
           "4": "Crawling",
-          "5": "",
-          "6": "Headpulse/explosion related",
-          "7": "",
-          "8": ""
+          "5": "unknown",
+          "6": "Headpulse/explosion related"
         }
       },
       { "field": "padding1", "type": "UnsignedByte" },
@@ -3850,7 +3841,8 @@
       {
         "field": "transferred_entities",
         "type": "StdUnorderedMap",
-        "comment": "unordered_map<int32_t, uint32_t> key is the uid, value is frame entity entered the floor"
+        "keytype": "EntityUID",
+        "valuetype": "UnsignedDword"
       }
     ],
     "ConveyorBelt": [

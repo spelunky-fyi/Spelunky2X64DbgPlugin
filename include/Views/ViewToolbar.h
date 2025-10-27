@@ -34,6 +34,7 @@ namespace S2Plugin
         void showStdList(uintptr_t address, std::string typeName, bool oldType = false);
         void showSaveGame(uintptr_t address);
         ViewCpp* showCode(std::string_view typeName);
+        void showSettings();
 
       public slots:
         ViewEntityDB* showEntityDB();

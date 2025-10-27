@@ -4,6 +4,7 @@
 #include "QtHelpers/TableWidgetItemNumeric.h"
 #include "QtHelpers/TreeWidgetItemNumeric.h"
 #include "QtPlugin.h"
+#include "Views/ViewSettings.h" // for Settings
 #include "Views/ViewToolbar.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
@@ -230,11 +231,17 @@ void S2Plugin::AbstractDatabaseView::comparisonFieldChosen()
         mCompareFlagComboBox->clear();
         mCompareFlagComboBox->addItem("");
         std::string refName = comboBoxData.value<ComparisonField>().refName;
+        auto settings = Settings::get();
         for (uint8_t x = 1; x <= flagsCount; ++x)
         {
             auto flagName = Configuration::get()->flagTitle(refName, x);
-            // TODO: don't show unknown unless it was chosen in settings
-            QString realFlagName = QString("%1: ").arg(x) + QString::fromStdString(flagName.empty() ? Configuration::get()->flagTitle("unknown", x) : flagName);
+            if (flagName.empty() && !settings->checkB(Settings::DEVELOPER_MODE))
+                continue;
+
+            QString realFlagName = QString("%1: ").arg(x) + QString::fromStdString(flagName);
+            if (flagName.empty())
+                realFlagName += QString::fromStdString(Configuration::get()->flagTitle("unknown", x));
+
             mCompareFlagComboBox->addItem(realFlagName, x - 1);
         }
         mCompareFlagComboBox->show();

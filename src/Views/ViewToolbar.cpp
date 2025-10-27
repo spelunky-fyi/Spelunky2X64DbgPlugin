@@ -225,6 +225,12 @@ S2Plugin::ViewCpp* S2Plugin::ViewToolbar::showCode(std::string_view typeName)
     return w;
 }
 
+void S2Plugin::ViewToolbar::showSettings()
+{
+    auto w = new ViewSettings();
+    openSubWindow(w);
+}
+
 //
 // slots:
 //

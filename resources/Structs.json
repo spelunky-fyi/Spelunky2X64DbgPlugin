@@ -216,34 +216,18 @@
       "2": "P1: Right",
       "3": "P1: Up",
       "4": "P1: Down",
-      "5": "-",
-      "6": "-",
-      "7": "-",
-      "8": "-",
       "9": "P2: Left",
       "10": "P2: Right",
       "11": "P2: Up",
       "12": "P2: Down",
-      "13": "-",
-      "14": "-",
-      "15": "-",
-      "16": "-",
       "17": "P3: Left",
       "18": "P3: Right",
       "19": "P3: Up",
       "20": "P3: Down",
-      "21": "-",
-      "22": "-",
-      "23": "-",
-      "24": "-",
       "25": "P4: Left",
       "26": "P4: Right",
       "27": "P4: Up",
-      "28": "P4: Down",
-      "29": "-",
-      "30": "-",
-      "31": "-",
-      "32": "-"
+      "28": "P4: Down"
     },
     "journal_chapters": {
       "1": "Player profile",
@@ -440,9 +424,7 @@
       "3": "Bomb",
       "4": "Rope",
       "5": "Run",
-      "6": "Use door/buy",
-      "7": "-",
-      "8": "-"
+      "6": "Use door/buy"
     },
     "buttons_player": {
       "1": "Jump",
@@ -456,11 +438,7 @@
       "9": "Left",
       "10": "Right",
       "11": "Up",
-      "12": "Down",
-      "13": "-",
-      "14": "-",
-      "15": "-",
-      "16": "-"
+      "12": "Down"
     },
     "entity_flags": {
       "1": "Invisible",
@@ -519,16 +497,7 @@
       "20": "Yangs turkey",
       "21": "Floor can be decorated",
       "22": "Disable collision",
-      "23": "JumpWhipped to shorthop",
-      "24": "",
-      "25": "",
-      "26": "",
-      "27": "",
-      "28": "",
-      "29": "",
-      "30": "",
-      "31": "",
-      "32": ""
+      "23": "JumpWhipped to shorthop"
     },
     "type_mask": {
       "1": "Player",
@@ -545,24 +514,7 @@
       "12": "SHADOW",
       "13": "LOGICAL",
       "14": "WATER",
-      "15": "LAVA",
-      "16": "",
-      "17": "",
-      "18": "",
-      "19": "",
-      "20": "",
-      "21": "",
-      "22": "",
-      "23": "",
-      "24": "",
-      "25": "",
-      "26": "",
-      "27": "",
-      "28": "",
-      "29": "",
-      "30": "",
-      "31": "",
-      "32": ""
+      "15": "LAVA"
     },
     "button_screens": {
       "1": "Jump",
@@ -579,34 +531,22 @@
       "2": "Bomb",
       "3": "Attack",
       "4": "Rope",
-      "5": "",
       "6": "Use door/buy",
-      "7": "",
       "8": "Run",
-      "9": "",
-      "10": "",
-      "11": "",
       "12": "menu",
       "13": "journal",
-      "14": "",
-      "15": "",
-      "16": "",
       "17": "Left",
       "18": "Right",
       "19": "Up",
-      "20": "Down",
-      "21": "",
-      "22": "",
-      "23": "",
-      "24": "",
-      "25": "",
-      "26": "",
-      "27": "",
-      "28": "",
-      "29": "",
-      "30": "",
-      "31": "",
-      "32": ""
+      "20": "Down"
+    },
+    "character_select_states": {
+      "0": "None",
+      "1": "Moving left",
+      "2": "Moving right",
+      "3": "Forward",
+      "4": "Backward",
+      "5": "Selected"
     }
   },
 
@@ -651,42 +591,9 @@
         "ref": "type_mask"
       },
       {
-        "field": "field_44",
-        "type": "Flags32",
-        "flags": {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "",
-          "9": "",
-          "10": "",
-          "11": "",
-          "12": "",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": "",
-          "17": "",
-          "18": "",
-          "19": "",
-          "20": "",
-          "21": "",
-          "22": "",
-          "23": "",
-          "24": "",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
-        }
+        "field": "padding",
+        "type": "Skip",
+        "offset": 4
       },
       {
         "field": "default_flags",
@@ -704,11 +611,8 @@
         "flags": {
           "1": "Apply solid block beautification",
           "2": "Treat as FLOORSTYLED",
-          "3": "",
-          "4": "",
           "5": "Squirts blood on damage",
           "6": "Climbable (as wall)",
-          "7": "",
           "8": "Fireproof",
           "9": "Double fire and explosive damage",
           "10": "Is on fire/lights on fire",
@@ -716,14 +620,8 @@
           "12": "Turns arrow tip to poison when hit",
           "13": "Curse immunity",
           "14": "Cursed pot effect (curses you when destroyed closeby)",
-          "15": "",
-          "16": "",
-          "17": "",
           "18": "Can be carried through layer doors",
-          "19": "",
-          "20": "",
           "21": "Can spawn monsters on top",
-          "22": "",
           "23": "Can be cloned",
           "24": "Can be bubbled",
           "25": "Can be telefragged",
@@ -734,44 +632,7 @@
       { "field": "friction", "type": "Float" },
       { "field": "elasticity", "type": "Float" },
       { "field": "weight", "type": "Float" },
-      {
-        "field": "field_60",
-        "type": "Flags32",
-        "flags": {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "",
-          "9": "",
-          "10": "",
-          "11": "",
-          "12": "",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": "",
-          "17": "",
-          "18": "",
-          "19": "",
-          "20": "",
-          "21": "",
-          "22": "",
-          "23": "",
-          "24": "",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
-        }
-      },
+      { "field": "field_60", "type": "Flags32" },
       { "field": "acceleration", "type": "Float" },
       { "field": "max_speed", "type": "Float" },
       { "field": "sprint_factor", "type": "Float" },
@@ -1421,14 +1282,7 @@
           "6": "left",
           "7": "right",
           "8": "up",
-          "9": "down",
-          "10": "",
-          "11": "",
-          "12": "",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": ""
+          "9": "down"
         }
       },
       {
@@ -1443,14 +1297,7 @@
           "6": "left",
           "7": "right",
           "8": "up",
-          "9": "down",
-          "10": "",
-          "11": "",
-          "12": "",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": ""
+          "9": "down"
         }
       },
       {
@@ -1667,11 +1514,11 @@
         "field": "__vftable",
         "type": "VirtualFunctionTable",
         "functions": {
-          "0": { "name": "~JournalPage", "params": "", "return": "" },
-          "1": { "name": "v_unknown1", "params": "", "return": "" },
-          "2": { "name": "v_unknown2", "params": "", "return": "" },
-          "3": { "name": "v_unknown3", "params": "", "return": "bool" },
-          "4": { "name": "render", "params": "", "return": "" }
+          "0": { "name": "~JournalPage" },
+          "1": { "name": "v_unknown1" },
+          "2": { "name": "v_unknown2" },
+          "3": { "name": "v_unknown3", "return": "bool" },
+          "4": { "name": "render" }
         }
       },
       { "field": "background", "type": "TextureRenderingInfo" },
@@ -3039,42 +2886,24 @@
         "comment": "unsure, set when hiting the back key, called after the zoom out of the screen"
       },
       {
-        "field": "some_state",
-        "type": "Flags32",
-        "flags": {
-          "1": "player_1_left",
-          "2": "player_1_right",
-          "3": "player_1_locked_in",
-          "4": "-",
-          "5": "-",
-          "6": "-",
-          "7": "-",
-          "8": "-",
-          "9": "player_2_left",
-          "10": "player_2_right",
-          "11": "player_2_locked_in",
-          "12": "-",
-          "13": "-",
-          "14": "-",
-          "15": "-",
-          "16": "-",
-          "17": "player_3_left",
-          "18": "player_3_right",
-          "19": "player_3_locked_in",
-          "20": "-",
-          "21": "-",
-          "22": "-",
-          "23": "-",
-          "24": "-",
-          "25": "player_4_left",
-          "26": "player_4_right",
-          "27": "player_4_locked_in",
-          "28": "-",
-          "29": "-",
-          "30": "-",
-          "31": "-",
-          "32": "-"
-        }
+        "field": "player1_state",
+        "type": "State8",
+        "ref": "character_select_states"
+      },
+      {
+        "field": "player2_state",
+        "type": "State8",
+        "ref": "character_select_states"
+      },
+      {
+        "field": "player3_state",
+        "type": "State8",
+        "ref": "character_select_states"
+      },
+      {
+        "field": "player4_state",
+        "type": "State8",
+        "ref": "character_select_states"
       },
       { "field": "screen_blackout", "type": "TextureRenderingInfo" },
       { "field": "blackout_transparency", "type": "Float" },
@@ -3433,39 +3262,21 @@
           "1": "Pause menu shown",
           "2": "Level transition pause",
           "3": "Cut-scene being shown",
-          "4": "",
-          "5": "",
-          "6": "Ankh pause",
-          "7": "",
-          "8": ""
+          "6": "Ankh pause"
         }
       },
       {
         "field": "pause_related1",
         "type": "Flags8",
         "flags": {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "Ankh activates",
-          "7": "",
-          "8": ""
+          "6": "Ankh activates"
         }
       },
       {
         "field": "pause_related2",
         "type": "Flags8",
         "flags": {
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "Ankh breaking",
-          "7": "",
-          "8": ""
+          "6": "Ankh breaking"
         }
       },
       { "field": "padding1", "type": "UnsignedByte" },
@@ -3487,26 +3298,12 @@
           "10": "Waddler aggroed",
           "11": "Shop bought out",
           "12": "Eggplant crown picked up",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": "",
           "17": "Udjat key spawned",
           "18": "Black market spawned",
           "19": "Drill spawned",
-          "20": "",
-          "21": "",
-          "22": "",
-          "23": "",
-          "24": "",
           "25": "Moon challenge spawned",
           "26": "Star challenge spawned",
-          "27": "Sun challenge spawned",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
+          "27": "Sun challenge spawned"
         }
       },
       {
@@ -3652,18 +3449,7 @@
           "18": "I defeated Tiamat",
           "19": "I defeated Hundun",
           "20": "I became one with the Cosmos",
-          "21": "I eventually died",
-          "22": "",
-          "23": "",
-          "24": "",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
+          "21": "I eventually died"
         }
       },
       { "field": "first_damage_cause", "type": "EntityDBID" },
@@ -3680,7 +3466,7 @@
         "type": "Flags32",
         "flags": {
           "1": "Upbeat dwelling intro music played",
-          "2": "", //once on, it stays on
+          "2": "unknown, stays on",
           "3": "Running tutorial speedrun",
           "4": "Pet has spawned",
           "5": "Level has Tun/shop?",
@@ -3702,15 +3488,8 @@
           "21": "Hide HUD, transition",
           "22": "Hide HUD, camp",
           "23": "Have clover",
-          "24": "You feel forgiven level",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
+          "24": "Show forgiveness toast",
+          "26": "Daily challenge options"
         }
       },
       {
@@ -3720,35 +3499,9 @@
           "1": "Udjat eye",
           "2": "Black market",
           "3": "Vlad's castle/drill",
-          "4": "-",
-          "5": "-",
-          "6": "-",
-          "7": "-",
-          "8": "-",
           "9": "Moon challenge",
           "10": "Star challenge",
-          "11": "Sun challenge",
-          "12": "-",
-          "13": "-",
-          "14": "-",
-          "15": "-",
-          "16": "-",
-          "17": "-",
-          "18": "-",
-          "19": "-",
-          "20": "-",
-          "21": "-",
-          "22": "-",
-          "23": "-",
-          "24": "-",
-          "25": "-",
-          "26": "-",
-          "27": "-",
-          "28": "-",
-          "29": "-",
-          "30": "-",
-          "31": "-",
-          "32": "-"
+          "11": "Sun challenge"
         },
         "comment": "these flags are set when the thing is actually in the level, as opposed to quest_flags, which keeps track of whether it has already spawned"
       },
@@ -3895,13 +3648,7 @@
         "type": "Flags8",
         "flags": {
           "1": "Crust embedded items shown",
-          "2": "Crust embedded items shown (level transition)",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": ""
+          "2": "Crust embedded items shown (level transition)"
         }
       },
       {
@@ -3909,13 +3656,7 @@
         "type": "Flags8",
         "flags": {
           "1": "Compass door markers shown",
-          "2": "Compass door markers shown (level transition)",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": ""
+          "2": "Compass door markers shown (level transition)"
         }
       },
       {
@@ -3923,13 +3664,7 @@
         "type": "Flags8",
         "flags": {
           "1": "Special compass door markers shown",
-          "2": "Special compass door markers shown (level transition)",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": ""
+          "2": "Special compass door markers shown (level transition)"
         }
       },
       { "field": "camera_layer", "type": "UnsignedByte" },
@@ -4041,19 +3776,7 @@
           "17": "Princess Airyn saved",
           "18": "Dirk Yamaoka saved",
           "19": "Tiamat win",
-          "20": "Hundun win",
-          "21": "",
-          "22": "",
-          "23": "",
-          "24": "",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
+          "20": "Hundun win"
         },
         "comment": "character saved -> triggers the 'Thanks for getting me out of there' line"
       },
@@ -4820,38 +4543,14 @@
         "field": "liquid_flags",
         "type": "Flags32",
         "flags": {
-          "1": "",
           "2": "lava_interaction? crashes the game if no lava is present",
           "3": "pause_physics",
-          "4": "",
-          "5": "",
           "6": "low_agitation?",
           "7": "high_agitation?",
           "8": "high_surface_tension?",
           "9": "low_surface_tension?",
-          "10": "",
           "11": "high_bounce?",
-          "12": "low_bounce?",
-          "13": "",
-          "14": "",
-          "15": "",
-          "16": "",
-          "17": "",
-          "18": "",
-          "19": "",
-          "20": "",
-          "21": "",
-          "22": "",
-          "23": "",
-          "24": "",
-          "25": "",
-          "26": "",
-          "27": "",
-          "28": "",
-          "29": "",
-          "30": "",
-          "31": "",
-          "32": ""
+          "12": "low_bounce?"
         }
       },
       { "field": "last_spawn_x", "type": "Float" },
@@ -5242,9 +4941,7 @@
           "3": "Parmesan rescued",
           "4": "Warning one way door",
           "5": "Great party, huh? Ooba",
-          "6": "I wish I brought a jacket",
-          "7": "",
-          "8": ""
+          "6": "I wish I brought a jacket"
         },
         "comment": "-1 = angry"
       },
@@ -5490,11 +5187,7 @@
           "1": "Left",
           "2": "Right",
           "3": "Up",
-          "4": "Down",
-          "5": "-",
-          "6": "-",
-          "7": "-",
-          "8": "-"
+          "4": "Down"
         }
       },
       { "field": "ready", "type": "Bool" },
@@ -6183,19 +5876,7 @@
           "17": "Princess Airyn",
           "18": "Dirk Yamaoka",
           "19": "Guy Spelunky",
-          "20": "Classic Guy",
-          "21": "-",
-          "22": "-",
-          "23": "-",
-          "24": "-",
-          "25": "-",
-          "26": "-",
-          "27": "-",
-          "28": "-",
-          "29": "-",
-          "30": "-",
-          "31": "-",
-          "32": ""
+          "20": "Classic Guy"
         }
       },
       {
@@ -8449,7 +8130,7 @@
           },
           "32": {
             "name": "get_transition_styled_floor_type",
-            "return": "ENT_TYPE"
+            "return": "uint32_t"
           },
           "33": {
             "name": "get_backwall_type",
@@ -9223,24 +8904,16 @@
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
-            "name": "unknown",
-            "params": "",
-            "return": ""
+            "name": "unknown"
           },
           "1": {
-            "name": "unknown",
-            "params": "",
-            "return": ""
+            "name": "unknown"
           },
           "2": {
-            "name": "unknown",
-            "params": "",
-            "return": ""
+            "name": "unknown"
           },
           "3": {
-            "name": "~SteamCallback",
-            "params": "",
-            "return": ""
+            "name": "~SteamCallback"
           }
         }
       },
@@ -9358,14 +9031,10 @@
         "type": "VirtualFunctionTable",
         "functions": {
           "0": {
-            "name": "~Renderer",
-            "params": "",
-            "return": ""
+            "name": "~Renderer"
           },
           "1": {
-            "name": "some_dx_stuff",
-            "params": "",
-            "return": ""
+            "name": "some_dx_stuff"
           },
           "2": { "name": "v2" },
           "3": { "name": "v3" },

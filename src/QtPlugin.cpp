@@ -24,6 +24,7 @@ namespace QtPlugin
     {
         MENU_DISASM_LOOKUP_IN_VIRTUAL_TABLE,
         MENU_PLUGIN_SHOW_TAB,
+        MENU_PLUGIN_SETTINGS,
     };
 }
 static QByteArray getResourceBytes(const char* path)
@@ -69,6 +70,7 @@ void QtPlugin::Setup()
 
     _plugin_menuseticon(S2Plugin::hMenu, &icon);
     _plugin_menuaddentry(S2Plugin::hMenu, MENU_PLUGIN_SHOW_TAB, "Show tab");
+    _plugin_menuaddentry(S2Plugin::hMenu, MENU_PLUGIN_SETTINGS, "Settings");
 
     SetEvent(hSetupEvent);
 }
@@ -150,6 +152,12 @@ void QtPlugin::MenuEntry(int hEntry)
             if (!gsSpelunky2MainWindow->isVisible())
                 GuiAddQWidgetTab(gsSpelunky2MainWindow);
 
+            ShowTab();
+            break;
+        }
+        case MENU_PLUGIN_SETTINGS:
+        {
+            gsViewToolbar->showSettings();
             ShowTab();
             break;
         }
