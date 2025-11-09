@@ -36,7 +36,7 @@ namespace S2Plugin
             return mTableStartAddress + (entry.offset * sizeof(uintptr_t));
         }
 
-        void setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name) const;
+        void setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name);
 
         constexpr size_t count() const noexcept
         {

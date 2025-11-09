@@ -197,7 +197,7 @@ namespace S2Plugin
       private:
         // column count for matrix
         size_t columns{0};
-        size_t size{0};
+        mutable size_t size{0};
         friend class Configuration;
     };
 

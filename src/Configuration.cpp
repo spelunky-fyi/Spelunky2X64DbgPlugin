@@ -1226,12 +1226,12 @@ size_t S2Plugin::MemoryField::get_size() const
     {
         if (type == MemoryFieldType::Array)
         {
-            const_cast<MemoryField*>(this)->size = numberOfElements * Configuration::get()->getTypeSize(firstParameterType);
+            size = numberOfElements * Configuration::get()->getTypeSize(firstParameterType);
             return size;
         }
         if (type == MemoryFieldType::Matrix)
         {
-            const_cast<MemoryField*>(this)->size = rows * columns * Configuration::get()->getTypeSize(firstParameterType);
+            size = rows * columns * Configuration::get()->getTypeSize(firstParameterType);
             return size;
         }
         if (jsonName.empty())
@@ -1241,10 +1241,10 @@ size_t S2Plugin::MemoryField::get_size() const
             {
                 new_size += field.get_size();
             }
-            const_cast<MemoryField*>(this)->size = new_size;
+            size = new_size;
             return size;
         }
-        const_cast<MemoryField*>(this)->size = Configuration::get()->getTypeSize(jsonName, type == MemoryFieldType::EntitySubclass);
+        size = Configuration::get()->getTypeSize(jsonName, type == MemoryFieldType::EntitySubclass);
     }
     return size;
 }

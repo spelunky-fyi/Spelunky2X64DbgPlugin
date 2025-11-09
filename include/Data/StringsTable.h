@@ -28,7 +28,7 @@ namespace S2Plugin
 
       private:
         uintptr_t ptr{0};
-        size_t size{0};
+        mutable size_t size{0};
         // Use the model as cache
         QStandardItemModel cache;
 

@@ -58,7 +58,7 @@ namespace S2Plugin
         const ParticleDB& get_ParticleDB();
         const EntityDB& get_EntityDB();
         const StringsTable& get_StringsTable(bool quiet);
-        const VirtualTableLookup& get_VirtualTableLookup();
+        VirtualTableLookup& get_VirtualTableLookup();
         //
 
         uintptr_t find(const char* pattern, uintptr_t start = 0, size_t size = 0) const;

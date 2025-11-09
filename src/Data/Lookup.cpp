@@ -191,7 +191,7 @@ const S2Plugin::StringsTable& S2Plugin::Spelunky2::get_StringsTable(bool quiet)
     return mStringsTable;
 }
 
-const S2Plugin::VirtualTableLookup& S2Plugin::Spelunky2::get_VirtualTableLookup()
+S2Plugin::VirtualTableLookup& S2Plugin::Spelunky2::get_VirtualTableLookup()
 {
     if (mVirtualTableLookup.mTableStartAddress != 0)
         return mVirtualTableLookup;

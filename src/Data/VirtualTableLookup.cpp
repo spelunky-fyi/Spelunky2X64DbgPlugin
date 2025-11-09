@@ -13,11 +13,11 @@ std::unordered_set<size_t> S2Plugin::VirtualTableLookup::tableOffsetForFunctionA
     return offsets;
 }
 
-void S2Plugin::VirtualTableLookup::setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name) const
+void S2Plugin::VirtualTableLookup::setSymbolNameForOffsetAddress(size_t offsetAddress, const std::string& name)
 {
     auto tableOffset = (offsetAddress - mTableStartAddress) / sizeof(size_t);
     auto& entry = mOffsetToTableEntries.at(tableOffset);
-    const_cast<VirtualTableEntry&>(entry).addSymbol(name);
+    entry.addSymbol(name);
 }
 
 S2Plugin::VirtualTableEntry S2Plugin::VirtualTableLookup::findPrecedingEntryWithSymbols(size_t tableOffset) const

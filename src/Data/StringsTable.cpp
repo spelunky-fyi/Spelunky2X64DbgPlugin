@@ -39,11 +39,11 @@ uintptr_t S2Plugin::StringsTable::count(bool recount) const
         {
             if (!Script::Memory::IsValidPtr(data[dataIdx]))
             {
-                const_cast<StringsTable&>(*this).size = idx * data.size() + dataIdx;
+                size = idx * data.size() + dataIdx;
                 return size;
             }
         }
     }
-    const_cast<StringsTable&>(*this).size = expectedMax;
+    size = expectedMax;
     return size;
 }
