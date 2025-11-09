@@ -21,14 +21,16 @@ S2Plugin::Settings* S2Plugin::Settings::get()
     return _ptr;
 }
 
+static QString getSettingsPath()
+{
+    char buffer[MAX_PATH + 1] = {0};
+    GetModuleFileNameA(nullptr, buffer, MAX_PATH);
+    return QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/settings.json");
+}
+
 S2Plugin::Settings::Settings()
 {
-    const QString path = []() -> QString
-    {
-        char buffer[MAX_PATH + 1] = {0};
-        GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-        return QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/settings.json");
-    }();
+    const QString path = getSettingsPath();
 
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -47,12 +49,7 @@ S2Plugin::Settings::Settings()
 
 void S2Plugin::Settings::save()
 {
-    static const QString path = []() -> QString
-    {
-        char buffer[MAX_PATH + 1] = {0};
-        GetModuleFileNameA(nullptr, buffer, MAX_PATH);
-        return QFileInfo(QString(buffer)).dir().filePath("plugins/spel2/settings.json");
-    }();
+    static const QString path = getSettingsPath();
 
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))

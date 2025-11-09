@@ -398,6 +398,9 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     MemoryField memField;
     memField.name = field["field"].get<std::string>();
 
+    if (memField.name.empty())
+        throw std::runtime_error("Field name cannot be empty (" + struct_name + "." + memField.name + ")");
+
     if (!std::regex_match(memField.name, varNameCheck) && !(struct_name.rfind("SaveGame", 0) == 0 && struct_name.length() > 8)) // exception for `SaveGame*` structs
         throw std::runtime_error("unsupported character in name (" + struct_name + "." + memField.name + ")");
 
@@ -515,6 +518,9 @@ S2Plugin::MemoryField S2Plugin::Configuration::populateMemoryField(const nlohman
     {
         case MemoryFieldType::Skip:
         {
+            if (memField.name[0] == '_')
+                throw std::runtime_error("Skip element name cannot starts with '_' (" + struct_name + "." + memField.name + ")");
+
             if (memField.isPointer)
                 throw std::runtime_error("Skip element cannot be marked as pointer (" + struct_name + "." + memField.name + ")");
 

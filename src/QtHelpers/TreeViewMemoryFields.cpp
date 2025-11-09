@@ -23,6 +23,7 @@
 #include "make_unsigned_integer.h"
 #include "pluginmain.h"
 #include "read_helpers.h"
+#include <QByteArray>
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
@@ -188,8 +189,30 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
     {
         case MemoryFieldType::Skip:
         {
-            // TODO: add skip when set in settings
-            // save offset with gsRoleSize
+            auto settings = Settings::get();
+            if (settings->checkB(Settings::DEVELOPER_MODE))
+            {
+                int64_t size = static_cast<int64_t>(field.get_size());
+                returnField = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
+                returnField->setData(size, gsRoleSize);
+                if (size > gsSkipMainFieldSize)
+                {
+                    QStandardItem* childField = nullptr;
+                    while (size > 0)
+                    {
+                        auto childSize = 0x8 - (delta & 0x7); // align to 8 if skip starts on address not dividable by 8
+                        MemoryField skipField;
+                        skipField.name = "_" + field.name;
+                        skipField.type = MemoryFieldType::Skip;
+                        childField = createAndInsertItem(skipField, fieldNameOverride + field.name, returnField, memoryAddress);
+                        childField->setData(childSize, gsRoleSize);
+                        delta += childSize;
+                        size -= childSize;
+                    }
+                    if (childField && size != 0) // fix last field if it was less then 8 bytes
+                        childField->setData(childField->data(gsRoleSize).toULongLong() + size, gsRoleSize);
+                }
+            }
             break;
         }
         case MemoryFieldType::CodePointer:
@@ -610,9 +633,6 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
     }
 
     MemoryFieldType fieldType = itemField->data(gsRoleType).value<MemoryFieldType>();
-    if (fieldType == MemoryFieldType::Skip) // TODO: change when setting for it is available
-        return;
-
     if (fieldType == MemoryFieldType::None)
     {
         dprintf("ERROR: unknown type in updateRow('%s' row: %d)\n", itemField->data(gsRoleUID).toString().toStdString().c_str(), row);
@@ -2301,7 +2321,80 @@ void S2Plugin::TreeViewMemoryFields::updateRow(int row, std::optional<uintptr_t>
         }
         case MemoryFieldType::Skip:
         {
-            // TODO when setting for skip is done
+            QVariant value;
+            auto size = itemField->data(gsRoleSize).toULongLong();
+            if (!valueMemoryOffset)
+            {
+                itemValue->setData({}, Qt::DisplayRole);
+                itemValueHex->setData({}, Qt::DisplayRole);
+
+                itemValue->setData({}, gsRoleRawValue);
+                itemField->setBackground(Qt::transparent);
+            }
+            else
+            {
+                auto oldDataVariant = itemValue->data(gsRoleRawValue);
+                auto oldData = oldDataVariant.value<QByteArray>();
+                QByteArray dataBytes(static_cast<int>(size), Qt::Initialization());
+                readMemory(valueMemoryOffset, dataBytes.data(), size, nullptr);
+                if (!oldDataVariant.isValid() || oldData != dataBytes)
+                {
+                    value.setValue(dataBytes);
+                    dataBytes.truncate(gsSkipMainFieldSize);
+                    auto displayHexBytes = dataBytes.toHex();
+                    std::reverse(dataBytes.begin(), dataBytes.end());
+                    auto displayBytes = dataBytes.toHex();
+                    std::for_each(displayHexBytes.begin(), displayHexBytes.end(), [](char& c) { return std::toupper(c); });
+                    itemValueHex->setData("0x" + displayHexBytes, Qt::DisplayRole);
+                    itemValue->setData("0x" + displayBytes, Qt::DisplayRole);
+                    itemField->setBackground(highlightColor);
+                    itemValue->setData(value, gsRoleRawValue);
+                }
+                else
+                {
+                    value = oldDataVariant;
+                    itemField->setBackground(Qt::transparent);
+                }
+            }
+            if (comparisonActive)
+            {
+                QVariant comparisonValue;
+                if (!comparisonMemoryOffset)
+                {
+                    itemComparisonValue->setData({}, Qt::DisplayRole);
+                    itemComparisonValueHex->setData({}, Qt::DisplayRole);
+                    itemComparisonValue->setData({}, gsRoleRawValue);
+                }
+                else
+                {
+                    auto oldDataVariant = itemComparisonValue->data(gsRoleRawValue);
+                    auto oldData = oldDataVariant.value<QByteArray>();
+                    QByteArray dataBytes(static_cast<int>(size), Qt::Initialization());
+                    readMemory(valueMemoryOffset, dataBytes.data(), size, nullptr);
+                    if (!oldDataVariant.isValid() || oldData != dataBytes)
+                    {
+                        comparisonValue.setValue(dataBytes);
+                        dataBytes.truncate(gsSkipMainFieldSize);
+                        auto displayHexBytes = dataBytes.toHex();
+                        std::reverse(dataBytes.begin(), dataBytes.end());
+                        auto displayBytes = dataBytes.toHex();
+                        std::for_each(displayHexBytes.begin(), displayHexBytes.end(), [](char& c) { return std::toupper(c); });
+                        itemComparisonValueHex->setData("0x" + displayHexBytes, Qt::DisplayRole);
+                        itemComparisonValue->setData("0x" + displayBytes, Qt::DisplayRole);
+                        itemComparisonValue->setData(value, gsRoleRawValue);
+                    }
+                    else
+                        comparisonValue = oldDataVariant;
+                }
+                itemComparisonValue->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+                itemComparisonValueHex->setBackground(value != comparisonValue ? comparisonDifferenceColor : Qt::transparent);
+            }
+
+            if (shouldUpdateChildren)
+            {
+                for (int x = 0; x < itemField->rowCount(); ++x)
+                    updateRow(x, newAddr, newAddrComparison, itemField);
+            }
             break;
         }
         case MemoryFieldType::EntitySubclass:

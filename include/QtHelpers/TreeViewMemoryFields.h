@@ -20,6 +20,8 @@ namespace S2Plugin
     constexpr const char* gsDragDropMemoryField_IsPointer = "pointer";
     constexpr const char* gsDragDropMemoryField_RefName = "ref";
 
+    constexpr const uint8_t gsSkipMainFieldSize = 16;
+
     struct ColumnFilter
     {
         explicit constexpr ColumnFilter(uint16_t a) : mActiveColumns(a){};
