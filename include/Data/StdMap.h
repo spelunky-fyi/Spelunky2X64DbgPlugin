@@ -32,7 +32,7 @@ namespace S2Plugin
             head.set_offsets();
         };
 
-        // value size only needed for value() function
+        // key size only needed for value() and value_ptr() functions
         StdMap(uintptr_t addr, uint8_t keyAlignment, uint8_t valueAlignment, size_t keySize)
         {
             uintptr_t data[2];
@@ -173,7 +173,7 @@ namespace S2Plugin
                     case 0:
                     case 1:
                     case 2:
-                        key_offset = 0x1A; // 3 pointers and 2 bool field
+                        key_offset = 0x1A; // 3 pointers and 2 bool fields
                         break;
                     case 3:
                     case 4:

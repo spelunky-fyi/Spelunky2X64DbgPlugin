@@ -77,6 +77,8 @@ QTreeView::branch:open:has-children:has-siblings  {
     QObject::connect(this, &QTreeView::clicked, this, &TreeViewMemoryFields::cellClicked);
     header()->setSectionsClickable(true);
     QObject::connect(header(), &QHeaderView::sectionClicked, this, &TreeViewMemoryFields::headerClicked);
+    if (Settings::get()->checkB(Settings::COMMENTS_AS_TOOLTIP))
+        mActiveColumns.disable(gsColComment);
 }
 
 void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryField>& fields, const std::string& mainName, uintptr_t structAddr, size_t initialDelta, uint8_t deltaPrefixCount,
@@ -98,8 +100,9 @@ void S2Plugin::TreeViewMemoryFields::addMemoryFields(const std::vector<MemoryFie
 QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField& field, const std::string& fieldNameOverride, uintptr_t memoryAddress, size_t delta, uint8_t deltaPrefixCount,
                                                               QStandardItem* parent)
 {
-    auto createAndInsertItem = [&delta, &deltaPrefixCount](const MemoryField& field, const std::string& fieldNameUID, QStandardItem* itemParent, uintptr_t memAddr,
-                                                           bool showDelta = true) -> QStandardItem*
+    auto settings = Settings::get();
+    auto createAndInsertItem = [&delta, &deltaPrefixCount, settings](const MemoryField& field, const std::string& fieldNameUID, QStandardItem* itemParent, uintptr_t memAddr,
+                                                                     bool showDelta = true) -> QStandardItem*
     {
         auto itemFieldName = new QStandardItem();
         itemFieldName->setEditable(false);
@@ -150,7 +153,13 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
 
         auto itemFieldComment = new QStandardItem();
         itemFieldComment->setEditable(false);
-        itemFieldComment->setData(QString::fromStdString(field.comment).toHtmlEscaped(), Qt::DisplayRole);
+        QString commentString = QString::fromStdString(field.comment).toHtmlEscaped();
+        itemFieldComment->setData(commentString, Qt::DisplayRole);
+        if (settings->checkB(Settings::COMMENTS_AS_TOOLTIP) && !commentString.isEmpty())
+        {
+            itemFieldName->setToolTip(commentString);
+            itemFieldName->setIcon(QIcon(":/icons/hint.png"));
+        }
 
         auto itemFieldType = new QStandardItem();
         itemFieldType->setEditable(false);
@@ -189,7 +198,6 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
     {
         case MemoryFieldType::Skip:
         {
-            auto settings = Settings::get();
             if (settings->checkB(Settings::DEVELOPER_MODE))
             {
                 int64_t size = static_cast<int64_t>(field.get_size());
@@ -287,7 +295,6 @@ QStandardItem* S2Plugin::TreeViewMemoryFields::addMemoryField(const MemoryField&
             auto flagsParent = createAndInsertItem(field, fieldNameOverride, parent, memoryAddress);
             MemoryField flagField;
             flagField.type = MemoryFieldType::Flag;
-            auto settings = Settings::get();
             for (uint8_t x = 1; x <= flags; ++x)
             {
                 flagField.name = "flag_" + std::to_string(x);

@@ -29,10 +29,7 @@ namespace S2Plugin
         {
             return static_cast<int>(mFunctions.size());
         }
-        int columnCount([[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
-        {
-            return 6;
-        }
+        int columnCount(const QModelIndex& parent = QModelIndex()) const override;
         QModelIndex index(int row, int column, [[maybe_unused]] const QModelIndex& parent = QModelIndex()) const override
         {
             return createIndex(row, column);

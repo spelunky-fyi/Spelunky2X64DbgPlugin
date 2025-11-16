@@ -2,6 +2,9 @@
   <qresource prefix="/icons">
     <file>caveman.png</file>
   </qresource>
+  <qresource prefix="/icons">
+    <file>hint.png</file>
+  </qresource>
   <qresource prefix="/images">
     <file alias="vline.png">stylesheet-vline.png</file>
   </qresource>

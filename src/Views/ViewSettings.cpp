@@ -42,9 +42,11 @@ S2Plugin::Settings::Settings()
     if (jsonData.isEmpty())
         return;
 
-    QJsonValue value = jsonData.value("dev");
-    if (!value.isNull())
-        mDevMode = value.toBool();
+    for (auto& [data, name] : cache)
+    {
+        QJsonValue value = jsonData.value(name);
+        data = value.toVariant();
+    }
 }
 
 void S2Plugin::Settings::save()
@@ -58,36 +60,12 @@ void S2Plugin::Settings::save()
         return;
     }
 
-    QJsonDocument document(QJsonObject({
-        {"dev", mDevMode},
-    }));
+    QJsonObject object;
+    for (const auto& [data, name] : cache)
+        object.insert(name, QJsonValue::fromVariant(data));
 
-    file.write(document.toJson());
+    file.write(QJsonDocument(object).toJson());
     file.close();
-}
-
-bool S2Plugin::Settings::checkB(SETTING option) const
-{
-    switch (option)
-    {
-        case DEVELOPER_MODE:
-        {
-            return mDevMode;
-        }
-    }
-    return false;
-}
-
-void S2Plugin::Settings::setB(SETTING option, bool b)
-{
-    switch (option)
-    {
-        case DEVELOPER_MODE:
-        {
-            mDevMode = b;
-            break;
-        }
-    }
 }
 
 S2Plugin::ViewSettings::ViewSettings(QWidget* parent) : QWidget(parent)
@@ -103,11 +81,20 @@ S2Plugin::ViewSettings::ViewSettings(QWidget* parent) : QWidget(parent)
     mainLayout->addSpacing(30);
 
     auto settings = Settings::get();
-    auto check = new QCheckBox("Dev mode", this);
-    check->setToolTip("Fills flag fields to max with \"unknown\" and shows skipped memory. Need to reload opened views to take effect");
-    QObject::connect(check, &QCheckBox::clicked, this, [settings](bool b) { settings->setB(Settings::DEVELOPER_MODE, b); });
-    check->setChecked(settings->checkB(Settings::DEVELOPER_MODE));
-    mainLayout->addWidget(check);
+    {
+        auto check = new QCheckBox("Dev mode", this);
+        check->setToolTip("Fills flag fields and virtual functions view to max with \"unknown\" and shows skipped memory. Need to reload opened views to take effect");
+        QObject::connect(check, &QCheckBox::clicked, this, [settings](bool b) { settings->setB(Settings::DEVELOPER_MODE, b); });
+        check->setChecked(settings->checkB(Settings::DEVELOPER_MODE));
+        mainLayout->addWidget(check);
+    }
+    {
+        auto check = new QCheckBox("Comments as tooltip", this);
+        check->setToolTip("Hides the comments column and instead shows them as tooltip when hovering over the name");
+        QObject::connect(check, &QCheckBox::clicked, this, [settings](bool b) { settings->setB(Settings::COMMENTS_AS_TOOLTIP, b); });
+        check->setChecked(settings->checkB(Settings::COMMENTS_AS_TOOLTIP));
+        mainLayout->addWidget(check);
+    }
 
     mainLayout->addStretch();
 }

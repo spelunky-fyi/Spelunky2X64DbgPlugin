@@ -40,16 +40,44 @@ S2Plugin::ViewVirtualFunctions::ViewVirtualFunctions(uintptr_t address, std::str
 
     auto functionsTable = new QTableView(this);
     auto model = new ItemModelVirtualFunctions(typeName, mMemoryAddress, functionsTable);
+
     functionsTable->setModel(model);
     functionsTable->setAlternatingRowColors(true);
     functionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    functionsTable->horizontalHeader()->setStretchLastSection(true);
+    auto tableHeader = functionsTable->horizontalHeader();
+    tableHeader->setStretchLastSection(true);
     functionsTable->setItemDelegate(HTMLDelegate);
     functionsTable->setColumnWidth(ItemModelVirtualFunctions::Index, 30);
     functionsTable->setColumnWidth(ItemModelVirtualFunctions::Offset, 50);
     functionsTable->setColumnWidth(ItemModelVirtualFunctions::TableAddress, 130);
     functionsTable->setColumnWidth(ItemModelVirtualFunctions::FunctionAddress, 130);
     functionsTable->setColumnWidth(ItemModelVirtualFunctions::Signature, 300);
+    tableHeader->setMinimumSectionSize(30);
+    QObject::connect(tableHeader, &QHeaderView::sectionResized, this,
+                     [tableHeader](int idx, [[maybe_unused]] int oldSize, int newSize)
+                     {
+                         int minimum = 0;
+                         switch (idx)
+                         {
+                             // case ItemModelVirtualFunctions::Index: // handled by setMinimumSectionSize
+                             case ItemModelVirtualFunctions::Offset:
+                                 minimum = 45;
+                                 break;
+                             case ItemModelVirtualFunctions::TableAddress:
+                             case ItemModelVirtualFunctions::FunctionAddress:
+                                 minimum = 125;
+                                 break;
+                             case ItemModelVirtualFunctions::Signature:
+                                 minimum = 250;
+                                 break;
+                         }
+                         if (newSize < minimum)
+                             tableHeader->resizeSection(idx, minimum);
+                     });
+
+    functionsTable->resizeRowsToContents();
+    functionsTable->verticalHeader()->setMinimumSectionSize(30);
+
     mainLayout->addWidget(functionsTable);
 
     QObject::connect(functionsTable, &QTableView::clicked, this, &ViewVirtualFunctions::tableEntryClicked);

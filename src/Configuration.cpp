@@ -1128,7 +1128,7 @@ uint8_t S2Plugin::Configuration::getAlignment(MemoryFieldType type) const
         case MemoryFieldType::Skip:
         {
             dprintf("cannot determinate alignment Configuration::getAlignment() (Skip)\n");
-            return sizeof(uintptr_t);
+            return 0;
         }
         case MemoryFieldType::Byte:
         case MemoryFieldType::UnsignedByte:
