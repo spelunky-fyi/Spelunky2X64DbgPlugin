@@ -13,27 +13,40 @@ void S2Plugin::StyledItemDelegateHTML::paint(QPainter* painter, const QStyleOpti
 
     painter->save();
 
+    options.decorationPosition = QStyleOptionViewItem::Right;
     QTextDocument doc;
     doc.setHtml(options.text);
+    doc.setTextWidth(options.rect.width());
+    QTextBlockFormat format;
+    if (options.displayAlignment & Qt::AlignRight)
+        format.setAlignment(Qt::AlignRight);
+    else if (options.displayAlignment & Qt::AlignHCenter)
+        format.setAlignment(Qt::AlignHCenter);
+    else
+        format.setAlignment(Qt::AlignLeft);
+
+    QTextCursor cursor(&doc);
+    cursor.select(QTextCursor::Document);
+    cursor.mergeBlockFormat(format);
 
     options.text = "";
     options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
-    QSize iconSize = options.icon.actualSize(options.rect.size());
+    // QSize iconSize = options.icon.actualSize(options.rect.size());
     if (mCenterVertically)
     {
-        doc.setTextWidth(options.rect.width());
-        auto centerVOffset = (options.rect.height() - doc.size().height()) / 2.0;
+        auto centerVOffset = (options.rect.height() - doc.size().height()) / 2;
         painter->translate(options.rect.left(), options.rect.top() + centerVOffset);
     }
     else
     {
-        painter->translate(options.rect.left() + iconSize.width(), options.rect.top() - 2);
+        painter->translate(options.rect.left() /*+ iconSize.width()*/, options.rect.top() - 2);
     }
-    QRect clip(0, 0, options.rect.width() + iconSize.width(), options.rect.height());
+    QRect clip(0, 0, options.rect.width() /*+ iconSize.width()*/, options.rect.height());
     // doc.drawContents(painter, clip);
 
     painter->setClipRect(clip);
     QAbstractTextDocumentLayout::PaintContext ctx;
+    // Apply custom text color if available
     auto newColor = index.data(Qt::TextColorRole);
     if (!newColor.isNull())
         ctx.palette.setColor(QPalette::Text, newColor.value<QColor>());
